@@ -1,15 +1,34 @@
 {
   "name": "42ndmind",
-  "version": "0.1.0",
-  "description": "Persistent epistemic memory and investigative runtime shell for Epistemic Octahedron-aligned agents.",
+  "version": "1.8.0",
   "type": "module",
+  "description": "Persistent epistemic memory runtime with quality-gated scenario dataset combining.",
   "scripts": {
-    "think": "node src/cli.js",
     "demo": "node tests/sampleRun.mjs",
-    "reset": "node src/cli.js --reset"
+    "think": "node src/cli.js think",
+    "evidence": "node src/cli.js evidence",
+    "inspect": "node src/cli.js inspect",
+    "reset": "node src/cli.js reset",
+    "review": "node src/cli.js review",
+    "plan": "node src/cli.js plan",
+    "next": "node src/cli.js next",
+    "answer": "node src/cli.js answer",
+    "export-traces": "node src/cli.js export-traces",
+    "export-alignment": "node src/cli.js export-alignment",
+    "export-preferences": "node src/cli.js export-preferences",
+    "validate-datasets": "node src/cli.js validate-datasets",
+    "export-bundle": "node src/cli.js export-bundle",
+    "run-scenarios": "node src/cli.js run-scenarios",
+    "run-scenarios-file": "node src/cli.js run-scenarios-file",
+    "audit": "node src/cli.js audit"
   },
-  "engines": {
-    "node": ">=20"
-  },
-  "license": "MIT"
+  "keywords": [
+    "epistemic-memory",
+    "agent-runtime",
+    "belief-revision",
+    "epistemic-octahedron",
+    "philosophers-stone",
+    "42ndmind"
+  ],
+  "license": "UNLICENSED"
 }

@@ -1,8 +1,14 @@
+
 export function makeId(prefix) {
+  const time = Date.now().toString(36);
   const random = Math.random().toString(36).slice(2, 10);
-  return `${prefix}_${Date.now().toString(36)}_${random}`;
+  return `${prefix}_${time}_${random}`;
 }
 
 export function nowIso() {
   return new Date().toISOString();
+}
+
+export function clamp(n, min = 0.01, max = 0.99) {
+  return Math.max(min, Math.min(max, Number(n.toFixed(2))));
 }

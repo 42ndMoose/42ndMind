@@ -1,8 +1,13 @@
 {
   "claims": [],
   "evidence": [],
+  "tensions": [],
   "contradictions": [],
   "hypotheses": [],
   "inquiryTasks": [],
-  "beliefUpdates": []
+  "beliefUpdates": [],
+  "motiveModels": [],
+  "investigationPlans": [],
+  "investigationActions": [],
+  "actionAnswerClassifications": []
 }
