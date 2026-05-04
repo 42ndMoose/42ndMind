@@ -1,13 +1,15 @@
 {
   "name": "42ndmind",
   "version": "0.1.0",
-  "private": true,
+  "description": "Persistent epistemic memory and investigative runtime shell for Epistemic Octahedron-aligned agents.",
   "type": "module",
-  "description": "Persistent epistemic memory and investigative agent runtime skeleton.",
   "scripts": {
-    "start": "node src/runtime/cli.js",
-    "test": "node --test"
+    "think": "node src/cli.js",
+    "demo": "node tests/sampleRun.mjs",
+    "reset": "node src/cli.js --reset"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
 }
