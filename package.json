@@ -1,8 +1,8 @@
 {
   "name": "42ndmind",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "type": "module",
-  "description": "Persistent epistemic memory runtime with quality-gated scenario dataset combining.",
+  "description": "Persistent epistemic memory runtime with quality-gated scenario dataset combining and no-action batch fallback.",
   "scripts": {
     "demo": "node tests/sampleRun.mjs",
     "think": "node src/cli.js think",
@@ -20,7 +20,8 @@
     "export-bundle": "node src/cli.js export-bundle",
     "run-scenarios": "node src/cli.js run-scenarios",
     "run-scenarios-file": "node src/cli.js run-scenarios-file",
-    "audit": "node src/cli.js audit"
+    "audit": "node src/cli.js audit",
+    "test:no-action": "node tests/noActionScenarioRun.mjs"
   },
   "keywords": [
     "epistemic-memory",

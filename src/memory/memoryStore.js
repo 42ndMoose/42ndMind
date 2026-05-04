@@ -12,6 +12,7 @@ export const EMPTY_MEMORY = {
   motiveModels: [],
   investigationPlans: [],
   investigationActions: [],
+  noActionEvents: [],
   actionAnswerClassifications: [],
   beliefUpdates: []
 };
@@ -45,6 +46,7 @@ export class MemoryStore {
       motiveModels: memory.motiveModels ?? [],
       investigationPlans: memory.investigationPlans ?? [],
       investigationActions: memory.investigationActions ?? [],
+      noActionEvents: memory.noActionEvents ?? [],
       actionAnswerClassifications: memory.actionAnswerClassifications ?? [],
       beliefUpdates: memory.beliefUpdates ?? []
     };
@@ -113,6 +115,7 @@ export function summarizeMemory(memory) {
     motiveModels: memory.motiveModels.length,
     investigationPlans: memory.investigationPlans.length,
     openInvestigationActions: memory.investigationActions.filter((action) => action.status === "open").length,
+    noActionEvents: (memory.noActionEvents ?? []).length,
     actionAnswerClassifications: memory.actionAnswerClassifications.length,
     beliefUpdates: memory.beliefUpdates.length
   };

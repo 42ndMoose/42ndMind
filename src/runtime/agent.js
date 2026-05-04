@@ -159,6 +159,7 @@ export class EpistemicAgent {
 
     return {
       action: result.action,
+      noActionEvent: result.noActionEvent ?? null,
       reason: result.reason,
       summary: summarizeMemory(result.memory),
       memoryPath: this.memory.filePath

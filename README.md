@@ -1,7 +1,7 @@
 
 # 42ndMind
 
-v1.8 adds quality-gated scenario dataset combining.
+v1.8.1 adds a no-action fallback so broad scenario batches do not crash when no investigation action is created. v1.8 added quality-gated scenario dataset combining.
 
 42ndMind is a persistent epistemic memory and investigative runtime shell.
 
@@ -12,6 +12,27 @@ It is meant to sit above a base LLM and optional LoRA adapter. It stores claims,
 - `philosophers-stone`: deterministic instrument / profiler / visualizer.
 - `42ndAlignment`: model training lab / SFT / LoRA / future preference training.
 - `42ndMind`: runtime memory / inquiry loop / epistemic agent shell.
+
+
+## v1.8.1 change
+
+The scenario runner now handles no-action cases gracefully. Previously, broader scenarios could produce no investigation action, but `runScenario` still called `answer({ actionSelector: "latest" })`, causing the batch run to crash before combined dataset export.
+
+Now, when `agent.next()` produces no action:
+
+- a `noActionEvent` is recorded in memory,
+- a belief update records the no-action condition,
+- the scenario skips action-answer intake,
+- traces/datasets/validation/audit still run,
+- the batch continues and produces combined dataset files.
+
+Run the regression test:
+
+```bash
+npm run test:no-action
+```
+
+This patch fixes the batch crash. It does not make the extractor broad yet. Many broader scenarios may still be excluded by quality gating until extractor/planner coverage improves.
 
 ## v1.8 MVP
 

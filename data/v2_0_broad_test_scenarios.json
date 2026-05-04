@@ -1,0 +1,554 @@
+{
+  "scenarios": [
+    {
+      "id": "v2_0_memory_error_001",
+      "description": "v2.0 broad test scenario 001: memory_error",
+      "firstClaim": "I never took the keys.",
+      "secondClaim": "Actually, I took the keys yesterday, but I already returned them.",
+      "evidence": {
+        "direction": "supports",
+        "text": "There is a message confirming the keys were returned yesterday evening."
+      },
+      "actionAnswer": "I honestly forgot because it happened quickly yesterday. My earlier denial was a memory error, not an attempt to deceive."
+    },
+    {
+      "id": "v2_0_scope_clarification_002",
+      "description": "v2.0 broad test scenario 002: scope_clarification",
+      "firstClaim": "I returned the car yesterday.",
+      "secondClaim": "The car is still in my driveway because I only returned the keys.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The key handoff is confirmed, but the car itself is still at the user house."
+      },
+      "actionAnswer": "When I said I returned it, I meant I returned the keys, not the car itself. That was a scope mistake."
+    },
+    {
+      "id": "v2_0_partial_truth_003",
+      "description": "v2.0 broad test scenario 003: partial_truth",
+      "firstClaim": "I paid back the money.",
+      "secondClaim": "I paid back half, and I will pay the rest Friday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "A receipt confirms only half of the amount was repaid."
+      },
+      "actionAnswer": "My first statement was too broad. I paid back part of it, but not the full amount yet."
+    },
+    {
+      "id": "v2_0_intentional_deception_004",
+      "description": "v2.0 broad test scenario 004: intentional_deception",
+      "firstClaim": "I was home all night.",
+      "secondClaim": "I left for an hour, but I did not want anyone to know.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Door camera footage shows the user leaving for about one hour."
+      },
+      "actionAnswer": "I hid that detail because I was worried how it would look. The earlier claim was not accurate."
+    },
+    {
+      "id": "v2_0_mistaken_accusation_005",
+      "description": "v2.0 broad test scenario 005: mistaken_accusation",
+      "firstClaim": "Alex stole my charger.",
+      "secondClaim": "I found the charger in my backpack.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The charger was found in the user backpack."
+      },
+      "actionAnswer": "I was wrong to accuse Alex. I assumed theft before checking my own things."
+    },
+    {
+      "id": "v2_0_timeline_contradiction_006",
+      "description": "v2.0 broad test scenario 006: timeline_contradiction",
+      "firstClaim": "I submitted the form before the deadline.",
+      "secondClaim": "I submitted it this morning, but the deadline was yesterday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The submission timestamp is after the posted deadline."
+      },
+      "actionAnswer": "I misunderstood the timeline. I submitted it, but not before the deadline."
+    },
+    {
+      "id": "v2_0_self_serving_claim_007",
+      "description": "v2.0 broad test scenario 007: self_serving_claim",
+      "firstClaim": "I did nothing wrong.",
+      "secondClaim": "I deleted the messages because they made me look bad.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The message deletion log shows the messages were removed after the dispute started."
+      },
+      "actionAnswer": "I deleted them because I was embarrassed and wanted to avoid consequences. That weakens my earlier claim."
+    },
+    {
+      "id": "v2_0_motive_ambiguity_008",
+      "description": "v2.0 broad test scenario 008: motive_ambiguity",
+      "firstClaim": "She ignored me because she hates me.",
+      "secondClaim": "She said her phone died and she was at work.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Her work schedule and phone battery log support the alternative explanation."
+      },
+      "actionAnswer": "I jumped to a motive claim without enough evidence. Her phone dying and being at work is a live alternative explanation."
+    },
+    {
+      "id": "v2_0_false_certainty_009",
+      "description": "v2.0 broad test scenario 009: false_certainty",
+      "firstClaim": "There is no possible way I misunderstood him.",
+      "secondClaim": "I only heard part of the conversation.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The user admits they heard only part of the conversation."
+      },
+      "actionAnswer": "My certainty was too high. Since I only heard part of it, misunderstanding remains possible."
+    },
+    {
+      "id": "v2_0_ideological_self_sealing_010",
+      "description": "v2.0 broad test scenario 010: ideological_self_sealing",
+      "firstClaim": "Anyone who disagrees with me is brainwashed.",
+      "secondClaim": "Even evidence against my view proves how brainwashed they are.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The claim treats disagreement and counterevidence as confirmation of itself."
+      },
+      "actionAnswer": "That reasoning is self-sealing. It protects the belief from correction instead of testing it against reality."
+    },
+    {
+      "id": "v2_0_memory_error_011",
+      "description": "v2.0 broad test scenario 011: memory_error",
+      "firstClaim": "I never took the keys.",
+      "secondClaim": "Actually, I took the keys yesterday, but I already returned them.",
+      "evidence": {
+        "direction": "supports",
+        "text": "There is a message confirming the keys were returned yesterday evening."
+      },
+      "actionAnswer": "I honestly forgot because it happened quickly yesterday. My earlier denial was a memory error, not an attempt to deceive."
+    },
+    {
+      "id": "v2_0_scope_clarification_012",
+      "description": "v2.0 broad test scenario 012: scope_clarification",
+      "firstClaim": "I returned the car yesterday.",
+      "secondClaim": "The car is still in my driveway because I only returned the keys.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The key handoff is confirmed, but the car itself is still at the user house."
+      },
+      "actionAnswer": "When I said I returned it, I meant I returned the keys, not the car itself. That was a scope mistake."
+    },
+    {
+      "id": "v2_0_partial_truth_013",
+      "description": "v2.0 broad test scenario 013: partial_truth",
+      "firstClaim": "I paid back the money.",
+      "secondClaim": "I paid back half, and I will pay the rest Friday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "A receipt confirms only half of the amount was repaid."
+      },
+      "actionAnswer": "My first statement was too broad. I paid back part of it, but not the full amount yet."
+    },
+    {
+      "id": "v2_0_intentional_deception_014",
+      "description": "v2.0 broad test scenario 014: intentional_deception",
+      "firstClaim": "I was home all night.",
+      "secondClaim": "I left for an hour, but I did not want anyone to know.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Door camera footage shows the user leaving for about one hour."
+      },
+      "actionAnswer": "I hid that detail because I was worried how it would look. The earlier claim was not accurate."
+    },
+    {
+      "id": "v2_0_mistaken_accusation_015",
+      "description": "v2.0 broad test scenario 015: mistaken_accusation",
+      "firstClaim": "Alex stole my charger.",
+      "secondClaim": "I found the charger in my backpack.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The charger was found in the user backpack."
+      },
+      "actionAnswer": "I was wrong to accuse Alex. I assumed theft before checking my own things."
+    },
+    {
+      "id": "v2_0_timeline_contradiction_016",
+      "description": "v2.0 broad test scenario 016: timeline_contradiction",
+      "firstClaim": "I submitted the form before the deadline.",
+      "secondClaim": "I submitted it this morning, but the deadline was yesterday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The submission timestamp is after the posted deadline."
+      },
+      "actionAnswer": "I misunderstood the timeline. I submitted it, but not before the deadline."
+    },
+    {
+      "id": "v2_0_self_serving_claim_017",
+      "description": "v2.0 broad test scenario 017: self_serving_claim",
+      "firstClaim": "I did nothing wrong.",
+      "secondClaim": "I deleted the messages because they made me look bad.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The message deletion log shows the messages were removed after the dispute started."
+      },
+      "actionAnswer": "I deleted them because I was embarrassed and wanted to avoid consequences. That weakens my earlier claim."
+    },
+    {
+      "id": "v2_0_motive_ambiguity_018",
+      "description": "v2.0 broad test scenario 018: motive_ambiguity",
+      "firstClaim": "She ignored me because she hates me.",
+      "secondClaim": "She said her phone died and she was at work.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Her work schedule and phone battery log support the alternative explanation."
+      },
+      "actionAnswer": "I jumped to a motive claim without enough evidence. Her phone dying and being at work is a live alternative explanation."
+    },
+    {
+      "id": "v2_0_false_certainty_019",
+      "description": "v2.0 broad test scenario 019: false_certainty",
+      "firstClaim": "There is no possible way I misunderstood him.",
+      "secondClaim": "I only heard part of the conversation.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The user admits they heard only part of the conversation."
+      },
+      "actionAnswer": "My certainty was too high. Since I only heard part of it, misunderstanding remains possible."
+    },
+    {
+      "id": "v2_0_ideological_self_sealing_020",
+      "description": "v2.0 broad test scenario 020: ideological_self_sealing",
+      "firstClaim": "Anyone who disagrees with me is brainwashed.",
+      "secondClaim": "Even evidence against my view proves how brainwashed they are.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The claim treats disagreement and counterevidence as confirmation of itself."
+      },
+      "actionAnswer": "That reasoning is self-sealing. It protects the belief from correction instead of testing it against reality."
+    },
+    {
+      "id": "v2_0_memory_error_021",
+      "description": "v2.0 broad test scenario 021: memory_error",
+      "firstClaim": "I never took the keys.",
+      "secondClaim": "Actually, I took the keys yesterday, but I already returned them.",
+      "evidence": {
+        "direction": "supports",
+        "text": "There is a message confirming the keys were returned yesterday evening."
+      },
+      "actionAnswer": "I honestly forgot because it happened quickly yesterday. My earlier denial was a memory error, not an attempt to deceive."
+    },
+    {
+      "id": "v2_0_scope_clarification_022",
+      "description": "v2.0 broad test scenario 022: scope_clarification",
+      "firstClaim": "I returned the car yesterday.",
+      "secondClaim": "The car is still in my driveway because I only returned the keys.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The key handoff is confirmed, but the car itself is still at the user house."
+      },
+      "actionAnswer": "When I said I returned it, I meant I returned the keys, not the car itself. That was a scope mistake."
+    },
+    {
+      "id": "v2_0_partial_truth_023",
+      "description": "v2.0 broad test scenario 023: partial_truth",
+      "firstClaim": "I paid back the money.",
+      "secondClaim": "I paid back half, and I will pay the rest Friday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "A receipt confirms only half of the amount was repaid."
+      },
+      "actionAnswer": "My first statement was too broad. I paid back part of it, but not the full amount yet."
+    },
+    {
+      "id": "v2_0_intentional_deception_024",
+      "description": "v2.0 broad test scenario 024: intentional_deception",
+      "firstClaim": "I was home all night.",
+      "secondClaim": "I left for an hour, but I did not want anyone to know.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Door camera footage shows the user leaving for about one hour."
+      },
+      "actionAnswer": "I hid that detail because I was worried how it would look. The earlier claim was not accurate."
+    },
+    {
+      "id": "v2_0_mistaken_accusation_025",
+      "description": "v2.0 broad test scenario 025: mistaken_accusation",
+      "firstClaim": "Alex stole my charger.",
+      "secondClaim": "I found the charger in my backpack.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The charger was found in the user backpack."
+      },
+      "actionAnswer": "I was wrong to accuse Alex. I assumed theft before checking my own things."
+    },
+    {
+      "id": "v2_0_timeline_contradiction_026",
+      "description": "v2.0 broad test scenario 026: timeline_contradiction",
+      "firstClaim": "I submitted the form before the deadline.",
+      "secondClaim": "I submitted it this morning, but the deadline was yesterday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The submission timestamp is after the posted deadline."
+      },
+      "actionAnswer": "I misunderstood the timeline. I submitted it, but not before the deadline."
+    },
+    {
+      "id": "v2_0_self_serving_claim_027",
+      "description": "v2.0 broad test scenario 027: self_serving_claim",
+      "firstClaim": "I did nothing wrong.",
+      "secondClaim": "I deleted the messages because they made me look bad.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The message deletion log shows the messages were removed after the dispute started."
+      },
+      "actionAnswer": "I deleted them because I was embarrassed and wanted to avoid consequences. That weakens my earlier claim."
+    },
+    {
+      "id": "v2_0_motive_ambiguity_028",
+      "description": "v2.0 broad test scenario 028: motive_ambiguity",
+      "firstClaim": "She ignored me because she hates me.",
+      "secondClaim": "She said her phone died and she was at work.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Her work schedule and phone battery log support the alternative explanation."
+      },
+      "actionAnswer": "I jumped to a motive claim without enough evidence. Her phone dying and being at work is a live alternative explanation."
+    },
+    {
+      "id": "v2_0_false_certainty_029",
+      "description": "v2.0 broad test scenario 029: false_certainty",
+      "firstClaim": "There is no possible way I misunderstood him.",
+      "secondClaim": "I only heard part of the conversation.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The user admits they heard only part of the conversation."
+      },
+      "actionAnswer": "My certainty was too high. Since I only heard part of it, misunderstanding remains possible."
+    },
+    {
+      "id": "v2_0_ideological_self_sealing_030",
+      "description": "v2.0 broad test scenario 030: ideological_self_sealing",
+      "firstClaim": "Anyone who disagrees with me is brainwashed.",
+      "secondClaim": "Even evidence against my view proves how brainwashed they are.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The claim treats disagreement and counterevidence as confirmation of itself."
+      },
+      "actionAnswer": "That reasoning is self-sealing. It protects the belief from correction instead of testing it against reality."
+    },
+    {
+      "id": "v2_0_memory_error_031",
+      "description": "v2.0 broad test scenario 031: memory_error",
+      "firstClaim": "I never took the keys.",
+      "secondClaim": "Actually, I took the keys yesterday, but I already returned them.",
+      "evidence": {
+        "direction": "supports",
+        "text": "There is a message confirming the keys were returned yesterday evening."
+      },
+      "actionAnswer": "I honestly forgot because it happened quickly yesterday. My earlier denial was a memory error, not an attempt to deceive."
+    },
+    {
+      "id": "v2_0_scope_clarification_032",
+      "description": "v2.0 broad test scenario 032: scope_clarification",
+      "firstClaim": "I returned the car yesterday.",
+      "secondClaim": "The car is still in my driveway because I only returned the keys.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The key handoff is confirmed, but the car itself is still at the user house."
+      },
+      "actionAnswer": "When I said I returned it, I meant I returned the keys, not the car itself. That was a scope mistake."
+    },
+    {
+      "id": "v2_0_partial_truth_033",
+      "description": "v2.0 broad test scenario 033: partial_truth",
+      "firstClaim": "I paid back the money.",
+      "secondClaim": "I paid back half, and I will pay the rest Friday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "A receipt confirms only half of the amount was repaid."
+      },
+      "actionAnswer": "My first statement was too broad. I paid back part of it, but not the full amount yet."
+    },
+    {
+      "id": "v2_0_intentional_deception_034",
+      "description": "v2.0 broad test scenario 034: intentional_deception",
+      "firstClaim": "I was home all night.",
+      "secondClaim": "I left for an hour, but I did not want anyone to know.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Door camera footage shows the user leaving for about one hour."
+      },
+      "actionAnswer": "I hid that detail because I was worried how it would look. The earlier claim was not accurate."
+    },
+    {
+      "id": "v2_0_mistaken_accusation_035",
+      "description": "v2.0 broad test scenario 035: mistaken_accusation",
+      "firstClaim": "Alex stole my charger.",
+      "secondClaim": "I found the charger in my backpack.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The charger was found in the user backpack."
+      },
+      "actionAnswer": "I was wrong to accuse Alex. I assumed theft before checking my own things."
+    },
+    {
+      "id": "v2_0_timeline_contradiction_036",
+      "description": "v2.0 broad test scenario 036: timeline_contradiction",
+      "firstClaim": "I submitted the form before the deadline.",
+      "secondClaim": "I submitted it this morning, but the deadline was yesterday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The submission timestamp is after the posted deadline."
+      },
+      "actionAnswer": "I misunderstood the timeline. I submitted it, but not before the deadline."
+    },
+    {
+      "id": "v2_0_self_serving_claim_037",
+      "description": "v2.0 broad test scenario 037: self_serving_claim",
+      "firstClaim": "I did nothing wrong.",
+      "secondClaim": "I deleted the messages because they made me look bad.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The message deletion log shows the messages were removed after the dispute started."
+      },
+      "actionAnswer": "I deleted them because I was embarrassed and wanted to avoid consequences. That weakens my earlier claim."
+    },
+    {
+      "id": "v2_0_motive_ambiguity_038",
+      "description": "v2.0 broad test scenario 038: motive_ambiguity",
+      "firstClaim": "She ignored me because she hates me.",
+      "secondClaim": "She said her phone died and she was at work.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Her work schedule and phone battery log support the alternative explanation."
+      },
+      "actionAnswer": "I jumped to a motive claim without enough evidence. Her phone dying and being at work is a live alternative explanation."
+    },
+    {
+      "id": "v2_0_false_certainty_039",
+      "description": "v2.0 broad test scenario 039: false_certainty",
+      "firstClaim": "There is no possible way I misunderstood him.",
+      "secondClaim": "I only heard part of the conversation.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The user admits they heard only part of the conversation."
+      },
+      "actionAnswer": "My certainty was too high. Since I only heard part of it, misunderstanding remains possible."
+    },
+    {
+      "id": "v2_0_ideological_self_sealing_040",
+      "description": "v2.0 broad test scenario 040: ideological_self_sealing",
+      "firstClaim": "Anyone who disagrees with me is brainwashed.",
+      "secondClaim": "Even evidence against my view proves how brainwashed they are.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The claim treats disagreement and counterevidence as confirmation of itself."
+      },
+      "actionAnswer": "That reasoning is self-sealing. It protects the belief from correction instead of testing it against reality."
+    },
+    {
+      "id": "v2_0_memory_error_041",
+      "description": "v2.0 broad test scenario 041: memory_error",
+      "firstClaim": "I never took the keys.",
+      "secondClaim": "Actually, I took the keys yesterday, but I already returned them.",
+      "evidence": {
+        "direction": "supports",
+        "text": "There is a message confirming the keys were returned yesterday evening."
+      },
+      "actionAnswer": "I honestly forgot because it happened quickly yesterday. My earlier denial was a memory error, not an attempt to deceive."
+    },
+    {
+      "id": "v2_0_scope_clarification_042",
+      "description": "v2.0 broad test scenario 042: scope_clarification",
+      "firstClaim": "I returned the car yesterday.",
+      "secondClaim": "The car is still in my driveway because I only returned the keys.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The key handoff is confirmed, but the car itself is still at the user house."
+      },
+      "actionAnswer": "When I said I returned it, I meant I returned the keys, not the car itself. That was a scope mistake."
+    },
+    {
+      "id": "v2_0_partial_truth_043",
+      "description": "v2.0 broad test scenario 043: partial_truth",
+      "firstClaim": "I paid back the money.",
+      "secondClaim": "I paid back half, and I will pay the rest Friday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "A receipt confirms only half of the amount was repaid."
+      },
+      "actionAnswer": "My first statement was too broad. I paid back part of it, but not the full amount yet."
+    },
+    {
+      "id": "v2_0_intentional_deception_044",
+      "description": "v2.0 broad test scenario 044: intentional_deception",
+      "firstClaim": "I was home all night.",
+      "secondClaim": "I left for an hour, but I did not want anyone to know.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Door camera footage shows the user leaving for about one hour."
+      },
+      "actionAnswer": "I hid that detail because I was worried how it would look. The earlier claim was not accurate."
+    },
+    {
+      "id": "v2_0_mistaken_accusation_045",
+      "description": "v2.0 broad test scenario 045: mistaken_accusation",
+      "firstClaim": "Alex stole my charger.",
+      "secondClaim": "I found the charger in my backpack.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The charger was found in the user backpack."
+      },
+      "actionAnswer": "I was wrong to accuse Alex. I assumed theft before checking my own things."
+    },
+    {
+      "id": "v2_0_timeline_contradiction_046",
+      "description": "v2.0 broad test scenario 046: timeline_contradiction",
+      "firstClaim": "I submitted the form before the deadline.",
+      "secondClaim": "I submitted it this morning, but the deadline was yesterday.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The submission timestamp is after the posted deadline."
+      },
+      "actionAnswer": "I misunderstood the timeline. I submitted it, but not before the deadline."
+    },
+    {
+      "id": "v2_0_self_serving_claim_047",
+      "description": "v2.0 broad test scenario 047: self_serving_claim",
+      "firstClaim": "I did nothing wrong.",
+      "secondClaim": "I deleted the messages because they made me look bad.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The message deletion log shows the messages were removed after the dispute started."
+      },
+      "actionAnswer": "I deleted them because I was embarrassed and wanted to avoid consequences. That weakens my earlier claim."
+    },
+    {
+      "id": "v2_0_motive_ambiguity_048",
+      "description": "v2.0 broad test scenario 048: motive_ambiguity",
+      "firstClaim": "She ignored me because she hates me.",
+      "secondClaim": "She said her phone died and she was at work.",
+      "evidence": {
+        "direction": "supports",
+        "text": "Her work schedule and phone battery log support the alternative explanation."
+      },
+      "actionAnswer": "I jumped to a motive claim without enough evidence. Her phone dying and being at work is a live alternative explanation."
+    },
+    {
+      "id": "v2_0_false_certainty_049",
+      "description": "v2.0 broad test scenario 049: false_certainty",
+      "firstClaim": "There is no possible way I misunderstood him.",
+      "secondClaim": "I only heard part of the conversation.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The user admits they heard only part of the conversation."
+      },
+      "actionAnswer": "My certainty was too high. Since I only heard part of it, misunderstanding remains possible."
+    },
+    {
+      "id": "v2_0_ideological_self_sealing_050",
+      "description": "v2.0 broad test scenario 050: ideological_self_sealing",
+      "firstClaim": "Anyone who disagrees with me is brainwashed.",
+      "secondClaim": "Even evidence against my view proves how brainwashed they are.",
+      "evidence": {
+        "direction": "supports",
+        "text": "The claim treats disagreement and counterevidence as confirmation of itself."
+      },
+      "actionAnswer": "That reasoning is self-sealing. It protects the belief from correction instead of testing it against reality."
+    }
+  ]
+}

@@ -5,10 +5,42 @@ export function createNextInvestigationAction(memory) {
   const plan = getLatestActivePlan(memory);
 
   if (!plan?.next_best_action) {
+    const reason = plan
+      ? "Latest investigation plan has no next best action."
+      : "No active investigation plan with a next best action.";
+
+    const event = {
+      id: makeId("no_action"),
+      status: "recorded",
+      event_type: "no_action_available",
+      reason,
+      source_plan: plan?.id ?? null,
+      plan_status: plan?.status ?? null,
+      created_at: nowIso()
+    };
+
+    const nextMemory = {
+      ...memory,
+      noActionEvents: [...(memory.noActionEvents ?? []), event],
+      beliefUpdates: [
+        ...(memory.beliefUpdates ?? []),
+        {
+          id: makeId("update"),
+          before: "Scenario runner requested a next investigation action.",
+          after: "No investigation action was available; runtime recorded a no-action event instead of crashing.",
+          reason,
+          epistemic_delta: "no_investigation_action_available",
+          no_action_event_id: event.id,
+          created_at: nowIso()
+        }
+      ]
+    };
+
     return {
-      memory,
+      memory: nextMemory,
       action: null,
-      reason: "No active investigation plan with a next best action."
+      noActionEvent: event,
+      reason
     };
   }
 

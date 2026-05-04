@@ -205,10 +205,19 @@ export async function runScenario({ scenario, outputRoot }) {
   const review = await agent.review();
   const plan = await agent.plan();
   const next = await agent.next();
-  const answer = await agent.answer({
-    actionSelector: "latest",
-    answerText: scenario.actionAnswer
-  });
+  const answer = next.action
+    ? await agent.answer({
+      actionSelector: "latest",
+      answerText: scenario.actionAnswer
+    })
+    : {
+      response: null,
+      evidenceLikeItem: null,
+      classification: null,
+      skipped: true,
+      reason: next.reason,
+      noActionEvent: next.noActionEvent ?? null
+    };
 
   const traceExport = await agent.exportTraces({
     outputPath: path.join(scenarioDir, "training_traces.jsonl")
@@ -250,8 +259,11 @@ export async function runScenario({ scenario, outputRoot }) {
       next_best_action: plan.plan.next_best_action
     },
     nextAction: next.action,
+    noActionEvent: next.noActionEvent ?? null,
     answer: {
-      classification: answer.classification
+      classification: answer.classification,
+      skipped: answer.skipped ?? false,
+      reason: answer.reason ?? null
     },
     traceExport,
     alignmentExport,
