@@ -1,0 +1,13 @@
+{
+  "name": "42ndmind",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Persistent epistemic memory and investigative agent runtime skeleton.",
+  "scripts": {
+    "start": "node src/runtime/cli.js",
+    "test": "node --test"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
