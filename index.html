@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Epistemic Kernel v0</title>
+  <style>
+    :root { --bg:#0f1115; --panel:#171a21; --muted:#8b93a7; --text:#eef2ff; --line:#2a3040; --accent:#9db6ff; --bad:#ff8b8b; --good:#9dffb4; --warn:#ffd28b; }
+    * { box-sizing: border-box; }
+    body { margin:0; font: 15px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; background:var(--bg); color:var(--text); }
+    header { padding:18px 22px; border-bottom:1px solid var(--line); background:#11141b; position:sticky; top:0; z-index:5; }
+    h1 { font-size:20px; margin:0 0 4px; }
+    .sub { color:var(--muted); font-size:13px; }
+    main { display:grid; grid-template-columns: 380px 1fr; gap:16px; padding:16px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; }
+    h2 { font-size:15px; margin:0 0 10px; color:#dfe6ff; }
+    h3 { font-size:13px; color:#c7d3ff; margin:12px 0 6px; }
+    label { display:block; font-size:12px; color:var(--muted); margin:8px 0 4px; }
+    input, textarea, select { width:100%; background:#0f1218; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; }
+    textarea { min-height:78px; resize:vertical; }
+    button { background:#25345c; color:var(--text); border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:4px 4px 4px 0; }
+    button:hover { background:#304274; }
+    button.danger { background:#44222a; border-color:#7d3c4a; }
+    button.light { background:#202633; border-color:#3a4254; }
+    .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+    .card { background:#10131a; border:1px solid var(--line); border-radius:10px; padding:10px; }
+    .metric { font-size:26px; font-weight:700; }
+    .muted { color:var(--muted); }
+    .small { font-size:12px; }
+    .good { color:var(--good); }
+    .bad { color:var(--bad); }
+    .warn { color:var(--warn); }
+    .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; margin:2px; font-size:12px; color:#d6ddf5; background:#11151d; }
+    pre { white-space:pre-wrap; overflow:auto; background:#0d1016; border:1px solid var(--line); border-radius:10px; padding:10px; color:#dfe6ff; max-height:440px; }
+    .claim { border-left:3px solid var(--accent); padding:8px 10px; margin:8px 0; background:#10131a; border-radius:8px; }
+    .claim.weakened { border-left-color:var(--bad); }
+    .claim.accepted { border-left-color:var(--good); }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .bar { height:8px; background:#0e1118; border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-top:4px; }
+    .fill { height:100%; background:var(--accent); width:0%; }
+    .fill.good { background:var(--good); } .fill.bad { background:var(--bad); }
+    @media (max-width: 900px) { main { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Epistemic Kernel v0</h1>
+    <div class="sub">A transparent belief-state prototype. LLM not required. It starts at null, stores claims, detects pressure, updates gates, and projects state to the Epistemic Octahedron.</div>
+  </header>
+
+  <main>
+    <div>
+      <section>
+        <h2>Quick ingest</h2>
+        <div class="muted small">Paste plain English. This is only a crude parser. For accuracy, use structured input below.</div>
+        <textarea id="quickText">I submitted the form before the deadline. Actually, I submitted it this morning, but the deadline was yesterday.</textarea>
+        <button onclick="quickIngest()">Ingest text</button>
+        <button class="light" onclick="loadSample('deadline')">Deadline sample</button>
+        <button class="light" onclick="loadSample('charger')">Charger sample</button>
+        <button class="light" onclick="loadSample('selfseal')">Self-sealing sample</button>
+      </section>
+
+      <section>
+        <h2>Add structured claim</h2>
+        <label>Claim text</label>
+        <textarea id="claimText" placeholder="Example: I never took the keys."></textarea>
+        <label>Subject</label>
+        <input id="claimSubject" value="user" />
+        <label>Object / topic</label>
+        <input id="claimObject" placeholder="keys, charger, form, messages..." />
+        <label>Confidence</label>
+        <input id="claimConfidence" type="number" min="0" max="1" step="0.05" value="0.55" />
+        <button onclick="addClaim()">Add claim</button>
+      </section>
+
+      <section>
+        <h2>Add evidence</h2>
+        <label>Evidence text</label>
+        <textarea id="evidenceText" placeholder="Example: Timestamp shows the form was submitted after the deadline."></textarea>
+        <label>Relation to claim</label>
+        <select id="evidenceRelation"><option value="supports">supports</option><option value="attacks">attacks</option></select>
+        <label>Target claim</label>
+        <select id="evidenceClaim"></select>
+        <label>Strength</label>
+        <select id="evidenceStrength"><option>weak</option><option selected>moderate</option><option>strong</option></select>
+        <button onclick="addEvidence()">Add evidence</button>
+      </section>
+
+      <section>
+        <h2>State controls</h2>
+        <button onclick="exportState()">Export state JSON</button>
+        <button onclick="document.getElementById('importFile').click()">Import state JSON</button>
+        <input id="importFile" type="file" accept="application/json" style="display:none" onchange="importState(event)" />
+        <button class="danger" onclick="resetKernel()">Reset</button>
+      </section>
+    </div>
+
+    <div>
+      <section>
+        <h2>Octahedron state</h2>
+        <div class="grid">
+          <div class="card"><div class="muted small">x: empathy / practicality</div><div id="xMetric" class="metric">0</div></div>
+          <div class="card"><div class="muted small">y: epistemic stability</div><div id="yMetric" class="metric">0</div></div>
+          <div class="card"><div class="muted small">z: wisdom / knowledge</div><div id="zMetric" class="metric">0</div></div>
+        </div>
+        <div id="stateLabel" class="muted" style="margin-top:10px"></div>
+        <div style="margin-top:10px" class="small muted">Surface check: <span id="surfaceCheck"></span></div>
+      </section>
+
+      <section>
+        <h2>Gate state</h2>
+        <div id="gateList"></div>
+      </section>
+
+      <section>
+        <h2>Claims and kernel answers</h2>
+        <div id="claimList"></div>
+      </section>
+
+      <section>
+        <h2>Contradictions</h2>
+        <div id="contradictionList"></div>
+      </section>
+
+      <section>
+        <h2>Open inquiry pressure</h2>
+        <div id="questionList"></div>
+      </section>
+
+      <section>
+        <h2>Principles formed</h2>
+        <div id="principleList"></div>
+      </section>
+
+      <section>
+        <h2>Raw state</h2>
+        <pre id="rawState"></pre>
+      </section>
+    </div>
+  </main>
+
+  <script src="src/epistemic-kernel.js"></script>
+  <script>
+    const saved = localStorage.getItem('epistemic_kernel_v0_state');
+    const kernel = new EpistemicKernel(saved ? JSON.parse(saved) : null);
+
+    function persist() { localStorage.setItem('epistemic_kernel_v0_state', JSON.stringify(kernel.snapshot())); }
+    function fmt(n) { return Number(n || 0).toFixed(3); }
+    function pct(n) { return Math.round(Math.abs(n || 0) * 100); }
+
+    function render() {
+      const state = kernel.snapshot();
+      const p = state.octahedron.point;
+      document.getElementById('xMetric').textContent = fmt(p.x);
+      document.getElementById('yMetric').textContent = fmt(p.y);
+      document.getElementById('zMetric').textContent = fmt(p.z);
+      document.getElementById('yMetric').className = 'metric ' + (p.y > 0.05 ? 'good' : p.y < -0.05 ? 'bad' : 'warn');
+      document.getElementById('stateLabel').textContent = state.octahedron.debug.state || 'null_origin';
+      document.getElementById('surfaceCheck').textContent = state.octahedron.debug.surface_equation || '';
+
+      const gateList = document.getElementById('gateList');
+      gateList.innerHTML = '';
+      for (const [gate, data] of Object.entries(state.gateStates)) {
+        const label = EpistemicKernelDefaults.GATE_LABELS[gate] || gate;
+        const div = document.createElement('div');
+        div.className = 'card';
+        const cls = data.score > 0.05 ? 'good' : data.score < -0.05 ? 'bad' : 'warn';
+        div.innerHTML = `<div class="row"><b>${label}</b><span class="pill ${cls}">${data.status}</span><span class="muted">${fmt(data.score)}</span></div>
+          <div class="bar"><div class="fill ${cls}" style="width:${pct(data.score)}%"></div></div>
+          <div class="small muted">+${data.positive_events} / -${data.negative_events}${data.last_evidence_span ? ' · ' + escapeHtml(data.last_evidence_span).slice(0,120) : ''}</div>`;
+        gateList.appendChild(div);
+      }
+
+      const select = document.getElementById('evidenceClaim');
+      select.innerHTML = state.claims.map(c => `<option value="${c.id}">${escapeHtml(c.text).slice(0,80)}</option>`).join('');
+
+      const claimList = document.getElementById('claimList');
+      claimList.innerHTML = state.claims.length ? '' : '<div class="muted">No claims yet.</div>';
+      for (const claim of state.claims) {
+        const ans = kernel.answerAboutClaim(claim.id);
+        const div = document.createElement('div');
+        div.className = 'claim ' + claim.status;
+        div.innerHTML = `<div><b>${escapeHtml(claim.text)}</b></div>
+          <div class="small muted">status: ${claim.status} · confidence: ${fmt(claim.confidence)} · object: ${escapeHtml(claim.object || 'none')}</div>
+          <div class="small">Kernel answer: <span class="pill">${ans.answer}</span> confidence ${ans.confidence}</div>
+          <div class="small muted">Reason: ${escapeHtml(ans.reason)}</div>
+          ${claim.live_hypotheses.length ? '<div class="small">Live hypotheses: ' + claim.live_hypotheses.map(h => `<span class="pill">${escapeHtml(h)}</span>`).join('') + '</div>' : ''}
+          <button class="light" onclick="challengeClaim('${claim.id}')">Challenge</button>`;
+        claimList.appendChild(div);
+      }
+
+      document.getElementById('contradictionList').innerHTML = state.contradictions.length ? state.contradictions.map(c => {
+        const a = state.claims.find(x => x.id === c.claim_a)?.text || c.claim_a;
+        const b = state.claims.find(x => x.id === c.claim_b)?.text || c.claim_b;
+        return `<div class="card"><b>${escapeHtml(c.reason)}</b><div class="small muted">severity: ${fmt(c.severity)} · status: ${c.status}</div><div class="small">A: ${escapeHtml(a)}</div><div class="small">B: ${escapeHtml(b)}</div></div>`;
+      }).join('') : '<div class="muted">No contradictions detected yet.</div>';
+
+      document.getElementById('questionList').innerHTML = state.questions.length ? state.questions.filter(q => q.status === 'open').map(q => `<div class="card"><div>${escapeHtml(q.text)}</div><button class="light" onclick="resolveQuestion('${q.id}')">Mark resolved</button></div>`).join('') : '<div class="muted">No open questions yet.</div>';
+
+      document.getElementById('principleList').innerHTML = state.principles.length ? state.principles.map(p => `<div class="card">${escapeHtml(p.text)}</div>`).join('') : '<div class="muted">No principles formed yet.</div>';
+
+      document.getElementById('rawState').textContent = JSON.stringify(state, null, 2);
+      persist();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    }
+
+    function addClaim() {
+      kernel.addClaim({
+        text: document.getElementById('claimText').value,
+        subject: document.getElementById('claimSubject').value,
+        object: document.getElementById('claimObject').value,
+        confidence: Number(document.getElementById('claimConfidence').value || 0.55),
+      });
+      document.getElementById('claimText').value = '';
+      document.getElementById('claimObject').value = '';
+      render();
+    }
+
+    function addEvidence() {
+      kernel.addEvidence({
+        text: document.getElementById('evidenceText').value,
+        relation: document.getElementById('evidenceRelation').value,
+        claimId: document.getElementById('evidenceClaim').value,
+        strength: document.getElementById('evidenceStrength').value,
+      });
+      document.getElementById('evidenceText').value = '';
+      render();
+    }
+
+    function quickIngest() {
+      kernel.quickIngest(document.getElementById('quickText').value);
+      render();
+    }
+
+    function loadSample(type) {
+      const samples = {
+        deadline: 'I submitted the form before the deadline. Actually, I submitted it this morning, but the deadline was yesterday. The timestamp shows the form was submitted after the posted deadline.',
+        charger: 'Alex stole my charger. Actually, I found the charger in my own backpack. I did not check my backpack before accusing Alex.',
+        selfseal: 'Anyone who disagrees with me is brainwashed. Evidence against my view only proves how brainwashed they are.',
+      };
+      document.getElementById('quickText').value = samples[type] || '';
+    }
+
+    function challengeClaim(id) {
+      kernel.challengeClaim(id, 'Manual challenge from user.');
+      render();
+    }
+
+    function resolveQuestion(id) {
+      const note = prompt('Resolution note:', 'Resolved or updated with new evidence.');
+      kernel.resolveQuestion(id, note || 'Resolved.');
+      render();
+    }
+
+    function resetKernel() {
+      if (confirm('Reset all kernel state?')) { kernel.reset(); render(); }
+    }
+
+    function exportState() {
+      const blob = new Blob([JSON.stringify(kernel.snapshot(), null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'epistemic_kernel_state.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importState(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const loaded = JSON.parse(reader.result);
+        Object.assign(kernel.state, loaded);
+        kernel.recalculate();
+        render();
+      };
+      reader.readAsText(file);
+    }
+
+    render();
+  </script>
+</body>
+</html>
