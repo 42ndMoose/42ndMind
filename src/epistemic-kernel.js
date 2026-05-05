@@ -207,6 +207,7 @@
         gateStates: createGateStateMap(),
         semantic: { a: 0, s: 0, b: 0 },
         octahedron: { point: { x: 0, y: 0, z: 0 }, debug: {} },
+        beliefGraph: { version: 'belief_graph_v0_1', root_id: 'root_worldview', nodes: [], links: [], notes: [] },
         eventLog: [],
       };
     }
@@ -519,6 +520,226 @@
       return 'claim has no attached evidence yet';
     }
 
+    semanticForText(text, { confidence = 0.5, contradictionPressure = 0, supportCount = 0, attackCount = 0, scopeWeight = 1 } = {}) {
+      const t = lower(text);
+      const empathy = containsAny(t, ['harm', 'person', 'people', 'care', 'fair', 'accuse', 'blame']) ? 0.08 : 0;
+      const practicality = containsAny(t, ['deadline', 'timestamp', 'receipt', 'constraint', 'evidence', 'record', 'form']) ? 0.08 : 0;
+      const wisdom = containsAny(t, ['motive', 'hypothesis', 'uncertain', 'unresolved', 'calibrated', 'principle']) ? 0.08 : 0;
+      const knowledge = containsAny(t, ['fact', 'record', 'timestamp', 'evidence', 'data', 'receipt']) ? 0.08 : 0;
+      const closurePenalty = absoluteOrClosureLanguage(t) ? 0.16 : 0;
+      const selfSealPenalty = selfSealingLanguage(t) ? 0.28 : 0;
+      const realityBonus = realityContactLanguage(t) ? 0.08 : 0;
+      const evidenceBalance = (supportCount * 0.08) - (attackCount * 0.18);
+      const confidenceOffset = (Number(confidence || 0.5) - 0.5) * 0.18;
+      const s = (confidenceOffset + realityBonus + evidenceBalance - contradictionPressure * 0.22 - closurePenalty - selfSealPenalty) * scopeWeight;
+      let a = (empathy - practicality) * scopeWeight;
+      let b = (wisdom - knowledge) * scopeWeight;
+      if (Math.abs(a) < 0.01 && Math.abs(b) < 0.01 && Math.abs(s) > 0.01) b = s > 0 ? 0.035 : -0.035;
+      return { a: Number(a.toFixed(4)), s: Number(clamp(s, -1, 1).toFixed(4)), b: Number(b.toFixed(4)) };
+    }
+
+    blendSemantics(items = []) {
+      const active = items.filter(Boolean);
+      const totalWeight = active.reduce((sum, item) => sum + Math.max(0, Number(item.weight || 1)), 0);
+      if (!active.length || totalWeight <= 0) return { a: 0, s: 0, b: 0 };
+      const out = active.reduce((sum, item) => {
+        const w = Math.max(0, Number(item.weight || 1));
+        const sem = item.semantic || item;
+        sum.a += Number(sem.a || 0) * w;
+        sum.s += Number(sem.s || 0) * w;
+        sum.b += Number(sem.b || 0) * w;
+        return sum;
+      }, { a: 0, s: 0, b: 0 });
+      return {
+        a: Number((out.a / totalWeight).toFixed(4)),
+        s: Number((out.s / totalWeight).toFixed(4)),
+        b: Number((out.b / totalWeight).toFixed(4)),
+      };
+    }
+
+    graphNode({ id, type, scope, label, semantic, weight = 1, parent_id = null, source_ids = [], status = 'active', notes = [] }) {
+      return {
+        id,
+        type,
+        scope,
+        label,
+        weight,
+        parent_id,
+        source_ids,
+        status,
+        semantic,
+        octahedron: projectSemanticTriple(semantic.a, semantic.s, semantic.b),
+        notes,
+      };
+    }
+
+    buildBeliefGraph() {
+      const nodes = [];
+      const links = [];
+      const notes = [
+        'A mind is represented as scoped octahedron states: claims feed stance clusters, stance clusters feed the main worldview summary.',
+        'The root point is an aggregate projection, not the person\'s entire soul forever.',
+        'Local evidence can pressure parent worldview nodes upward or downward.',
+      ];
+
+      const claimNodes = [];
+      for (const claim of this.state.claims || []) {
+        const contradictionPressure = (claim.contradictions || []).reduce((sum, id) => {
+          const c = this.state.contradictions.find((item) => item.id === id && item.status === 'active');
+          return sum + (c ? Number(c.severity || 0) : 0);
+        }, 0);
+        const semantic = this.semanticForText(claim.text, {
+          confidence: claim.confidence,
+          contradictionPressure,
+          supportCount: (claim.evidence_for || []).length,
+          attackCount: (claim.evidence_against || []).length,
+          scopeWeight: 0.55,
+        });
+        const node = this.graphNode({
+          id: `claim_node:${claim.id}`,
+          type: 'claim',
+          scope: 'thought',
+          label: claim.text,
+          semantic,
+          weight: 0.4,
+          parent_id: `stance_node:${claim.object || 'unclassified'}`,
+          source_ids: [claim.id],
+          status: claim.status,
+          notes: claim.live_hypotheses?.length ? [`live hypotheses: ${claim.live_hypotheses.join(', ')}`] : [],
+        });
+        claimNodes.push(node);
+        nodes.push(node);
+      }
+
+      for (const contradiction of this.state.contradictions || []) {
+        const a = this.state.claims.find((claim) => claim.id === contradiction.claim_a);
+        const b = this.state.claims.find((claim) => claim.id === contradiction.claim_b);
+        const text = `${a?.text || contradiction.claim_a} ↔ ${b?.text || contradiction.claim_b}`;
+        const semantic = this.semanticForText(text, {
+          confidence: 0.45,
+          contradictionPressure: Number(contradiction.severity || 0),
+          supportCount: 0,
+          attackCount: 0,
+          scopeWeight: 0.8,
+        });
+        const object = a?.object || b?.object || 'unclassified';
+        const node = this.graphNode({
+          id: `contradiction_node:${contradiction.id}`,
+          type: 'contradiction',
+          scope: 'tension',
+          label: contradiction.reason,
+          semantic,
+          weight: 0.7,
+          parent_id: `stance_node:${object}`,
+          source_ids: [contradiction.id, contradiction.claim_a, contradiction.claim_b],
+          status: contradiction.status,
+          notes: ['Unresolved contradiction should remain local pressure until evidence resolves it.'],
+        });
+        nodes.push(node);
+      }
+
+      const groups = new Map();
+      for (const node of nodes.filter((item) => ['claim', 'contradiction'].includes(item.type))) {
+        const key = node.parent_id || 'stance_node:unclassified';
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(node);
+      }
+
+      const stanceNodes = [];
+      for (const [id, children] of groups.entries()) {
+        const label = id.replace('stance_node:', '') || 'unclassified';
+        const semantic = this.blendSemantics(children.map((child) => ({ semantic: child.semantic, weight: child.weight })));
+        const activeContradictions = children.filter((child) => child.type === 'contradiction' && child.status === 'active').length;
+        const node = this.graphNode({
+          id,
+          type: 'stance_cluster',
+          scope: 'stance',
+          label: `Stance cluster: ${label}`,
+          semantic,
+          weight: 0.75 + children.length * 0.08,
+          parent_id: 'root_worldview',
+          source_ids: children.flatMap((child) => child.source_ids || []),
+          status: activeContradictions ? 'under_pressure' : 'active',
+          notes: activeContradictions ? [`${activeContradictions} unresolved contradiction(s) in this cluster`] : [],
+        });
+        stanceNodes.push(node);
+        nodes.push(node);
+      }
+
+      if ((this.state.principles || []).length) {
+        const principleText = this.state.principles.map((p) => p.text).join(' ');
+        const semantic = this.semanticForText(principleText, {
+          confidence: 0.72,
+          contradictionPressure: 0,
+          supportCount: this.state.principles.length,
+          attackCount: 0,
+          scopeWeight: 0.9,
+        });
+        const node = this.graphNode({
+          id: 'core_principles',
+          type: 'principle_cluster',
+          scope: 'worldview_fragment',
+          label: 'Core principles currently formed',
+          semantic,
+          weight: 1.2,
+          parent_id: 'root_worldview',
+          source_ids: this.state.principles.map((p) => p.id),
+          status: 'active',
+          notes: this.state.principles.map((p) => p.text),
+        });
+        nodes.push(node);
+      }
+
+      const rootChildren = nodes.filter((node) => node.parent_id === 'root_worldview');
+      const rootSemantic = this.state.semantic && (this.state.claims.length || this.state.evidence.length || this.state.contradictions.length)
+        ? this.state.semantic
+        : this.blendSemantics(rootChildren.map((child) => ({ semantic: child.semantic, weight: child.weight })));
+      const root = this.graphNode({
+        id: 'root_worldview',
+        type: 'main_worldview',
+        scope: 'full_profile_summary',
+        label: 'Main worldview aggregate for current kernel memory',
+        semantic: { a: Number(rootSemantic.a || 0), s: Number(rootSemantic.s || 0), b: Number(rootSemantic.b || 0) },
+        weight: 1,
+        parent_id: null,
+        source_ids: rootChildren.map((child) => child.id),
+        status: 'aggregate',
+        notes: ['This is the visible main octahedron point. It summarizes active memory but does not erase local states.'],
+      });
+      nodes.unshift(root);
+
+      for (const node of nodes) {
+        if (node.parent_id) {
+          const parent = nodes.find((item) => item.id === node.parent_id);
+          links.push({
+            from: node.id,
+            to: node.parent_id,
+            relation: this.nodeParentRelation(node, parent),
+            child_y: node.octahedron.point.y,
+            parent_y: parent?.octahedron?.point?.y ?? null,
+          });
+        }
+      }
+
+      return {
+        version: 'belief_graph_v0_1',
+        root_id: 'root_worldview',
+        nodes,
+        links,
+        notes,
+      };
+    }
+
+    nodeParentRelation(node, parent = null) {
+      if (!parent) return 'unlinked';
+      const childY = Number(node.octahedron?.point?.y || 0);
+      const parentY = Number(parent.octahedron?.point?.y || 0);
+      if (childY < -0.1) return 'pressure_against_parent';
+      if (childY > 0.35 && parentY >= 0) return 'aligned_can_reinforce_parent';
+      if (Math.abs(childY) <= 0.1) return 'local_unresolved_do_not_merge_strongly';
+      return 'weak_or_mixed_influence';
+    }
+
     recalculate() {
       const gateStates = this.state.gateStates;
       let positive = 0;
@@ -567,6 +788,7 @@
         contradiction_pressure: Number(contradictionPressure.toFixed(4)),
       };
       this.state.octahedron = projectSemanticTriple(this.state.semantic.a, this.state.semantic.s, this.state.semantic.b);
+      this.state.beliefGraph = this.buildBeliefGraph();
       return this.snapshot();
     }
   }
