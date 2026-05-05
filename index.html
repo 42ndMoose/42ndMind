@@ -22,6 +22,8 @@
     button:hover { background:#304274; }
     button.danger { background:#44222a; border-color:#7d3c4a; }
     button.light { background:#202633; border-color:#3a4254; }
+    button.goodbtn { background:#1f4a31; border-color:#3b7f55; }
+    #llmContextOutput { min-height:120px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; }
     .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
     .card { background:#10131a; border:1px solid var(--line); border-radius:10px; padding:10px; }
     .metric { font-size:26px; font-weight:700; }
@@ -91,6 +93,11 @@
         <button onclick="exportState()">Export state JSON</button>
         <button onclick="document.getElementById('importFile').click()">Import state JSON</button>
         <input id="importFile" type="file" accept="application/json" style="display:none" onchange="importState(event)" />
+        <hr style="border:0;border-top:1px solid var(--line);margin:10px 0" />
+        <button class="goodbtn" onclick="copyLLMContext('pretty')">Copy LLM context</button>
+        <button class="light" onclick="copyLLMContext('compact')">Copy compact context</button>
+        <div id="copyStatus" class="small muted" style="margin-top:6px">Copies state, current textbox drafts, and visible UI into one packet.</div>
+        <textarea id="llmContextOutput" placeholder="Copied LLM context packet will also appear here." readonly></textarea>
         <button class="danger" onclick="resetKernel()">Reset</button>
       </section>
     </div>
@@ -257,6 +264,142 @@
 
     function resetKernel() {
       if (confirm('Reset all kernel state?')) { kernel.reset(); render(); }
+    }
+
+    function labelForControl(control) {
+      if (!control || !control.id) return '';
+      const explicit = document.querySelector(`label[for="${CSS.escape(control.id)}"]`);
+      if (explicit) return explicit.innerText.trim();
+      let node = control.previousElementSibling;
+      while (node) {
+        if (node.tagName && node.tagName.toLowerCase() === 'label') return node.innerText.trim();
+        if (node.tagName && ['input', 'textarea', 'select', 'button'].includes(node.tagName.toLowerCase())) break;
+        node = node.previousElementSibling;
+      }
+      return control.id;
+    }
+
+    function collectFormDrafts() {
+      return Array.from(document.querySelectorAll('input, textarea, select'))
+        .filter((el) => el.id && el.type !== 'file' && el.id !== 'llmContextOutput')
+        .map((el) => ({
+          id: el.id,
+          tag: el.tagName.toLowerCase(),
+          type: el.getAttribute('type') || null,
+          label: labelForControl(el),
+          value: el.value,
+          checked: typeof el.checked === 'boolean' && el.type === 'checkbox' ? el.checked : undefined,
+        }));
+    }
+
+    function collectVisibleUiSnapshot() {
+      return Array.from(document.querySelectorAll('section')).map((section, index) => {
+        const title = section.querySelector('h2')?.innerText?.trim() || `section_${index + 1}`;
+        const text = section.innerText
+          .replace(/\n{3,}/g, '\n\n')
+          .replace(/[ \t]{2,}/g, ' ')
+          .trim();
+        return { title, text };
+      });
+    }
+
+    function summarizeKernelState(state) {
+      const openQuestions = (state.questions || []).filter((q) => q.status === 'open');
+      const gateSummary = Object.fromEntries(Object.entries(state.gateStates || {}).map(([gate, data]) => [
+        gate,
+        {
+          score: Number(data.score || 0),
+          status: data.status,
+          positive_events: data.positive_events || 0,
+          negative_events: data.negative_events || 0,
+          last_evidence_span: data.last_evidence_span || null,
+        },
+      ]));
+      return {
+        version: state.version,
+        updated_at: state.updated_at,
+        counts: {
+          claims: (state.claims || []).length,
+          evidence: (state.evidence || []).length,
+          contradictions: (state.contradictions || []).length,
+          open_questions: openQuestions.length,
+          principles: (state.principles || []).length,
+          events: (state.eventLog || []).length,
+        },
+        octahedron: state.octahedron,
+        semantic: state.semantic,
+        gate_summary: gateSummary,
+        active_claims: (state.claims || []).map((claim) => ({
+          id: claim.id,
+          text: claim.text,
+          status: claim.status,
+          confidence: claim.confidence,
+          object: claim.object,
+          live_hypotheses: claim.live_hypotheses || [],
+          contradictions: claim.contradictions || [],
+        })),
+        contradictions: state.contradictions || [],
+        open_questions: openQuestions,
+        principles: state.principles || [],
+      };
+    }
+
+    function buildLLMContextPacket() {
+      const state = kernel.snapshot();
+      return {
+        packet_type: 'epistemic_kernel_llm_context',
+        packet_version: '0.1',
+        created_at: new Date().toISOString(),
+        purpose: 'Paste this into an LLM so it can see the current Epistemic Kernel UI, unsaved textbox drafts, and full belief state.',
+        app: {
+          title: document.title,
+          location: window.location.href,
+          user_agent: navigator.userAgent,
+        },
+        instructions_for_llm: [
+          'Treat kernel_state as the source of truth for saved belief state.',
+          'Treat form_drafts as unsaved text currently sitting in textboxes/selects.',
+          'Treat visible_ui_snapshot as what the user is currently seeing in the browser.',
+          'When advising on fixes, preserve the difference between saved state and unsaved draft text.',
+        ],
+        form_drafts: collectFormDrafts(),
+        visible_ui_snapshot: collectVisibleUiSnapshot(),
+        kernel_summary: summarizeKernelState(state),
+        kernel_state: state,
+      };
+    }
+
+    async function copyTextToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      temp.setAttribute('readonly', '');
+      temp.style.position = 'fixed';
+      temp.style.left = '-9999px';
+      document.body.appendChild(temp);
+      temp.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(temp);
+      return ok;
+    }
+
+    async function copyLLMContext(mode = 'pretty') {
+      const packet = buildLLMContextPacket();
+      const text = mode === 'compact' ? JSON.stringify(packet) : JSON.stringify(packet, null, 2);
+      const output = document.getElementById('llmContextOutput');
+      const status = document.getElementById('copyStatus');
+      output.value = text;
+      try {
+        const ok = await copyTextToClipboard(text);
+        status.textContent = ok
+          ? `Copied ${mode} LLM context packet (${text.length.toLocaleString()} characters). Paste it into ChatGPT.`
+          : `Could not auto-copy. Select the packet below and copy manually (${text.length.toLocaleString()} characters).`;
+      } catch (err) {
+        status.textContent = `Could not auto-copy. Select the packet below and copy manually (${text.length.toLocaleString()} characters). Error: ${err.message}`;
+      }
     }
 
     function exportState() {
