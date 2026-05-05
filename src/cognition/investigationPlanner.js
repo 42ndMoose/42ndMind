@@ -24,6 +24,7 @@ export function buildInvestigationPlan(memory) {
   const planItems = [];
 
   for (const cluster of motiveClusters) {
+    if (cluster.contradiction.type?.includes("self_sealing")) planItems.push(createSelfSealingAuditPlan(cluster));
     if (cluster.separation < 0.2) planItems.push(createMotiveDiscriminationPlan(cluster));
     if (cluster.top.motive_type === "strategic_deception" && cluster.top.confidence >= 0.45) planItems.push(createDeceptionAuditPlan(cluster));
     if (cluster.top.motive_type === "correction_or_clarification") planItems.push(createCorrectionVerificationPlan(cluster));
@@ -32,6 +33,7 @@ export function buildInvestigationPlan(memory) {
   const unresolvedTasks = memory.inquiryTasks.filter((task) => task.status === "open");
 
   for (const task of unresolvedTasks) {
+    const relatedContradiction = memory.contradictions?.find((item) => item.id === task.related_tension) ?? null;
     planItems.push({
       id: makeId("plan_item"),
       plan_type: "open_inquiry_task",
@@ -39,6 +41,7 @@ export function buildInvestigationPlan(memory) {
       focus: task.question,
       reason: task.reason,
       related_task: task.id,
+      related_contradiction: relatedContradiction?.id ?? null,
       suggested_actions: [
         { action_type: "ask_user_for_evidence", prompt: task.question },
         { action_type: "request_timeline", prompt: "Ask for a concrete sequence of events, including dates, wording, and evidence." }
@@ -55,6 +58,29 @@ export function buildInvestigationPlan(memory) {
     summary: sortedItems.length > 0 ? "Investigation plan generated from unresolved epistemic pressure." : "No active investigation pressure detected.",
     plan_items: sortedItems,
     next_best_action: sortedItems[0] ?? null
+  };
+}
+
+
+function createSelfSealingAuditPlan(cluster) {
+  return {
+    id: makeId("plan_item"),
+    plan_type: "self_sealing_audit",
+    priority: 0.94,
+    focus: "Audit whether the belief protects itself from correction.",
+    reason: "The contradiction pattern treats disagreement or counterevidence as confirmation.",
+    related_contradiction: cluster.contradiction.id,
+    motive_candidates: cluster.motives.map((motive) => ({
+      motive_id: motive.id,
+      motive_type: motive.motive_type,
+      confidence: motive.confidence,
+      status: motive.status
+    })),
+    suggested_actions: [
+      { action_type: "ask_for_discriminating_evidence", prompt: "What evidence could count against this belief rather than being absorbed as proof of itself?" },
+      { action_type: "check_alternative_explanations", prompt: "Can disagreement be explained without assuming the dissenter is corrupted or brainwashed?" },
+      { action_type: "ask_user_for_context", prompt: "What would make this belief open to correction?" }
+    ]
   };
 }
 

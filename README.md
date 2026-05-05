@@ -1,7 +1,7 @@
 
 # 42ndMind
 
-v1.8.1 adds a no-action fallback so broad scenario batches do not crash when no investigation action is created. v1.8 added quality-gated scenario dataset combining.
+v1.9 expands the rule-based runtime so broader motive, deception, scope, timeline, accusation, false-certainty, and self-sealing scenarios can pass quality-gated scenario export. v1.8.1 adds a no-action fallback so broad scenario batches do not crash when no investigation action is created. v1.8 added quality-gated scenario dataset combining.
 
 42ndMind is a persistent epistemic memory and investigative runtime shell.
 
@@ -13,6 +13,40 @@ It is meant to sit above a base LLM and optional LoRA adapter. It stores claims,
 - `42ndAlignment`: model training lab / SFT / LoRA / future preference training.
 - `42ndMind`: runtime memory / inquiry loop / epistemic agent shell.
 
+
+## v1.9 change
+
+v1.9 expands the toy rule-based runtime beyond the original borrow/return examples.
+
+It adds broader extraction, contradiction detection, planning, and action-answer classification for:
+
+- timeline/deadline contradiction
+- self-serving reputation management
+- mistaken accusation
+- motive ambiguity and alternative explanation
+- false certainty with later evidence gap
+- self-sealing logic
+- partial truth
+- return versus present possession
+- whereabouts/concealment contradiction
+
+The broad 50-scenario test now completes and quality-passes all scenarios:
+
+```text
+scenario_count: 50
+included_scenarios: 50
+excluded_scenarios: 0
+sft_rows: 250
+preference_rows: 250
+```
+
+Run the broad test with:
+
+```bash
+npm run run-scenarios-file -- data/v2_0_broad_test_scenarios.json data/v2_0_broad_patch_test.local
+```
+
+See `docs/v1_9_broad_pressure_runtime.md`.
 
 ## v1.8.1 change
 

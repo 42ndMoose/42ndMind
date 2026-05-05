@@ -9,15 +9,15 @@ await fs.rm(outputRoot, { recursive: true, force: true });
 const scenarios = {
   scenarios: [
     {
-      id: "no_action_partial_truth_money",
-      description: "Scenario likely to create no investigation action under the v1.8 rule-based runtime.",
-      firstClaim: "I paid back the money.",
-      secondClaim: "I paid back half, and I will pay the rest Friday.",
+      id: "no_action_low_pressure_preference",
+      description: "Low-pressure scenario expected to create no investigation action while still completing the batch.",
+      firstClaim: "I like tea.",
+      secondClaim: "I also like coffee.",
       evidence: {
         direction: "supports",
-        text: "A receipt confirms only half of the amount was repaid."
+        text: "The user reports both preferences without conflict."
       },
-      actionAnswer: "My first statement was too broad. I paid back part of it, but not the full amount yet."
+      actionAnswer: "There is no contradiction to resolve here."
     },
     {
       id: "normal_memory_error_keys",
@@ -47,7 +47,7 @@ await fs.access(`${outputRoot}/combined_manifest.json`);
 await fs.access(`${outputRoot}/excluded_scenarios.json`);
 await fs.access(`${outputRoot}/scenario_summary.json`);
 
-const noActionScenario = result.scenarios.find((scenario) => scenario.id === "no_action_partial_truth_money");
+const noActionScenario = result.scenarios.find((scenario) => scenario.id === "no_action_low_pressure_preference");
 
 if (!noActionScenario) {
   throw new Error("No-action scenario result missing.");

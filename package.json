@@ -1,8 +1,8 @@
 {
   "name": "42ndmind",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "type": "module",
-  "description": "Persistent epistemic memory runtime with quality-gated scenario dataset combining and no-action batch fallback.",
+  "description": "Persistent epistemic memory runtime with broad epistemic pressure scenario handling.",
   "scripts": {
     "demo": "node tests/sampleRun.mjs",
     "think": "node src/cli.js think",
@@ -31,5 +31,5 @@
     "philosophers-stone",
     "42ndmind"
   ],
-  "license": "UNLICENSED"
+  "license": "MIT"
 }
