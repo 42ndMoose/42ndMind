@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind LLM Brain Console</title>
+  <style>
+    :root { --bg:#0f1115; --panel:#171a21; --muted:#8b93a7; --text:#eef2ff; --line:#2a3040; --accent:#9db6ff; --bad:#ff8b8b; --good:#9dffb4; --warn:#ffd28b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:var(--bg); color:var(--text); }
+    header { padding:16px 18px; border-bottom:1px solid var(--line); background:#11141b; position:sticky; top:0; z-index:5; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    .sub { color:var(--muted); font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif; }
+    main { display:grid; grid-template-columns: minmax(360px, 520px) 1fr; gap:12px; padding:12px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    textarea, input, select { width:100%; background:#0f1218; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:170px; resize:vertical; }
+    button { background:#25345c; color:var(--text); border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 3px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    button:hover { background:#304274; }
+    button.good { background:#1f4a31; border-color:#3b7f55; }
+    button.warn { background:#4a3a1f; border-color:#7f633b; }
+    button.bad { background:#44222a; border-color:#7d3c4a; }
+    .muted { color:var(--muted); }
+    .small { font-size:12px; }
+    .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; margin:2px; font-size:12px; color:#d6ddf5; background:#11151d; }
+    .ok { color:var(--good); }
+    .no { color:var(--bad); }
+    .maybe { color:var(--warn); }
+    .status { margin-top:7px; white-space:pre-wrap; color:var(--muted); }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .metric { background:#10131a; border:1px solid var(--line); border-radius:8px; padding:8px; }
+    .metric b { display:block; font-size:20px; }
+    pre { white-space:pre-wrap; overflow:auto; background:#0d1016; border:1px solid var(--line); border-radius:10px; padding:10px; max-height:540px; }
+    a { color:var(--accent); }
+    @media (max-width: 920px) { main { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind LLM Brain Console</h1>
+  <div class="sub">LLM-first interface. The human does not need to operate the kernel manually. Copy the brain packet to an LLM, paste back an LLM command packet, then import it.</div>
+</header>
+
+<main>
+  <div>
+    <section>
+      <h2>1. Machine controls</h2>
+      <button class="good" onclick="bootBrain()">BOOT / refresh packet</button>
+      <button onclick="runSmokeTests()">RUN automatic smoke tests</button>
+      <button onclick="runAudit()">RUN self-audit</button>
+      <button onclick="copyBrainPacket()">COPY brain packet</button>
+      <button onclick="copyOperatingProtocol()">COPY LLM operating protocol</button>
+      <button onclick="exportState()">EXPORT state JSON</button>
+      <button class="bad" onclick="resetBrain()">RESET brain</button>
+      <div id="controlStatus" class="status small"></div>
+    </section>
+
+    <section>
+      <h2>2. Paste LLM command packet here</h2>
+      <div class="small muted">Expected JSON: { "command_type":"epistemic_kernel_command", "commands":[...] }</div>
+      <textarea id="commandInput" spellcheck="false" placeholder="Paste LLM command packet JSON here."></textarea>
+      <button class="good" onclick="runCommandPacket()">IMPORT / RUN command packet</button>
+      <button onclick="loadExampleCommand()">Load example command</button>
+      <div id="commandStatus" class="status small"></div>
+    </section>
+
+    <section>
+      <h2>3. Optional raw text for extraction prompt</h2>
+      <textarea id="rawTextInput" spellcheck="false" placeholder="Paste raw human text here. Then copy the extraction prompt and give it to an LLM.">Criticism is epistemic pressure against a claim. Hostility is only one possible motive and needs separate evidence.</textarea>
+      <button onclick="copyExtractionPrompt()">COPY extraction prompt for this text</button>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2>Brain status</h2>
+      <div class="metrics">
+        <div class="metric"><span class="muted">x</span><b id="mx">0</b></div>
+        <div class="metric"><span class="muted">y</span><b id="my">0</b></div>
+        <div class="metric"><span class="muted">z</span><b id="mz">0</b></div>
+        <div class="metric"><span class="muted">nodes</span><b id="mnodes">0</b></div>
+      </div>
+      <div id="summaryLine" class="status small"></div>
+    </section>
+
+    <section>
+      <h2>Brain packet output</h2>
+      <div class="small muted">This is the main thing to paste into a different ChatGPT session. It contains state, graph, audit, test results, and exact instructions.</div>
+      <textarea id="brainPacketOutput" spellcheck="false"></textarea>
+    </section>
+
+    <section>
+      <h2>Automatic test report</h2>
+      <pre id="testReport">No tests run yet.</pre>
+    </section>
+
+    <section>
+      <h2>Current audit preview</h2>
+      <pre id="auditPreview">No audit yet.</pre>
+    </section>
+
+    <section>
+      <h2>Raw kernel state</h2>
+      <pre id="rawState"></pre>
+    </section>
+  </div>
+</main>
+
+<script src="src/epistemic-kernel-v0-2.js"></script>
+<script>
+  const STORAGE_KEY = 'epistemic_kernel_v0_state';
+  const TEST_KEY = 'epistemic_kernel_last_test_report';
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const kernel = new EpistemicKernel(saved ? JSON.parse(saved) : null);
+
+  function fmt(n) { return Number(n || 0).toFixed(3); }
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(kernel.snapshot())); }
+  function setStatus(id, text) { document.getElementById(id).textContent = text; }
+  function snapshot() { kernel.recalculate(); return kernel.snapshot(); }
+
+  function summarize(state) {
+    const p = state.octahedron?.point || { x:0, y:0, z:0 };
+    return {
+      version: state.version,
+      point: p,
+      semantic: state.semantic,
+      counts: {
+        observations: state.observations?.length || 0,
+        claims: state.claims?.length || 0,
+        evidence: state.evidence?.length || 0,
+        contradictions: state.contradictions?.length || 0,
+        open_questions: (state.questions || []).filter(q => q.status === 'open').length,
+        principles: state.principles?.length || 0,
+        dependencies: state.dependencies?.length || 0,
+        graph_nodes: state.beliefGraph?.nodes?.length || 0,
+        graph_links: state.beliefGraph?.links?.length || 0,
+        audits: state.audits?.length || 0,
+      },
+      audit_preview: state.currentAuditPreview || null,
+    };
+  }
+
+  function operatingProtocol() {
+    return {
+      protocol_name: '42ndMind LLM Brain Operating Protocol',
+      protocol_version: '0.2',
+      role_of_llm: 'Extractor, operator, and explainer. The LLM does not own belief movement. The kernel owns belief state updates.',
+      role_of_kernel: 'Maintain structured belief state aligned with the Epistemic Octahedron: null origin, active surface projection, scoped nodes, gates, contradiction pressure, reality contact, non-self-sealing, and self-audit.',
+      command_schema: {
+        command_type: 'epistemic_kernel_command',
+        commands: [
+          { op: 'reset' },
+          { op: 'quick_ingest', mode: 'auto|principle|challenge|correction|observation', text: '...' },
+          { op: 'import_packet', packet: { packet_type: 'epistemic_extraction_packet', claims: [], evidence: [], principles: [], dependencies: [], questions: [], observations: [] } },
+          { op: 'add_claim', text: '...', subject: '...', object: '...', scope: 'claim|stance|worldview_fragment', confidence: 0.55 },
+          { op: 'add_evidence', text: '...', relation: 'supports|attacks', target: 'claim id, client id, or exact claim text', strength: 'weak|moderate|strong', confidence: 0.75 },
+          { op: 'add_dependency', dependent: 'claim ref', depends_on: 'claim ref', strength: 'weak|moderate|strong', relation: 'depends_on' },
+          { op: 'self_audit' },
+          { op: 'propose_rule_change', title: '...', rationale: '...', patch: '...', expected_effect: '...', falsification: '...' }
+        ]
+      },
+      extraction_packet_schema: {
+        packet_type: 'epistemic_extraction_packet',
+        claims: [{ client_id:'c1', text:'...', subject:'...', object:'...', scope:'claim|stance|worldview_fragment', confidence:0.5, status:'active' }],
+        evidence: [{ text:'...', relation:'supports|attacks', target_client_id:'c1', strength:'weak|moderate|strong', confidence:0.75 }],
+        principles: [{ text:'...', scope:'principle_candidate', confidence:0.45, status:'candidate', testing_requirements:['...'] }],
+        dependencies: [{ dependent_client_id:'c2', depends_on_client_id:'c1', relation:'depends_on', strength:'moderate', note:'...' }],
+        questions: ['...'],
+        observations: []
+      },
+      operating_rules: [
+        'Prefer structured extraction packets over raw quick_ingest.',
+        'Do not treat no contradiction as proof of truth.',
+        'Do not turn motive into fact without separate motive evidence.',
+        'Keep challenge and criticism as epistemic pressure before classifying it as hostility.',
+        'Candidate principles require testing requirements before upward merge.',
+        'Use self_audit after meaningful updates.',
+        'Use reset only when the user explicitly wants a clean state.'
+      ]
+    };
+  }
+
+  function brainPacket() {
+    const state = snapshot();
+    const report = JSON.parse(localStorage.getItem(TEST_KEY) || 'null');
+    return {
+      packet_type: '42ndMind_live_brain_packet',
+      packet_version: '0.2',
+      created_at: new Date().toISOString(),
+      purpose: 'Paste this into an LLM so it can operate the live 42ndMind kernel through command packets instead of a human UI.',
+      operating_protocol: operatingProtocol(),
+      brain_summary: summarize(state),
+      last_test_report: report,
+      kernel_state: state,
+      next_llm_instruction: 'Inspect kernel_state and brain_summary. Return an epistemic_kernel_command JSON packet only when the user wants the kernel updated. Otherwise explain what the state means plainly.'
+    };
+  }
+
+  async function copyText(text) {
+    const box = document.getElementById('brainPacketOutput');
+    box.value = text;
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) { return false; }
+  }
+
+  async function copyBrainPacket() {
+    const text = JSON.stringify(brainPacket(), null, 2);
+    const ok = await copyText(text);
+    setStatus('controlStatus', `${ok ? 'Copied' : 'Placed'} brain packet (${text.length.toLocaleString()} chars).`);
+  }
+
+  async function copyOperatingProtocol() {
+    const text = JSON.stringify(operatingProtocol(), null, 2);
+    const ok = await copyText(text);
+    setStatus('controlStatus', `${ok ? 'Copied' : 'Placed'} operating protocol (${text.length.toLocaleString()} chars).`);
+  }
+
+  async function copyExtractionPrompt() {
+    const text = kernel.getExtractionPrompt(document.getElementById('rawTextInput').value || '');
+    const ok = await copyText(text);
+    setStatus('controlStatus', `${ok ? 'Copied' : 'Placed'} extraction prompt (${text.length.toLocaleString()} chars).`);
+  }
+
+  function bootBrain() {
+    render();
+    setStatus('controlStatus', 'Booted. Brain packet refreshed.');
+  }
+
+  function resetBrain() {
+    if (!confirm('Reset kernel state?')) return;
+    kernel.reset();
+    localStorage.removeItem(TEST_KEY);
+    save();
+    render();
+    setStatus('controlStatus', 'Kernel reset to null origin.');
+  }
+
+  function executeCommand(command) {
+    const op = command.op;
+    if (op === 'reset') return kernel.reset();
+    if (op === 'quick_ingest') return kernel.quickIngest(command.text || '', { mode: command.mode || 'auto' });
+    if (op === 'import_packet') return kernel.importExtractionPacket(command.packet || command.extraction_packet || {});
+    if (op === 'add_claim') return kernel.addClaim(command);
+    if (op === 'add_evidence') return kernel.addEvidence({ ...command, claimId: command.claimId || command.target || command.target_claim_text || command.target_client_id });
+    if (op === 'add_dependency') return kernel.addDependency(command);
+    if (op === 'self_audit') return kernel.selfAudit();
+    if (op === 'propose_rule_change') return kernel.proposeRuleChange(command);
+    throw new Error(`Unknown op: ${op}`);
+  }
+
+  function runCommandPacket() {
+    try {
+      const packet = JSON.parse(document.getElementById('commandInput').value);
+      const commands = Array.isArray(packet.commands) ? packet.commands : [packet];
+      const results = commands.map((cmd) => ({ op: cmd.op, result: executeCommand(cmd) }));
+      save();
+      render();
+      setStatus('commandStatus', `Ran ${results.length} command(s). Last op: ${results[results.length - 1]?.op || 'none'}`);
+    } catch (e) {
+      setStatus('commandStatus', `Command failed: ${e.message}`);
+    }
+  }
+
+  function loadExampleCommand() {
+    const packet = {
+      command_type: 'epistemic_kernel_command',
+      commands: [
+        { op: 'reset' },
+        { op: 'import_packet', packet: {
+          packet_type: 'epistemic_extraction_packet',
+          claims: [
+            { client_id: 'c1', text: 'I submitted the form before the deadline.', subject: 'user', object: 'form', scope: 'claim', confidence: 0.55 },
+            { client_id: 'c2', text: 'I submitted it this morning, but the deadline was yesterday.', subject: 'user', object: 'form', scope: 'claim', confidence: 0.70 }
+          ],
+          evidence: [
+            { text: 'The timestamp shows the form was submitted after the posted deadline.', relation: 'attacks', target_client_id: 'c1', strength: 'strong', confidence: 0.90 }
+          ],
+          principles: [
+            { text: 'Timeline claims should be checked against timestamps before motive is concluded.', scope: 'principle_candidate', confidence: 0.55, status: 'candidate', testing_requirements: ['Verify timestamp, deadline, and claimant knowledge separately.'] }
+          ],
+          dependencies: [],
+          questions: ['Did the user know the deadline before submitting?'],
+          observations: []
+        }},
+        { op: 'self_audit' }
+      ]
+    };
+    document.getElementById('commandInput').value = JSON.stringify(packet, null, 2);
+  }
+
+  function runSmokeTests() {
+    const results = [];
+    function test(name, fn) {
+      const k = new EpistemicKernel();
+      let passed = false;
+      let details = {};
+      try { details = fn(k) || {}; passed = !!details.passed; }
+      catch (e) { details = { error: e.message }; }
+      results.push({ name, passed, details, summary: summarize(k.snapshot()) });
+    }
+
+    test('timeline contradiction plus timestamp evidence', (k) => {
+      k.importExtractionPacket({
+        claims: [
+          { client_id:'c1', text:'I submitted the form before the deadline.', subject:'user', object:'form', confidence:0.55 },
+          { client_id:'c2', text:'I submitted it this morning, but the deadline was yesterday.', subject:'user', object:'form', confidence:0.70 }
+        ],
+        evidence: [{ text:'The timestamp shows the form was submitted after the posted deadline.', relation:'attacks', target_client_id:'c1', strength:'strong', confidence:0.90 }],
+        principles: [], dependencies: [], questions: [], observations: []
+      });
+      const state = k.snapshot();
+      const weakened = state.claims.find(c => c.client_id === 'c1')?.status === 'weakened' || state.claims.find(c => c.client_id === 'c1')?.confidence < 0.35;
+      return { passed: weakened && state.evidence.length === 1, weakened, target_confidence: state.claims.find(c => c.client_id === 'c1')?.confidence, contradictions: state.contradictions.length };
+    });
+
+    test('self-sealing pressure', (k) => {
+      k.quickIngest('Anyone who disagrees with me is brainwashed. Evidence against my view only proves how brainwashed they are.', { mode:'auto' });
+      const state = k.snapshot();
+      const gate = state.gateStates.G6_non_self_sealing;
+      return { passed: gate.score < 0 && state.contradictions.length >= 1, g6_score: gate.score, contradictions: state.contradictions.length };
+    });
+
+    test('low-signal guard', (k) => {
+      k.quickIngest('asdf qwer zzzz !!!!!', { mode:'auto' });
+      const state = k.snapshot();
+      return { passed: state.observations.length >= 1 && state.claims.length === 0, observations: state.observations.length, claims: state.claims.length };
+    });
+
+    test('principle candidate stays testable', (k) => {
+      k.quickIngest('Criticism is epistemic pressure against a claim. Hostility is only one possible motive and needs separate evidence.', { mode:'principle' });
+      const state = k.snapshot();
+      const p = state.principles[0];
+      return { passed: !!p && p.status === 'candidate' && state.questions.some(q => q.status === 'open'), principle_status: p?.status, open_questions: state.questions.filter(q => q.status === 'open').length };
+    });
+
+    const report = {
+      packet_type: '42ndMind_kernel_smoke_test_report',
+      created_at: new Date().toISOString(),
+      passed: results.filter(r => r.passed).length,
+      failed: results.filter(r => !r.passed).length,
+      results
+    };
+    localStorage.setItem(TEST_KEY, JSON.stringify(report));
+    document.getElementById('testReport').textContent = JSON.stringify(report, null, 2);
+    setStatus('controlStatus', `Smoke tests complete: ${report.passed} passed, ${report.failed} failed.`);
+    render();
+  }
+
+  function runAudit() {
+    const audit = kernel.selfAudit();
+    save();
+    render();
+    setStatus('controlStatus', `Self-audit stored with ${audit.findings.length} finding(s).`);
+  }
+
+  function exportState() {
+    const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '42ndMind_kernel_state.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function render() {
+    const state = snapshot();
+    save();
+    const p = state.octahedron?.point || { x:0, y:0, z:0 };
+    document.getElementById('mx').textContent = fmt(p.x);
+    document.getElementById('my').textContent = fmt(p.y);
+    document.getElementById('mz').textContent = fmt(p.z);
+    document.getElementById('mnodes').textContent = state.beliefGraph?.nodes?.length || 0;
+    document.getElementById('summaryLine').textContent = JSON.stringify(summarize(state), null, 2);
+    document.getElementById('auditPreview').textContent = JSON.stringify(state.currentAuditPreview || null, null, 2);
+    document.getElementById('rawState').textContent = JSON.stringify(state, null, 2);
+    document.getElementById('brainPacketOutput').value = JSON.stringify(brainPacket(), null, 2);
+    const report = localStorage.getItem(TEST_KEY);
+    if (report) document.getElementById('testReport').textContent = JSON.stringify(JSON.parse(report), null, 2);
+  }
+
+  bootBrain();
+</script>
+</body>
+</html>
