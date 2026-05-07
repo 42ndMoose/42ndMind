@@ -3,43 +3,63 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>42ndMind LLM Brain Console</title>
+  <title>42ndMind Live Octahedron Brain</title>
   <style>
-    :root { --bg:#0f1115; --panel:#171a21; --muted:#8b93a7; --text:#eef2ff; --line:#2a3040; --accent:#9db6ff; --bad:#ff8b8b; --good:#9dffb4; --warn:#ffd28b; }
+    :root {
+      --bg:#0f1115; --panel:#171a21; --panel2:#10131a; --muted:#8b93a7; --text:#eef2ff;
+      --line:#2a3040; --accent:#9db6ff; --bad:#ff8b8b; --good:#9dffb4; --warn:#ffd28b; --ink:#dfe6ff;
+    }
     * { box-sizing:border-box; }
-    body { margin:0; font:14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:var(--bg); color:var(--text); }
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:var(--bg); color:var(--text); }
     header { padding:16px 18px; border-bottom:1px solid var(--line); background:#11141b; position:sticky; top:0; z-index:5; }
     h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
-    .sub { color:var(--muted); font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif; }
-    main { display:grid; grid-template-columns: minmax(360px, 520px) 1fr; gap:12px; padding:12px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:var(--ink); }
+    h3 { font:700 12px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:10px 0 6px; color:#cdd7ff; }
+    .sub { color:var(--muted); font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif; max-width:1100px; }
+    main { display:grid; grid-template-columns:minmax(360px,520px) 1fr; gap:12px; padding:12px; }
     section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
-    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
-    textarea, input, select { width:100%; background:#0f1218; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-    textarea { min-height:170px; resize:vertical; }
+    textarea,input,select { width:100%; background:#0f1218; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:160px; resize:vertical; }
+    input[type="range"] { padding:0; }
     button { background:#25345c; color:var(--text); border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 3px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
     button:hover { background:#304274; }
     button.good { background:#1f4a31; border-color:#3b7f55; }
     button.warn { background:#4a3a1f; border-color:#7f633b; }
     button.bad { background:#44222a; border-color:#7d3c4a; }
+    a { color:var(--accent); }
+    pre { white-space:pre-wrap; overflow:auto; background:#0d1016; border:1px solid var(--line); border-radius:10px; padding:10px; max-height:560px; }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th,td { border-bottom:1px solid var(--line); padding:6px 5px; text-align:left; vertical-align:top; }
+    th { color:#cdd7ff; font-weight:700; background:#11151d; position:sticky; top:0; }
     .muted { color:var(--muted); }
     .small { font-size:12px; }
+    .tiny { font-size:11px; }
+    .status { margin-top:7px; white-space:pre-wrap; color:var(--muted); }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .metric { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:8px; min-height:68px; }
+    .metric span { display:block; color:var(--muted); }
+    .metric b { display:block; font-size:20px; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; margin:2px; font-size:12px; color:#d6ddf5; background:#11151d; }
     .ok { color:var(--good); }
     .no { color:var(--bad); }
     .maybe { color:var(--warn); }
-    .status { margin-top:7px; white-space:pre-wrap; color:var(--muted); }
-    .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-    .metric { background:#10131a; border:1px solid var(--line); border-radius:8px; padding:8px; }
-    .metric b { display:block; font-size:20px; }
-    pre { white-space:pre-wrap; overflow:auto; background:#0d1016; border:1px solid var(--line); border-radius:10px; padding:10px; max-height:540px; }
-    a { color:var(--accent); }
-    @media (max-width: 920px) { main { grid-template-columns:1fr; } }
+    .card { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:8px; margin:6px 0; }
+    .scroll { overflow:auto; max-height:420px; border:1px solid var(--line); border-radius:8px; }
+    .mathline { background:#0d1016; border:1px solid var(--line); border-radius:8px; padding:8px; margin:6px 0; color:#dfe6ff; }
+    .diamondWrap { background:#0d1016; border:1px solid var(--line); border-radius:10px; padding:8px; }
+    svg { width:100%; max-height:410px; display:block; }
+    .nodeRow { cursor:pointer; }
+    .nodeRow:hover { background:#141926; }
+    .selected { outline:1px solid var(--accent); outline-offset:-1px; }
+    @media (max-width:920px) { main { grid-template-columns:1fr; } .metrics,.grid3 { grid-template-columns:1fr 1fr; } }
   </style>
 </head>
 <body>
 <header>
-  <h1>42ndMind LLM Brain Console</h1>
-  <div class="sub">LLM-first interface. The human does not need to operate the kernel manually. Copy the brain packet to an LLM, paste back an LLM command packet, then import it.</div>
+  <h1>42ndMind Live Octahedron Brain</h1>
+  <div class="sub">LLM-first console with the live math exposed. The kernel owns belief movement; the LLM extracts packets and explains state. Every active node projects to the Epistemic Octahedron surface.</div>
 </header>
 
 <main>
@@ -52,7 +72,9 @@
       <button onclick="copyBrainPacket()">COPY brain packet</button>
       <button onclick="copyOperatingProtocol()">COPY LLM operating protocol</button>
       <button onclick="exportState()">EXPORT state JSON</button>
+      <button class="warn" onclick="loadOctahedronDemo()">LOAD octahedron demo packet</button>
       <button class="bad" onclick="resetBrain()">RESET brain</button>
+      <div class="row small muted"><a href="index.html">human kernel UI</a> · <a href="belief-graph.html">graph view</a></div>
       <div id="controlStatus" class="status small"></div>
     </section>
 
@@ -61,7 +83,7 @@
       <div class="small muted">Expected JSON: { "command_type":"epistemic_kernel_command", "commands":[...] }</div>
       <textarea id="commandInput" spellcheck="false" placeholder="Paste LLM command packet JSON here."></textarea>
       <button class="good" onclick="runCommandPacket()">IMPORT / RUN command packet</button>
-      <button onclick="loadExampleCommand()">Load example command</button>
+      <button onclick="loadExampleCommand()">Load contradiction example</button>
       <div id="commandStatus" class="status small"></div>
     </section>
 
@@ -70,23 +92,53 @@
       <textarea id="rawTextInput" spellcheck="false" placeholder="Paste raw human text here. Then copy the extraction prompt and give it to an LLM.">Criticism is epistemic pressure against a claim. Hostility is only one possible motive and needs separate evidence.</textarea>
       <button onclick="copyExtractionPrompt()">COPY extraction prompt for this text</button>
     </section>
+
+    <section>
+      <h2>4. Manual semantic probe</h2>
+      <div class="small muted">This does not mutate saved state. It only proves the surface math in real time.</div>
+      <label class="small muted">a / x semantic: empathy positive, practicality negative <b id="probeAVal">0.000</b></label>
+      <input id="probeA" type="range" min="-1" max="1" step="0.01" value="0" />
+      <label class="small muted">s / y semantic: epistemic stability <b id="probeSVal">0.000</b></label>
+      <input id="probeS" type="range" min="-1" max="1" step="0.01" value="0" />
+      <label class="small muted">b / z semantic: wisdom positive, knowledge negative <b id="probeBVal">0.000</b></label>
+      <input id="probeB" type="range" min="-1" max="1" step="0.01" value="0" />
+      <div id="probeMath" class="mathline small"></div>
+    </section>
   </div>
 
   <div>
     <section>
-      <h2>Brain status</h2>
+      <h2>Live octahedron math</h2>
       <div class="metrics">
-        <div class="metric"><span class="muted">x</span><b id="mx">0</b></div>
-        <div class="metric"><span class="muted">y</span><b id="my">0</b></div>
-        <div class="metric"><span class="muted">z</span><b id="mz">0</b></div>
-        <div class="metric"><span class="muted">nodes</span><b id="mnodes">0</b></div>
+        <div class="metric"><span>x surface</span><b id="mx">0</b><div class="tiny muted">empathy ↔ practicality</div></div>
+        <div class="metric"><span>y surface</span><b id="my">0</b><div class="tiny muted">epistemic stability</div></div>
+        <div class="metric"><span>z surface</span><b id="mz">0</b><div class="tiny muted">wisdom ↔ knowledge</div></div>
+        <div class="metric"><span>nodes</span><b id="mnodes">0</b><div class="tiny muted">local states</div></div>
       </div>
-      <div id="summaryLine" class="status small"></div>
+      <div id="surfaceLaw" class="mathline small"></div>
+      <div class="grid3">
+        <div class="card"><b>raw semantic</b><div id="rawSemantic" class="small muted"></div></div>
+        <div class="card"><b>surface check</b><div id="surfaceCheck" class="small muted"></div></div>
+        <div class="card"><b>state label</b><div id="stateLabel" class="small muted"></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2D side-view projection</h2>
+      <div class="small muted">Diamond view of the octahedron: top is mature integration, bottom is collapse pressure, center is the equator. Dots are live graph nodes.</div>
+      <div id="diamondView" class="diamondWrap"></div>
+      <div id="selectedNodeView" class="status small"></div>
+    </section>
+
+    <section>
+      <h2>Node math table</h2>
+      <div class="small muted">Each node carries a local semantic triple, then projects to a surface point. Root is only the aggregate of active memory.</div>
+      <div class="scroll"><table><thead><tr><th>node</th><th>type</th><th>semantic</th><th>surface</th><th>L1</th><th>parent relation</th></tr></thead><tbody id="nodeTable"></tbody></table></div>
     </section>
 
     <section>
       <h2>Brain packet output</h2>
-      <div class="small muted">This is the main thing to paste into a different ChatGPT session. It contains state, graph, audit, test results, and exact instructions.</div>
+      <div class="small muted">Paste this into another LLM session. It contains state, graph, audit, tests, live math, and operating rules.</div>
       <textarea id="brainPacketOutput" spellcheck="false"></textarea>
     </section>
 
@@ -113,11 +165,39 @@
   const TEST_KEY = 'epistemic_kernel_last_test_report';
   const saved = localStorage.getItem(STORAGE_KEY);
   const kernel = new EpistemicKernel(saved ? JSON.parse(saved) : null);
+  let selectedNodeId = 'root_worldview';
 
-  function fmt(n) { return Number(n || 0).toFixed(3); }
+  function $(id) { return document.getElementById(id); }
+  function fmt(n, places = 3) { return Number(n || 0).toFixed(places); }
+  function clampLocal(value, min, max) { return Math.max(min, Math.min(max, Number(value) || 0)); }
   function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(kernel.snapshot())); }
-  function setStatus(id, text) { document.getElementById(id).textContent = text; }
+  function setStatus(id, text) { $(id).textContent = text; }
   function snapshot() { kernel.recalculate(); return kernel.snapshot(); }
+  function esc(value) { return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+  function l1(point) { return Math.abs(Number(point?.x || 0)) + Math.abs(Number(point?.y || 0)) + Math.abs(Number(point?.z || 0)); }
+  function clsY(y) { return Number(y || 0) > 0.1 ? 'ok' : Number(y || 0) < -0.1 ? 'no' : 'maybe'; }
+
+  function projectionForSemantic(semantic = {}) {
+    const a = Number(semantic.a || 0);
+    const s = Number(semantic.s || 0);
+    const b = Number(semantic.b || 0);
+    const projected = EpistemicKernelDefaults.projectSemanticTriple(a, s, b);
+    const point = projected.point || { x:0, y:0, z:0 };
+    const rawL1 = Math.abs(a) + Math.abs(s) + Math.abs(b);
+    const surfaceL1 = l1(point);
+    return {
+      semantic: { a, s, b },
+      point,
+      raw_l1: rawL1,
+      surface_l1: surfaceL1,
+      is_null_origin: rawL1 <= 1e-9,
+      surface_valid: rawL1 <= 1e-9 ? surfaceL1 === 0 : Math.abs(surfaceL1 - 1) < 0.000001,
+      peak_distance_l1: Math.abs(point.x) + Math.abs(1 - point.y) + Math.abs(point.z),
+      collapse_distance_l1: Math.abs(point.x) + Math.abs(-1 - point.y) + Math.abs(point.z),
+      equator_distance: Math.abs(point.y),
+      debug: projected.debug || {}
+    };
+  }
 
   function summarize(state) {
     const p = state.octahedron?.point || { x:0, y:0, z:0 };
@@ -125,6 +205,7 @@
       version: state.version,
       point: p,
       semantic: state.semantic,
+      math: projectionForSemantic(state.semantic),
       counts: {
         observations: state.observations?.length || 0,
         claims: state.claims?.length || 0,
@@ -144,30 +225,25 @@
   function operatingProtocol() {
     return {
       protocol_name: '42ndMind LLM Brain Operating Protocol',
-      protocol_version: '0.2',
-      role_of_llm: 'Extractor, operator, and explainer. The LLM does not own belief movement. The kernel owns belief state updates.',
+      protocol_version: '0.3-live-math',
+      role_of_llm: 'Extractor, operator, and explainer. The LLM proposes structured packets. The kernel owns belief movement and projection math.',
       role_of_kernel: 'Maintain structured belief state aligned with the Epistemic Octahedron: null origin, active surface projection, scoped nodes, gates, contradiction pressure, reality contact, non-self-sealing, and self-audit.',
+      core_surface_law: '|x| + |y| + |z| = 1 for active worldview positions; (0,0,0) is reserved for null origin before active worldview plotting.',
       command_schema: {
         command_type: 'epistemic_kernel_command',
         commands: [
           { op: 'reset' },
           { op: 'quick_ingest', mode: 'auto|principle|challenge|correction|observation', text: '...' },
-          { op: 'import_packet', packet: { packet_type: 'epistemic_extraction_packet', claims: [], evidence: [], principles: [], dependencies: [], questions: [], observations: [] } },
+          { op: 'import_packet', packet: { packet_type: 'epistemic_extraction_packet', claims: [], evidence: [], principles: [], dependencies: [], questions: [], observations: [], gate_events: [] } },
           { op: 'add_claim', text: '...', subject: '...', object: '...', scope: 'claim|stance|worldview_fragment', confidence: 0.55 },
           { op: 'add_evidence', text: '...', relation: 'supports|attacks', target: 'claim id, client id, or exact claim text', strength: 'weak|moderate|strong', confidence: 0.75 },
           { op: 'add_dependency', dependent: 'claim ref', depends_on: 'claim ref', strength: 'weak|moderate|strong', relation: 'depends_on' },
+          { op: 'add_principle', text: '...', confidence: 0.55, testing_requirements: ['...'] },
+          { op: 'add_gate_event', gate: 'G1_counter_consideration|G2_non_strawman|G3_self_correction|G4_contradiction_handling|G5_reality_contact|G6_non_self_sealing', direction: 'positive|negative', strength: 'weak|moderate|strong', confidence: 0.75, evidence: '...' },
+          { op: 'resolve_question', question_id: '...', note: '...' },
           { op: 'self_audit' },
           { op: 'propose_rule_change', title: '...', rationale: '...', patch: '...', expected_effect: '...', falsification: '...' }
         ]
-      },
-      extraction_packet_schema: {
-        packet_type: 'epistemic_extraction_packet',
-        claims: [{ client_id:'c1', text:'...', subject:'...', object:'...', scope:'claim|stance|worldview_fragment', confidence:0.5, status:'active' }],
-        evidence: [{ text:'...', relation:'supports|attacks', target_client_id:'c1', strength:'weak|moderate|strong', confidence:0.75 }],
-        principles: [{ text:'...', scope:'principle_candidate', confidence:0.45, status:'candidate', testing_requirements:['...'] }],
-        dependencies: [{ dependent_client_id:'c2', depends_on_client_id:'c1', relation:'depends_on', strength:'moderate', note:'...' }],
-        questions: ['...'],
-        observations: []
       },
       operating_rules: [
         'Prefer structured extraction packets over raw quick_ingest.',
@@ -175,9 +251,31 @@
         'Do not turn motive into fact without separate motive evidence.',
         'Keep challenge and criticism as epistemic pressure before classifying it as hostility.',
         'Candidate principles require testing requirements before upward merge.',
+        'Every active node must expose raw semantic values and projected surface values.',
         'Use self_audit after meaningful updates.',
         'Use reset only when the user explicitly wants a clean state.'
       ]
+    };
+  }
+
+  function buildLiveMath(state) {
+    const graph = state.beliefGraph || { nodes: [], links: [] };
+    const linksByFrom = new Map((graph.links || []).map(link => [link.from, link]));
+    return {
+      surface_law: '|x| + |y| + |z| = 1',
+      null_origin: '(0,0,0) is not an active surface point',
+      root: projectionForSemantic(state.semantic),
+      nodes: (graph.nodes || []).map(node => ({
+        id: node.id,
+        type: node.type,
+        scope: node.scope,
+        status: node.status,
+        label: node.label,
+        parent_id: node.parent_id || null,
+        relation_to_parent: linksByFrom.get(node.id)?.relation || null,
+        semantic: node.semantic,
+        projection: projectionForSemantic(node.semantic || {})
+      }))
     };
   }
 
@@ -186,19 +284,20 @@
     const report = JSON.parse(localStorage.getItem(TEST_KEY) || 'null');
     return {
       packet_type: '42ndMind_live_brain_packet',
-      packet_version: '0.2',
+      packet_version: '0.3-live-math',
       created_at: new Date().toISOString(),
-      purpose: 'Paste this into an LLM so it can operate the live 42ndMind kernel through command packets instead of a human UI.',
+      purpose: 'Paste this into an LLM so it can operate the live 42ndMind kernel through command packets while seeing the actual octahedron math.',
       operating_protocol: operatingProtocol(),
       brain_summary: summarize(state),
+      live_math: buildLiveMath(state),
       last_test_report: report,
       kernel_state: state,
-      next_llm_instruction: 'Inspect kernel_state and brain_summary. Return an epistemic_kernel_command JSON packet only when the user wants the kernel updated. Otherwise explain what the state means plainly.'
+      next_llm_instruction: 'Inspect kernel_state, live_math, and brain_summary. Return an epistemic_kernel_command JSON packet only when the user wants the kernel updated. Otherwise explain what the state means plainly.'
     };
   }
 
   async function copyText(text) {
-    const box = document.getElementById('brainPacketOutput');
+    const box = $('brainPacketOutput');
     box.value = text;
     try { await navigator.clipboard.writeText(text); return true; }
     catch (e) { return false; }
@@ -217,20 +316,21 @@
   }
 
   async function copyExtractionPrompt() {
-    const text = kernel.getExtractionPrompt(document.getElementById('rawTextInput').value || '');
+    const text = kernel.getExtractionPrompt($('rawTextInput').value || '');
     const ok = await copyText(text);
     setStatus('controlStatus', `${ok ? 'Copied' : 'Placed'} extraction prompt (${text.length.toLocaleString()} chars).`);
   }
 
   function bootBrain() {
     render();
-    setStatus('controlStatus', 'Booted. Brain packet refreshed.');
+    setStatus('controlStatus', 'Booted. Live math and brain packet refreshed.');
   }
 
   function resetBrain() {
     if (!confirm('Reset kernel state?')) return;
     kernel.reset();
     localStorage.removeItem(TEST_KEY);
+    selectedNodeId = 'root_worldview';
     save();
     render();
     setStatus('controlStatus', 'Kernel reset to null origin.');
@@ -244,6 +344,9 @@
     if (op === 'add_claim') return kernel.addClaim(command);
     if (op === 'add_evidence') return kernel.addEvidence({ ...command, claimId: command.claimId || command.target || command.target_claim_text || command.target_client_id });
     if (op === 'add_dependency') return kernel.addDependency(command);
+    if (op === 'add_principle') return kernel.addPrinciple(command);
+    if (op === 'add_gate_event') return kernel.applyGateEvent(command.gate, command.direction || 'positive', command);
+    if (op === 'resolve_question') return kernel.resolveQuestion(command.question_id || command.id, command.note || command.resolution || 'Resolved through command packet.');
     if (op === 'self_audit') return kernel.selfAudit();
     if (op === 'propose_rule_change') return kernel.proposeRuleChange(command);
     throw new Error(`Unknown op: ${op}`);
@@ -251,7 +354,7 @@
 
   function runCommandPacket() {
     try {
-      const packet = JSON.parse(document.getElementById('commandInput').value);
+      const packet = JSON.parse($('commandInput').value);
       const commands = Array.isArray(packet.commands) ? packet.commands : [packet];
       const results = commands.map((cmd) => ({ op: cmd.op, result: executeCommand(cmd) }));
       save();
@@ -286,7 +389,43 @@
         { op: 'self_audit' }
       ]
     };
-    document.getElementById('commandInput').value = JSON.stringify(packet, null, 2);
+    $('commandInput').value = JSON.stringify(packet, null, 2);
+  }
+
+  function loadOctahedronDemo() {
+    const packet = {
+      command_type: 'epistemic_kernel_command',
+      commands: [
+        { op: 'reset' },
+        { op: 'import_packet', packet: {
+          packet_type: 'epistemic_extraction_packet',
+          claims: [
+            { client_id:'c1', text:'A mature decision should protect people while respecting practical constraints.', subject:'worldview', object:'decision_quality', scope:'worldview_fragment', confidence:0.66 },
+            { client_id:'c2', text:'Evidence should decide whether a claim survives pressure.', subject:'worldview', object:'belief_update', scope:'worldview_fragment', confidence:0.70 },
+            { client_id:'c3', text:'Motive should remain unresolved unless separate motive evidence exists.', subject:'worldview', object:'motive_calibration', scope:'stance', confidence:0.64 }
+          ],
+          evidence: [
+            { text:'The kernel preserves attacking evidence and open questions instead of erasing them.', relation:'supports', target_client_id:'c2', strength:'moderate', confidence:0.80 },
+            { text:'A structured packet separates claim, evidence, principle, scope, and uncertainty.', relation:'supports', target_client_id:'c1', strength:'moderate', confidence:0.75 }
+          ],
+          principles: [
+            { text:'A local belief should merge upward only after surviving relevant evidence and contradiction pressure.', scope:'principle_candidate', confidence:0.58, status:'candidate', testing_requirements:['Run contradiction and dependency benchmark cases before promotion.'] }
+          ],
+          gate_events: [
+            { gate:'G1_counter_consideration', direction:'positive', strength:'moderate', confidence:0.75, evidence:'Demo includes counter-pressure and scope limits.', scope:'worldview_fragment' },
+            { gate:'G3_self_correction', direction:'positive', strength:'moderate', confidence:0.72, evidence:'Demo keeps principles candidate-level until tested.', scope:'worldview_fragment' },
+            { gate:'G4_contradiction_handling', direction:'positive', strength:'weak', confidence:0.70, evidence:'Demo preserves unresolved pressure.', scope:'worldview_fragment' },
+            { gate:'G5_reality_contact', direction:'positive', strength:'moderate', confidence:0.78, evidence:'Demo attaches evidence to claims.', scope:'worldview_fragment' },
+            { gate:'G6_non_self_sealing', direction:'positive', strength:'weak', confidence:0.70, evidence:'Demo names falsification requirements.', scope:'worldview_fragment' }
+          ],
+          questions: ['What benchmark result would prove this merge rule is too strict?'],
+          observations: []
+        }},
+        { op:'self_audit' }
+      ]
+    };
+    $('commandInput').value = JSON.stringify(packet, null, 2);
+    runCommandPacket();
   }
 
   function runSmokeTests() {
@@ -310,8 +449,9 @@
         principles: [], dependencies: [], questions: [], observations: []
       });
       const state = k.snapshot();
-      const weakened = state.claims.find(c => c.client_id === 'c1')?.status === 'weakened' || state.claims.find(c => c.client_id === 'c1')?.confidence < 0.35;
-      return { passed: weakened && state.evidence.length === 1, weakened, target_confidence: state.claims.find(c => c.client_id === 'c1')?.confidence, contradictions: state.contradictions.length };
+      const target = state.claims.find(c => c.client_id === 'c1');
+      const weakened = target?.status === 'weakened' || target?.confidence < 0.35;
+      return { passed: weakened && state.evidence.length === 1, weakened, target_confidence: target?.confidence, contradictions: state.contradictions.length };
     });
 
     test('self-sealing pressure', (k) => {
@@ -334,6 +474,18 @@
       return { passed: !!p && p.status === 'candidate' && state.questions.some(q => q.status === 'open'), principle_status: p?.status, open_questions: state.questions.filter(q => q.status === 'open').length };
     });
 
+    test('all active graph nodes obey surface projection', (k) => {
+      k.importExtractionPacket({
+        claims: [{ client_id:'c1', text:'Evidence should decide whether a claim survives pressure.', subject:'worldview', object:'belief_update', scope:'worldview_fragment', confidence:0.70 }],
+        evidence: [{ text:'A record can support or attack the claim.', relation:'supports', target_client_id:'c1', strength:'moderate', confidence:0.80 }],
+        principles: [], dependencies: [], questions: [], observations: []
+      });
+      const state = k.snapshot();
+      const nodes = state.beliefGraph.nodes || [];
+      const invalid = nodes.filter(node => !projectionForSemantic(node.semantic || {}).surface_valid).map(node => node.id);
+      return { passed: nodes.length > 1 && invalid.length === 0, nodes: nodes.length, invalid };
+    });
+
     const report = {
       packet_type: '42ndMind_kernel_smoke_test_report',
       created_at: new Date().toISOString(),
@@ -342,7 +494,7 @@
       results
     };
     localStorage.setItem(TEST_KEY, JSON.stringify(report));
-    document.getElementById('testReport').textContent = JSON.stringify(report, null, 2);
+    $('testReport').textContent = JSON.stringify(report, null, 2);
     setStatus('controlStatus', `Smoke tests complete: ${report.passed} passed, ${report.failed} failed.`);
     render();
   }
@@ -363,22 +515,107 @@
     URL.revokeObjectURL(a.href);
   }
 
+  function sidePoint(point) {
+    const p = point || { x:0, y:0, z:0 };
+    const horizontal = clampLocal(Number(p.x || 0) + Number(p.z || 0), -1, 1);
+    return { x: 180 + horizontal * 130, y: 180 - Number(p.y || 0) * 130 };
+  }
+
+  function renderDiamond(state) {
+    const graph = state.beliefGraph || { nodes: [], links: [] };
+    const nodes = graph.nodes || [];
+    const linkByFrom = new Map((graph.links || []).map(link => [link.from, link]));
+    if (!nodes.some(node => node.id === selectedNodeId)) selectedNodeId = graph.root_id || 'root_worldview';
+    const circles = nodes.map((node, index) => {
+      const p = node.octahedron?.point || projectionForSemantic(node.semantic || {}).point;
+      const pos = sidePoint(p);
+      const r = node.id === graph.root_id ? 6 : node.type === 'contradiction' ? 5 : 4;
+      const cls = clsY(p.y);
+      const stroke = node.id === selectedNodeId ? 'var(--accent)' : 'var(--line)';
+      const label = esc(`${node.type}: ${node.label}`.slice(0, 120));
+      const dx = (index % 5 - 2) * 3;
+      const dy = (Math.floor(index / 5) % 5 - 2) * 3;
+      const fill = cls === 'ok' ? 'var(--good)' : cls === 'no' ? 'var(--bad)' : 'var(--warn)';
+      return `<circle tabindex="0" role="button" cx="${fmt(pos.x + dx, 2)}" cy="${fmt(pos.y + dy, 2)}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2" onclick="selectNode('${esc(node.id)}')"><title>${label}</title></circle>`;
+    }).join('');
+    $('diamondView').innerHTML = `<svg viewBox="0 0 360 360" aria-label="Epistemic Octahedron side-view diamond">
+      <polygon points="180,50 310,180 180,310 50,180" fill="none" stroke="var(--line)" stroke-width="2" />
+      <line x1="50" y1="180" x2="310" y2="180" stroke="var(--line)" stroke-width="1" stroke-dasharray="5 5" />
+      <line x1="180" y1="50" x2="180" y2="310" stroke="var(--line)" stroke-width="1" stroke-dasharray="5 5" />
+      <text x="180" y="36" text-anchor="middle" fill="var(--good)" font-size="11">peak (0,1,0)</text>
+      <text x="180" y="330" text-anchor="middle" fill="var(--bad)" font-size="11">collapse (0,-1,0)</text>
+      <text x="318" y="184" fill="var(--muted)" font-size="11">equator</text>
+      ${circles}
+    </svg>`;
+    const selected = nodes.find(node => node.id === selectedNodeId) || nodes.find(node => node.id === graph.root_id);
+    if (!selected) { $('selectedNodeView').textContent = 'No node selected.'; return; }
+    const math = projectionForSemantic(selected.semantic || {});
+    const relation = linkByFrom.get(selected.id)?.relation || 'root/no parent';
+    $('selectedNodeView').innerHTML = `<b>${esc(selected.id)}</b> · ${esc(selected.type)} · ${esc(relation)}\nsemantic a=${fmt(math.semantic.a)}, s=${fmt(math.semantic.s)}, b=${fmt(math.semantic.b)}\nsurface x=${fmt(math.point.x)}, y=${fmt(math.point.y)}, z=${fmt(math.point.z)} · L1=${fmt(math.surface_l1)} · peak distance=${fmt(math.peak_distance_l1)}`;
+  }
+
+  function selectNode(id) {
+    selectedNodeId = id;
+    render();
+  }
+
+  function renderNodeTable(state) {
+    const graph = state.beliefGraph || { nodes: [], links: [] };
+    const linkByFrom = new Map((graph.links || []).map(link => [link.from, link]));
+    const rows = (graph.nodes || []).map(node => {
+      const math = projectionForSemantic(node.semantic || {});
+      const relation = linkByFrom.get(node.id)?.relation || (node.id === graph.root_id ? 'root' : 'unlinked');
+      const rowClass = node.id === selectedNodeId ? 'nodeRow selected' : 'nodeRow';
+      return `<tr class="${rowClass}" onclick="selectNode('${esc(node.id)}')">
+        <td><b>${esc(node.id)}</b><div class="tiny muted">${esc((node.label || '').slice(0, 110))}</div></td>
+        <td>${esc(node.type)}<div class="tiny muted">${esc(node.scope || '')} · ${esc(node.status || '')}</div></td>
+        <td>a ${fmt(math.semantic.a)}<br>s ${fmt(math.semantic.s)}<br>b ${fmt(math.semantic.b)}</td>
+        <td>x ${fmt(math.point.x)}<br><span class="${clsY(math.point.y)}">y ${fmt(math.point.y)}</span><br>z ${fmt(math.point.z)}</td>
+        <td>${fmt(math.surface_l1)}<div class="tiny ${math.surface_valid ? 'ok' : 'no'}">${math.surface_valid ? 'valid' : 'invalid'}</div></td>
+        <td>${esc(relation)}</td>
+      </tr>`;
+    }).join('');
+    $('nodeTable').innerHTML = rows || '<tr><td colspan="6" class="muted">No graph nodes yet.</td></tr>';
+  }
+
+  function renderLiveMath(state) {
+    const p = state.octahedron?.point || { x:0, y:0, z:0 };
+    const math = projectionForSemantic(state.semantic || {});
+    $('mx').textContent = fmt(p.x);
+    $('my').textContent = fmt(p.y);
+    $('mz').textContent = fmt(p.z);
+    $('my').className = clsY(p.y);
+    $('mnodes').textContent = state.beliefGraph?.nodes?.length || 0;
+    $('surfaceLaw').innerHTML = `<b>Active surface law:</b> |x| + |y| + |z| = 1. Current L1 = ${fmt(math.surface_l1)}. Raw L1 before projection = ${fmt(math.raw_l1)}.`;
+    $('rawSemantic').textContent = `a=${fmt(math.semantic.a)}, s=${fmt(math.semantic.s)}, b=${fmt(math.semantic.b)}`;
+    $('surfaceCheck').innerHTML = `${math.surface_valid ? '<span class="ok">valid</span>' : '<span class="no">invalid</span>'} · null_origin=${math.is_null_origin} · peak_distance=${fmt(math.peak_distance_l1)} · collapse_distance=${fmt(math.collapse_distance_l1)}`;
+    $('stateLabel').textContent = state.octahedron?.debug?.state || 'null_origin';
+  }
+
+  function renderProbe() {
+    const semantic = { a:Number($('probeA').value), s:Number($('probeS').value), b:Number($('probeB').value) };
+    $('probeAVal').textContent = fmt(semantic.a);
+    $('probeSVal').textContent = fmt(semantic.s);
+    $('probeBVal').textContent = fmt(semantic.b);
+    const math = projectionForSemantic(semantic);
+    $('probeMath').innerHTML = `raw semantic = (${fmt(semantic.a)}, ${fmt(semantic.s)}, ${fmt(semantic.b)})<br>projected surface = x ${fmt(math.point.x)}, y ${fmt(math.point.y)}, z ${fmt(math.point.z)}<br>|x|+|y|+|z| = ${fmt(math.surface_l1)} · ${math.is_null_origin ? 'null origin, no active surface plot' : 'active surface plot'}`;
+  }
+
   function render() {
     const state = snapshot();
     save();
-    const p = state.octahedron?.point || { x:0, y:0, z:0 };
-    document.getElementById('mx').textContent = fmt(p.x);
-    document.getElementById('my').textContent = fmt(p.y);
-    document.getElementById('mz').textContent = fmt(p.z);
-    document.getElementById('mnodes').textContent = state.beliefGraph?.nodes?.length || 0;
-    document.getElementById('summaryLine').textContent = JSON.stringify(summarize(state), null, 2);
-    document.getElementById('auditPreview').textContent = JSON.stringify(state.currentAuditPreview || null, null, 2);
-    document.getElementById('rawState').textContent = JSON.stringify(state, null, 2);
-    document.getElementById('brainPacketOutput').value = JSON.stringify(brainPacket(), null, 2);
+    renderLiveMath(state);
+    renderDiamond(state);
+    renderNodeTable(state);
+    renderProbe();
+    $('auditPreview').textContent = JSON.stringify(state.currentAuditPreview || null, null, 2);
+    $('rawState').textContent = JSON.stringify(state, null, 2);
+    $('brainPacketOutput').value = JSON.stringify(brainPacket(), null, 2);
     const report = localStorage.getItem(TEST_KEY);
-    if (report) document.getElementById('testReport').textContent = JSON.stringify(JSON.parse(report), null, 2);
+    if (report) $('testReport').textContent = JSON.stringify(JSON.parse(report), null, 2);
   }
 
+  ['probeA', 'probeS', 'probeB'].forEach(id => $(id).addEventListener('input', renderProbe));
   bootBrain();
 </script>
 </body>
