@@ -60,6 +60,12 @@
   function pushUniqueFinding(findings, finding) {
     if (!findings.some((item) => item.type === finding.type && item.text === finding.text)) findings.push(finding);
   }
+  function removeNoMajorIfNeeded(auditLike) {
+    const findings = auditLike.findings || [];
+    const realFindings = findings.filter((item) => item.type !== 'no_major_audit_flags');
+    auditLike.findings = realFindings.length ? realFindings : findings;
+    return auditLike;
+  }
   function addAuditPressureFindings(kernel, auditLike) {
     const state = kernel.state || {};
     const findings = auditLike.findings || [];
@@ -90,7 +96,7 @@
       });
     }
     auditLike.findings = findings;
-    return auditLike;
+    return removeNoMajorIfNeeded(auditLike);
   }
 
   Kernel.prototype.quickIngest = function patchedQuickIngest(text, options = {}) {
@@ -121,8 +127,7 @@
 
   Kernel.prototype.selfAudit = function patchedSelfAudit() {
     const audit = originalSelfAudit.call(this);
-    addAuditPressureFindings(this, audit);
-    return audit;
+    return addAuditPressureFindings(this, audit);
   };
 
   Kernel.lowSignalPatch = { shouldQuarantineLowSignal };
