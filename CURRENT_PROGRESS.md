@@ -80,7 +80,7 @@ The claim-challenge page exports both:
 
 ### Dossier source graph
 
-`dossier-source-graph-test.html` passed the 9-check smoke test:
+`dossier-source-graph-test.html` now uses `src/dossier-source-graph-v0-1.js?v=0.1.3` and includes a 12-check smoke/regression test:
 
 - has fact
 - has inference
@@ -91,6 +91,9 @@ The claim-challenge page exports both:
 - prevents automatic truth merge
 - has unresolved pressure
 - root blocks direct merge
+- kernel command omits observations
+- counter-considerations export as attacking evidence
+- metadata records counter-consideration export mode
 
 `dossier-source-graph.html` can now:
 
@@ -133,59 +136,45 @@ v0.1.3 fixes this at the source:
 - metadata records `counter_considerations_exported_as_attacking_evidence: true`
 - metadata records `observations_omitted_to_avoid_low_signal_question_noise: true`
 
-`dossier-source-graph.html` is cache-busted to load:
+`dossier-source-graph.html` and `dossier-source-graph-test.html` are cache-busted to load:
 
 ```html
 <script src="src/dossier-source-graph-v0-1.js?v=0.1.3"></script>
 ```
 
-## Latest browser packet note
+## Latest clean browser packet note
 
-The latest user-provided brain packet showed that the bridge worked, but the live browser state contained both old and new imports because earlier tests happened before a reset.
+A clean reset test was run on 2026-05-09 using the v0.1.3 dossier path alone.
 
-Important detail from the latest packet:
+Clean result confirmed:
 
-- old import event included `observations: 7`
-- newer v0.1.3-style import event included `observations: 0`
-- newer import exported counter-considerations as `attacks` evidence
-- benchmark remained `10 / 10`
-
-So the code fix is in place, but the next clean test must start from a reset state to prove the v0.1.3 path alone avoids observation noise.
-
-## Clean test sequence for next session
-
-Use this sequence before making more changes:
-
-1. Open `llm-brain-v0-3.html`.
-2. Hard refresh.
-3. Click `RESET`.
-4. Open `dossier-source-graph.html`.
-5. Hard refresh.
-6. Confirm the summary shows version `0.1.3`.
-7. Click `SEND to live brain`.
-8. Open `llm-brain-v0-3.html`.
-9. Click `LOAD pending command` only if the command box is empty.
-10. Click `IMPORT / RUN`.
-11. Click `COPY brain packet`.
-12. Inspect the brain packet.
-
-Expected clean result:
-
-- dossier claims imported
-- dossier evidence imported
-- counter-considerations appear as attacking evidence
+- reset state imported 4 dossier claims and 7 evidence rows
 - `structured_packet_imported.detail.counts.observations = 0`
-- no new `Clarify low-signal input...` questions from dossier import
-- benchmark remains `10 / 10`
+- `kernel_state.observations = []`
+- counter-considerations imported as evidence rows with `relation: "attacks"`
+- no dossier-created `Clarify low-signal input...` questions appeared
+- open questions now come from explicit unresolved inference/interpretation/hypothesis pressure, not low-signal observation quarantine
+- benchmark remained `10 / 10`
+- active graph nodes preserved the Octahedron surface rule
+
+The clean packet proves the v0.1.3 path supports README Milestone 13: curated dossier structures can enter the kernel as typed claims/evidence/counter-pressure without becoming a propaganda mirror or automatic truth merge.
 
 ## Current next development target
 
-Next small task should be one of these, in order:
+Next small task should build toward the README goal, not just add page polish.
 
-1. Verify clean v0.1.3 dossier import after reset.
-2. If clean, add a tiny regression/smoke test that checks dossier kernel-command export has `observations: []` and at least one `attacks` evidence row.
-3. Then document the clean import result in this file.
-4. After that, begin persistent dossier-to-kernel memory integration or real source/retrieval design.
+Recommended next step:
+
+1. Add a small imported-source trace summary to the live brain packet or UI so dossier imports are visibly grouped by source/import event.
+2. Keep it read-only first: source title, import time, claim count, evidence count, attacking evidence count, open question count, and observation count.
+3. Use that trace as the seed for persistent dossier-to-kernel memory integration.
+4. Only after that, begin a real source/retrieval design.
+
+Why this is the right next step:
+
+- README Milestone 13 needs dossier integration with source/evidence links, live counter-considerations, and no automatic truth merge.
+- README Milestone 14 needs the LLM/interface layer to explain kernel state without controlling belief movement.
+- A source trace gives the future LLM layer a stable object to explain and lets the kernel keep source provenance separate from worldview claims.
 
 Do not jump into a large redesign.
 
@@ -213,7 +202,7 @@ The repo has moved forward on these README milestones:
 - M10 Philosophical text ingestion: candidate principles require testing.
 - M11 Benchmark v0.1: fixed cases exist and currently pass `10 / 10`.
 - M12-M15 limited harness: `milestone-closer.html` makes endgame behavior visible as testable packets.
-- M13 early bridge: `dossier-source-graph.html` imports typed dossier packets and can hand a kernel command into the live brain.
+- M13 cleaner bridge: `dossier-source-graph.html` imports typed dossier packets, exports counter-considerations as attacking evidence, and hands a clean kernel command into the live brain.
 
 ## The SHA write trick for ChatGPT GitHub connector
 
@@ -271,11 +260,14 @@ Important state:
 - Main live console: llm-brain-v0-3.html
 - Dossier importer: dossier-source-graph.html
 - Dossier module: src/dossier-source-graph-v0-1.js
-- Dossier module latest version should be 0.1.3
-- dossier-source-graph.html should load src/dossier-source-graph-v0-1.js?v=0.1.3
+- Dossier module latest version is 0.1.3
+- dossier-source-graph.html loads src/dossier-source-graph-v0-1.js?v=0.1.3
+- dossier-source-graph-test.html loads src/dossier-source-graph-v0-1.js?v=0.1.3
 - v0.1.3 exports counter-considerations as attacking evidence, not observations
-- v0.1.3 should produce kernel command with observations: []
-- Previous noisy low-signal questions came from older observation-based dossier imports before v0.1.3
+- v0.1.3 produces kernel command with observations: []
+- Clean reset test confirmed structured_packet_imported counts observations: 0
+- Clean reset test confirmed no dossier-created Clarify low-signal input questions
+- dossier-source-graph-test.html now checks observations: [], attacking evidence rows, and metadata
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -285,23 +277,12 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to run a clean reset test:
-   - open llm-brain-v0-3.html
-   - RESET
-   - open dossier-source-graph.html
-   - hard refresh
-   - confirm version 0.1.3
-   - SEND to live brain
-   - open llm-brain-v0-3.html
-   - LOAD pending command only if needed
-   - IMPORT / RUN
-   - COPY brain packet
-2. Inspect the brain packet.
-3. Confirm structured_packet_imported counts observations: 0.
-4. Confirm counter-considerations imported as evidence relation attacks.
-5. Confirm no new Clarify low-signal input questions came from the dossier import.
-6. If clean, add a tiny dossier-source-graph-test.html check or module smoke test that verifies kernel command export has observations: [] and attacking evidence rows.
-7. Update CURRENT_PROGRESS.md briefly.
+Build toward the README goal with one small source-trace step, not a broad redesign.
+
+Recommended next step:
+1. Add a small imported-source trace summary to the live brain packet or UI so dossier imports are visibly grouped by source/import event.
+2. Keep it read-only first: source title, import time, claim count, evidence count, attacking evidence count, open question count, and observation count.
+3. Use that as the seed for persistent dossier-to-kernel memory integration and later source/retrieval design.
 
 Keep edits small. Avoid broad rewrites or visual redesign.
 ```
