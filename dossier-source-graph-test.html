@@ -19,7 +19,7 @@
   <p><a href="milestone-closer.html">milestone closer</a> · <a href="goal-runner.html">goal runner</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a></p>
   <button onclick="copyOutput()">COPY output</button><span id="status" class="muted"></span>
   <pre id="out">Running...</pre>
-  <script src="src/dossier-source-graph-v0-1.js"></script>
+  <script src="src/dossier-source-graph-v0-1.js?v=0.1.1"></script>
   <script>
     function setStatus(text) { document.getElementById('status').textContent = text; }
     async function copyOutput() {
@@ -37,8 +37,8 @@
         ['has evidence', report.pass_checks.has_evidence],
         ['has counter-consideration', report.pass_checks.has_counter_consideration],
         ['prevents automatic truth merge', report.pass_checks.prevents_auto_truth_merge],
-        ['has unresolved pressure', report.unresolved_count >= 3],
-        ['root blocks direct merge', report.nodes[0].merge_allowed === false]
+        ['has unresolved pressure', report.pass_checks.has_unresolved_pressure],
+        ['root blocks direct merge', report.pass_checks.root_blocks_direct_merge]
       ];
       const passed = cases.filter(c => c[1]).length;
       const text = `Dossier Source Graph v${DossierSourceGraphV01.VERSION} smoke test\n${passed}/${cases.length} passed\n\n` + cases.map(c => `${c[1] ? 'PASS' : 'FAIL'} ${c[0]}`).join('\n') + '\n\n' + JSON.stringify(report, null, 2);
