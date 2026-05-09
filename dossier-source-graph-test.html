@@ -19,7 +19,7 @@
   <p><a href="milestone-closer.html">milestone closer</a> · <a href="goal-runner.html">goal runner</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a></p>
   <button onclick="copyOutput()">COPY output</button><span id="status" class="muted"></span>
   <pre id="out">Running...</pre>
-  <script src="src/dossier-source-graph-v0-1.js?v=0.1.1"></script>
+  <script src="src/dossier-source-graph-v0-1.js?v=0.1.3"></script>
   <script>
     function setStatus(text) { document.getElementById('status').textContent = text; }
     async function copyOutput() {
@@ -29,6 +29,9 @@
     }
     function run() {
       const report = DossierSourceGraphV01.importPacket(DossierSourceGraphV01.samplePacket());
+      const commandPacket = report.epistemic_kernel_command.commands[0].packet;
+      const commandEvidence = commandPacket.evidence || [];
+      const commandObservations = commandPacket.observations || [];
       const cases = [
         ['has fact', report.pass_checks.has_fact],
         ['has inference', report.pass_checks.has_inference],
@@ -38,7 +41,10 @@
         ['has counter-consideration', report.pass_checks.has_counter_consideration],
         ['prevents automatic truth merge', report.pass_checks.prevents_auto_truth_merge],
         ['has unresolved pressure', report.pass_checks.has_unresolved_pressure],
-        ['root blocks direct merge', report.pass_checks.root_blocks_direct_merge]
+        ['root blocks direct merge', report.pass_checks.root_blocks_direct_merge],
+        ['kernel command omits observations', Array.isArray(commandObservations) && commandObservations.length === 0],
+        ['counter-considerations export as attacking evidence', commandEvidence.some(row => row.relation === 'attacks' && String(row.text || '').startsWith('counter_consideration:'))],
+        ['metadata records counter-consideration export mode', commandPacket.meta && commandPacket.meta.counter_considerations_exported_as_attacking_evidence === true]
       ];
       const passed = cases.filter(c => c[1]).length;
       const text = `Dossier Source Graph v${DossierSourceGraphV01.VERSION} smoke test\n${passed}/${cases.length} passed\n\n` + cases.map(c => `${c[1] ? 'PASS' : 'FAIL'} ${c[0]}`).join('\n') + '\n\n' + JSON.stringify(report, null, 2);
