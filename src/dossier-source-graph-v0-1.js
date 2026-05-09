@@ -9,7 +9,7 @@
   verify facts by itself, and does not mutate the core kernel automatically.
 */
 (function (global) {
-  const VERSION = '0.1.2';
+  const VERSION = '0.1.3';
   const VALID_KINDS = ['fact', 'inference', 'interpretation', 'hypothesis'];
 
   function asArray(value) {
@@ -121,33 +121,16 @@
       source: 'dossier_source_graph',
       links: { client_id: claimId, source_item_id: item.id, source_link_index: index }
     }));
-    return evidenceRows.concat(sourceRows);
-  }
-
-  function kernelObservationsForItem(item) {
-    const observations = [];
-    item.counter_considerations.forEach((entry) => {
-      observations.push({
-        text: `counter_consideration for ${item.kind}: ${entry}`,
-        status: 'unresolved',
-        reason: `Counter-consideration remains live for dossier item ${item.id}.`
-      });
-    });
-    if (item.kind !== 'fact') {
-      observations.push({
-        text: `${item.kind}_pressure: ${item.claim}`,
-        status: item.status === 'supported' ? 'candidate' : 'unresolved',
-        reason: `${item.kind} is imported as pressure, not settled truth.`
-      });
-    }
-    if (item.evidence.length === 0) {
-      observations.push({
-        text: `evidence_gap for ${item.kind}: ${item.claim}`,
-        status: 'unresolved',
-        reason: `Dossier item ${item.id} has no direct evidence entries.`
-      });
-    }
-    return observations;
+    const counterRows = item.counter_considerations.map((entry, index) => ({
+      text: `counter_consideration: ${entry}`,
+      relation: 'attacks',
+      target: claimId,
+      strength: 'weak',
+      confidence: 0.45,
+      source: 'dossier_source_graph',
+      links: { client_id: claimId, source_item_id: item.id, counter_consideration_index: index }
+    }));
+    return evidenceRows.concat(sourceRows, counterRows);
   }
 
   function kernelQuestionsForItem(item) {
@@ -155,6 +138,12 @@
     if (item.status === 'unresolved' || item.kind === 'hypothesis' || item.counter_considerations.length > 0 || item.evidence.length === 0) {
       questions.push({
         text: `What evidence would support or weaken this ${item.kind}: ${item.claim}`,
+        links: { client_id: `dossier_claim_${item.id}`, source_item_id: item.id, source: 'dossier_source_graph_v0_1' }
+      });
+    }
+    if (item.counter_considerations.length > 0) {
+      questions.push({
+        text: `Which counter-consideration is strongest against this ${item.kind}, and what would answer it? ${item.claim}`,
         links: { client_id: `dossier_claim_${item.id}`, source_item_id: item.id, source: 'dossier_source_graph_v0_1' }
       });
     }
@@ -166,7 +155,7 @@
     const items = Object.values(sourceItemsById);
     const claims = items.map(kernelClaimForItem);
     const evidence = items.flatMap(kernelEvidenceForItem);
-    const observations = items.flatMap(kernelObservationsForItem);
+    const observations = [];
     const questions = items.flatMap(kernelQuestionsForItem);
     const gate_events = [];
 
@@ -176,8 +165,8 @@
         direction: 'positive',
         strength: 'moderate',
         confidence: 0.75,
-        evidence: 'Dossier source graph imported live counter-considerations.',
-        reason: 'Counter-considerations were preserved instead of flattened away.',
+        evidence: 'Dossier source graph imported live counter-considerations as attacking evidence and open questions.',
+        reason: 'Counter-considerations were preserved instead of flattened away or treated as low-signal observations.',
         scope: 'dossier_source_graph'
       });
     }
@@ -217,6 +206,8 @@
               facts_are_not_whole_dossier_truth: true,
               inference_interpretation_hypothesis_stay_separate: true,
               counter_considerations_remain_live: true,
+              counter_considerations_exported_as_attacking_evidence: true,
+              observations_omitted_to_avoid_low_signal_question_noise: true,
               no_external_fetch_or_fact_verification: true,
               no_core_rule_promotion: true
             }
