@@ -9,7 +9,7 @@
   verify facts by itself, and does not mutate the core kernel automatically.
 */
 (function (global) {
-  const VERSION = '0.1.1';
+  const VERSION = '0.1.2';
   const VALID_KINDS = ['fact', 'inference', 'interpretation', 'hypothesis'];
 
   function asArray(value) {
@@ -89,6 +89,143 @@
     };
   }
 
+  function kernelClaimForItem(item) {
+    return {
+      client_id: `dossier_claim_${item.id}`,
+      text: item.claim,
+      subject: 'dossier_source',
+      object: item.kind,
+      scope: `dossier_${item.kind}`,
+      confidence: item.confidence,
+      status: item.status === 'supported' && item.kind === 'fact' ? 'active' : 'unresolved'
+    };
+  }
+
+  function kernelEvidenceForItem(item) {
+    const claimId = `dossier_claim_${item.id}`;
+    const evidenceRows = item.evidence.map((entry, index) => ({
+      text: entry,
+      relation: 'supports',
+      target: claimId,
+      strength: item.kind === 'fact' ? 'moderate' : 'weak',
+      confidence: item.kind === 'fact' ? 0.75 : 0.55,
+      source: 'dossier_source_graph',
+      links: { client_id: claimId, source_item_id: item.id, evidence_index: index }
+    }));
+    const sourceRows = item.source_links.map((entry, index) => ({
+      text: `source_link: ${entry}`,
+      relation: 'supports',
+      target: claimId,
+      strength: 'weak',
+      confidence: 0.5,
+      source: 'dossier_source_graph',
+      links: { client_id: claimId, source_item_id: item.id, source_link_index: index }
+    }));
+    return evidenceRows.concat(sourceRows);
+  }
+
+  function kernelObservationsForItem(item) {
+    const observations = [];
+    item.counter_considerations.forEach((entry) => {
+      observations.push({
+        text: `counter_consideration for ${item.kind}: ${entry}`,
+        status: 'unresolved',
+        reason: `Counter-consideration remains live for dossier item ${item.id}.`
+      });
+    });
+    if (item.kind !== 'fact') {
+      observations.push({
+        text: `${item.kind}_pressure: ${item.claim}`,
+        status: item.status === 'supported' ? 'candidate' : 'unresolved',
+        reason: `${item.kind} is imported as pressure, not settled truth.`
+      });
+    }
+    if (item.evidence.length === 0) {
+      observations.push({
+        text: `evidence_gap for ${item.kind}: ${item.claim}`,
+        status: 'unresolved',
+        reason: `Dossier item ${item.id} has no direct evidence entries.`
+      });
+    }
+    return observations;
+  }
+
+  function kernelQuestionsForItem(item) {
+    const questions = [];
+    if (item.status === 'unresolved' || item.kind === 'hypothesis' || item.counter_considerations.length > 0 || item.evidence.length === 0) {
+      questions.push({
+        text: `What evidence would support or weaken this ${item.kind}: ${item.claim}`,
+        links: { client_id: `dossier_claim_${item.id}`, source_item_id: item.id, source: 'dossier_source_graph_v0_1' }
+      });
+    }
+    return questions;
+  }
+
+  function toKernelCommand(report) {
+    const sourceItemsById = Object.fromEntries((report.source_items || []).map(item => [item.id, item]));
+    const items = Object.values(sourceItemsById);
+    const claims = items.map(kernelClaimForItem);
+    const evidence = items.flatMap(kernelEvidenceForItem);
+    const observations = items.flatMap(kernelObservationsForItem);
+    const questions = items.flatMap(kernelQuestionsForItem);
+    const gate_events = [];
+
+    if (items.some(item => item.counter_considerations.length > 0)) {
+      gate_events.push({
+        gate: 'G1_counter_consideration',
+        direction: 'positive',
+        strength: 'moderate',
+        confidence: 0.75,
+        evidence: 'Dossier source graph imported live counter-considerations.',
+        reason: 'Counter-considerations were preserved instead of flattened away.',
+        scope: 'dossier_source_graph'
+      });
+    }
+    if (items.some(item => item.evidence.length > 0 || item.source_links.length > 0)) {
+      gate_events.push({
+        gate: 'G5_reality_contact',
+        direction: 'positive',
+        strength: 'moderate',
+        confidence: 0.7,
+        evidence: 'Dossier source graph imported evidence/source-link entries.',
+        reason: 'Evidence paths were kept separate from interpretation and hypothesis.',
+        scope: 'dossier_source_graph'
+      });
+    }
+
+    return {
+      command_type: 'epistemic_kernel_command',
+      created_by: 'dossier-source-graph-v0.1',
+      requires_user_approval: true,
+      commands: [
+        {
+          op: 'import_packet',
+          packet: {
+            packet_type: 'epistemic_extraction_packet',
+            packet_version: 'dossier_source_graph_v0_1',
+            source: 'dossier_source_graph',
+            claims,
+            evidence,
+            principles: [],
+            dependencies: [],
+            observations,
+            questions,
+            gate_events,
+            meta: {
+              source_title: report.source_title,
+              source_graph_version: report.version,
+              facts_are_not_whole_dossier_truth: true,
+              inference_interpretation_hypothesis_stay_separate: true,
+              counter_considerations_remain_live: true,
+              no_external_fetch_or_fact_verification: true,
+              no_core_rule_promotion: true
+            }
+          }
+        }
+      ]
+    };
+  }
+
   function importPacket(packet) {
     const items = asArray(packet && packet.items).map(normalizeItem).filter(item => item.claim);
     const nodes = [
@@ -119,7 +256,7 @@
       has_unresolved_pressure: unresolved.length > 0,
       root_blocks_direct_merge: root.merge_allowed === false
     };
-    return {
+    const report = {
       packet_type: '42ndMind_dossier_source_graph_report',
       version: VERSION,
       created_at: new Date().toISOString(),
@@ -130,6 +267,7 @@
       nodes,
       links,
       unresolved,
+      source_items: items,
       pass_checks,
       pass: Object.values(pass_checks).every(Boolean),
       guardrails: {
@@ -140,6 +278,8 @@
         no_core_rule_promotion: true
       }
     };
+    report.epistemic_kernel_command = toKernelCommand(report);
+    return report;
   }
 
   function samplePacket() {
@@ -186,6 +326,7 @@
     VERSION,
     VALID_KINDS,
     importPacket,
+    toKernelCommand,
     samplePacket
   };
 })(typeof window !== 'undefined' ? window : globalThis);
