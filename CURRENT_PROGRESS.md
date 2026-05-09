@@ -6,7 +6,7 @@ Last major confirmation: **2026-05-09** from a copied `42ndMind_live_brain_packe
 
 ## Current status
 
-42ndMind is no longer only a visual index or static concept page. It is now an early belief-state engine with live Epistemic Octahedron math, structured memory, scoped graph nodes, contradiction pressure, audit pressure, benchmark tests, and LLM command packets.
+42ndMind is no longer only a visual index or static concept page. It is now an early belief-state engine with live Epistemic Octahedron math, structured memory, scoped graph nodes, contradiction pressure, audit pressure, benchmark tests, LLM command packets, and a manual claim-challenge workflow.
 
 The practical target is now clearer:
 
@@ -17,6 +17,7 @@ This is not yet a general truth machine. It can challenge internal coherence, mo
 ## New live entry points
 
 - `llm-brain-v0-3.html` is the preferred patched live brain console.
+- `claim-challenge.html` runs the v0.1 claim-challenge workflow for external claims.
 - `llm-brain.html` is the older v0.2/v0.3 live console and should be treated as secondary.
 - `goal-runner.html` runs benchmark cases, milestone status, sandboxed rule reports, and memory compression packets.
 - `belief-graph.html` uses the v0.2 kernel so the graph view is consistent with the live brain.
@@ -26,6 +27,7 @@ This is not yet a general truth machine. It can challenge internal coherence, mo
 - `src/epistemic-kernel-v0-2.js` remains the base browser kernel.
 - `src/epistemic-kernel-v0-2-patches.js` is loaded after the base kernel and currently patches low-signal quarantine plus unresolved-contradiction audit behavior.
 - `src/epistemic-benchmark-v0-1.js` defines fixed benchmark cases for epistemic pressure.
+- `src/claim-challenge-v0-1.js` defines the manual claim-challenge workflow and optional kernel command export.
 - The benchmark cases cover timeline contradiction, mistaken accusation, self-sealing belief, low-signal quarantine, candidate principle testing, motive calibration, dependency propagation, structured-packet language equivalence, surface projection, and peak-guard behavior.
 - The sandbox utility currently supports a candidate unresolved-contradiction y-cap overlay. It does not promote the rule into core logic automatically.
 - The memory compression utility produces an active-workspace/archive packet while preserving trace IDs.
@@ -57,6 +59,20 @@ The positive root `y` is now correctly treated as suspicious under unresolved co
 - `unresolved_contradiction_needs_evidence`: active contradiction exists with no attached evidence
 
 This is the intended behavior: contradiction detection can be rewarded as awareness, but unresolved contradiction must remain pressure until evidence or resolution arrives.
+
+## Claim-challenge workflow status
+
+The v0.1 claim-challenge workflow exists in `src/claim-challenge-v0-1.js` and `claim-challenge.html`.
+
+Manual checks completed:
+
+- self-sealing example works
+- motive-overclaim example works
+- contradiction example works
+
+The workflow returns extracted claim text, dependencies, evidence needed to support, evidence that would weaken, overclaim flags, classification, next open question, unresolved pressure, Octahedron projection data, guardrails, and an optional `epistemic_kernel_command` packet.
+
+It preserves the null origin for no-claim input, projects active claim-challenge states to `|x| + |y| + |z| = 1`, does not treat contradiction detection as contradiction resolution, does not promote rules automatically, and keeps unresolved pressure visible.
 
 ## What the user-provided packets are for
 
@@ -108,6 +124,7 @@ Current capability:
 - Flag unresolved contradiction over-reward.
 - Run benchmark tests to catch regressions.
 - Export a brain packet for another LLM session.
+- Challenge an external claim through the manual claim-challenge workflow.
 
 Current limit:
 
@@ -120,17 +137,18 @@ Current limit:
 
 ## Belief-challenger target
 
-The next practical milestone is a claim-challenge workflow. Given a claim from another person, the system should return:
+The first manual claim-challenge workflow is now implemented. Given a claim from another person, the system returns:
 
 - the extracted claim
 - what the claim depends on
 - what evidence would support it
 - what evidence would weaken it
 - where it overclaims
-- whether it is coherent, unresolved, contradicted, evidence-backed, or self-sealing
+- whether it is coherent, unresolved, contradicted, evidence-backed, self-sealing, motive-overclaim, or related classification pressure
 - what open question should be answered next
+- an optional kernel command packet for importing the pressure into the kernel
 
-That workflow would turn the project from a live belief map into an actual belief challenger.
+This turns the project from a live belief map toward an actual belief challenger, but the source/retrieval layer and ordinary-LLM comparison are still separate future gaps.
 
 ## Remaining major gaps
 
@@ -140,7 +158,7 @@ That workflow would turn the project from a live belief map into an actual belie
 
 ## Practical next step
 
-Use `llm-brain-v0-3.html` as the main live console.
+Use `claim-challenge.html` for manual claim challenges and `llm-brain-v0-3.html` as the main live console.
 
 For future diagnostics:
 
@@ -152,4 +170,4 @@ For future diagnostics:
 6. Click `COPY output`.
 7. Paste both packets into the next GPT session.
 
-The next development push should be the claim-challenge workflow, not another visual redesign.
+The next development push should be link wiring, tiny regression checks, and source/retrieval design, not another visual redesign.
