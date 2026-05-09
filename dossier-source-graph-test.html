@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Dossier Source Graph Smoke Test</title>
+  <style>
+    body { margin:20px; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    a { color:#9db6ff; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 10px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    pre { white-space:pre-wrap; background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    .pass { color:#9dffb4; }
+    .fail { color:#ff8b8b; }
+    .muted { color:#8b93a7; }
+  </style>
+</head>
+<body>
+  <h1>Dossier Source Graph Smoke Test</h1>
+  <p><a href="milestone-closer.html">milestone closer</a> · <a href="goal-runner.html">goal runner</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a></p>
+  <button onclick="copyOutput()">COPY output</button><span id="status" class="muted"></span>
+  <pre id="out">Running...</pre>
+  <script src="src/dossier-source-graph-v0-1.js"></script>
+  <script>
+    function setStatus(text) { document.getElementById('status').textContent = text; }
+    async function copyOutput() {
+      const text = document.getElementById('out').textContent;
+      try { await navigator.clipboard.writeText(text); setStatus(`Copied output (${text.length.toLocaleString()} chars).`); }
+      catch (e) { setStatus('Could not auto-copy. Select the output manually.'); }
+    }
+    function run() {
+      const report = DossierSourceGraphV01.importPacket(DossierSourceGraphV01.samplePacket());
+      const cases = [
+        ['has fact', report.pass_checks.has_fact],
+        ['has inference', report.pass_checks.has_inference],
+        ['has interpretation', report.pass_checks.has_interpretation],
+        ['has hypothesis', report.pass_checks.has_hypothesis],
+        ['has evidence', report.pass_checks.has_evidence],
+        ['has counter-consideration', report.pass_checks.has_counter_consideration],
+        ['prevents automatic truth merge', report.pass_checks.prevents_auto_truth_merge],
+        ['has unresolved pressure', report.unresolved_count >= 3],
+        ['root blocks direct merge', report.nodes[0].merge_allowed === false]
+      ];
+      const passed = cases.filter(c => c[1]).length;
+      const text = `Dossier Source Graph v${DossierSourceGraphV01.VERSION} smoke test\n${passed}/${cases.length} passed\n\n` + cases.map(c => `${c[1] ? 'PASS' : 'FAIL'} ${c[0]}`).join('\n') + '\n\n' + JSON.stringify(report, null, 2);
+      const out = document.getElementById('out');
+      out.textContent = text;
+      out.className = passed === cases.length ? 'pass' : 'fail';
+    }
+    run();
+  </script>
+</body>
+</html>
