@@ -45,7 +45,7 @@
   <div>
     <section><h2>Controls</h2>
       <a href="dossier-source-graph-test.html">smoke test</a> · <a href="milestone-closer.html">milestone closer</a> · <a href="goal-runner.html">goal runner</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a><br />
-      <button class="good" onclick="runImport()">IMPORT dossier packet</button><button class="warn" onclick="loadSample()">LOAD sample</button><button onclick="copyOutput()">COPY output</button><button onclick="copyKernelCommand()">COPY kernel command</button><span id="status" class="small muted"></span>
+      <button class="good" onclick="runImport()">IMPORT dossier packet</button><button class="warn" onclick="loadSample()">LOAD sample</button><button onclick="copyOutput()">COPY output</button><button onclick="copyKernelCommand()">COPY kernel command</button><button onclick="sendToLiveBrain()">SEND to live brain</button><span id="status" class="small muted"></span>
     </section>
     <section><h2>Dossier packet JSON</h2>
       <div class="small muted">Expected shape: { "title": "...", "items": [{ "kind": "fact|inference|interpretation|hypothesis", "claim": "...", "evidence": [], "counter_considerations": [], "source_links": [] }] }</div>
@@ -69,6 +69,7 @@
 </main>
 <script src="src/dossier-source-graph-v0-1.js?v=0.1.2"></script>
 <script>
+  const PENDING_COMMAND_KEY = '42ndMind_pending_kernel_command';
   let lastReport = null;
   function $(id) { return document.getElementById(id); }
   function esc(value) { return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
@@ -107,6 +108,12 @@
     if (!text || text === 'null') return;
     try { await navigator.clipboard.writeText(text); setStatus(`Copied kernel command (${text.length.toLocaleString()} chars).`); }
     catch (e) { setStatus('Could not auto-copy. Select the kernel command manually.'); }
+  }
+  function sendToLiveBrain() {
+    const text = $('kernelOutput').value;
+    if (!text || text === 'null') return setStatus('No kernel command is available yet.');
+    localStorage.setItem(PENDING_COMMAND_KEY, text);
+    setStatus('Saved pending kernel command. Open live brain v0.3 to import it.');
   }
   loadSample();
 </script>
