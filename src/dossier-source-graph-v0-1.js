@@ -9,7 +9,7 @@
   verify facts by itself, and does not mutate the core kernel automatically.
 */
 (function (global) {
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
   const VALID_KINDS = ['fact', 'inference', 'interpretation', 'hypothesis'];
 
   function asArray(value) {
@@ -103,6 +103,7 @@
     ].concat(items.map(nodeForItem));
     const links = items.map(linkForItem);
     const unresolved = items.filter(item => item.status === 'unresolved' || item.kind === 'hypothesis' || item.counter_considerations.length > 0);
+    const root = nodes[0];
     const counts = VALID_KINDS.reduce((acc, kind) => {
       acc[kind] = items.filter(item => item.kind === kind).length;
       return acc;
@@ -114,7 +115,9 @@
       has_hypothesis: counts.hypothesis > 0,
       has_evidence: items.some(item => item.evidence.length > 0),
       has_counter_consideration: items.some(item => item.counter_considerations.length > 0),
-      prevents_auto_truth_merge: nodes.every(node => node.id === 'dossier_source_graph_root' || node.merge_allowed === (node.type === 'dossier_fact' && node.evidence_count > 0 && node.counter_count === 0))
+      prevents_auto_truth_merge: nodes.every(node => node.id === 'dossier_source_graph_root' || node.merge_allowed === (node.type === 'dossier_fact' && node.evidence_count > 0 && node.counter_count === 0)),
+      has_unresolved_pressure: unresolved.length > 0,
+      root_blocks_direct_merge: root.merge_allowed === false
     };
     return {
       packet_type: '42ndMind_dossier_source_graph_report',
