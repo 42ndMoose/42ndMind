@@ -6,7 +6,7 @@ Last major confirmation: **2026-05-09** from a copied `42ndMind_live_brain_packe
 
 ## Current status
 
-42ndMind is no longer only a visual index or static concept page. It is now an early belief-state engine with live Epistemic Octahedron math, structured memory, scoped graph nodes, contradiction pressure, audit pressure, benchmark tests, LLM command packets, and a manual claim-challenge workflow.
+42ndMind is no longer only a visual index or static concept page. It is now an early belief-state engine with live Epistemic Octahedron math, structured memory, scoped graph nodes, contradiction pressure, audit pressure, benchmark tests, LLM command packets, a manual claim-challenge workflow, and a limited M12-M15 milestone closer harness.
 
 The practical target is now clearer:
 
@@ -19,6 +19,7 @@ This is not yet a general truth machine. It can challenge internal coherence, mo
 - `llm-brain-v0-3.html` is the preferred patched live brain console.
 - `claim-challenge.html` runs the v0.1 claim-challenge workflow for external claims.
 - `claim-challenge-test.html` runs a tiny browser smoke test for the claim-challenge workflow.
+- `milestone-closer.html` runs a limited M12-M15 harness for ordinary-LLM comparison, dossier packet separation, LLM-interface draft extraction, and sandboxed self-improvement pressure.
 - `llm-brain.html` is the older v0.2/v0.3 live console and should be treated as secondary.
 - `goal-runner.html` runs benchmark cases, milestone status, sandboxed rule reports, and memory compression packets.
 - `belief-graph.html` uses the v0.2 kernel so the graph view is consistent with the live brain.
@@ -30,6 +31,7 @@ This is not yet a general truth machine. It can challenge internal coherence, mo
 - `src/epistemic-benchmark-v0-1.js` defines fixed benchmark cases for epistemic pressure.
 - `src/claim-challenge-v0-1.js` defines the manual claim-challenge workflow and optional kernel command export.
 - `claim-challenge-test.html` verifies the key claim-challenge classifications, null origin behavior, active surface projection, and optional kernel command packet.
+- `milestone-closer.html` is a thin browser harness for the README endgame. It does not complete the long-term goal by itself; it makes M12-M15 behavior testable and packet-shaped.
 - The benchmark cases cover timeline contradiction, mistaken accusation, self-sealing belief, low-signal quarantine, candidate principle testing, motive calibration, dependency propagation, structured-packet language equivalence, surface projection, and peak-guard behavior.
 - The sandbox utility currently supports a candidate unresolved-contradiction y-cap overlay. It does not promote the rule into core logic automatically.
 - The memory compression utility produces an active-workspace/archive packet while preserving trace IDs.
@@ -85,9 +87,20 @@ The workflow returns extracted claim text, dependencies, evidence needed to supp
 
 It preserves the null origin for no-claim input, projects active claim-challenge states to `|x| + |y| + |z| = 1`, does not treat contradiction detection as contradiction resolution, does not promote rules automatically, and keeps unresolved pressure visible.
 
+## M12-M15 milestone closer status
+
+`milestone-closer.html` now provides a limited harness for the README endgame:
+
+- M12: compares generic LLM, prompt-only epistemic, and kernel-guided answer text using epistemic-pressure criteria.
+- M13: imports a dossier-style packet and separates fact, inference, interpretation, and hypothesis while preserving counter-considerations.
+- M14: converts natural text into a draft structured extraction packet that requires user approval before kernel import.
+- M15: represents a rule proposal as a sandboxed candidate with no automatic promotion.
+
+This is not the full mature system described by the README. It is a small testable bridge toward those milestones.
+
 ## What the user-provided packets are for
 
-Copied brain packets and benchmark outputs are useful. They are not noise. They are telemetry.
+Copied brain packets, benchmark outputs, claim-challenge reports, and milestone-closer reports are useful. They are not noise. They are telemetry.
 
 They let another GPT session inspect:
 
@@ -99,8 +112,9 @@ They let another GPT session inspect:
 - what the root and node coordinates are
 - whether audit pressure matches the actual graph state
 - whether the kernel is drifting away from the Epistemic Octahedron rules
+- how the M12-M15 harness scored ordinary-LLM comparison, dossier separation, LLM-interface draft extraction, and sandboxed self-improvement pressure
 
-Future GPT sessions should ask the user for a fresh brain packet and benchmark packet whenever diagnosing repo behavior.
+Future GPT sessions should ask the user for a fresh brain packet, benchmark packet, and milestone-closer packet whenever diagnosing repo behavior.
 
 ## Roadmap movement
 
@@ -117,6 +131,7 @@ The repo has moved forward on these README milestones:
 - M9 Memory compression: active pressure and archival traces can be separated.
 - M10 Philosophical text ingestion: principle candidates are tested for falsification/testing requirements.
 - M11 Benchmark v0.1: fixed cases now exist and currently pass 10/10 under the patched browser path.
+- M12-M15 limited harness: `milestone-closer.html` now makes the remaining endgame behavior visible as testable packets, but does not yet make the kernel fully autonomous or mature.
 
 ## What the kernel can currently do
 
@@ -136,15 +151,17 @@ Current capability:
 - Run benchmark tests to catch regressions.
 - Export a brain packet for another LLM session.
 - Challenge an external claim through the manual claim-challenge workflow.
+- Produce a limited M12-M15 milestone-closer report.
 
 Current limit:
 
 - It cannot independently verify all real-world facts without evidence or retrieval.
 - It still relies on rule-based pattern detection for many contradictions.
 - It does not yet have a mature source/retrieval layer.
-- It does not yet compare itself against ordinary LLM behavior.
-- It does not yet integrate the dossier as a source graph.
-- It does not yet self-promote rules into core logic.
+- It does not yet run a formal external ordinary-LLM comparison benchmark with real model outputs.
+- It does not yet integrate the live dossier as a persistent source graph.
+- It does not yet provide a complete natural-language approval/import interface.
+- It does not yet self-promote rules into core logic, by design.
 
 ## Belief-challenger target
 
@@ -163,13 +180,15 @@ This turns the project from a live belief map toward an actual belief challenger
 
 ## Remaining major gaps
 
-- M12: comparison against ordinary LLM behavior is still not implemented.
-- M13: dossier integration is still not implemented.
-- M15: live self-improving behavior remains candidate-level only; no rule self-promotes.
+- Mature source/retrieval layer is still not implemented.
+- Formal ordinary-LLM comparison against real model outputs is still not implemented.
+- Persistent dossier integration as a source graph is still not implemented.
+- Full natural-language LLM interface with approve/import loop is still not implemented.
+- Live self-improving behavior remains candidate-level only; no rule self-promotes.
 
 ## Practical next step
 
-Use `claim-challenge.html` for manual claim challenges, `claim-challenge-test.html` for the tiny smoke test, and `llm-brain-v0-3.html` as the main live console.
+Use `claim-challenge.html` for manual claim challenges, `claim-challenge-test.html` for the tiny smoke test, `milestone-closer.html` for the M12-M15 harness, and `llm-brain-v0-3.html` as the main live console.
 
 For future diagnostics:
 
@@ -181,6 +200,9 @@ For future diagnostics:
 6. Click `COPY output`.
 7. Open `claim-challenge-test.html`.
 8. Confirm the smoke test passes.
-9. Paste both packets into the next GPT session.
+9. Open `milestone-closer.html`.
+10. Click `RUN milestone closer`.
+11. Click `COPY output`.
+12. Paste the packets into the next GPT session.
 
-The next development push should be source/retrieval design or ordinary-LLM comparison, not another visual redesign.
+The next development push should be source/retrieval design, real ordinary-LLM comparison data, or persistent dossier integration, not another visual redesign.
