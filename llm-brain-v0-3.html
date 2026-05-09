@@ -29,7 +29,7 @@
 <header><h1>42ndMind Live Brain v0.3</h1><div class="sub">Patched live console: low-signal quarantine, contradiction audit pressure, live Octahedron math, benchmark packet export.</div></header>
 <main>
   <div>
-    <section><h2>Controls</h2><a href="goal-runner.html">goal runner</a> · <a href="belief-graph.html">graph</a> · <a href="index.html">human UI</a><br />
+    <section><h2>Controls</h2><a href="goal-runner.html">goal runner</a> · <a href="claim-challenge.html">claim challenge</a> · <a href="belief-graph.html">graph</a> · <a href="index.html">human UI</a><br />
       <button class="good" onclick="refresh()">BOOT / refresh</button><button onclick="runSmokeTests()">RUN smoke tests</button><button onclick="runAudit()">RUN self-audit</button><button onclick="copyBrainPacket()">COPY brain packet</button><button class="warn" onclick="loadExample()">LOAD contradiction example</button><button class="bad" onclick="resetBrain()">RESET</button><div id="status" class="small muted"></div></section>
     <section><h2>Command packet</h2><div class="small muted">Paste JSON: { "command_type":"epistemic_kernel_command", "commands":[...] }</div><textarea id="commandInput" spellcheck="false"></textarea><button class="good" onclick="runCommands()">IMPORT / RUN</button><button onclick="loadLowSignalExample()">Load low-signal test</button><div id="commandStatus" class="small muted"></div></section>
     <section><h2>Raw text → extraction prompt</h2><textarea id="rawText" spellcheck="false">Criticism is epistemic pressure against a claim. Hostility is only one possible motive and needs separate evidence.</textarea><button onclick="copyExtractionPrompt()">COPY extraction prompt</button></section>
@@ -54,7 +54,7 @@
   const kernel = new EpistemicKernel(saved ? JSON.parse(saved) : null);
   let selectedNode = 'root_worldview';
   function $(id){ return document.getElementById(id); }
-  function esc(v){ return String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+  function esc(v){ return String(v ?? '').replace(/[&<>'\"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
   function fmt(n){ return Number(n || 0).toFixed(3); }
   function l1(p){ return Math.abs(Number(p?.x||0))+Math.abs(Number(p?.y||0))+Math.abs(Number(p?.z||0)); }
   function clsY(y){ return Number(y||0)>0.1?'ok':Number(y||0)<-0.1?'no':'maybe'; }
