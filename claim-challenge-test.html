@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Claim Challenge Smoke Test</title>
+  <style>
+    body { margin: 20px; font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0f1115; color:#eef2ff; }
+    a { color:#9db6ff; }
+    pre { white-space: pre-wrap; background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    .pass { color:#9dffb4; }
+    .fail { color:#ff8b8b; }
+  </style>
+</head>
+<body>
+  <h1>Claim Challenge Smoke Test</h1>
+  <p><a href="claim-challenge.html">claim challenge</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a> · <a href="goal-runner.html">goal runner</a></p>
+  <pre id="out">Running...</pre>
+  <script src="src/claim-challenge-v0-1.js"></script>
+  <script>
+    function l1(point) {
+      return Math.abs(point.x || 0) + Math.abs(point.y || 0) + Math.abs(point.z || 0);
+    }
+    function runCase(name, input, expect) {
+      const report = ClaimChallengeV01.analyze(input, { includeKernelCommand: true });
+      const ok = expect(report);
+      return { name, ok, primary: report.classification.primary, point: report.octahedron.point, next_open_question: report.next_open_question };
+    }
+    const cases = [
+      runCase('self-sealing classification', 'Anyone who disagrees with this only proves they are brainwashed.', r => r.classification.primary === 'self-sealing'),
+      runCase('motive-overclaim classification', 'He lied on purpose because the outcome helped him.', r => r.classification.primary === 'motive-overclaim'),
+      runCase('contradiction classification', 'I submitted the form before the deadline. Actually, I submitted it this morning, but the deadline was yesterday.', r => r.classification.primary === 'contradicted'),
+      runCase('null origin on no-claim input', 'asdf qwer zzzz !!!!!', r => r.low_signal === true && r.octahedron.point.x === 0 && r.octahedron.point.y === 0 && r.octahedron.point.z === 0),
+      runCase('active states preserve octahedron surface', 'This index outperforms the S&P 500.', r => Math.abs(l1(r.octahedron.point) - 1) < 1e-9),
+      runCase('kernel command packet is optional output', 'According to the timestamped receipt, the package was submitted before the posted deadline.', r => !!r.epistemic_kernel_command && r.epistemic_kernel_command.command_type === 'epistemic_kernel_command')
+    ];
+    const passed = cases.filter(c => c.ok).length;
+    const text = `Claim Challenge v${ClaimChallengeV01.VERSION} smoke test\n${passed}/${cases.length} passed\n\n` + cases.map(c => `${c.ok ? 'PASS' : 'FAIL'} ${c.name}\n  primary: ${c.primary}\n  point: ${JSON.stringify(c.point)}\n  next: ${c.next_open_question}`).join('\n\n');
+    const out = document.getElementById('out');
+    out.textContent = text;
+    out.className = passed === cases.length ? 'pass' : 'fail';
+  </script>
+</body>
+</html>
