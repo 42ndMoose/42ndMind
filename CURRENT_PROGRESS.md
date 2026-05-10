@@ -25,6 +25,7 @@ Last updated: **2026-05-10**.
 - deterministic local explanation preview
 - ordinary LLM comparison harness for Milestone 12
 - ordinary LLM comparison smoke test
+- M12 comparison report saver/index
 - refreshed README status for the current v0.3 stack
 - limited M12-M15 milestone closer harness
 
@@ -34,8 +35,9 @@ It is still not a full truth machine. It cannot independently verify external fa
 
 - `llm-brain-v0-3.html` is the main patched live brain console.
 - `goal-runner.html` runs benchmark, milestone, sandbox, and compression reports and links to the ordinary LLM comparison harness.
-- `ordinary-llm-comparison.html` compares pasted generic/prompt-only LLM outputs against kernel-guided benchmark behavior.
+- `ordinary-llm-comparison.html` compares pasted generic/prompt-only LLM outputs against kernel-guided benchmark behavior and links to the M12 report index.
 - `ordinary-llm-comparison-test.html` runs the ordinary LLM comparison smoke test.
+- `m12-comparison-report-index.html` saves copied M12 comparison packets in localStorage and exports an aggregate evidence packet.
 - `claim-challenge.html` challenges external claims and exports optional kernel commands.
 - `claim-challenge-test.html` runs the claim-challenge smoke test.
 - `dossier-source-graph.html` imports curated dossier packets into typed source-graph pressure and can send a kernel command to the live brain.
@@ -55,6 +57,30 @@ It is still not a full truth machine. It cannot independently verify external fa
 - `src/dossier-source-graph-v0-1.js`: dossier source-graph importer and kernel-command exporter.
 
 ## Confirmed stable pieces
+
+### M12 report saver/index
+
+`m12-comparison-report-index.html` now exists.
+
+It lets the user:
+
+- paste copied `42ndMind_ordinary_llm_comparison_packet` reports
+- validate the packet type
+- save reports into localStorage
+- list saved reports by case id, timestamp, best lane, score split, and whether real generic/prompt-only outputs appear present
+- export all reports as a single `42ndMind_m12_comparison_report_index` packet
+- copy the aggregate export packet
+- clear saved local reports
+
+It does not claim M12 is passed. Its aggregate export includes the honesty note:
+
+```text
+This index stores comparison reports. M12 is not passed unless real generic and prompt-only LLM outputs are present and kernel-guided analysis outperforms them across the benchmark criteria.
+```
+
+`ordinary-llm-comparison.html` now links to `m12-comparison-report-index.html`.
+
+This is the final M12 scaffolding step unless real external LLM comparison outputs are being collected.
 
 ### README status refresh
 
@@ -224,7 +250,20 @@ The claim-challenge page exports both:
 - prompt blocks mutation
 - prompt blocks truth promotion
 
-## Latest important change: README status refresh
+## Latest important change: M12 report saver/index
+
+`m12-comparison-report-index.html` was added as the final local M12 evidence-storage scaffold.
+
+This matters because M12 should not stay as a one-off manual page test. Real generic/prompt-only LLM outputs need to be collected as comparison reports and exported as an aggregate packet if the project later claims M12 progress.
+
+The index deliberately keeps M12 conservative:
+
+- empty/fixture reports do not count as real-output reports
+- the aggregate packet reports `m12_status: "not_yet_claimable"` until real generic and prompt-only LLM outputs are present
+- the index treats benchmark outputs as evidence, not proof by themselves
+- doctrine flags preserve first-principles, kernel-owned belief movement, LLM-output-as-observed-behavior, no rule self-promotion, and no M12 pass claim without real outputs
+
+## README status refresh
 
 `README.md` now reflects the current active project state instead of the older original v0/index flow.
 
@@ -409,25 +448,26 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should be an M12 report saver/export index.
+M12 scaffolding is now sufficient until real ordinary LLM outputs are being collected.
 
-Recommended next implementation:
+Next implementation should pivot back to the actual kernel-brain loop.
 
-1. Add `m12-comparison-report-index.html` or equivalent.
-2. Let the user paste or load copied `42ndMind_ordinary_llm_comparison_packet` reports.
-3. Store reports in localStorage.
-4. List reports by case id, timestamp, best lane, and score split.
-5. Export all saved reports as one packet.
-6. Do not claim M12 pass until real generic/prompt-only LLM outputs are included.
+Recommended next step:
 
-This would let real ordinary LLM comparison results accumulate without pretending the harness itself proves the claim.
+1. Add a retrieval/source placeholder schema without pretending it verifies facts yet.
+2. Represent source objects separately from claims/evidence.
+3. Include fields such as source id, title, URL/citation text, retrieval status, trust notes, attached claims, attached evidence, and unresolved source questions.
+4. Keep it non-scoring first.
+5. Use it as the bridge toward mature source/retrieval and deeper dossier-to-kernel memory.
 
-Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 12-15.
+This is closer to the main goal than more M12 UI work: the kernel needs to learn/hold/challenge/replace/strengthen beliefs using explicit source pressure, not just compare outputs.
+
+Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 13-15.
 
 ## Remaining major gaps
 
 - Mature source/retrieval layer is not implemented.
-- Formal ordinary-LLM comparison using real model outputs is only scaffolded; real model outputs must still be pasted and preserved.
+- Formal ordinary-LLM comparison using real model outputs is scaffolded; real model outputs must still be pasted and preserved.
 - Persistent dossier integration as a source graph tied into kernel memory is still early.
 - Full natural-language approval/import interface is not implemented.
 - Live self-improvement remains candidate-level only; no rule self-promotes.
@@ -449,6 +489,7 @@ The repo has moved forward on these README milestones:
 - M11 Benchmark v0.1: fixed cases exist and currently pass `10 / 10`.
 - M12 comparison harness: `ordinary-llm-comparison.html` now scores pasted LLM outputs against kernel-guided benchmark behavior.
 - M12 comparison smoke test: `ordinary-llm-comparison-test.html` verifies packet shape, rubric criteria, scoring lanes, and doctrine guardrails.
+- M12 report index: `m12-comparison-report-index.html` stores copied comparison packets and exports aggregate evidence without claiming proof.
 - M12-M15 limited harness: `milestone-closer.html` makes endgame behavior visible as testable packets.
 - M13 cleaner bridge: `dossier-source-graph.html` imports typed dossier packets, exports counter-considerations as attacking evidence, and hands a clean kernel command into the live brain.
 - M13/M14 source trace seed: `llm-brain-v0-3.html` now exposes a read-only imported-source trace in UI and brain packet export.
@@ -515,6 +556,7 @@ Important state:
 - Goal runner: goal-runner.html
 - Ordinary LLM comparison: ordinary-llm-comparison.html
 - Ordinary LLM comparison test: ordinary-llm-comparison-test.html
+- M12 report index: m12-comparison-report-index.html
 - Dossier importer: dossier-source-graph.html
 - Dossier module: src/dossier-source-graph-v0-1.js
 - Dossier module latest version is 0.1.3
@@ -533,6 +575,7 @@ Important state:
 - source-trace-bridge-test.html exists and should report 20/20 passed
 - ordinary-llm-comparison.html exists as Milestone 12 harness
 - ordinary-llm-comparison-test.html exists and should report all checks passed
+- m12-comparison-report-index.html stores copied comparison packets and exports aggregate evidence
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -542,15 +585,14 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-Build an M12 comparison report saver/index.
+Pivot back to the actual kernel-brain loop, not more M12 scaffolding.
 
 Recommended next implementation:
-1. Add `m12-comparison-report-index.html`.
-2. Let the user paste copied `42ndMind_ordinary_llm_comparison_packet` reports.
-3. Store reports in localStorage.
-4. List reports by case id, timestamp, best lane, and score split.
-5. Export all saved reports as one packet.
-6. Do not claim M12 pass until real generic/prompt-only LLM outputs are included.
+1. Add a retrieval/source placeholder schema without pretending it verifies facts yet.
+2. Represent source objects separately from claims/evidence.
+3. Include fields such as source id, title, URL/citation text, retrieval status, trust notes, attached claims, attached evidence, and unresolved source questions.
+4. Keep it non-scoring first.
+5. Use it as the bridge toward mature source/retrieval and deeper dossier-to-kernel memory.
 
-Keep edits small unless the next step is clearly coherent with README Milestones 12-15.
+Keep edits small unless the next step is clearly coherent with README Milestones 13-15.
 ```
