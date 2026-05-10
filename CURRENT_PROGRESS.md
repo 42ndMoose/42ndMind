@@ -18,6 +18,7 @@ Last updated: **2026-05-09**.
 - claim-challenge workflow
 - dossier source-graph importer
 - pending-command handoff into the live brain
+- imported source trace in the live brain packet/UI
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a retrieval/source layer or user-supplied evidence.
@@ -109,8 +110,32 @@ The claim-challenge page exports both:
 - auto-load or manually load it with `LOAD pending command`
 - run it with `IMPORT / RUN`
 - clear the pending command after import
+- show a read-only `Imported source trace` panel
+- include `source_trace_summary` in the copied brain packet
 
-## Latest important change: dossier source graph v0.1.3
+## Latest important change: imported source trace
+
+`llm-brain-v0-3.html` now builds a read-only imported-source trace from the existing kernel event log.
+
+The trace is deliberately not core logic yet. It does not change belief state, promote truth, or mutate rules.
+
+It groups each `structured_packet_imported` event and reports:
+
+- source title/kind
+- import time
+- event id
+- claim count
+- evidence count
+- attacking evidence count
+- open question count
+- observation count
+- source links found in imported evidence rows
+- claim ids and evidence ids created by that import
+- metadata saying the trace is read-only and grouped from the event log
+
+This is the first source-provenance step toward README Milestones 13 and 14: the kernel can now show where an import came from and what pressure it brought in, while still keeping the LLM/interface layer outside belief control.
+
+## Dossier source graph v0.1.3 note
 
 `src/dossier-source-graph-v0-1.js` is now at:
 
@@ -161,20 +186,24 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should build toward the README goal, not just add page polish.
+Next small task should verify the imported-source trace from a clean browser run.
 
-Recommended next step:
+Recommended test:
 
-1. Add a small imported-source trace summary to the live brain packet or UI so dossier imports are visibly grouped by source/import event.
-2. Keep it read-only first: source title, import time, claim count, evidence count, attacking evidence count, open question count, and observation count.
-3. Use that trace as the seed for persistent dossier-to-kernel memory integration.
-4. Only after that, begin a real source/retrieval design.
+1. Open `llm-brain-v0-3.html`.
+2. Hard refresh.
+3. Click `RESET`.
+4. Open `dossier-source-graph.html`.
+5. Hard refresh and confirm version `0.1.3`.
+6. Click `SEND to live brain`.
+7. Return to `llm-brain-v0-3.html`.
+8. Click `LOAD pending command` only if needed.
+9. Click `IMPORT / RUN`.
+10. Confirm the `Imported source trace` panel shows one structured packet import.
+11. Click `COPY brain packet`.
+12. Confirm `source_trace_summary[0]` exists and reports observations `0`, evidence `7`, attacking evidence `3`, and claims `4`.
 
-Why this is the right next step:
-
-- README Milestone 13 needs dossier integration with source/evidence links, live counter-considerations, and no automatic truth merge.
-- README Milestone 14 needs the LLM/interface layer to explain kernel state without controlling belief movement.
-- A source trace gives the future LLM layer a stable object to explain and lets the kernel keep source provenance separate from worldview claims.
+If clean, the next implementation step should be a tiny persistent source-trace field inside kernel state, rather than recomputing only from event logs. That would move the source trace from UI/export derived summary toward persistent dossier-to-kernel memory.
 
 Do not jump into a large redesign.
 
@@ -203,6 +232,7 @@ The repo has moved forward on these README milestones:
 - M11 Benchmark v0.1: fixed cases exist and currently pass `10 / 10`.
 - M12-M15 limited harness: `milestone-closer.html` makes endgame behavior visible as testable packets.
 - M13 cleaner bridge: `dossier-source-graph.html` imports typed dossier packets, exports counter-considerations as attacking evidence, and hands a clean kernel command into the live brain.
+- M13/M14 source trace seed: `llm-brain-v0-3.html` now exposes a read-only imported-source trace in UI and brain packet export.
 
 ## The SHA write trick for ChatGPT GitHub connector
 
@@ -268,6 +298,8 @@ Important state:
 - Clean reset test confirmed structured_packet_imported counts observations: 0
 - Clean reset test confirmed no dossier-created Clarify low-signal input questions
 - dossier-source-graph-test.html now checks observations: [], attacking evidence rows, and metadata
+- llm-brain-v0-3.html now has an Imported source trace panel
+- copied brain packets now include source_trace_summary
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -277,12 +309,11 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-Build toward the README goal with one small source-trace step, not a broad redesign.
-
-Recommended next step:
-1. Add a small imported-source trace summary to the live brain packet or UI so dossier imports are visibly grouped by source/import event.
-2. Keep it read-only first: source title, import time, claim count, evidence count, attacking evidence count, open question count, and observation count.
-3. Use that as the seed for persistent dossier-to-kernel memory integration and later source/retrieval design.
+1. Ask user to verify a clean dossier import in the browser.
+2. Inspect the copied brain packet.
+3. Confirm source_trace_summary[0] exists.
+4. Confirm source_trace_summary[0].counts observations 0, evidence 7, attacking_evidence 3, claims 4.
+5. If clean, make the next tiny step: persist source traces in kernel state instead of only deriving them from event logs.
 
 Keep edits small. Avoid broad rewrites or visual redesign.
 ```
