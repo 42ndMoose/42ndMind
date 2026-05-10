@@ -23,6 +23,7 @@ Last updated: **2026-05-10**.
 - source-trace explanation bridge for LLM-facing summaries
 - source-trace bridge smoke test
 - deterministic local explanation preview
+- ordinary LLM comparison harness for Milestone 12
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a retrieval/source layer or user-supplied evidence.
@@ -30,7 +31,8 @@ It is still not a full truth machine. It cannot independently verify external fa
 ## Main live entry points
 
 - `llm-brain-v0-3.html` is the main patched live brain console.
-- `goal-runner.html` runs benchmark, milestone, sandbox, and compression reports.
+- `goal-runner.html` runs benchmark, milestone, sandbox, and compression reports and links to the ordinary LLM comparison harness.
+- `ordinary-llm-comparison.html` compares pasted generic/prompt-only LLM outputs against kernel-guided benchmark behavior.
 - `claim-challenge.html` challenges external claims and exports optional kernel commands.
 - `claim-challenge-test.html` runs the claim-challenge smoke test.
 - `dossier-source-graph.html` imports curated dossier packets into typed source-graph pressure and can send a kernel command to the live brain.
@@ -68,6 +70,39 @@ The live brain still often contains the sample unresolved timeline contradiction
 - Claim B: `Actually, I submitted it this morning, but the deadline was yesterday.`
 
 This is intentional test material. The audit correctly flags positive root-y as suspicious while unresolved contradiction remains active.
+
+### Ordinary LLM comparison harness
+
+`ordinary-llm-comparison.html` now exists for README Milestone 12.
+
+It does not call external models and does not pretend to prove superiority from placeholders. It provides a visible comparison harness where real model outputs can be pasted and scored.
+
+It supports:
+
+- selecting any fixed `EpistemicBenchmark.CASES` case
+- copying a generic LLM prompt
+- copying a prompt-only epistemic LLM prompt
+- filling a kernel-guided output from the benchmark case result
+- scoring all three outputs against visible epistemic-pressure criteria
+- exporting a `42ndMind_ordinary_llm_comparison_packet`
+
+The scoring rubric covers:
+
+- contradiction detection
+- evidence separation
+- motive calibration
+- scope control
+- self-sealing detection
+- belief update accuracy
+- unresolved-pressure preservation
+
+The packet includes an honesty note:
+
+```text
+This does not call external models and does not prove superiority unless real model outputs are pasted and preserved.
+```
+
+This turns Milestone 12 from a vague claim into a reproducible comparison workflow.
 
 ### Claim challenge
 
@@ -156,9 +191,28 @@ The claim-challenge page exports both:
 - prompt blocks mutation
 - prompt blocks truth promotion
 
-## Latest important change: local source-trace explanation preview
+## Latest important change: ordinary LLM comparison harness
 
-`source-trace-bridge.html` now generates a deterministic local explanation preview from the same source-trace packet it gives to the LLM.
+`ordinary-llm-comparison.html` was added as the first real Milestone 12 comparison harness.
+
+It is intentionally conservative. It does not claim that kernel-guided analysis beats ordinary LLMs unless actual ordinary LLM outputs are pasted into the page and scored against the rubric.
+
+It creates a comparison packet with:
+
+- case metadata
+- kernel benchmark result
+- generic LLM output score
+- prompt-only epistemic LLM output score
+- kernel-guided output score
+- visible per-criterion hits
+- pasted outputs
+- doctrine flags saying LLM outputs are observed behavior, not truth
+
+This keeps the project first-principles: the benchmark measures belief-movement behavior rather than polished wording.
+
+## Local source-trace explanation preview
+
+`source-trace-bridge.html` generates a deterministic local explanation preview from the same source-trace packet it gives to the LLM.
 
 This preview is intentionally not an LLM answer and not a belief update. It is a local, auditable summary of the imported source trace.
 
@@ -295,34 +349,26 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should verify the bridge smoke test and local preview in-browser.
+Next small task should verify the ordinary LLM comparison harness in-browser.
 
 Recommended test:
 
-1. Open `source-trace-bridge-test.html`.
-2. Confirm it reports `20/20 passed`.
-3. Open `llm-brain-v0-3.html`.
-4. Hard refresh.
-5. Click `RESET`.
-6. Open `dossier-source-graph.html`.
-7. Hard refresh and confirm version `0.1.3`.
-8. Click `SEND to live brain`.
-9. Return to `llm-brain-v0-3.html`.
-10. Click `LOAD pending command` only if needed.
-11. Click `IMPORT / RUN`.
-12. Open `source-trace-bridge.html`.
-13. Confirm the trace summary shows `source_traces: 1`.
-14. Confirm the local preview says the import created provenance and pressure, not automatic truth.
-15. Confirm the local preview says the LLM must not mutate state or promote coherence into truth.
+1. Open `ordinary-llm-comparison.html`.
+2. Confirm the case dropdown loads benchmark cases.
+3. Click `FILL kernel-guided output`.
+4. Click `SCORE comparison`.
+5. Confirm the kernel-guided score is nonzero and the comparison packet appears.
+6. Paste any ordinary LLM output into the generic/prompt-only boxes later and score again.
+7. Confirm the exported packet includes the honesty note saying it does not prove superiority without real pasted model outputs.
 
-If clean, the next implementation step can be a small bridge link from `dossier-source-graph.html` to `source-trace-bridge.html`, or a small export field that includes the local preview in copied brain packets.
+If clean, the next implementation step should be a tiny `ordinary-llm-comparison-test.html` smoke check for packet shape and rubric criteria.
 
-Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 13-15.
+Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 12-15.
 
 ## Remaining major gaps
 
 - Mature source/retrieval layer is not implemented.
-- Formal ordinary-LLM comparison using real model outputs is not implemented.
+- Formal ordinary-LLM comparison using real model outputs is only scaffolded; real model outputs must still be pasted and preserved.
 - Persistent dossier integration as a source graph tied into kernel memory is still early.
 - Full natural-language approval/import interface is not implemented.
 - Live self-improvement remains candidate-level only; no rule self-promotes.
@@ -340,8 +386,9 @@ The repo has moved forward on these README milestones:
 - M7 Self-audit: motive, self-sealing, and unresolved contradiction pressure are tested.
 - M8 Sandboxed self-improvement: candidate overlays can be compared without core promotion.
 - M9 Memory compression: active pressure and archival traces can be separated.
-- M10 Philosophical text ingestion: candidate principles require testing.
+- M10 Philosophical text ingestion: principle candidates require testing.
 - M11 Benchmark v0.1: fixed cases exist and currently pass `10 / 10`.
+- M12 comparison harness: `ordinary-llm-comparison.html` now scores pasted LLM outputs against kernel-guided benchmark behavior.
 - M12-M15 limited harness: `milestone-closer.html` makes endgame behavior visible as testable packets.
 - M13 cleaner bridge: `dossier-source-graph.html` imports typed dossier packets, exports counter-considerations as attacking evidence, and hands a clean kernel command into the live brain.
 - M13/M14 source trace seed: `llm-brain-v0-3.html` now exposes a read-only imported-source trace in UI and brain packet export.
@@ -404,6 +451,8 @@ First read CURRENT_PROGRESS.md.
 
 Important state:
 - Main live console: llm-brain-v0-3.html
+- Goal runner: goal-runner.html
+- Ordinary LLM comparison: ordinary-llm-comparison.html
 - Dossier importer: dossier-source-graph.html
 - Dossier module: src/dossier-source-graph-v0-1.js
 - Dossier module latest version is 0.1.3
@@ -420,6 +469,7 @@ Important state:
 - source-trace-bridge.html reads sourceTraces and emits read-only LLM explanation packets/prompts
 - source-trace-bridge.html now has a deterministic local explanation preview
 - source-trace-bridge-test.html exists and should report 20/20 passed
+- ordinary-llm-comparison.html exists as Milestone 12 harness
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -429,9 +479,10 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to verify source-trace-bridge-test.html reports 20/20 passed.
-2. Ask user to verify source-trace-bridge.html local preview after a clean dossier import.
-3. If clean, add a tiny bridge link from dossier-source-graph.html to source-trace-bridge.html, or add a small export field that includes the local preview in copied brain packets.
+1. Ask user to verify ordinary-llm-comparison.html loads benchmark cases.
+2. Ask user to click FILL kernel-guided output and SCORE comparison.
+3. Confirm the comparison packet appears and includes honesty_note.
+4. If clean, add ordinary-llm-comparison-test.html smoke check for packet shape and rubric criteria.
 
-Keep edits small unless the next step is clearly coherent with README Milestones 13-15.
+Keep edits small unless the next step is clearly coherent with README Milestones 12-15.
 ```
