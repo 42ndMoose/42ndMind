@@ -24,6 +24,7 @@ Last updated: **2026-05-10**.
 - source-trace bridge smoke test
 - deterministic local explanation preview
 - ordinary LLM comparison harness for Milestone 12
+- ordinary LLM comparison smoke test
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a retrieval/source layer or user-supplied evidence.
@@ -33,6 +34,7 @@ It is still not a full truth machine. It cannot independently verify external fa
 - `llm-brain-v0-3.html` is the main patched live brain console.
 - `goal-runner.html` runs benchmark, milestone, sandbox, and compression reports and links to the ordinary LLM comparison harness.
 - `ordinary-llm-comparison.html` compares pasted generic/prompt-only LLM outputs against kernel-guided benchmark behavior.
+- `ordinary-llm-comparison-test.html` runs the ordinary LLM comparison smoke test.
 - `claim-challenge.html` challenges external claims and exports optional kernel commands.
 - `claim-challenge-test.html` runs the claim-challenge smoke test.
 - `dossier-source-graph.html` imports curated dossier packets into typed source-graph pressure and can send a kernel command to the live brain.
@@ -101,6 +103,21 @@ The packet includes an honesty note:
 ```text
 This does not call external models and does not prove superiority unless real model outputs are pasted and preserved.
 ```
+
+`ordinary-llm-comparison-test.html` now exists and checks:
+
+- benchmark cases loaded
+- selected case comes from benchmark
+- comparison packet type/version
+- honesty note present
+- three score lanes
+- max score matches rubric
+- all seven rubric criteria are present
+- kernel result is included
+- kernel-guided output is nonempty and scores nonzero
+- generic and prompt-only outputs are scoreable
+- best label is valid
+- doctrine flags preserve first-principles, kernel-owned belief movement, LLM-output-as-observed-behavior, contradiction-not-resolution, unresolved pressure, and no self-promotion
 
 This turns Milestone 12 from a vague claim into a reproducible comparison workflow.
 
@@ -191,7 +208,15 @@ The claim-challenge page exports both:
 - prompt blocks mutation
 - prompt blocks truth promotion
 
-## Latest important change: ordinary LLM comparison harness
+## Latest important change: ordinary LLM comparison smoke test
+
+`ordinary-llm-comparison-test.html` was added as a deterministic smoke test for the Milestone 12 comparison harness.
+
+It uses a fixture comparison packet and checks packet shape, rubric shape, scoring lanes, honesty note, kernel benchmark linkage, and doctrine guardrails.
+
+This test does not replace real model comparisons. It only verifies that the comparison harness itself is structurally sane before real generic/prompt-only LLM outputs are pasted.
+
+## Ordinary LLM comparison harness
 
 `ordinary-llm-comparison.html` was added as the first real Milestone 12 comparison harness.
 
@@ -349,19 +374,21 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should verify the ordinary LLM comparison harness in-browser.
+Next small task should verify the ordinary LLM comparison smoke test in-browser.
 
 Recommended test:
 
-1. Open `ordinary-llm-comparison.html`.
-2. Confirm the case dropdown loads benchmark cases.
-3. Click `FILL kernel-guided output`.
-4. Click `SCORE comparison`.
-5. Confirm the kernel-guided score is nonzero and the comparison packet appears.
-6. Paste any ordinary LLM output into the generic/prompt-only boxes later and score again.
-7. Confirm the exported packet includes the honesty note saying it does not prove superiority without real pasted model outputs.
+1. Open `ordinary-llm-comparison-test.html`.
+2. Confirm it reports all checks passed.
+3. Open `ordinary-llm-comparison.html`.
+4. Confirm the case dropdown loads benchmark cases.
+5. Click `FILL kernel-guided output`.
+6. Click `SCORE comparison`.
+7. Confirm the kernel-guided score is nonzero and the comparison packet appears.
+8. Paste any ordinary LLM output into the generic/prompt-only boxes later and score again.
+9. Confirm the exported packet includes the honesty note saying it does not prove superiority without real pasted model outputs.
 
-If clean, the next implementation step should be a tiny `ordinary-llm-comparison-test.html` smoke check for packet shape and rubric criteria.
+If clean, the next implementation step should be a small M12 report saver/export index or a small README status refresh that points to the current v0.3 pages instead of older v0 pages.
 
 Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 12-15.
 
@@ -389,6 +416,7 @@ The repo has moved forward on these README milestones:
 - M10 Philosophical text ingestion: principle candidates require testing.
 - M11 Benchmark v0.1: fixed cases exist and currently pass `10 / 10`.
 - M12 comparison harness: `ordinary-llm-comparison.html` now scores pasted LLM outputs against kernel-guided benchmark behavior.
+- M12 comparison smoke test: `ordinary-llm-comparison-test.html` verifies packet shape, rubric criteria, scoring lanes, and doctrine guardrails.
 - M12-M15 limited harness: `milestone-closer.html` makes endgame behavior visible as testable packets.
 - M13 cleaner bridge: `dossier-source-graph.html` imports typed dossier packets, exports counter-considerations as attacking evidence, and hands a clean kernel command into the live brain.
 - M13/M14 source trace seed: `llm-brain-v0-3.html` now exposes a read-only imported-source trace in UI and brain packet export.
@@ -453,6 +481,7 @@ Important state:
 - Main live console: llm-brain-v0-3.html
 - Goal runner: goal-runner.html
 - Ordinary LLM comparison: ordinary-llm-comparison.html
+- Ordinary LLM comparison test: ordinary-llm-comparison-test.html
 - Dossier importer: dossier-source-graph.html
 - Dossier module: src/dossier-source-graph-v0-1.js
 - Dossier module latest version is 0.1.3
@@ -470,6 +499,7 @@ Important state:
 - source-trace-bridge.html now has a deterministic local explanation preview
 - source-trace-bridge-test.html exists and should report 20/20 passed
 - ordinary-llm-comparison.html exists as Milestone 12 harness
+- ordinary-llm-comparison-test.html exists and should report all checks passed
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -479,10 +509,9 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to verify ordinary-llm-comparison.html loads benchmark cases.
-2. Ask user to click FILL kernel-guided output and SCORE comparison.
-3. Confirm the comparison packet appears and includes honesty_note.
-4. If clean, add ordinary-llm-comparison-test.html smoke check for packet shape and rubric criteria.
+1. Ask user to verify ordinary-llm-comparison-test.html reports all checks passed.
+2. Ask user to verify ordinary-llm-comparison.html still loads cases and scores kernel-guided output.
+3. If clean, add a small M12 report saver/export index or refresh README status so it points to the current v0.3 pages instead of older v0 pages.
 
 Keep edits small unless the next step is clearly coherent with README Milestones 12-15.
 ```
