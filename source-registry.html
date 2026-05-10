@@ -54,6 +54,7 @@
     <section>
       <h2>Controls</h2>
       <button onclick="loadSample()">LOAD sample packet</button>
+      <button onclick="loadFromLiveSourceTraces()">LOAD from live sourceTraces</button>
       <button class="good" onclick="importPacket()">IMPORT source registry packet</button>
       <button onclick="saveRegistry()">SAVE registry metadata</button>
       <button onclick="loadSavedRegistry()">LOAD saved registry</button>
@@ -63,7 +64,7 @@
     </section>
     <section>
       <h2>Paste source registry packet</h2>
-      <textarea id="input" spellcheck="false" placeholder="Paste a 42ndMind_source_registry_packet here, or load the sample."></textarea>
+      <textarea id="input" spellcheck="false" placeholder="Paste a 42ndMind_source_registry_packet here, load the sample, or convert live sourceTraces."></textarea>
     </section>
     <section>
       <h2>Summary</h2>
@@ -89,9 +90,10 @@
     </section>
   </div>
 </main>
-<script src="src/source-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/source-registry-v0-1.js?v=0.1.1"></script>
 <script>
   const STORAGE_KEY = '42ndMind_source_registry_v0_1';
+  const LIVE_KERNEL_STORAGE_KEY = 'epistemic_kernel_v0_state';
   let currentReport = null;
 
   function $(id) { return document.getElementById(id); }
@@ -103,6 +105,29 @@
   function loadSample() {
     $('input').value = JSON.stringify(SourceRegistryV01.samplePacket(), null, 2);
     setStatus('Loaded sample source registry packet.');
+  }
+
+  function loadFromLiveSourceTraces() {
+    const raw = localStorage.getItem(LIVE_KERNEL_STORAGE_KEY);
+    if (!raw) {
+      setStatus('No live kernel state found. Import into llm-brain-v0-3.html first.');
+      return;
+    }
+    try {
+      const state = JSON.parse(raw);
+      const traces = asArray(state.sourceTraces);
+      if (!traces.length) {
+        setStatus('No sourceTraces found in live kernel state. Import a dossier packet first.');
+        return;
+      }
+      const packet = SourceRegistryV01.sourceTracesToPacket(traces, { imported_from: LIVE_KERNEL_STORAGE_KEY });
+      $('input').value = JSON.stringify(packet, null, 2);
+      currentReport = SourceRegistryV01.importPacket(packet);
+      renderReport(currentReport);
+      setStatus(`Converted ${traces.length} live sourceTrace(s) into a non-scoring source registry report.`);
+    } catch (error) {
+      setStatus(`Could not convert live sourceTraces: ${error.message}`);
+    }
   }
 
   function importPacket() {
