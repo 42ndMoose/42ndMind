@@ -9,7 +9,7 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.1';
+  const VERSION = '0.1.2';
   const SOURCE_STATUSES = Object.freeze([
     'not_retrieved',
     'provided_by_user',
@@ -277,7 +277,7 @@
           'Does the linked context support the imported claim text, or only a narrower claim?'
         ],
         provenance: {
-          imported_from: importedSourceId,
+          imported_from: importSourceId,
           import_event_id: eventId,
           source_trace_id: eventId
         }
