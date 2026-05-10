@@ -2,7 +2,7 @@
 
 This file is the handoff record for continuing work toward the README goal: a transparent, meaning-based epistemic system governed by the Epistemic Octahedron.
 
-Last updated: **2026-05-09**.
+Last updated: **2026-05-10**.
 
 ## Current short status
 
@@ -19,6 +19,7 @@ Last updated: **2026-05-09**.
 - dossier source-graph importer
 - pending-command handoff into the live brain
 - imported source trace in the live brain packet/UI
+- persisted `sourceTraces` in live kernel state
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a retrieval/source layer or user-supplied evidence.
@@ -112,14 +113,15 @@ The claim-challenge page exports both:
 - clear the pending command after import
 - show a read-only `Imported source trace` panel
 - include `source_trace_summary` in the copied brain packet
+- persist the same trace into `kernel_state.sourceTraces`
 
-## Latest important change: imported source trace
+## Latest important change: persisted imported source traces
 
-`llm-brain-v0-3.html` now builds a read-only imported-source trace from the existing kernel event log.
+`llm-brain-v0-3.html` now persists imported-source traces into live kernel state as `sourceTraces`.
 
-The trace is deliberately not core logic yet. It does not change belief state, promote truth, or mutate rules.
+This is still deliberately non-scoring metadata. It does not alter claim confidence, gates, semantic coordinates, contradiction handling, or root worldview movement.
 
-It groups each `structured_packet_imported` event and reports:
+The trace is built from existing `structured_packet_imported` events and stored during refresh/brain-packet export. Each trace reports:
 
 - source title/kind
 - import time
@@ -131,9 +133,21 @@ It groups each `structured_packet_imported` event and reports:
 - observation count
 - source links found in imported evidence rows
 - claim ids and evidence ids created by that import
-- metadata saying the trace is read-only and grouped from the event log
+- metadata saying the trace is read-only, persisted in kernel state, and grouped from the event log
 
-This is the first source-provenance step toward README Milestones 13 and 14: the kernel can now show where an import came from and what pressure it brought in, while still keeping the LLM/interface layer outside belief control.
+The first browser verification showed a clean dossier trace with:
+
+```json
+{
+  "claims": 4,
+  "evidence": 7,
+  "attacking_evidence": 3,
+  "open_questions": 6,
+  "observations": 0
+}
+```
+
+This is the first persistent source-provenance step toward README Milestones 13 and 14: the kernel can now carry import provenance as state while still keeping source provenance separate from truth promotion and belief movement.
 
 ## Dossier source graph v0.1.3 note
 
@@ -186,7 +200,7 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should verify the imported-source trace from a clean browser run.
+Next small task should verify `kernel_state.sourceTraces` from a clean browser run.
 
 Recommended test:
 
@@ -201,9 +215,9 @@ Recommended test:
 9. Click `IMPORT / RUN`.
 10. Confirm the `Imported source trace` panel shows one structured packet import.
 11. Click `COPY brain packet`.
-12. Confirm `source_trace_summary[0]` exists and reports observations `0`, evidence `7`, attacking evidence `3`, and claims `4`.
+12. Confirm both `source_trace_summary[0]` and `kernel_state.sourceTraces[0]` exist and report observations `0`, evidence `7`, attacking evidence `3`, and claims `4`.
 
-If clean, the next implementation step should be a tiny persistent source-trace field inside kernel state, rather than recomputing only from event logs. That would move the source trace from UI/export derived summary toward persistent dossier-to-kernel memory.
+If clean, the next implementation step should be a tiny source-trace smoke check or a small bridge that lets future LLM explanations read from `sourceTraces` without reading the whole event log.
 
 Do not jump into a large redesign.
 
@@ -233,6 +247,7 @@ The repo has moved forward on these README milestones:
 - M12-M15 limited harness: `milestone-closer.html` makes endgame behavior visible as testable packets.
 - M13 cleaner bridge: `dossier-source-graph.html` imports typed dossier packets, exports counter-considerations as attacking evidence, and hands a clean kernel command into the live brain.
 - M13/M14 source trace seed: `llm-brain-v0-3.html` now exposes a read-only imported-source trace in UI and brain packet export.
+- M13/M14 persistent source trace: `llm-brain-v0-3.html` now persists source traces into `kernel_state.sourceTraces` as non-scoring provenance state.
 
 ## The SHA write trick for ChatGPT GitHub connector
 
@@ -299,7 +314,8 @@ Important state:
 - Clean reset test confirmed no dossier-created Clarify low-signal input questions
 - dossier-source-graph-test.html now checks observations: [], attacking evidence rows, and metadata
 - llm-brain-v0-3.html now has an Imported source trace panel
-- copied brain packets now include source_trace_summary
+- copied brain packets include source_trace_summary
+- llm-brain-v0-3.html persists source traces into kernel_state.sourceTraces
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -312,8 +328,9 @@ Next task:
 1. Ask user to verify a clean dossier import in the browser.
 2. Inspect the copied brain packet.
 3. Confirm source_trace_summary[0] exists.
-4. Confirm source_trace_summary[0].counts observations 0, evidence 7, attacking_evidence 3, claims 4.
-5. If clean, make the next tiny step: persist source traces in kernel state instead of only deriving them from event logs.
+4. Confirm kernel_state.sourceTraces[0] exists.
+5. Confirm both trace counts have observations 0, evidence 7, attacking_evidence 3, claims 4.
+6. If clean, make the next tiny step: add a source-trace smoke check or a small LLM explanation bridge that reads sourceTraces without reading the whole event log.
 
 Keep edits small. Avoid broad rewrites or visual redesign.
 ```
