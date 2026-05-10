@@ -9,7 +9,7 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
   const SOURCE_STATUSES = Object.freeze([
     'not_retrieved',
     'provided_by_user',
@@ -30,6 +30,11 @@
 
   function sourceId(index) {
     return `source_${String(index + 1).padStart(3, '0')}`;
+  }
+
+  function slug(value, fallback = 'source') {
+    const s = text(value).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    return s || fallback;
   }
 
   function normalizeLocator(locator = {}) {
@@ -196,6 +201,167 @@
     };
   }
 
+  function traceSourceId(trace = {}, suffix = 'import') {
+    const base = slug(trace.event_id || trace.import_time || trace.source_title || 'trace', 'trace');
+    return `source_trace_${base}_${suffix}`;
+  }
+
+  function sourceTraceToPacket(trace = {}, options = {}) {
+    const claimIds = asArray(trace.claim_ids).map(text).filter(Boolean);
+    const evidenceIds = asArray(trace.evidence_ids).map(text).filter(Boolean);
+    const sourceLinks = asArray(trace.source_links).map(text).filter(Boolean);
+    const eventId = text(trace.event_id) || 'unknown_event';
+    const sourceKind = text(trace.source_kind) || 'structured_packet_import';
+    const sourceTitle = text(trace.source_title) || 'Structured source trace import';
+    const importSourceId = traceSourceId(trace, 'import_event');
+    const importedFrom = text(options.imported_from) || 'kernel_state.sourceTraces';
+
+    const sources = [{
+      id: importSourceId,
+      title: `${sourceTitle} import event`,
+      source_kind: `${sourceKind}_import_event`,
+      locator: {
+        citation_text: `Imported source trace ${eventId}`,
+        local_ref: eventId,
+        quote_hint: `Trace created at ${text(trace.import_time) || 'unknown time'}. Counts: ${JSON.stringify(trace.counts || {})}`
+      },
+      retrieval_status: 'provided_by_user',
+      retrieval_method: 'local_kernel_source_trace',
+      retrieved_at: text(trace.import_time),
+      trust_notes: [
+        'Converted from persisted kernel source trace; not independently retrieved by source registry.',
+        'Import provenance groups claim/evidence pressure but does not verify the underlying claims.',
+        sourceLinks.length ? `Trace included ${sourceLinks.length} source link(s); link-to-row precision still requires review.` : 'Trace contained no explicit source links.'
+      ],
+      reliability_flags: ['source_trace_conversion', 'requires_source_review', 'non_scoring_metadata'],
+      attached_claim_ids: claimIds,
+      attached_evidence_ids: evidenceIds,
+      unresolved_source_questions: [
+        'Which imported claims are directly supported by each source object?',
+        'Which evidence rows are direct citations, interpretations, or counter-considerations?',
+        'Can the original source context be retrieved and checked independently?'
+      ],
+      provenance: {
+        imported_from: importedFrom,
+        import_event_id: eventId,
+        source_trace_id: eventId
+      }
+    }];
+
+    sourceLinks.forEach((link, index) => {
+      const linkId = `${traceSourceId(trace, 'linked_source')}_${String(index + 1).padStart(2, '0')}`;
+      const isUrl = /^https?:\/\//i.test(link);
+      sources.push({
+        id: linkId,
+        title: `Linked source ${index + 1} from ${sourceTitle}`,
+        source_kind: 'linked_source_from_trace',
+        locator: {
+          url: isUrl ? link : '',
+          citation_text: isUrl ? '' : link,
+          local_ref: eventId,
+          quote_hint: 'Source link came from imported evidence text; direct row mapping still needs review.'
+        },
+        retrieval_status: 'not_retrieved',
+        retrieval_method: 'link_extracted_from_source_trace',
+        retrieved_at: '',
+        trust_notes: [
+          'Source link was extracted from a source trace and has not been retrieved by the registry.',
+          'Do not treat this link as verified support until retrieval and context review are performed.'
+        ],
+        reliability_flags: ['unretrieved_link', 'requires_context_review', 'non_scoring_metadata'],
+        attached_claim_ids: claimIds,
+        attached_evidence_ids: evidenceIds,
+        unresolved_source_questions: [
+          'Can this link be retrieved?',
+          'Which exact claim and evidence rows does this link support or weaken?',
+          'Does the linked context support the imported claim text, or only a narrower claim?'
+        ],
+        provenance: {
+          imported_from: importedSourceId,
+          import_event_id: eventId,
+          source_trace_id: eventId
+        }
+      });
+    });
+
+    const claim_source_links = sources.flatMap(source => claimIds.map(claim_id => ({
+      claim_id,
+      source_id: source.id,
+      relation: source.id === importSourceId ? 'grouped_by_import_trace' : 'possibly_cited_by_source_link',
+      note: 'Non-scoring provenance link from source trace conversion; direct support still requires source review.'
+    })));
+
+    const evidence_source_links = sources.flatMap(source => evidenceIds.map(evidence_id => ({
+      evidence_id,
+      source_id: source.id,
+      relation: source.id === importSourceId ? 'grouped_by_import_trace' : 'possibly_derived_from_source_link',
+      note: 'Non-scoring provenance link from source trace conversion; direct derivation still requires source review.'
+    })));
+
+    const source_questions = sources.flatMap(source => source.unresolved_source_questions.map((question, index) => ({
+      id: `${source.id}_question_${String(index + 1).padStart(2, '0')}`,
+      source_id: source.id,
+      text: question,
+      status: 'open'
+    })));
+
+    return {
+      packet_type: '42ndMind_source_registry_packet',
+      packet_version: VERSION,
+      created_at: new Date().toISOString(),
+      purpose: 'Converted from persisted sourceTrace into non-scoring source registry objects.',
+      sources,
+      claim_source_links,
+      evidence_source_links,
+      source_questions,
+      conversion_meta: {
+        converted_from: 'sourceTrace',
+        source_trace_event_id: eventId,
+        non_scoring: true,
+        provenance_is_not_proof: true,
+        retrieval_is_not_verification: true,
+        link_to_row_precision_requires_review: true
+      }
+    };
+  }
+
+  function sourceTracesToPacket(traces = [], options = {}) {
+    const packets = asArray(traces).map((trace, index) => sourceTraceToPacket(trace, { ...options, trace_index: index }));
+    return {
+      packet_type: '42ndMind_source_registry_packet',
+      packet_version: VERSION,
+      created_at: new Date().toISOString(),
+      purpose: 'Converted persisted sourceTraces into non-scoring source registry objects.',
+      sources: packets.flatMap(packet => packet.sources),
+      claim_source_links: packets.flatMap(packet => packet.claim_source_links),
+      evidence_source_links: packets.flatMap(packet => packet.evidence_source_links),
+      source_questions: packets.flatMap(packet => packet.source_questions),
+      conversion_meta: {
+        converted_from: 'sourceTraces',
+        trace_count: packets.length,
+        non_scoring: true,
+        provenance_is_not_proof: true,
+        retrieval_is_not_verification: true,
+        link_to_row_precision_requires_review: true
+      }
+    };
+  }
+
+  function sampleTrace() {
+    return {
+      trace_type: 'structured_packet_import',
+      source_title: 'Dossier source graph import',
+      source_kind: 'dossier_source_graph',
+      import_time: '2026-05-10T00:00:00.000Z',
+      event_id: 'event_sample_trace',
+      counts: { claims: 4, evidence: 7, attacking_evidence: 3, open_questions: 6, observations: 0 },
+      source_links: ['https://example.invalid/source-a'],
+      claim_ids: ['claim_1', 'claim_2', 'claim_3', 'claim_4'],
+      evidence_ids: ['evidence_1', 'evidence_2', 'evidence_3', 'evidence_4', 'evidence_5', 'evidence_6', 'evidence_7'],
+      meta: { read_only_trace: true, persisted_in_kernel_state: true }
+    };
+  }
+
   function samplePacket() {
     return {
       packet_type: '42ndMind_source_registry_packet',
@@ -255,6 +421,9 @@
     normalizeSource,
     buildRegistry,
     importPacket,
+    sourceTraceToPacket,
+    sourceTracesToPacket,
+    sampleTrace,
     samplePacket
   });
 })(typeof window !== 'undefined' ? window : globalThis);
