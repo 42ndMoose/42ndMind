@@ -19,7 +19,7 @@
   <p><a href="source-registry.html">source registry</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a> · <a href="dossier-source-graph.html">dossier graph</a> · <a href="source-trace-bridge.html">source trace bridge</a></p>
   <button onclick="copyOutput()">COPY output</button><span id="status" class="muted"></span>
   <pre id="out">Running...</pre>
-<script src="src/source-registry-v0-1.js?v=0.1.1"></script>
+<script src="src/source-registry-v0-1.js?v=0.1.2"></script>
 <script>
   function run() {
     try {
@@ -33,7 +33,7 @@
       const importEventSource = traceRegistry.sources.find(row => row.source_kind.endsWith('_import_event')) || {};
       const linkedSource = traceRegistry.sources.find(row => row.source_kind === 'linked_source_from_trace') || {};
       const cases = [
-        ['version 0.1.1', SourceRegistryV01.VERSION === '0.1.1'],
+        ['version 0.1.2', SourceRegistryV01.VERSION === '0.1.2'],
         ['report type', report.packet_type === '42ndMind_source_registry_report'],
         ['registry type', registry.registry_type === '42ndMind_source_registry'],
         ['has sources', report.pass_checks.has_sources === true],
