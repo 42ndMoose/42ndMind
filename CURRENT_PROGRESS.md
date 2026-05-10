@@ -21,6 +21,8 @@ Last updated: **2026-05-10**.
 - imported source trace in the live brain packet/UI
 - persisted `sourceTraces` in live kernel state
 - source-trace explanation bridge for LLM-facing summaries
+- source-trace bridge smoke test
+- deterministic local explanation preview
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a retrieval/source layer or user-supplied evidence.
@@ -33,7 +35,8 @@ It is still not a full truth machine. It cannot independently verify external fa
 - `claim-challenge-test.html` runs the claim-challenge smoke test.
 - `dossier-source-graph.html` imports curated dossier packets into typed source-graph pressure and can send a kernel command to the live brain.
 - `dossier-source-graph-test.html` runs the dossier source-graph smoke test.
-- `source-trace-bridge.html` reads persisted source traces and produces read-only LLM explanation packets/prompts.
+- `source-trace-bridge.html` reads persisted source traces and produces read-only LLM explanation packets/prompts plus a local explanation preview.
+- `source-trace-bridge-test.html` runs the source-trace bridge smoke test.
 - `milestone-closer.html` runs the limited M12-M15 harness.
 - `belief-graph.html` is the graph view.
 
@@ -118,7 +121,60 @@ The claim-challenge page exports both:
 - persist the same trace into `kernel_state.sourceTraces`
 - link to `source-trace-bridge.html`
 
-## Latest important change: source-trace explanation bridge
+### Source trace bridge
+
+`source-trace-bridge.html` now:
+
+- reads persisted `kernel_state.sourceTraces` from local browser state
+- produces a `42ndMind_source_trace_explanation_packet`
+- produces a copyable LLM explanation prompt
+- shows a compact trace summary
+- shows a deterministic local explanation preview
+- has `COPY local preview`
+- links to `source-trace-bridge-test.html`
+
+`source-trace-bridge-test.html` now exists and checks:
+
+- packet type
+- one source trace
+- claims count 4
+- evidence count 7
+- attacking evidence count 3
+- observations 0
+- linked claims preserved
+- linked evidence preserved
+- attacking rows separated
+- open pressure visible
+- first-principles flag
+- Octahedron active surface rule
+- contradiction detection is not contradiction resolution
+- no rule self-promotion
+- explain-only guardrail
+- no-mutation guardrail
+- provenance-is-not-proof guardrail
+- LLM-is-interface guardrail
+- prompt blocks mutation
+- prompt blocks truth promotion
+
+## Latest important change: local source-trace explanation preview
+
+`source-trace-bridge.html` now generates a deterministic local explanation preview from the same source-trace packet it gives to the LLM.
+
+This preview is intentionally not an LLM answer and not a belief update. It is a local, auditable summary of the imported source trace.
+
+It explains:
+
+- what source/import entered the kernel
+- how many claims, evidence rows, attacking evidence rows, open questions, and observations came in
+- that the import created provenance and pressure, not automatic truth
+- the support/attack split
+- live counter-considerations
+- unresolved pressure
+- the guardrail that an LLM may explain but must not mutate state, promote coherence into truth, flatten counter-considerations, or propose rule promotion without user approval
+
+`source-trace-bridge.html` packet version is now `0.1.1`.
+
+## Source-trace explanation bridge
 
 `source-trace-bridge.html` was added as a read-only LLM interface bridge.
 
@@ -127,6 +183,7 @@ It reads persisted `kernel_state.sourceTraces` from local browser state and prod
 - a `42ndMind_source_trace_explanation_packet`
 - a copyable LLM explanation prompt
 - a compact trace summary
+- a local explanation preview
 
 The bridge is intentionally not a belief engine. It does not mutate kernel state, change confidence, alter gates, resolve contradictions, promote rules, or touch the root worldview. It prepares a controlled explanation packet so an LLM can explain source provenance and unresolved pressure without becoming the brain.
 
@@ -238,26 +295,27 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should verify the new source-trace bridge from a clean browser state.
+Next small task should verify the bridge smoke test and local preview in-browser.
 
 Recommended test:
 
-1. Open `llm-brain-v0-3.html`.
-2. Hard refresh.
-3. Click `RESET`.
-4. Open `dossier-source-graph.html`.
-5. Hard refresh and confirm version `0.1.3`.
-6. Click `SEND to live brain`.
-7. Return to `llm-brain-v0-3.html`.
-8. Click `LOAD pending command` only if needed.
-9. Click `IMPORT / RUN`.
-10. Confirm the `Imported source trace` panel shows one structured packet import.
-11. Open `source-trace-bridge.html`.
-12. Confirm the trace summary shows `source_traces: 1`.
-13. Confirm the explanation packet includes one source trace with observations `0`, evidence `7`, attacking evidence `3`, and claims `4`.
-14. Confirm the LLM prompt tells the LLM to explain only and not mutate state.
+1. Open `source-trace-bridge-test.html`.
+2. Confirm it reports `20/20 passed`.
+3. Open `llm-brain-v0-3.html`.
+4. Hard refresh.
+5. Click `RESET`.
+6. Open `dossier-source-graph.html`.
+7. Hard refresh and confirm version `0.1.3`.
+8. Click `SEND to live brain`.
+9. Return to `llm-brain-v0-3.html`.
+10. Click `LOAD pending command` only if needed.
+11. Click `IMPORT / RUN`.
+12. Open `source-trace-bridge.html`.
+13. Confirm the trace summary shows `source_traces: 1`.
+14. Confirm the local preview says the import created provenance and pressure, not automatic truth.
+15. Confirm the local preview says the LLM must not mutate state or promote coherence into truth.
 
-If clean, the next implementation step should be a tiny smoke page for the source-trace bridge or a compact natural-language explanation preview generated locally from the trace packet.
+If clean, the next implementation step can be a small bridge link from `dossier-source-graph.html` to `source-trace-bridge.html`, or a small export field that includes the local preview in copied brain packets.
 
 Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 13-15.
 
@@ -289,6 +347,8 @@ The repo has moved forward on these README milestones:
 - M13/M14 source trace seed: `llm-brain-v0-3.html` now exposes a read-only imported-source trace in UI and brain packet export.
 - M13/M14 persistent source trace: `llm-brain-v0-3.html` now persists source traces into `kernel_state.sourceTraces` as non-scoring provenance state.
 - M14 explanation bridge seed: `source-trace-bridge.html` turns persisted source traces into read-only LLM explanation packets/prompts.
+- M14 local explanation preview: `source-trace-bridge.html` now gives a deterministic local preview before any LLM is involved.
+- M14 bridge smoke test: `source-trace-bridge-test.html` checks bridge packet shape, counts, doctrine flags, and no-mutation guardrails.
 
 ## The SHA write trick for ChatGPT GitHub connector
 
@@ -358,6 +418,8 @@ Important state:
 - copied brain packets include source_trace_summary
 - llm-brain-v0-3.html persists source traces into kernel_state.sourceTraces
 - source-trace-bridge.html reads sourceTraces and emits read-only LLM explanation packets/prompts
+- source-trace-bridge.html now has a deterministic local explanation preview
+- source-trace-bridge-test.html exists and should report 20/20 passed
 
 Use the SHA write trick:
 1. Fetch file first and use current blob SHA.
@@ -367,12 +429,9 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to verify a clean dossier import in the browser.
-2. Open source-trace-bridge.html.
-3. Confirm the bridge sees source_traces: 1.
-4. Confirm its explanation packet includes observations 0, evidence 7, attacking_evidence 3, claims 4.
-5. Confirm the prompt tells the LLM to explain only and not mutate state.
-6. If clean, add a tiny source-trace bridge smoke check or a compact local explanation preview.
+1. Ask user to verify source-trace-bridge-test.html reports 20/20 passed.
+2. Ask user to verify source-trace-bridge.html local preview after a clean dossier import.
+3. If clean, add a tiny bridge link from dossier-source-graph.html to source-trace-bridge.html, or add a small export field that includes the local preview in copied brain packets.
 
 Keep edits small unless the next step is clearly coherent with README Milestones 13-15.
 ```
