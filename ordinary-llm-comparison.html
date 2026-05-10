@@ -44,6 +44,7 @@
       <h2>Navigation</h2>
       <a href="llm-brain-v0-3.html">live brain v0.3</a> ·
       <a href="goal-runner.html">goal runner</a> ·
+      <a href="m12-comparison-report-index.html">M12 report index</a> ·
       <a href="claim-challenge.html">claim challenge</a> ·
       <a href="source-trace-bridge.html">source trace bridge</a>
     </section>
@@ -104,41 +105,13 @@
 <script src="src/epistemic-benchmark-v0-1.js"></script>
 <script>
   const CRITERIA = [
-    {
-      id:'contradiction_detection', label:'Contradiction detection', max:2,
-      positive:['contradiction','inconsistent','conflict','cannot both','timeline','tension'],
-      negative:['no contradiction','nothing conflicts','clearly true']
-    },
-    {
-      id:'evidence_separation', label:'Evidence separation', max:2,
-      positive:['evidence','support','attack','attacking','supports','weakens','source','timestamp'],
-      negative:['obviously','just trust','proves everything']
-    },
-    {
-      id:'motive_calibration', label:'Motive calibration', max:2,
-      positive:['motive','intent','separate evidence','not enough evidence','hypothesis','could be mistaken'],
-      negative:['definitely lied','obviously malicious','wanted to hurt']
-    },
-    {
-      id:'scope_control', label:'Scope control', max:2,
-      positive:['scope','local claim','do not merge','not worldview','limited','specific claim'],
-      negative:['therefore everything','proves the whole worldview','always']
-    },
-    {
-      id:'self_sealing_detection', label:'Self-sealing detection', max:2,
-      positive:['self-sealing','falsify','what evidence would count against','counterevidence','unfalsifiable'],
-      negative:['evidence against proves it','disagreement proves']
-    },
-    {
-      id:'belief_update_accuracy', label:'Belief update accuracy', max:2,
-      positive:['weaken','strengthen','confidence','update','reduce confidence','status','claim survives'],
-      negative:['certainty','100% true','case closed']
-    },
-    {
-      id:'unresolved_pressure_preservation', label:'Unresolved-pressure preservation', max:2,
-      positive:['unresolved','open question','pressure remains','not resolved','needs more evidence','unknown'],
-      negative:['fully resolved','nothing remains','no further question']
-    }
+    { id:'contradiction_detection', label:'Contradiction detection', max:2, positive:['contradiction','inconsistent','conflict','cannot both','timeline','tension'], negative:['no contradiction','nothing conflicts','clearly true'] },
+    { id:'evidence_separation', label:'Evidence separation', max:2, positive:['evidence','support','attack','attacking','supports','weakens','source','timestamp'], negative:['obviously','just trust','proves everything'] },
+    { id:'motive_calibration', label:'Motive calibration', max:2, positive:['motive','intent','separate evidence','not enough evidence','hypothesis','could be mistaken'], negative:['definitely lied','obviously malicious','wanted to hurt'] },
+    { id:'scope_control', label:'Scope control', max:2, positive:['scope','local claim','do not merge','not worldview','limited','specific claim'], negative:['therefore everything','proves the whole worldview','always'] },
+    { id:'self_sealing_detection', label:'Self-sealing detection', max:2, positive:['self-sealing','falsify','what evidence would count against','counterevidence','unfalsifiable'], negative:['evidence against proves it','disagreement proves'] },
+    { id:'belief_update_accuracy', label:'Belief update accuracy', max:2, positive:['weaken','strengthen','confidence','update','reduce confidence','status','claim survives'], negative:['certainty','100% true','case closed'] },
+    { id:'unresolved_pressure_preservation', label:'Unresolved-pressure preservation', max:2, positive:['unresolved','open question','pressure remains','not resolved','needs more evidence','unknown'], negative:['fully resolved','nothing remains','no further question'] }
   ];
 
   let selectedCase = null;
