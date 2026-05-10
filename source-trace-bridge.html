@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Source Trace Bridge</title>
+  <style>
+    :root { --bg:#0f1115; --panel:#171a21; --muted:#8b93a7; --text:#eef2ff; --line:#2a3040; --accent:#9db6ff; --bad:#ff8b8b; --good:#9dffb4; --warn:#ffd28b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:var(--bg); color:var(--text); }
+    header { padding:16px 18px; border-bottom:1px solid var(--line); background:#11141b; }
+    main { display:grid; grid-template-columns:minmax(340px,460px) 1fr; gap:12px; padding:12px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    a { color:var(--accent); }
+    button { background:#25345c; color:var(--text); border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 10px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    button:hover { background:#304274; }
+    pre, textarea { width:100%; white-space:pre-wrap; overflow:auto; background:#0d1016; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:520px; resize:vertical; }
+    .muted { color:var(--muted); }
+    .small { font-size:12px; }
+    .ok { color:var(--good); }
+    .warn { color:var(--warn); }
+    .bad { color:var(--bad); }
+    @media (max-width:900px) { main { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Source Trace Bridge</h1>
+  <div class="muted small">Read-only bridge from persisted source provenance to LLM explanation packets. It does not mutate belief state.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="llm-brain-v0-3.html">live brain v0.3</a> ·
+      <a href="dossier-source-graph.html">dossier graph</a> ·
+      <a href="goal-runner.html">goal runner</a> ·
+      <a href="belief-graph.html">graph</a>
+    </section>
+    <section>
+      <h2>Controls</h2>
+      <button onclick="refresh()">REFRESH from localStorage</button>
+      <button onclick="copyPacket()">COPY explanation packet</button>
+      <button onclick="copyPrompt()">COPY LLM explanation prompt</button>
+      <div id="status" class="small muted"></div>
+    </section>
+    <section>
+      <h2>Purpose</h2>
+      <p class="small muted">This page converts persisted <code>kernel_state.sourceTraces</code> into an explanation packet for an LLM interface layer. The LLM may explain provenance and pressure, but must not alter claim confidence, gates, contradictions, source traces, or core rules.</p>
+      <p class="small muted">This supports the README architecture: language model as interface, kernel as belief-state owner.</p>
+    </section>
+    <section>
+      <h2>Trace summary</h2>
+      <pre id="summary">No state loaded.</pre>
+    </section>
+  </div>
+  <div>
+    <section>
+      <h2>Explanation packet</h2>
+      <textarea id="packet" spellcheck="false"></textarea>
+    </section>
+    <section>
+      <h2>LLM prompt</h2>
+      <textarea id="prompt" spellcheck="false"></textarea>
+    </section>
+  </div>
+</main>
+<script>
+  const STORAGE_KEY = 'epistemic_kernel_v0_state';
+
+  function $(id) { return document.getElementById(id); }
+  function asArray(value) { return Array.isArray(value) ? value : []; }
+  function safeText(value) { return String(value ?? '').trim(); }
+  function readState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    try { return JSON.parse(raw); }
+    catch (error) { return { parse_error: error.message, raw_length: raw.length }; }
+  }
+  function byId(rows) {
+    return new Map(asArray(rows).map(row => [row.id, row]));
+  }
+  function compactClaim(row) {
+    if (!row) return null;
+    return {
+      id: row.id,
+      client_id: row.client_id || null,
+      text: row.text,
+      scope: row.scope,
+      status: row.status,
+      confidence: row.confidence,
+      source: row.source,
+      evidence_for_count: asArray(row.evidence_for).length,
+      evidence_against_count: asArray(row.evidence_against).length
+    };
+  }
+  function compactEvidence(row) {
+    if (!row) return null;
+    return {
+      id: row.id,
+      text: row.text,
+      relation: row.relation,
+      claimId: row.claimId,
+      strength: row.strength,
+      confidence: row.confidence,
+      source: row.source
+    };
+  }
+  function linkedOpenQuestions(state, trace) {
+    const claimIds = new Set(asArray(trace.claim_ids));
+    const evidenceIds = new Set(asArray(trace.evidence_ids));
+    return asArray(state.questions).filter(question => {
+      const links = question.links || {};
+      if (question.status && question.status !== 'open') return false;
+      if (claimIds.has(links.claim_id)) return true;
+      if (evidenceIds.has(links.evidence_id)) return true;
+      if (safeText(links.client_id).startsWith('dossier_claim_')) return true;
+      if (links.source === 'dossier_source_graph_v0_1') return true;
+      return false;
+    }).map(question => ({ id: question.id, text: question.text, links: question.links || {} }));
+  }
+  function buildExplanationPacket(state) {
+    const claims = byId(state.claims);
+    const evidence = byId(state.evidence);
+    const traces = asArray(state.sourceTraces);
+    const tracePackets = traces.map(trace => {
+      const linkedClaims = asArray(trace.claim_ids).map(id => compactClaim(claims.get(id))).filter(Boolean);
+      const linkedEvidence = asArray(trace.evidence_ids).map(id => compactEvidence(evidence.get(id))).filter(Boolean);
+      const attackingEvidence = linkedEvidence.filter(row => row.relation === 'attacks');
+      const supportingEvidence = linkedEvidence.filter(row => row.relation !== 'attacks');
+      return {
+        trace_type: trace.trace_type,
+        source_title: trace.source_title,
+        source_kind: trace.source_kind,
+        import_time: trace.import_time,
+        event_id: trace.event_id,
+        counts: trace.counts,
+        source_links: asArray(trace.source_links),
+        linked_claims: linkedClaims,
+        linked_evidence: linkedEvidence,
+        attacking_evidence: attackingEvidence,
+        supporting_evidence: supportingEvidence,
+        open_questions: linkedOpenQuestions(state, trace),
+        explanation_guardrails: {
+          explain_only: true,
+          do_not_mutate_kernel_state: true,
+          do_not_promote_truth_from_coherence: true,
+          preserve_counter_considerations: true,
+          preserve_observation_count_as_low_signal_indicator: true,
+          treat_source_trace_as_provenance_not_proof: true,
+          kernel_owns_belief_movement: true,
+          llm_is_interface_not_brain: true
+        }
+      };
+    });
+    return {
+      packet_type: '42ndMind_source_trace_explanation_packet',
+      packet_version: '0.1.0',
+      created_at: new Date().toISOString(),
+      purpose: 'Give an LLM interface a compact, read-only provenance summary without granting belief-state control.',
+      doctrine: {
+        first_principles: true,
+        epistemic_octahedron_consistent: true,
+        null_origin_preserved: true,
+        active_surface_rule: '|x| + |y| + |z| = 1 for active states',
+        unresolved_pressure_must_remain_visible: true,
+        contradiction_detection_is_not_contradiction_resolution: true,
+        no_rule_self_promotion: true
+      },
+      state_summary: {
+        claims: asArray(state.claims).length,
+        evidence: asArray(state.evidence).length,
+        open_questions: asArray(state.questions).filter(q => q.status === 'open').length,
+        observations: asArray(state.observations).length,
+        source_traces: traces.length
+      },
+      source_traces: tracePackets,
+      requested_llm_behavior: [
+        'Explain what sources were imported and what pressure they created.',
+        'Separate fact, inference, interpretation, and hypothesis when visible from scopes or claim objects.',
+        'Explain supporting evidence separately from attacking evidence.',
+        'Mention unresolved questions as unresolved pressure, not as failure.',
+        'Do not describe the imported dossier as true merely because it is coherent.',
+        'Do not invent missing evidence, missing sources, or validation results.',
+        'Do not suggest belief-state changes unless framed as a proposed kernel command requiring user approval.'
+      ]
+    };
+  }
+  function buildPrompt(packet) {
+    return [
+      'You are explaining a 42ndMind source trace. The Epistemic Kernel owns belief movement. You are only the interface layer.',
+      '',
+      'Use the packet below to explain, in plain language:',
+      '1. What source/import entered the kernel.',
+      '2. How many claims, evidence rows, attacking evidence rows, open questions, and observations came in.',
+      '3. Which counter-considerations remain live.',
+      '4. Why this does not automatically prove the dossier true.',
+      '5. What unresolved pressure remains.',
+      '',
+      'Do not mutate state. Do not promote truth. Do not flatten counter-considerations. Do not treat source provenance as proof.',
+      '',
+      JSON.stringify(packet, null, 2)
+    ].join('\n');
+  }
+  function refresh() {
+    const state = readState();
+    if (!state) {
+      $('summary').textContent = 'No local kernel state found. Open llm-brain-v0-3.html and import a packet first.';
+      $('packet').value = '';
+      $('prompt').value = '';
+      $('status').textContent = 'No state loaded.';
+      return;
+    }
+    if (state.parse_error) {
+      $('summary').textContent = `Could not parse local kernel state: ${state.parse_error}`;
+      $('packet').value = '';
+      $('prompt').value = '';
+      $('status').textContent = 'Parse error.';
+      return;
+    }
+    const packet = buildExplanationPacket(state);
+    $('summary').textContent = JSON.stringify(packet.state_summary, null, 2);
+    $('packet').value = JSON.stringify(packet, null, 2);
+    $('prompt').value = buildPrompt(packet);
+    $('status').textContent = `Loaded ${packet.state_summary.source_traces} source trace(s).`;
+  }
+  async function copyValue(id, label) {
+    const text = $(id).value;
+    try { await navigator.clipboard.writeText(text); $('status').textContent = `Copied ${label} (${text.length.toLocaleString()} chars).`; }
+    catch (error) { $('status').textContent = `Could not auto-copy ${label}. Select it manually.`; }
+  }
+  function copyPacket() { copyValue('packet', 'explanation packet'); }
+  function copyPrompt() { copyValue('prompt', 'LLM explanation prompt'); }
+  refresh();
+</script>
+</body>
+</html>
