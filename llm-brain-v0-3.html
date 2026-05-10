@@ -26,10 +26,10 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Live Brain v0.3</h1><div class="sub">Patched live console: low-signal quarantine, contradiction audit pressure, idempotent imports, duplicate provenance audit, live Octahedron math.</div></header>
+<header><h1>42ndMind Live Brain v0.3</h1><div class="sub">Patched live console: low-signal quarantine, contradiction audit pressure, idempotent imports, duplicate provenance audit, source registry visibility, live Octahedron math.</div></header>
 <main>
   <div>
-    <section><h2>Controls</h2><a href="goal-runner.html">goal runner</a> · <a href="claim-challenge.html">claim challenge</a> · <a href="dossier-source-graph.html">dossier graph</a> · <a href="source-trace-bridge.html">source trace bridge</a> · <a href="belief-graph.html">graph</a> · <a href="index.html">human UI</a><br />
+    <section><h2>Controls</h2><a href="goal-runner.html">goal runner</a> · <a href="claim-challenge.html">claim challenge</a> · <a href="dossier-source-graph.html">dossier graph</a> · <a href="source-trace-bridge.html">source trace bridge</a> · <a href="source-registry.html">source registry</a> · <a href="belief-graph.html">graph</a> · <a href="index.html">human UI</a><br />
       <button class="good" onclick="refresh()">BOOT / refresh</button><button onclick="runSmokeTests()">RUN smoke tests</button><button onclick="runAudit()">RUN self-audit</button><button onclick="copyBrainPacket()">COPY brain packet</button><button class="warn" onclick="loadExample()">LOAD contradiction example</button><button class="bad" onclick="resetBrain()">RESET</button><div id="status" class="small muted"></div></section>
     <section><h2>Command packet</h2><div class="small muted">Paste JSON: { "command_type":"epistemic_kernel_command", "commands":[...] }. Exact duplicate import_packet commands are skipped and recorded as duplicate provenance, not independent convergence.</div><textarea id="commandInput" spellcheck="false"></textarea><button class="good" onclick="runCommands()">IMPORT / RUN</button><button onclick="loadLowSignalExample()">Load low-signal test</button><button onclick="loadPendingCommand()">LOAD pending command</button><div id="commandStatus" class="small muted"></div></section>
     <section><h2>Raw text → extraction prompt</h2><textarea id="rawText" spellcheck="false">Criticism is epistemic pressure against a claim. Hostility is only one possible motive and needs separate evidence.</textarea><button onclick="copyExtractionPrompt()">COPY extraction prompt</button></section>
@@ -52,6 +52,7 @@
   const STORAGE_KEY = 'epistemic_kernel_v0_state';
   const TEST_KEY = 'epistemic_kernel_last_test_report';
   const PENDING_COMMAND_KEY = '42ndMind_pending_kernel_command';
+  const SOURCE_REGISTRY_STORAGE_KEY = '42ndMind_source_registry_v0_1';
   const saved = localStorage.getItem(STORAGE_KEY);
   const kernel = new EpistemicKernel(saved ? JSON.parse(saved) : null);
   let selectedNode = 'root_worldview';
@@ -68,24 +69,33 @@
   function openQuestions(state){ return (state.questions||[]).filter(q=>q.status==='open'); }
   function stableStringify(value){ if(Array.isArray(value)) return '['+value.map(stableStringify).join(',')+']'; if(value && typeof value==='object'){ return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stableStringify(value[k])).join(',')+'}'; } return JSON.stringify(value); }
   function tinyHash(text){ let h=2166136261; for(let i=0;i<text.length;i++){ h^=text.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
+  function asArray(value){ return Array.isArray(value) ? value : []; }
   function importPacketSignature(cmd){ return 'import_packet:'+tinyHash(stableStringify(cmd.packet||cmd.extraction_packet||{})); }
   function seenImportSignatures(){ return new Set(kernel.state.importedCommandSignatures||[]); }
   function rememberImportSignature(signature){ const list=Array.from(seenImportSignatures()); if(!list.includes(signature)) list.push(signature); kernel.state.importedCommandSignatures=list.slice(-100); }
+  function sourceRegistryMeta(){ return { non_scoring:true, metadata_only:true, source_registry_not_belief_update:true, scoring_allowed:false, affects_claim_confidence:false, affects_gates:false, affects_root_worldview:false, provenance_is_not_proof:true, retrieval_is_not_verification:true }; }
+  function readSavedSourceRegistry(){
+    const raw=localStorage.getItem(SOURCE_REGISTRY_STORAGE_KEY);
+    if(!raw) return { available:false, storage_key:SOURCE_REGISTRY_STORAGE_KEY, reason:'no_saved_source_registry', meta:sourceRegistryMeta() };
+    try{
+      const payload=JSON.parse(raw);
+      const registry=payload.sourceRegistry || (payload.sourceRegistryReport && payload.sourceRegistryReport.source_registry) || null;
+      if(!registry) return { available:false, storage_key:SOURCE_REGISTRY_STORAGE_KEY, reason:'saved_payload_missing_sourceRegistry', saved_at:payload.saved_at||'', meta:sourceRegistryMeta() };
+      return { available:true, storage_key:SOURCE_REGISTRY_STORAGE_KEY, saved_at:payload.saved_at||'', sourceRegistry:registry, sourceRegistryReport:payload.sourceRegistryReport||null, saved_meta:payload.meta||{}, meta:sourceRegistryMeta() };
+    }catch(error){ return { available:false, storage_key:SOURCE_REGISTRY_STORAGE_KEY, reason:'parse_failed', error:error.message, meta:sourceRegistryMeta() }; }
+  }
+  function sourceRegistrySummary(saved){
+    const registry=saved && saved.sourceRegistry;
+    const sources=asArray(registry && registry.sources);
+    const claimLinks=asArray(registry && registry.claim_source_links);
+    const evidenceLinks=asArray(registry && registry.evidence_source_links);
+    const questions=asArray(registry && registry.source_questions);
+    const counts=registry && registry.counts ? registry.counts : {};
+    const statuses=sources.reduce((acc,source)=>{ const status=source.retrieval_status||'unknown'; acc[status]=(acc[status]||0)+1; return acc; },{});
+    return { available:!!(saved && saved.available && registry), storage_key:SOURCE_REGISTRY_STORAGE_KEY, saved_at:(saved && saved.saved_at)||'', reason:(saved && saved.reason)||'', error:(saved && saved.error)||'', counts:{ sources:Number(counts.sources||sources.length||0), claim_source_links:Number(counts.claim_source_links||claimLinks.length||0), evidence_source_links:Number(counts.evidence_source_links||evidenceLinks.length||0), source_questions:Number(counts.source_questions||questions.length||0), unresolved_source_questions:Number(counts.unresolved_source_questions||sources.reduce((sum,source)=>sum+asArray(source.unresolved_source_questions).length,0)) }, retrieval_statuses:statuses, doctrine:{ non_scoring:true, metadata_only:true, source_objects_separate_from_claims:true, source_objects_separate_from_evidence:true, provenance_is_not_proof:true, retrieval_is_not_verification:true, kernel_owns_belief_movement:true } };
+  }
   function recordDuplicateImportSkip(cmd, signature){
-    const event = {
-      id:`event_dup_import_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,
-      at:new Date().toISOString(),
-      type:'duplicate_import_skipped',
-      detail:{
-        signature,
-        epistemic_rule:'duplicate_provenance_is_not_independent_convergence',
-        reason:'Repeated identical structured import was already processed. Repetition of the same packet does not add independent evidence or new belief pressure.',
-        belief_movement:'none',
-        scoring_effect:'none',
-        non_scoring:true,
-        command_kind:cmd.op || 'import_packet'
-      }
-    };
+    const event = { id:`event_dup_import_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`, at:new Date().toISOString(), type:'duplicate_import_skipped', detail:{ signature, epistemic_rule:'duplicate_provenance_is_not_independent_convergence', reason:'Repeated identical structured import was already processed. Repetition of the same packet does not add independent evidence or new belief pressure.', belief_movement:'none', scoring_effect:'none', non_scoring:true, command_kind:cmd.op || 'import_packet' } };
     kernel.state.eventLog = Array.isArray(kernel.state.eventLog) ? kernel.state.eventLog : [];
     kernel.state.eventLog.push(event);
     kernel.state.duplicateImportAudit = Array.isArray(kernel.state.duplicateImportAudit) ? kernel.state.duplicateImportAudit : [];
@@ -110,34 +120,11 @@
       const attacks=evidence.filter(row=>row.relation==='attacks');
       const sourceLinks=evidence.map(row=>String(row.text||'')).filter(text=>text.startsWith('source_link:')).map(text=>text.replace(/^source_link:\s*/,'')).filter(Boolean);
       const isDossier=claims.some(row=>String(row.scope||'').startsWith('dossier_')||String(row.client_id||'').startsWith('dossier_claim_'))||evidence.some(row=>String(row.text||'').startsWith('counter_consideration:')||String(row.text||'').startsWith('source_link:'));
-      return {
-        trace_type:'structured_packet_import',
-        source_title:isDossier?'Dossier source graph import':'Structured packet import',
-        source_kind:isDossier?'dossier_source_graph':'structured_packet',
-        import_time:item.event.at,
-        event_id:item.event.id,
-        counts:{
-          claims:claimIds.length || Number(counts.claims||0),
-          evidence:evidenceIds.length || Number(counts.evidence||0),
-          attacking_evidence:attacks.length,
-          open_questions:Number(counts.questions||0),
-          observations:Number(counts.observations||0)
-        },
-        source_links:sourceLinks.slice(0,8),
-        claim_ids:claimIds,
-        evidence_ids:evidenceIds,
-        meta:{
-          read_only_trace:true,
-          persisted_in_kernel_state:true,
-          grouped_from_event_log:true,
-          event_counts:counts,
-          note:'This trace summarizes provenance and import pressure; it does not promote truth or alter belief movement.'
-        }
-      };
+      return { trace_type:'structured_packet_import', source_title:isDossier?'Dossier source graph import':'Structured packet import', source_kind:isDossier?'dossier_source_graph':'structured_packet', import_time:item.event.at, event_id:item.event.id, counts:{ claims:claimIds.length || Number(counts.claims||0), evidence:evidenceIds.length || Number(counts.evidence||0), attacking_evidence:attacks.length, open_questions:Number(counts.questions||0), observations:Number(counts.observations||0) }, source_links:sourceLinks.slice(0,8), claim_ids:claimIds, evidence_ids:evidenceIds, meta:{ read_only_trace:true, persisted_in_kernel_state:true, grouped_from_event_log:true, event_counts:counts, note:'This trace summarizes provenance and import pressure; it does not promote truth or alter belief movement.' } };
     });
   }
   function persistSourceTraceSummary(state){ const traces=sourceTraceSummary(state); state.sourceTraces=traces; kernel.state.sourceTraces=traces; return traces; }
-  function brainPacket(){ const state=snapshot(); const sourceTraces=persistSourceTraceSummary(state); save(); const bench=EpistemicBenchmark.runBenchmark(); return { packet_type:'42ndMind_live_brain_packet', packet_version:'0.3.3-patched', created_at:new Date().toISOString(), purpose:'Operate and inspect the patched 42ndMind kernel.', patch_status:{v02_patches_applied:!!EpistemicKernel.__v02PatchesApplied, low_signal_guard:'patched', contradiction_audit:'patched', idempotent_import_packet_guard:'patched', duplicate_provenance_audit:'patched'}, command_protocol:commandProtocol(), source_trace_summary:sourceTraces, duplicate_import_audit:state.duplicateImportAudit||[], brain_summary:{ point:state.octahedron.point, semantic:state.semantic, counts:{claims:state.claims.length,evidence:state.evidence.length,contradictions:activeContradictions(state).length,open_questions:openQuestions(state).length,principles:state.principles.length,graph_nodes:state.beliefGraph.nodes.length}, audit_preview:state.currentAuditPreview }, live_math:{ root:project(state.semantic), nodes:(state.beliefGraph.nodes||[]).map(n=>({id:n.id,type:n.type,label:n.label,parent_id:n.parent_id,semantic:n.semantic,projection:project(n.semantic)})) }, benchmark_summary:bench.summary, last_test_report:JSON.parse(localStorage.getItem(TEST_KEY)||'null'), kernel_state:state }; }
+  function brainPacket(){ const state=snapshot(); const sourceTraces=persistSourceTraceSummary(state); const savedSourceRegistry=readSavedSourceRegistry(); const sourceSummary=sourceRegistrySummary(savedSourceRegistry); save(); const bench=EpistemicBenchmark.runBenchmark(); return { packet_type:'42ndMind_live_brain_packet', packet_version:'0.3.4-patched', created_at:new Date().toISOString(), purpose:'Operate and inspect the patched 42ndMind kernel.', patch_status:{v02_patches_applied:!!EpistemicKernel.__v02PatchesApplied, low_signal_guard:'patched', contradiction_audit:'patched', idempotent_import_packet_guard:'patched', duplicate_provenance_audit:'patched', source_registry_visibility:'patched_metadata_only'}, command_protocol:commandProtocol(), source_trace_summary:sourceTraces, source_registry_summary:sourceSummary, source_registry_metadata:savedSourceRegistry.available ? { available:true, storage_key:SOURCE_REGISTRY_STORAGE_KEY, saved_at:savedSourceRegistry.saved_at, sourceRegistry:savedSourceRegistry.sourceRegistry, sourceRegistryReport:savedSourceRegistry.sourceRegistryReport, meta:savedSourceRegistry.meta } : { available:false, storage_key:SOURCE_REGISTRY_STORAGE_KEY, reason:savedSourceRegistry.reason||'no_saved_source_registry', error:savedSourceRegistry.error||'', meta:savedSourceRegistry.meta }, duplicate_import_audit:state.duplicateImportAudit||[], brain_summary:{ point:state.octahedron.point, semantic:state.semantic, counts:{claims:state.claims.length,evidence:state.evidence.length,contradictions:activeContradictions(state).length,open_questions:openQuestions(state).length,principles:state.principles.length,graph_nodes:state.beliefGraph.nodes.length}, audit_preview:state.currentAuditPreview }, live_math:{ root:project(state.semantic), nodes:(state.beliefGraph.nodes||[]).map(n=>({id:n.id,type:n.type,label:n.label,parent_id:n.parent_id,semantic:n.semantic,projection:project(n.semantic)})) }, benchmark_summary:bench.summary, last_test_report:JSON.parse(localStorage.getItem(TEST_KEY)||'null'), kernel_state:state }; }
   function execute(cmd){ const op=cmd.op; if(op==='reset')return kernel.reset(); if(op==='quick_ingest')return kernel.quickIngest(cmd.text||'',{mode:cmd.mode||'auto'}); if(op==='import_packet')return kernel.importExtractionPacket(cmd.packet||cmd.extraction_packet||{}); if(op==='add_evidence')return kernel.addEvidence({...cmd,claimId:cmd.claimId||cmd.target||cmd.target_claim_text||cmd.target_client_id}); if(op==='add_claim')return kernel.addClaim(cmd); if(op==='add_dependency')return kernel.addDependency(cmd); if(op==='add_principle')return kernel.addPrinciple(cmd); if(op==='add_gate_event')return kernel.applyGateEvent(cmd.gate,cmd.direction||'positive',cmd); if(op==='self_audit')return kernel.selfAudit(); throw new Error('Unknown op: '+op); }
   function runCommands(){
     try{
