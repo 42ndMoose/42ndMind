@@ -25,6 +25,7 @@ Last updated: **2026-05-10**.
 - deterministic local explanation preview
 - ordinary LLM comparison harness for Milestone 12
 - ordinary LLM comparison smoke test
+- refreshed README status for the current v0.3 stack
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a retrieval/source layer or user-supplied evidence.
@@ -43,16 +44,31 @@ It is still not a full truth machine. It cannot independently verify external fa
 - `source-trace-bridge-test.html` runs the source-trace bridge smoke test.
 - `milestone-closer.html` runs the limited M12-M15 harness.
 - `belief-graph.html` is the graph view.
+- `index.html` remains available as an older human-facing kernel UI, but it is no longer the primary active console.
 
 ## Main implementation files
 
 - `src/epistemic-kernel-v0-2.js`: base browser kernel.
 - `src/epistemic-kernel-v0-2-patches.js`: low-signal quarantine and unresolved-contradiction audit patch layer.
-- `src/epistemic-benchmark-v0-1.js`: fixed benchmark cases.
+- `src/epistemic-benchmark-v0-1.js`: fixed benchmark cases, sandbox overlay runner, milestone status, and memory compression helpers.
 - `src/claim-challenge-v0-1.js`: claim-challenge workflow.
 - `src/dossier-source-graph-v0-1.js`: dossier source-graph importer and kernel-command exporter.
 
 ## Confirmed stable pieces
+
+### README status refresh
+
+`README.md` was refreshed to reflect the current v0.3 stack.
+
+The README now states:
+
+- `llm-brain-v0-3.html` is the current main console.
+- `index.html` is older and no longer the primary active console.
+- current active pages include the goal runner, ordinary LLM comparison harness/test, claim challenge/test, dossier source graph/test, source-trace bridge/test, milestone closer, and graph view.
+- current active implementation files include `src/epistemic-kernel-v0-2.js`, `src/epistemic-kernel-v0-2-patches.js`, `src/epistemic-benchmark-v0-1.js`, `src/claim-challenge-v0-1.js`, and `src/dossier-source-graph-v0-1.js`.
+- stable smoke checks include benchmark `10 / 10`, dossier source graph behavior, source-trace bridge guardrails, and ordinary LLM comparison harness shape.
+- M12, M13, and M14 now include current implementation notes.
+- next immediate tasks now focus on real LLM comparison packets, M12 report saving/indexing, retrieval/source schema, natural-language approval loop, deeper source traces, richer philosophical text ingestion, sandboxed self-improvement, and selected `profiler.js` math.
 
 ### Kernel and benchmark
 
@@ -208,7 +224,26 @@ The claim-challenge page exports both:
 - prompt blocks mutation
 - prompt blocks truth promotion
 
-## Latest important change: ordinary LLM comparison smoke test
+## Latest important change: README status refresh
+
+`README.md` now reflects the current active project state instead of the older original v0/index flow.
+
+The refresh was intentionally scoped. It updated:
+
+- current status
+- current active pages
+- active implementation files
+- stable smoke checks
+- what the prototype does now
+- how to use the active v0.3 stack
+- current limitations
+- current proof claims and non-proof claims
+- M0, M12, M13, and M14 implementation notes
+- next immediate tasks
+
+It did not rewrite the core theory sections or the full roadmap.
+
+## Ordinary LLM comparison smoke test
 
 `ordinary-llm-comparison-test.html` was added as a deterministic smoke test for the Milestone 12 comparison harness.
 
@@ -374,21 +409,18 @@ The clean packet proves the v0.1.3 path supports README Milestone 13: curated do
 
 ## Current next development target
 
-Next small task should verify the ordinary LLM comparison smoke test in-browser.
+Next small task should be an M12 report saver/export index.
 
-Recommended test:
+Recommended next implementation:
 
-1. Open `ordinary-llm-comparison-test.html`.
-2. Confirm it reports all checks passed.
-3. Open `ordinary-llm-comparison.html`.
-4. Confirm the case dropdown loads benchmark cases.
-5. Click `FILL kernel-guided output`.
-6. Click `SCORE comparison`.
-7. Confirm the kernel-guided score is nonzero and the comparison packet appears.
-8. Paste any ordinary LLM output into the generic/prompt-only boxes later and score again.
-9. Confirm the exported packet includes the honesty note saying it does not prove superiority without real pasted model outputs.
+1. Add `m12-comparison-report-index.html` or equivalent.
+2. Let the user paste or load copied `42ndMind_ordinary_llm_comparison_packet` reports.
+3. Store reports in localStorage.
+4. List reports by case id, timestamp, best lane, and score split.
+5. Export all saved reports as one packet.
+6. Do not claim M12 pass until real generic/prompt-only LLM outputs are included.
 
-If clean, the next implementation step should be a small M12 report saver/export index or a small README status refresh that points to the current v0.3 pages instead of older v0 pages.
+This would let real ordinary LLM comparison results accumulate without pretending the harness itself proves the claim.
 
 Do not jump into a large redesign unless there is a specific coherent step toward README Milestones 12-15.
 
@@ -478,6 +510,7 @@ Do not read unrelated uploaded files.
 First read CURRENT_PROGRESS.md.
 
 Important state:
+- README.md has been refreshed for the current v0.3 stack.
 - Main live console: llm-brain-v0-3.html
 - Goal runner: goal-runner.html
 - Ordinary LLM comparison: ordinary-llm-comparison.html
@@ -509,9 +542,15 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to verify ordinary-llm-comparison-test.html reports all checks passed.
-2. Ask user to verify ordinary-llm-comparison.html still loads cases and scores kernel-guided output.
-3. If clean, add a small M12 report saver/export index or refresh README status so it points to the current v0.3 pages instead of older v0 pages.
+Build an M12 comparison report saver/index.
+
+Recommended next implementation:
+1. Add `m12-comparison-report-index.html`.
+2. Let the user paste copied `42ndMind_ordinary_llm_comparison_packet` reports.
+3. Store reports in localStorage.
+4. List reports by case id, timestamp, best lane, and score split.
+5. Export all saved reports as one packet.
+6. Do not claim M12 pass until real generic/prompt-only LLM outputs are included.
 
 Keep edits small unless the next step is clearly coherent with README Milestones 12-15.
 ```
