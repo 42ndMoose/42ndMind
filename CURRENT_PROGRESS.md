@@ -37,7 +37,7 @@ It is not a full truth machine. It cannot independently verify external facts wi
 
 ## Main live entry points
 
-- `source-registry-readiness.html` — read-only retrieval/source-review readiness checklist. Created and fetch-back verified, but not yet linked from `source-registry.html`.
+- `source-registry-readiness.html` — read-only retrieval/source-review readiness checklist. Created, fetch-back verified, and linked from `source-registry.html`.
 - `llm-brain-v0-3.html` — main patched live brain console.
 - `goal-runner.html` — benchmark, milestone, sandbox, and compression runner.
 - `ordinary-llm-comparison.html` — M12 comparison harness.
