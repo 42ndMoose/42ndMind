@@ -25,6 +25,7 @@ It currently has:
 - persisted `sourceTraces`
 - source-trace explanation bridge
 - source-registry visibility in source-trace explanations
+- source-trace/source-registry bridge smoke test
 - ordinary LLM comparison harness and report index
 - non-scoring source registry module
 - source registry workflow page
@@ -46,7 +47,7 @@ It is not a full truth machine. It cannot independently verify external facts wi
 - `dossier-source-graph.html` — dossier importer.
 - `dossier-source-graph-test.html` — dossier importer smoke/regression test.
 - `source-trace-bridge.html` — read-only source-trace/source-registry explanation bridge.
-- `source-trace-bridge-test.html` — source-trace bridge smoke test.
+- `source-trace-bridge-test.html` — source-trace/source-registry bridge smoke test.
 - `source-registry.html` — load/paste/save/export non-scoring source registry packets and convert live source traces.
 - `source-registry-test.html` — source registry smoke test.
 - `milestone-closer.html` — limited M12-M15 harness.
@@ -157,7 +158,7 @@ Clean browser packet confirmed:
 
 `llm-brain-v0-3.html` persists imported source traces into `kernel_state.sourceTraces`.
 
-`source-trace-bridge.html` now reads source traces and saved source registry metadata. It produces:
+`source-trace-bridge.html` reads source traces and saved source registry metadata. It produces:
 
 - `42ndMind_source_trace_explanation_packet`
 - packet version `0.1.2`
@@ -168,7 +169,7 @@ Clean browser packet confirmed:
 
 It remains read-only and non-scoring. It must not mutate kernel state, source registry, gates, confidence, or graph movement.
 
-`source-trace-bridge-test.html` should be updated next because it may still expect packet version `0.1.1` or lack source-registry checks.
+`source-trace-bridge-test.html` has been updated to expect packet version `0.1.2` and now checks source registry visibility/guardrails. It should report `38/38 passed` in browser.
 
 ### M12 comparison
 
@@ -240,6 +241,22 @@ It can:
 
 ## Latest important changes
 
+### Updated source trace bridge test
+
+- commit `56cdbbf1ea1a2a811ad292467420edac2bd50e7b`: updated `source-trace-bridge-test.html`
+
+The smoke test now expects explanation packet version `0.1.2` and checks:
+
+- source registry summary exists
+- source registry metadata exists
+- source registry source count is visible
+- unresolved source questions are visible
+- source registry is non-scoring metadata only
+- provenance is not proof
+- retrieval is not verification
+- bridge guardrails include `do_not_mutate_source_registry`
+- prompt blocks source registry mutation
+
 ### Source registry visibility in source trace bridge
 
 - commit `e18fa7ae62cb4e92641a6b2e22563ab16ff38430`: added source registry visibility to `source-trace-bridge.html`
@@ -275,21 +292,16 @@ The browser test reports `36/36 passed`.
 
 ## Current next development target
 
-Next step should update and run `source-trace-bridge-test.html`.
+Next step should verify `source-trace-bridge-test.html` in browser.
 
-Recommended implementation:
+Recommended test:
 
-1. Fetch `source-trace-bridge-test.html`.
-2. Update expected packet version to `0.1.2` if needed.
-3. Add checks for:
-   - `source_registry_summary`
-   - `source_registry_metadata`
-   - `source_registry_metadata.meta.non_scoring === true`
-   - `source_registry_metadata.meta.scoring_allowed === false`
-   - bridge guardrails include `do_not_mutate_source_registry`
-   - bridge doctrine includes `provenance_is_not_proof` and `retrieval_is_not_verification`
-4. Keep it read-only and non-scoring.
-5. Ask user to hard refresh and verify the updated test.
+1. Hard refresh `source-trace-bridge-test.html`.
+2. Confirm it reports `38/38 passed`.
+3. Open `source-trace-bridge.html`.
+4. Hard refresh.
+5. Confirm local preview includes source registry availability as non-scoring metadata.
+6. Copy explanation packet if needed and confirm packet version is `0.1.2`.
 
 If clean, the next implementation target should be a tiny source-registry explanation preview or retrieval-readiness checklist, still non-scoring.
 
@@ -348,7 +360,8 @@ Important state:
 - source-registry-test.html loads v=0.1.2 and has been verified as 36/36 passed
 - source-registry.html loads v=0.1.2 and saves sourceRegistry to localStorage as metadata only
 - source-registry.html can LOAD from live sourceTraces
-- source-trace-bridge.html now emits packet version 0.1.2 and includes source_registry_summary/source_registry_metadata
+- source-trace-bridge.html emits packet version 0.1.2 and includes source_registry_summary/source_registry_metadata
+- source-trace-bridge-test.html expects 38/38 passed
 - Source registry is non-scoring metadata only; it must not move belief state.
 - Source objects are separate from claims/evidence.
 - Retrieval status is not verification.
@@ -362,7 +375,7 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Update source-trace-bridge-test.html for packet version 0.1.2 and source-registry visibility checks.
-2. Keep it read-only and non-scoring.
-3. Ask user to verify the updated test.
+1. Ask user to verify source-trace-bridge-test.html reports 38/38 passed.
+2. If clean, add a tiny source-registry explanation preview or retrieval-readiness checklist.
+3. Keep it read-only and non-scoring.
 ```
