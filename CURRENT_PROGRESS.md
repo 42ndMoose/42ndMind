@@ -21,7 +21,8 @@ This is the handoff record for continuing work toward the README goal: a transpa
 - persisted `sourceTraces`
 - source-trace explanation bridge
 - ordinary LLM comparison harness and report index
-- non-scoring source registry schema
+- non-scoring source registry module
+- source registry workflow page
 - limited M12-M15 milestone closer harness
 
 It is still not a full truth machine. It cannot independently verify external facts without a mature retrieval/source layer.
@@ -39,6 +40,7 @@ It is still not a full truth machine. It cannot independently verify external fa
 - `dossier-source-graph-test.html` — dossier importer smoke/regression test.
 - `source-trace-bridge.html` — read-only source-trace explanation bridge.
 - `source-trace-bridge-test.html` — source-trace bridge smoke test.
+- `source-registry.html` — load/paste/save/export non-scoring source registry packets.
 - `source-registry-test.html` — source registry smoke test.
 - `milestone-closer.html` — limited M12-M15 harness.
 - `belief-graph.html` — graph viewer.
@@ -147,34 +149,43 @@ Doctrine/guardrails:
 
 `source-registry-test.html` should report `24/24 passed`.
 
+`source-registry.html` now exists and can:
+
+- load the sample source registry packet
+- import pasted `42ndMind_source_registry_packet` JSON
+- render a source table and normalized report
+- save `sourceRegistry` into localStorage under `42ndMind_source_registry_v0_1`
+- mark saved registry as metadata-only and non-scoring
+- load saved registry
+- copy the normalized report
+- clear saved registry metadata
+
 ## Latest important change
 
-Added the first non-scoring source registry schema:
+Added source registry workflow page:
 
-- commit `31d2801ca77c72720ad2d44db85853186129f085`: `src/source-registry-v0-1.js`
-- commit `8750edaabfe5fbcf95d5708fab5ad6dd12af1ce8`: `source-registry-test.html`
+- commit `648c3351b170fdd7a00c9ac71d66d0071b5ee24b`: `source-registry.html`
 
-This is a bridge toward README Milestone 13: source/retrieval structure can now exist independently of claim/evidence scoring. It does not verify facts and does not move belief state.
+This makes the source registry usable in-browser without integrating it into belief scoring.
 
 ## Current next development target
 
-Next step should connect the source registry to actual user/browser workflow.
+Next step should bridge real dossier source traces into source registry objects.
 
 Recommended next implementation:
 
-1. Add `source-registry.html`.
-2. Let the user load the sample packet or paste a `42ndMind_source_registry_packet`.
-3. Show the normalized source registry report.
-4. Save `sourceRegistry` into localStorage as metadata only.
-5. Export/copy the report.
-6. Link it from `llm-brain-v0-3.html` or `source-trace-bridge.html` after the page is verified.
+1. Add a tiny function to `src/source-registry-v0-1.js` that converts a persisted `sourceTrace` into a `42ndMind_source_registry_packet`.
+2. Keep generated source objects non-scoring.
+3. Preserve `claim_ids`, `evidence_ids`, `source_links`, counts, import event id, and unresolved source questions.
+4. Add a smoke check for trace-to-registry conversion.
+5. After verification, add a button in `source-registry.html` to import from saved `kernel_state.sourceTraces`.
 
-After that, the stronger step is to convert persisted dossier `sourceTraces` into source registry objects automatically.
+This would connect M13 dossier import, source traces, and source registry into one provenance chain without moving belief state.
 
 ## Remaining major gaps
 
 - Mature retrieval/source layer is not implemented.
-- Source registry is schema-only and non-scoring.
+- Source registry is non-scoring metadata only.
 - Formal ordinary-LLM comparison using real model outputs is scaffolded; real outputs still need to be pasted and preserved.
 - Persistent dossier integration as a source graph tied into kernel memory is still early.
 - Full natural-language approval/import interface is not implemented.
@@ -184,7 +195,7 @@ After that, the stronger step is to convert persisted dossier `sourceTraces` int
 
 - M1-M11: browser kernel, graph, gates, evidence pressure, benchmark, and patch layer are active.
 - M12: comparison harness, smoke test, and report index exist.
-- M13: dossier import, source traces, and non-scoring source registry seed exist.
+- M13: dossier import, source traces, non-scoring source registry module, and source registry workflow page exist.
 - M14: read-only source-trace explanation bridge exists.
 - M15: only limited/sandboxed pieces exist; no autonomous self-promotion.
 
@@ -213,13 +224,13 @@ Do not read unrelated uploaded files.
 First read CURRENT_PROGRESS.md.
 
 Important state:
-- README.md has been refreshed for the current v0.3 stack.
 - Main live console: llm-brain-v0-3.html
 - Dossier importer: dossier-source-graph.html
 - Dossier module latest version is 0.1.3
 - Source registry module: src/source-registry-v0-1.js
 - Source registry module latest version is 0.1.0
 - source-registry-test.html exists and should report 24/24 passed
+- source-registry.html exists and saves sourceRegistry to localStorage as metadata only
 - Source registry is non-scoring metadata only; it must not move belief state.
 - Source objects are separate from claims/evidence.
 - Retrieval status is not verification.
@@ -233,9 +244,8 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to verify source-registry-test.html reports 24/24 passed.
-2. If clean, add source-registry.html.
-3. It should load sample/pasted source registry packets, show normalized report, save sourceRegistry into localStorage as metadata only, and export/copy the report.
-4. Keep it non-scoring.
-5. Do not integrate into belief scoring yet.
+1. Ask user to verify source-registry.html sample import/save works.
+2. If clean, add trace-to-source-registry conversion.
+3. Keep it non-scoring.
+4. Do not integrate into belief scoring yet.
 ```
