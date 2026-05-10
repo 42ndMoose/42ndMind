@@ -38,6 +38,7 @@
     <section><h2>Live Octahedron math</h2><div class="metrics"><div class="metric"><span>x</span><b id="mx">0</b><div class="tiny muted">empathy ↔ practicality</div></div><div class="metric"><span>y</span><b id="my">0</b><div class="tiny muted">stability</div></div><div class="metric"><span>z</span><b id="mz">0</b><div class="tiny muted">wisdom ↔ knowledge</div></div><div class="metric"><span>nodes</span><b id="mnodes">0</b><div class="tiny muted">local states</div></div></div><div id="mathSummary" class="card small"></div></section>
     <section><h2>Diamond projection</h2><div id="diamond" class="diamond"></div><div id="selected" class="small muted"></div></section>
     <section><h2>Node table</h2><div class="scroll"><table><thead><tr><th>node</th><th>semantic</th><th>surface</th><th>relation</th></tr></thead><tbody id="nodeTable"></tbody></table></div></section>
+    <section><h2>Imported source trace</h2><pre id="sourceTrace">No structured imports yet.</pre></section>
     <section><h2>Brain packet output</h2><textarea id="packetOutput" spellcheck="false"></textarea></section>
     <section><h2>Audit preview</h2><pre id="auditPreview"></pre></section>
     <section><h2>Smoke test report</h2><pre id="testReport">No tests run yet.</pre></section>
@@ -66,8 +67,49 @@
   function activeContradictions(state){ return (state.contradictions||[]).filter(c=>c.status==='active'); }
   function openQuestions(state){ return (state.questions||[]).filter(q=>q.status==='open'); }
   function commandProtocol(){ return { command_type:'epistemic_kernel_command', commands:[{op:'quick_ingest', mode:'auto|principle|challenge|correction|observation', text:'...'},{op:'import_packet', packet:{packet_type:'epistemic_extraction_packet', claims:[], evidence:[], principles:[], dependencies:[], questions:[], observations:[], gate_events:[]}},{op:'add_evidence', text:'...', relation:'supports|attacks', target:'claim id, client id, or exact text', strength:'weak|moderate|strong', confidence:0.75},{op:'self_audit'}] }; }
-  function brainPacket(){ const state=snapshot(); const bench=EpistemicBenchmark.runBenchmark(); return { packet_type:'42ndMind_live_brain_packet', packet_version:'0.3.1-patched', created_at:new Date().toISOString(), purpose:'Operate and inspect the patched 42ndMind kernel.', patch_status:{v02_patches_applied:!!EpistemicKernel.__v02PatchesApplied, low_signal_guard:'patched', contradiction_audit:'patched'}, command_protocol:commandProtocol(), brain_summary:{ point:state.octahedron.point, semantic:state.semantic, counts:{claims:state.claims.length,evidence:state.evidence.length,contradictions:activeContradictions(state).length,open_questions:openQuestions(state).length,principles:state.principles.length,graph_nodes:state.beliefGraph.nodes.length}, audit_preview:state.currentAuditPreview }, live_math:{ root:project(state.semantic), nodes:(state.beliefGraph.nodes||[]).map(n=>({id:n.id,type:n.type,label:n.label,parent_id:n.parent_id,semantic:n.semantic,projection:project(n.semantic)})) }, benchmark_summary:bench.summary, last_test_report:JSON.parse(localStorage.getItem(TEST_KEY)||'null'), kernel_state:state }; }
-  function execute(cmd){ const op=cmd.op; if(op==='reset')return kernel.reset(); if(op==='quick_ingest')return kernel.quickIngest(cmd.text||'',{mode:cmd.mode||'auto'}); if(op==='import_packet')return kernel.importExtractionPacket(cmd.packet||cmd.extraction_packet||{}); if(op==='add_claim')return kernel.addClaim(cmd); if(op==='add_evidence')return kernel.addEvidence({...cmd,claimId:cmd.claimId||cmd.target||cmd.target_claim_text||cmd.target_client_id}); if(op==='add_dependency')return kernel.addDependency(cmd); if(op==='add_principle')return kernel.addPrinciple(cmd); if(op==='add_gate_event')return kernel.applyGateEvent(cmd.gate,cmd.direction||'positive',cmd); if(op==='self_audit')return kernel.selfAudit(); throw new Error('Unknown op: '+op); }
+  function sourceTraceSummary(state){
+    const events=state.eventLog||[];
+    const imports=events.map((event,index)=>({event,index})).filter(item=>item.event.type==='structured_packet_imported');
+    const claimsById=new Map((state.claims||[]).map(row=>[row.id,row]));
+    const evidenceById=new Map((state.evidence||[]).map(row=>[row.id,row]));
+    return imports.map((item,i)=>{
+      const previous=i>0?imports[i-1].index:-1;
+      const slice=events.slice(previous+1,item.index+1);
+      const claimIds=slice.filter(e=>e.type==='claim_added').map(e=>e.detail?.claim_id).filter(Boolean);
+      const evidenceIds=slice.filter(e=>e.type==='evidence_added').map(e=>e.detail?.evidence_id).filter(Boolean);
+      const claims=claimIds.map(id=>claimsById.get(id)).filter(Boolean);
+      const evidence=evidenceIds.map(id=>evidenceById.get(id)).filter(Boolean);
+      const counts=item.event.detail?.counts||{};
+      const attacks=evidence.filter(row=>row.relation==='attacks');
+      const sourceLinks=evidence.map(row=>String(row.text||'')).filter(text=>text.startsWith('source_link:')).map(text=>text.replace(/^source_link:\s*/,'')).filter(Boolean);
+      const isDossier=claims.some(row=>String(row.scope||'').startsWith('dossier_')||String(row.client_id||'').startsWith('dossier_claim_'))||evidence.some(row=>String(row.text||'').startsWith('counter_consideration:')||String(row.text||'').startsWith('source_link:'));
+      return {
+        trace_type:'structured_packet_import',
+        source_title:isDossier?'Dossier source graph import':'Structured packet import',
+        source_kind:isDossier?'dossier_source_graph':'structured_packet',
+        import_time:item.event.at,
+        event_id:item.event.id,
+        counts:{
+          claims:claimIds.length || Number(counts.claims||0),
+          evidence:evidenceIds.length || Number(counts.evidence||0),
+          attacking_evidence:attacks.length,
+          open_questions:Number(counts.questions||0),
+          observations:Number(counts.observations||0)
+        },
+        source_links:sourceLinks.slice(0,8),
+        claim_ids:claimIds,
+        evidence_ids:evidenceIds,
+        meta:{
+          read_only_trace:true,
+          grouped_from_event_log:true,
+          event_counts:counts,
+          note:'This trace summarizes provenance and import pressure; it does not promote truth or alter kernel state.'
+        }
+      };
+    });
+  }
+  function brainPacket(){ const state=snapshot(); const bench=EpistemicBenchmark.runBenchmark(); return { packet_type:'42ndMind_live_brain_packet', packet_version:'0.3.1-patched', created_at:new Date().toISOString(), purpose:'Operate and inspect the patched 42ndMind kernel.', patch_status:{v02_patches_applied:!!EpistemicKernel.__v02PatchesApplied, low_signal_guard:'patched', contradiction_audit:'patched'}, command_protocol:commandProtocol(), source_trace_summary:sourceTraceSummary(state), brain_summary:{ point:state.octahedron.point, semantic:state.semantic, counts:{claims:state.claims.length,evidence:state.evidence.length,contradictions:activeContradictions(state).length,open_questions:openQuestions(state).length,principles:state.principles.length,graph_nodes:state.beliefGraph.nodes.length}, audit_preview:state.currentAuditPreview }, live_math:{ root:project(state.semantic), nodes:(state.beliefGraph.nodes||[]).map(n=>({id:n.id,type:n.type,label:n.label,parent_id:n.parent_id,semantic:n.semantic,projection:project(n.semantic)})) }, benchmark_summary:bench.summary, last_test_report:JSON.parse(localStorage.getItem(TEST_KEY)||'null'), kernel_state:state }; }
+  function execute(cmd){ const op=cmd.op; if(op==='reset')return kernel.reset(); if(op==='quick_ingest')return kernel.quickIngest(cmd.text||'',{mode:cmd.mode||'auto'}); if(op==='import_packet')return kernel.importExtractionPacket(cmd.packet||cmd.extraction_packet||{}); if(op==='add_evidence')return kernel.addEvidence({...cmd,claimId:cmd.claimId||cmd.target||cmd.target_claim_text||cmd.target_client_id}); if(op==='add_claim')return kernel.addClaim(cmd); if(op==='add_dependency')return kernel.addDependency(cmd); if(op==='add_principle')return kernel.addPrinciple(cmd); if(op==='add_gate_event')return kernel.applyGateEvent(cmd.gate,cmd.direction||'positive',cmd); if(op==='self_audit')return kernel.selfAudit(); throw new Error('Unknown op: '+op); }
   function runCommands(){ try{ const packet=JSON.parse($('commandInput').value); const commands=Array.isArray(packet.commands)?packet.commands:[packet]; const results=commands.map(c=>({op:c.op,result:execute(c)})); localStorage.removeItem(PENDING_COMMAND_KEY); save(); refresh(); $('commandStatus').textContent=`Ran ${results.length} command(s).`; }catch(e){ $('commandStatus').textContent='Command failed: '+e.message; } }
   function loadPendingCommand(){ const pending=localStorage.getItem(PENDING_COMMAND_KEY); if(!pending){ $('commandStatus').textContent='No pending kernel command found.'; return; } $('commandInput').value=pending; $('commandStatus').textContent='Loaded pending kernel command. Review it, then click IMPORT / RUN.'; }
   function loadExample(){ $('commandInput').value=JSON.stringify({command_type:'epistemic_kernel_command',commands:[{op:'reset'},{op:'quick_ingest',mode:'auto',text:'I submitted the form before the deadline. Actually, I submitted it this morning, but the deadline was yesterday.'},{op:'self_audit'}]},null,2); }
@@ -80,7 +122,7 @@
   async function copyExtractionPrompt(){ const text=kernel.getExtractionPrompt($('rawText').value||''); const ok=await copyText(text); $('status').textContent=`${ok?'Copied':'Placed'} extraction prompt (${text.length.toLocaleString()} chars).`; }
   function renderDiamond(state){ const nodes=state.beliefGraph.nodes||[]; if(!nodes.some(n=>n.id===selectedNode)) selectedNode='root_worldview'; const dots=nodes.map((n,i)=>{ const p=n.octahedron?.point||project(n.semantic).point; const pos=side(p); const fill=clsY(p.y)==='ok'?'var(--good)':clsY(p.y)==='no'?'var(--bad)':'var(--warn)'; const r=n.id==='root_worldview'?6:n.type==='contradiction'?5:4; return `<circle cx="${pos.x+(i%5-2)*3}" cy="${pos.y+(Math.floor(i/5)%5-2)*3}" r="${r}" fill="${fill}" stroke="${n.id===selectedNode?'var(--accent)':'var(--line)'}" stroke-width="2" onclick="selectedNode='${esc(n.id)}';refresh()"><title>${esc(n.type+': '+n.label)}</title></circle>`; }).join(''); $('diamond').innerHTML=`<svg viewBox="0 0 360 360"><polygon points="180,50 310,180 180,310 50,180" fill="none" stroke="var(--line)" stroke-width="2"/><line x1="50" y1="180" x2="310" y2="180" stroke="var(--line)" stroke-dasharray="5 5"/><line x1="180" y1="50" x2="180" y2="310" stroke="var(--line)" stroke-dasharray="5 5"/><text x="180" y="36" text-anchor="middle" fill="var(--good)" font-size="11">peak</text><text x="180" y="330" text-anchor="middle" fill="var(--bad)" font-size="11">collapse</text>${dots}</svg>`; const n=nodes.find(x=>x.id===selectedNode); $('selected').textContent=n?`${n.id} · ${n.type} · y ${fmt(n.octahedron?.point?.y)}`:'No node selected.'; }
   function renderTable(state){ const linkByFrom=new Map((state.beliefGraph.links||[]).map(l=>[l.from,l])); $('nodeTable').innerHTML=(state.beliefGraph.nodes||[]).map(n=>{ const m=project(n.semantic||{}); const p=n.octahedron?.point||m.point; return `<tr onclick="selectedNode='${esc(n.id)}';refresh()"><td><b>${esc(n.id)}</b><div class="tiny muted">${esc((n.label||'').slice(0,100))}</div></td><td>a ${fmt(n.semantic?.a)}<br>s ${fmt(n.semantic?.s)}<br>b ${fmt(n.semantic?.b)}</td><td>x ${fmt(p.x)}<br><span class="${clsY(p.y)}">y ${fmt(p.y)}</span><br>z ${fmt(p.z)}<br>L1 ${fmt(l1(p))}</td><td>${esc(linkByFrom.get(n.id)?.relation || (n.id==='root_worldview'?'root':'unlinked'))}</td></tr>`; }).join(''); }
-  function refresh(){ const state=snapshot(); save(); const p=state.octahedron.point; $('mx').textContent=fmt(p.x); $('my').textContent=fmt(p.y); $('mz').textContent=fmt(p.z); $('my').className=clsY(p.y); $('mnodes').textContent=state.beliefGraph.nodes.length; const m=project(state.semantic); $('mathSummary').innerHTML=`<b>|x|+|y|+|z|</b> = ${fmt(m.surface_l1)} · raw L1 ${fmt(m.raw_l1)} · patch ${EpistemicKernel.__v02PatchesApplied?'loaded':'missing'} · active contradictions ${activeContradictions(state).length}`; renderDiamond(state); renderTable(state); $('auditPreview').textContent=JSON.stringify(state.currentAuditPreview,null,2); $('rawState').textContent=JSON.stringify(state,null,2); $('packetOutput').value=JSON.stringify(brainPacket(),null,2); const report=localStorage.getItem(TEST_KEY); if(report) $('testReport').textContent=JSON.stringify(JSON.parse(report),null,2); }
+  function refresh(){ const state=snapshot(); save(); const p=state.octahedron.point; $('mx').textContent=fmt(p.x); $('my').textContent=fmt(p.y); $('mz').textContent=fmt(p.z); $('my').className=clsY(p.y); $('mnodes').textContent=state.beliefGraph.nodes.length; const m=project(state.semantic); $('mathSummary').innerHTML=`<b>|x|+|y|+|z|</b> = ${fmt(m.surface_l1)} · raw L1 ${fmt(m.raw_l1)} · patch ${EpistemicKernel.__v02PatchesApplied?'loaded':'missing'} · active contradictions ${activeContradictions(state).length}`; renderDiamond(state); renderTable(state); $('sourceTrace').textContent=JSON.stringify(sourceTraceSummary(state),null,2); $('auditPreview').textContent=JSON.stringify(state.currentAuditPreview,null,2); $('rawState').textContent=JSON.stringify(state,null,2); $('packetOutput').value=JSON.stringify(brainPacket(),null,2); const report=localStorage.getItem(TEST_KEY); if(report) $('testReport').textContent=JSON.stringify(JSON.parse(report),null,2); }
   loadPendingCommand();
   refresh();
 </script>
