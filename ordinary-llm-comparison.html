@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Ordinary LLM Comparison</title>
+  <style>
+    :root { --bg:#0f1115; --panel:#171a21; --muted:#8b93a7; --text:#eef2ff; --line:#2a3040; --accent:#9db6ff; --bad:#ff8b8b; --good:#9dffb4; --warn:#ffd28b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:var(--bg); color:var(--text); }
+    header { padding:16px 18px; border-bottom:1px solid var(--line); background:#11141b; }
+    main { display:grid; grid-template-columns:minmax(360px,520px) 1fr; gap:12px; padding:12px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    a { color:var(--accent); }
+    button, select { background:#25345c; color:var(--text); border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 10px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    select { width:100%; }
+    button:hover { background:#304274; }
+    textarea, pre { width:100%; white-space:pre-wrap; overflow:auto; background:#0d1016; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:160px; resize:vertical; }
+    pre { max-height:460px; }
+    .muted { color:var(--muted); }
+    .small { font-size:12px; }
+    .ok { color:var(--good); }
+    .warn { color:var(--warn); }
+    .bad { color:var(--bad); }
+    .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .scorecard { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .metric { background:#10131a; border:1px solid var(--line); border-radius:8px; padding:8px; }
+    .metric span { display:block; color:var(--muted); }
+    .metric b { font-size:20px; }
+    @media (max-width:1050px) { main { grid-template-columns:1fr; } .grid3 { grid-template-columns:1fr; } .scorecard { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Ordinary LLM Comparison</h1>
+  <div class="muted small">Milestone 12 harness: compare pasted generic/prompt-only LLM outputs against kernel-guided state movement using visible epistemic-pressure criteria. No external model is called.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="llm-brain-v0-3.html">live brain v0.3</a> ·
+      <a href="goal-runner.html">goal runner</a> ·
+      <a href="claim-challenge.html">claim challenge</a> ·
+      <a href="source-trace-bridge.html">source trace bridge</a>
+    </section>
+    <section>
+      <h2>Benchmark case</h2>
+      <select id="caseSelect" onchange="loadSelectedCase()"></select>
+      <button onclick="copyPrompt('generic')">COPY generic LLM prompt</button>
+      <button onclick="copyPrompt('epistemic')">COPY prompt-only epistemic prompt</button>
+      <button onclick="fillKernelGuided()">FILL kernel-guided output</button>
+      <button onclick="scoreAll()">SCORE comparison</button>
+      <button onclick="copyPacket()">COPY comparison packet</button>
+      <div id="status" class="small muted"></div>
+    </section>
+    <section>
+      <h2>Case packet</h2>
+      <pre id="casePacket">No case selected.</pre>
+    </section>
+    <section>
+      <h2>Rubric</h2>
+      <pre id="rubric"></pre>
+    </section>
+  </div>
+  <div>
+    <section>
+      <h2>Outputs to compare</h2>
+      <div class="grid3">
+        <div>
+          <h2>Generic LLM output</h2>
+          <textarea id="genericOutput" spellcheck="false" placeholder="Paste normal LLM answer here."></textarea>
+        </div>
+        <div>
+          <h2>Prompt-only epistemic LLM output</h2>
+          <textarea id="promptOnlyOutput" spellcheck="false" placeholder="Paste LLM answer after only giving epistemic instructions here."></textarea>
+        </div>
+        <div>
+          <h2>Kernel-guided output</h2>
+          <textarea id="kernelOutput" spellcheck="false" placeholder="Click FILL kernel-guided output, or paste a kernel-guided explanation here."></textarea>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>Score summary</h2>
+      <div class="scorecard">
+        <div class="metric"><span>generic</span><b id="genericScore">0</b></div>
+        <div class="metric"><span>prompt-only</span><b id="promptScore">0</b></div>
+        <div class="metric"><span>kernel-guided</span><b id="kernelScore">0</b></div>
+        <div class="metric"><span>best</span><b id="bestLabel">none</b></div>
+      </div>
+    </section>
+    <section>
+      <h2>Comparison packet</h2>
+      <pre id="comparisonPacket">No comparison scored yet.</pre>
+    </section>
+  </div>
+</main>
+<script src="src/epistemic-kernel-v0-2.js"></script>
+<script src="src/epistemic-kernel-v0-2-patches.js"></script>
+<script src="src/epistemic-benchmark-v0-1.js"></script>
+<script>
+  const CRITERIA = [
+    {
+      id:'contradiction_detection', label:'Contradiction detection', max:2,
+      positive:['contradiction','inconsistent','conflict','cannot both','timeline','tension'],
+      negative:['no contradiction','nothing conflicts','clearly true']
+    },
+    {
+      id:'evidence_separation', label:'Evidence separation', max:2,
+      positive:['evidence','support','attack','attacking','supports','weakens','source','timestamp'],
+      negative:['obviously','just trust','proves everything']
+    },
+    {
+      id:'motive_calibration', label:'Motive calibration', max:2,
+      positive:['motive','intent','separate evidence','not enough evidence','hypothesis','could be mistaken'],
+      negative:['definitely lied','obviously malicious','wanted to hurt']
+    },
+    {
+      id:'scope_control', label:'Scope control', max:2,
+      positive:['scope','local claim','do not merge','not worldview','limited','specific claim'],
+      negative:['therefore everything','proves the whole worldview','always']
+    },
+    {
+      id:'self_sealing_detection', label:'Self-sealing detection', max:2,
+      positive:['self-sealing','falsify','what evidence would count against','counterevidence','unfalsifiable'],
+      negative:['evidence against proves it','disagreement proves']
+    },
+    {
+      id:'belief_update_accuracy', label:'Belief update accuracy', max:2,
+      positive:['weaken','strengthen','confidence','update','reduce confidence','status','claim survives'],
+      negative:['certainty','100% true','case closed']
+    },
+    {
+      id:'unresolved_pressure_preservation', label:'Unresolved-pressure preservation', max:2,
+      positive:['unresolved','open question','pressure remains','not resolved','needs more evidence','unknown'],
+      negative:['fully resolved','nothing remains','no further question']
+    }
+  ];
+
+  let selectedCase = null;
+  let lastPacket = null;
+
+  function $(id) { return document.getElementById(id); }
+  function asArray(value) { return Array.isArray(value) ? value : []; }
+  function round(value, places = 3) { const factor = Math.pow(10, places); return Math.round(Number(value || 0) * factor) / factor; }
+  function lower(text) { return String(text || '').toLowerCase(); }
+  function includesAny(text, terms) { const t = lower(text); return terms.some(term => t.includes(lower(term))); }
+  function countHits(text, terms) { const t = lower(text); return terms.filter(term => t.includes(lower(term))).length; }
+
+  function init() {
+    const select = $('caseSelect');
+    select.innerHTML = asArray(EpistemicBenchmark.CASES).map((caseDef, index) => `<option value="${index}">${caseDef.id} · M${caseDef.milestone}</option>`).join('');
+    $('rubric').textContent = JSON.stringify({
+      purpose:'Score visible epistemic behavior in pasted LLM outputs. This is a deterministic harness, not a hidden truth oracle.',
+      max_score: CRITERIA.reduce((sum, row) => sum + row.max, 0),
+      criteria: CRITERIA.map(row => ({ id:row.id, label:row.label, max:row.max, positive_signals:row.positive, negative_signals:row.negative })),
+      pass_condition_for_claiming_M12:'Real model outputs must be pasted and scored; do not claim superiority from empty placeholders.'
+    }, null, 2);
+    loadSelectedCase();
+  }
+
+  function loadSelectedCase() {
+    selectedCase = EpistemicBenchmark.CASES[Number($('caseSelect').value || 0)];
+    const result = EpistemicBenchmark.runCase(selectedCase);
+    $('casePacket').textContent = JSON.stringify({
+      case_id:selectedCase.id,
+      title:selectedCase.title,
+      category:selectedCase.category,
+      milestone:selectedCase.milestone,
+      failure_pattern:selectedCase.failure_pattern,
+      kernel_case_result:result,
+      testing_note:'Copy prompts to external LLMs, paste their outputs, then score. Kernel-guided output can be filled locally from the benchmark result.'
+    }, null, 2);
+    $('genericOutput').value = '';
+    $('promptOnlyOutput').value = '';
+    $('kernelOutput').value = '';
+    lastPacket = null;
+    $('comparisonPacket').textContent = 'No comparison scored yet.';
+    updateScoreDisplay(null);
+  }
+
+  function promptForCase(mode) {
+    const base = [
+      `Analyze this epistemic-pressure test case: ${selectedCase.title}`,
+      `Case id: ${selectedCase.id}`,
+      `Failure pattern to avoid: ${selectedCase.failure_pattern}`,
+      '',
+      'Task: explain what is going on and what conclusion should be drawn.'
+    ];
+    if (mode === 'epistemic') {
+      base.push('', 'Extra instructions:',
+        '- Separate claims from evidence.',
+        '- Identify contradictions or unresolved pressure.',
+        '- Do not infer motive without separate evidence.',
+        '- Preserve counter-considerations.',
+        '- Do not treat no contradiction as proof of truth.',
+        '- State what evidence would change the conclusion.'
+      );
+    }
+    base.push('', 'Use this benchmark packet:', JSON.stringify({ id:selectedCase.id, title:selectedCase.title, category:selectedCase.category, milestone:selectedCase.milestone, failure_pattern:selectedCase.failure_pattern }, null, 2));
+    return base.join('\n');
+  }
+
+  async function copyPrompt(mode) {
+    const text = promptForCase(mode);
+    try { await navigator.clipboard.writeText(text); $('status').textContent = `Copied ${mode} prompt (${text.length.toLocaleString()} chars).`; }
+    catch (error) { $('status').textContent = `Could not auto-copy ${mode} prompt. Select manually from case packet.`; }
+  }
+
+  function kernelGuidedText() {
+    const result = EpistemicBenchmark.runCase(selectedCase);
+    const lines = [];
+    lines.push(`Kernel-guided result for ${selectedCase.id}: ${result.passed ? 'benchmark passed' : 'benchmark failed'}.`);
+    lines.push(`Category: ${selectedCase.category}; milestone M${selectedCase.milestone}.`);
+    lines.push(`Counts: ${result.counts.claims} claim(s), ${result.counts.evidence} evidence row(s), ${result.counts.contradictions} active contradiction(s), ${result.counts.open_questions} open question(s), ${result.counts.observations} observation(s).`);
+    lines.push(`Root point: x=${round(result.root_point.x)}, y=${round(result.root_point.y)}, z=${round(result.root_point.z)}. Active states must preserve |x| + |y| + |z| = 1.`);
+    lines.push('Belief movement is represented as claim/evidence/contradiction/open-question pressure, not polished language.');
+    lines.push('Contradiction detection is not contradiction resolution; unresolved pressure remains visible until evidence resolves it.');
+    lines.push('Motive claims require separate motive evidence. Coherence alone does not promote truth.');
+    lines.push('Any rule change would need sandbox testing and user approval before promotion.');
+    lines.push(`Checks: ${JSON.stringify(result.checks)}`);
+    return lines.join('\n');
+  }
+
+  function fillKernelGuided() {
+    $('kernelOutput').value = kernelGuidedText();
+    $('status').textContent = 'Filled kernel-guided output from benchmark state movement.';
+  }
+
+  function scoreText(text) {
+    const criteria = CRITERIA.map(criterion => {
+      const positiveHits = countHits(text, criterion.positive);
+      const negativeHits = countHits(text, criterion.negative);
+      let score = 0;
+      if (positiveHits >= 2) score = 2;
+      else if (positiveHits === 1) score = 1;
+      if (negativeHits > 0 && score > 0) score -= 1;
+      return { id:criterion.id, label:criterion.label, score, max:criterion.max, positive_hits:positiveHits, negative_hits:negativeHits };
+    });
+    const total = criteria.reduce((sum, row) => sum + row.score, 0);
+    const max = criteria.reduce((sum, row) => sum + row.max, 0);
+    return { total, max, ratio: round(total / Math.max(1, max), 4), criteria };
+  }
+
+  function scoreAll() {
+    const generic = scoreText($('genericOutput').value);
+    const promptOnly = scoreText($('promptOnlyOutput').value);
+    const kernelGuided = scoreText($('kernelOutput').value);
+    const result = EpistemicBenchmark.runCase(selectedCase);
+    const scores = { generic, prompt_only:promptOnly, kernel_guided:kernelGuided };
+    const best = Object.entries(scores).sort((a,b) => b[1].total - a[1].total)[0] || ['none', { total:0 }];
+    lastPacket = {
+      packet_type:'42ndMind_ordinary_llm_comparison_packet',
+      packet_version:'0.1.0',
+      created_at:new Date().toISOString(),
+      purpose:'Milestone 12 comparison harness. Scores pasted LLM outputs against visible epistemic-pressure criteria and compares them with kernel-guided state movement.',
+      honesty_note:'This does not call external models and does not prove superiority unless real model outputs are pasted and preserved.',
+      case:{ id:selectedCase.id, title:selectedCase.title, category:selectedCase.category, milestone:selectedCase.milestone, failure_pattern:selectedCase.failure_pattern },
+      kernel_case_result:result,
+      scores,
+      best:{ label:best[0], total:best[1].total, max:best[1].max },
+      doctrine:{
+        first_principles:true,
+        kernel_owns_belief_movement:true,
+        llm_outputs_are_observed_behavior_not_truth:true,
+        contradiction_detection_is_not_resolution:true,
+        unresolved_pressure_must_remain_visible:true,
+        no_rule_self_promotion:true
+      },
+      pasted_outputs:{ generic:$('genericOutput').value, prompt_only:$('promptOnlyOutput').value, kernel_guided:$('kernelOutput').value }
+    };
+    $('comparisonPacket').textContent = JSON.stringify(lastPacket, null, 2);
+    updateScoreDisplay(lastPacket);
+    $('status').textContent = `Scored comparison. Best: ${best[0]} (${best[1].total}/${best[1].max}).`;
+  }
+
+  function updateScoreDisplay(packet) {
+    if (!packet) {
+      $('genericScore').textContent = '0';
+      $('promptScore').textContent = '0';
+      $('kernelScore').textContent = '0';
+      $('bestLabel').textContent = 'none';
+      return;
+    }
+    $('genericScore').textContent = `${packet.scores.generic.total}/${packet.scores.generic.max}`;
+    $('promptScore').textContent = `${packet.scores.prompt_only.total}/${packet.scores.prompt_only.max}`;
+    $('kernelScore').textContent = `${packet.scores.kernel_guided.total}/${packet.scores.kernel_guided.max}`;
+    $('bestLabel').textContent = packet.best.label;
+  }
+
+  async function copyPacket() {
+    if (!lastPacket) scoreAll();
+    const text = JSON.stringify(lastPacket, null, 2);
+    try { await navigator.clipboard.writeText(text); $('status').textContent = `Copied comparison packet (${text.length.toLocaleString()} chars).`; }
+    catch (error) { $('status').textContent = 'Could not auto-copy packet. Select it manually.'; }
+  }
+
+  init();
+</script>
+</body>
+</html>
