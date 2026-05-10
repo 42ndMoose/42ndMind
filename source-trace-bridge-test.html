@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Source Trace Bridge Smoke Test</title>
+  <style>
+    body { margin:20px; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    a { color:#9db6ff; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 10px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    pre { white-space:pre-wrap; background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    .pass { color:#9dffb4; }
+    .fail { color:#ff8b8b; }
+    .muted { color:#8b93a7; }
+  </style>
+</head>
+<body>
+  <h1>Source Trace Bridge Smoke Test</h1>
+  <p><a href="source-trace-bridge.html">source trace bridge</a> · <a href="llm-brain-v0-3.html">live brain v0.3</a> · <a href="dossier-source-graph.html">dossier graph</a></p>
+  <button onclick="copyOutput()">COPY output</button><span id="status" class="muted"></span>
+  <pre id="out">Running...</pre>
+<script>
+  function asArray(value) { return Array.isArray(value) ? value : []; }
+  function byId(rows) { return new Map(asArray(rows).map(row => [row.id, row])); }
+  function compactClaim(row) {
+    return row ? {
+      id: row.id,
+      client_id: row.client_id || null,
+      text: row.text,
+      scope: row.scope,
+      status: row.status,
+      confidence: row.confidence,
+      source: row.source,
+      evidence_for_count: asArray(row.evidence_for).length,
+      evidence_against_count: asArray(row.evidence_against).length
+    } : null;
+  }
+  function compactEvidence(row) {
+    return row ? {
+      id: row.id,
+      text: row.text,
+      relation: row.relation,
+      claimId: row.claimId,
+      strength: row.strength,
+      confidence: row.confidence,
+      source: row.source
+    } : null;
+  }
+  function buildFixtureState() {
+    const claims = [1,2,3,4].map(n => ({
+      id: `claim_${n}`,
+      client_id: `dossier_claim_d${n}`,
+      text: `Dossier claim ${n}`,
+      scope: n === 1 ? 'dossier_fact' : n === 2 ? 'dossier_inference' : n === 3 ? 'dossier_interpretation' : 'dossier_hypothesis',
+      status: n === 1 ? 'active' : 'unresolved',
+      confidence: n === 1 ? 1 : 0.55,
+      source: 'structured_packet',
+      evidence_for: n === 4 ? [] : [`evidence_${n}`],
+      evidence_against: n === 1 ? [] : [`evidence_attack_${n}`]
+    }));
+    const evidence = [
+      { id:'evidence_1', text:'source link supplied by user', relation:'supports', claimId:'claim_1', strength:'moderate', confidence:0.75, source:'structured_packet' },
+      { id:'evidence_source_1', text:'source_link: https://example.invalid/source', relation:'supports', claimId:'claim_1', strength:'weak', confidence:0.5, source:'structured_packet' },
+      { id:'evidence_2', text:'pattern match', relation:'supports', claimId:'claim_2', strength:'weak', confidence:0.55, source:'structured_packet' },
+      { id:'evidence_attack_2', text:'counter_consideration: could be independent convergence', relation:'attacks', claimId:'claim_2', strength:'weak', confidence:0.45, source:'structured_packet' },
+      { id:'evidence_3', text:'wording analysis', relation:'supports', claimId:'claim_3', strength:'weak', confidence:0.55, source:'structured_packet' },
+      { id:'evidence_attack_3', text:'counter_consideration: alternate editorial explanation', relation:'attacks', claimId:'claim_3', strength:'weak', confidence:0.45, source:'structured_packet' },
+      { id:'evidence_attack_4', text:'counter_consideration: needs stronger source evidence', relation:'attacks', claimId:'claim_4', strength:'weak', confidence:0.45, source:'structured_packet' }
+    ];
+    const questions = [1,2,3,4,5,6].map(n => ({
+      id:`question_${n}`,
+      text:`Open dossier pressure question ${n}`,
+      status:'open',
+      links:{ client_id:`dossier_claim_d${Math.min(4, Math.max(1, Math.ceil(n/2)))}`, source:'dossier_source_graph_v0_1' }
+    }));
+    return {
+      claims,
+      evidence,
+      questions,
+      observations:[],
+      sourceTraces:[{
+        trace_type:'structured_packet_import',
+        source_title:'Dossier source graph import',
+        source_kind:'dossier_source_graph',
+        import_time:'2026-05-10T00:00:00.000Z',
+        event_id:'event_test_source_trace',
+        counts:{ claims:4, evidence:7, attacking_evidence:3, open_questions:6, observations:0 },
+        source_links:['https://example.invalid/source'],
+        claim_ids:claims.map(row => row.id),
+        evidence_ids:evidence.map(row => row.id),
+        meta:{ read_only_trace:true, persisted_in_kernel_state:true, grouped_from_event_log:true }
+      }]
+    };
+  }
+  function linkedOpenQuestions(state, trace) {
+    const claimIds = new Set(asArray(trace.claim_ids));
+    const evidenceIds = new Set(asArray(trace.evidence_ids));
+    return asArray(state.questions).filter(question => {
+      const links = question.links || {};
+      if (question.status && question.status !== 'open') return false;
+      if (claimIds.has(links.claim_id)) return true;
+      if (evidenceIds.has(links.evidence_id)) return true;
+      if (String(links.client_id || '').startsWith('dossier_claim_')) return true;
+      if (links.source === 'dossier_source_graph_v0_1') return true;
+      return false;
+    });
+  }
+  function buildExplanationPacket(state) {
+    const claims = byId(state.claims);
+    const evidence = byId(state.evidence);
+    const traces = asArray(state.sourceTraces);
+    return {
+      packet_type:'42ndMind_source_trace_explanation_packet',
+      packet_version:'0.1.0',
+      doctrine:{
+        first_principles:true,
+        epistemic_octahedron_consistent:true,
+        null_origin_preserved:true,
+        active_surface_rule:'|x| + |y| + |z| = 1 for active states',
+        unresolved_pressure_must_remain_visible:true,
+        contradiction_detection_is_not_contradiction_resolution:true,
+        no_rule_self_promotion:true
+      },
+      state_summary:{ claims:asArray(state.claims).length, evidence:asArray(state.evidence).length, open_questions:linkedOpenQuestions(state, traces[0]).length, observations:asArray(state.observations).length, source_traces:traces.length },
+      source_traces:traces.map(trace => {
+        const linkedClaims = asArray(trace.claim_ids).map(id => compactClaim(claims.get(id))).filter(Boolean);
+        const linkedEvidence = asArray(trace.evidence_ids).map(id => compactEvidence(evidence.get(id))).filter(Boolean);
+        return {
+          source_kind:trace.source_kind,
+          counts:trace.counts,
+          linked_claims:linkedClaims,
+          linked_evidence:linkedEvidence,
+          attacking_evidence:linkedEvidence.filter(row => row.relation === 'attacks'),
+          supporting_evidence:linkedEvidence.filter(row => row.relation !== 'attacks'),
+          open_questions:linkedOpenQuestions(state, trace),
+          explanation_guardrails:{
+            explain_only:true,
+            do_not_mutate_kernel_state:true,
+            do_not_promote_truth_from_coherence:true,
+            preserve_counter_considerations:true,
+            treat_source_trace_as_provenance_not_proof:true,
+            kernel_owns_belief_movement:true,
+            llm_is_interface_not_brain:true
+          }
+        };
+      })
+    };
+  }
+  function buildPrompt(packet) {
+    return [
+      'You are explaining a 42ndMind source trace. The Epistemic Kernel owns belief movement. You are only the interface layer.',
+      'Do not mutate state. Do not promote truth. Do not flatten counter-considerations. Do not treat source provenance as proof.',
+      JSON.stringify(packet, null, 2)
+    ].join('\n\n');
+  }
+  function run() {
+    const packet = buildExplanationPacket(buildFixtureState());
+    const prompt = buildPrompt(packet);
+    const trace = packet.source_traces[0] || { counts:{}, explanation_guardrails:{} };
+    const cases = [
+      ['packet type', packet.packet_type === '42ndMind_source_trace_explanation_packet'],
+      ['one source trace', packet.state_summary.source_traces === 1],
+      ['claims count', trace.counts.claims === 4],
+      ['evidence count', trace.counts.evidence === 7],
+      ['attacking evidence count', trace.counts.attacking_evidence === 3],
+      ['observations omitted', trace.counts.observations === 0],
+      ['linked claims preserved', trace.linked_claims.length === 4],
+      ['linked evidence preserved', trace.linked_evidence.length === 7],
+      ['attacking rows separated', trace.attacking_evidence.length === 3],
+      ['open pressure visible', trace.open_questions.length === 6],
+      ['first principles flag', packet.doctrine.first_principles === true],
+      ['octahedron surface rule', packet.doctrine.active_surface_rule.includes('|x| + |y| + |z| = 1')],
+      ['contradiction is not resolution', packet.doctrine.contradiction_detection_is_not_contradiction_resolution === true],
+      ['no rule self-promotion', packet.doctrine.no_rule_self_promotion === true],
+      ['explain only guardrail', trace.explanation_guardrails.explain_only === true],
+      ['no mutation guardrail', trace.explanation_guardrails.do_not_mutate_kernel_state === true],
+      ['provenance not proof guardrail', trace.explanation_guardrails.treat_source_trace_as_provenance_not_proof === true],
+      ['LLM is interface guardrail', trace.explanation_guardrails.llm_is_interface_not_brain === true],
+      ['prompt blocks mutation', prompt.includes('Do not mutate state')],
+      ['prompt blocks truth promotion', prompt.includes('Do not promote truth')]
+    ];
+    const passed = cases.filter(row => row[1]).length;
+    const text = `Source Trace Bridge smoke test\n${passed}/${cases.length} passed\n\n` + cases.map(row => `${row[1] ? 'PASS' : 'FAIL'} ${row[0]}`).join('\n') + '\n\n' + JSON.stringify(packet, null, 2);
+    const out = document.getElementById('out');
+    out.textContent = text;
+    out.className = passed === cases.length ? 'pass' : 'fail';
+  }
+  async function copyOutput() {
+    const text = document.getElementById('out').textContent;
+    try { await navigator.clipboard.writeText(text); document.getElementById('status').textContent = `Copied output (${text.length.toLocaleString()} chars).`; }
+    catch (error) { document.getElementById('status').textContent = 'Could not auto-copy. Select output manually.'; }
+  }
+  run();
+</script>
+</body>
+</html>
