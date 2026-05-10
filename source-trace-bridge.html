@@ -18,6 +18,7 @@
     button:hover { background:#304274; }
     pre, textarea { width:100%; white-space:pre-wrap; overflow:auto; background:#0d1016; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
     textarea { min-height:520px; resize:vertical; }
+    .preview { min-height:180px; }
     .muted { color:var(--muted); }
     .small { font-size:12px; }
     .ok { color:var(--good); }
@@ -37,6 +38,7 @@
       <h2>Navigation</h2>
       <a href="llm-brain-v0-3.html">live brain v0.3</a> ·
       <a href="dossier-source-graph.html">dossier graph</a> ·
+      <a href="source-trace-bridge-test.html">bridge test</a> ·
       <a href="goal-runner.html">goal runner</a> ·
       <a href="belief-graph.html">graph</a>
     </section>
@@ -45,6 +47,7 @@
       <button onclick="refresh()">REFRESH from localStorage</button>
       <button onclick="copyPacket()">COPY explanation packet</button>
       <button onclick="copyPrompt()">COPY LLM explanation prompt</button>
+      <button onclick="copyPreview()">COPY local preview</button>
       <div id="status" class="small muted"></div>
     </section>
     <section>
@@ -55,6 +58,10 @@
     <section>
       <h2>Trace summary</h2>
       <pre id="summary">No state loaded.</pre>
+    </section>
+    <section>
+      <h2>Local explanation preview</h2>
+      <pre id="preview" class="preview">No explanation preview yet.</pre>
     </section>
   </div>
   <div>
@@ -158,7 +165,7 @@
     });
     return {
       packet_type: '42ndMind_source_trace_explanation_packet',
-      packet_version: '0.1.0',
+      packet_version: '0.1.1',
       created_at: new Date().toISOString(),
       purpose: 'Give an LLM interface a compact, read-only provenance summary without granting belief-state control.',
       doctrine: {
@@ -178,6 +185,7 @@
         source_traces: traces.length
       },
       source_traces: tracePackets,
+      local_preview: buildLocalPreviewFromTraces(tracePackets),
       requested_llm_behavior: [
         'Explain what sources were imported and what pressure they created.',
         'Separate fact, inference, interpretation, and hypothesis when visible from scopes or claim objects.',
@@ -188,6 +196,27 @@
         'Do not suggest belief-state changes unless framed as a proposed kernel command requiring user approval.'
       ]
     };
+  }
+  function buildLocalPreviewFromTraces(traces) {
+    if (!asArray(traces).length) return 'No source traces are currently persisted in kernel state.';
+    return asArray(traces).map((trace, index) => {
+      const counts = trace.counts || {};
+      const attacks = asArray(trace.attacking_evidence);
+      const supports = asArray(trace.supporting_evidence);
+      const questions = asArray(trace.open_questions);
+      const liveCounters = attacks.map(row => safeText(row.text).replace(/^counter_consideration:\s*/i, '').trim()).filter(Boolean);
+      const lines = [];
+      lines.push(`Source trace ${index + 1}: ${trace.source_title || trace.source_kind || 'structured import'}`);
+      lines.push(`Import kind: ${trace.source_kind || 'unknown'}.`);
+      lines.push(`Imported structure: ${counts.claims || 0} claim(s), ${counts.evidence || 0} evidence row(s), ${counts.attacking_evidence || attacks.length} attacking evidence row(s), ${counts.open_questions || questions.length} open question(s), ${counts.observations || 0} observation(s).`);
+      lines.push('Interpretation: this import created provenance and pressure, not automatic truth. The kernel still owns belief movement.');
+      lines.push(`Support/attack split: ${supports.length} supporting row(s) and ${attacks.length} attacking row(s) are visible separately.`);
+      if (liveCounters.length) lines.push(`Live counter-considerations: ${liveCounters.slice(0, 4).join('; ')}${liveCounters.length > 4 ? '; ...' : ''}.`);
+      else lines.push('Live counter-considerations: none detected in this trace.');
+      lines.push(`Unresolved pressure: ${questions.length} open question(s) remain active. Contradiction or pressure detection is not treated as resolution.`);
+      lines.push('Guardrail: the LLM may explain this trace, but it must not mutate state, promote coherence into truth, flatten counter-considerations, or propose rule promotion without user approval.');
+      return lines.join('\n');
+    }).join('\n\n');
   }
   function buildPrompt(packet) {
     return [
@@ -211,6 +240,7 @@
       $('summary').textContent = 'No local kernel state found. Open llm-brain-v0-3.html and import a packet first.';
       $('packet').value = '';
       $('prompt').value = '';
+      $('preview').textContent = 'No explanation preview yet.';
       $('status').textContent = 'No state loaded.';
       return;
     }
@@ -218,6 +248,7 @@
       $('summary').textContent = `Could not parse local kernel state: ${state.parse_error}`;
       $('packet').value = '';
       $('prompt').value = '';
+      $('preview').textContent = 'No explanation preview because state could not be parsed.';
       $('status').textContent = 'Parse error.';
       return;
     }
@@ -225,15 +256,17 @@
     $('summary').textContent = JSON.stringify(packet.state_summary, null, 2);
     $('packet').value = JSON.stringify(packet, null, 2);
     $('prompt').value = buildPrompt(packet);
+    $('preview').textContent = packet.local_preview;
     $('status').textContent = `Loaded ${packet.state_summary.source_traces} source trace(s).`;
   }
-  async function copyValue(id, label) {
-    const text = $(id).value;
+  async function copyValue(id, label, property = 'value') {
+    const text = $(id)[property];
     try { await navigator.clipboard.writeText(text); $('status').textContent = `Copied ${label} (${text.length.toLocaleString()} chars).`; }
     catch (error) { $('status').textContent = `Could not auto-copy ${label}. Select it manually.`; }
   }
   function copyPacket() { copyValue('packet', 'explanation packet'); }
   function copyPrompt() { copyValue('prompt', 'LLM explanation prompt'); }
+  function copyPreview() { copyValue('preview', 'local preview', 'textContent'); }
   refresh();
 </script>
 </body>
