@@ -28,6 +28,7 @@ It currently has:
 - non-scoring source registry module
 - source registry workflow page
 - trace-to-source-registry conversion
+- source registry visibility in live brain packets
 - limited M12-M15 milestone closer harness
 
 It is not a full truth machine. It cannot independently verify external facts without a mature retrieval/source layer.
@@ -69,23 +70,43 @@ It is not a full truth machine. It cannot independently verify external facts wi
 - `contradiction_audit = patched`
 - `idempotent_import_packet_guard = patched`
 - `duplicate_provenance_audit = patched`
+- `source_registry_visibility = patched_metadata_only`
 - benchmark score: `10 / 10`
 - failed cases: `0`
 - active Octahedron states preserve `|x| + |y| + |z| = 1`
 - null origin stays separate from active surface states
 
-### Duplicate import behavior
+### Live brain packet
 
-`llm-brain-v0-3.html` now prevents exact duplicate `import_packet` commands from being treated as fresh belief pressure.
-
-The live brain packet is now:
+`llm-brain-v0-3.html` now produces:
 
 ```json
 {
   "packet_type": "42ndMind_live_brain_packet",
-  "packet_version": "0.3.3-patched"
+  "packet_version": "0.3.4-patched"
 }
 ```
+
+The packet includes:
+
+- `source_trace_summary`
+- `source_registry_summary`
+- `source_registry_metadata`
+- `duplicate_import_audit`
+
+`source_registry_summary` and `source_registry_metadata` are non-scoring metadata only. They do not alter claims, evidence, gates, contradictions, graph nodes, root worldview, confidence, or Octahedron coordinates.
+
+The live brain reads saved source registry metadata from:
+
+```text
+42ndMind_source_registry_v0_1
+```
+
+If no registry is saved, the brain packet reports `available: false` and `reason: "no_saved_source_registry"`.
+
+### Duplicate import behavior
+
+`llm-brain-v0-3.html` prevents exact duplicate `import_packet` commands from being treated as fresh belief pressure.
 
 Duplicate imports are skipped and recorded in `kernel_state.eventLog` as:
 
@@ -102,15 +123,7 @@ Duplicate imports are skipped and recorded in `kernel_state.eventLog` as:
 }
 ```
 
-The brain packet also includes:
-
-```json
-{
-  "duplicate_import_audit": []
-}
-```
-
-This makes the rule brain-visible rather than only a hidden UI blocker. The governing principle is: repeated identical provenance is not independent convergence.
+The governing principle is: repeated identical provenance is not independent convergence.
 
 ### Dossier source graph
 
@@ -161,7 +174,7 @@ Clean browser packet confirmed:
 
 ### Source registry
 
-`src/source-registry-v0-1.js` is now at version `0.1.2`.
+`src/source-registry-v0-1.js` is at version `0.1.2`.
 
 It defines a non-scoring source registry layer that represents source objects separately from claims and evidence.
 
@@ -192,7 +205,7 @@ Doctrine/guardrails:
 - kernel owns belief movement
 - registry is non-scoring metadata only
 
-`source-registry-test.html` now loads:
+`source-registry-test.html` loads:
 
 ```html
 <script src="src/source-registry-v0-1.js?v=0.1.2"></script>
@@ -200,7 +213,7 @@ Doctrine/guardrails:
 
 It was verified in-browser as `36/36 passed`.
 
-`source-registry.html` now loads:
+`source-registry.html` loads:
 
 ```html
 <script src="src/source-registry-v0-1.js?v=0.1.2"></script>
@@ -221,11 +234,18 @@ It can:
 
 ## Latest important changes
 
+### Source registry visibility in live brain packet
+
+- commit `ff8db604f8b247b5e3ac32add2bbd29454880105`: added source registry visibility directly to `llm-brain-v0-3.html`
+- commit `231c67536a0f4b3f177a9f653ad26c1147ebd78d`: removed unused bridge file created during the first implementation attempt
+
+The live brain now reads saved source registry metadata from localStorage and includes it in copied brain packets as metadata-only.
+
 ### Duplicate provenance audit
 
 - commit `0f0f1346425ada62ed41b32337ae48a995023049`: `llm-brain-v0-3.html`
 
-Exact duplicate structured imports are now skipped and recorded as explicit non-scoring epistemic audit events.
+Exact duplicate structured imports are skipped and recorded as explicit non-scoring epistemic audit events.
 
 This strengthens the kernel rule:
 
@@ -239,21 +259,27 @@ Repeated identical provenance is not independent convergence.
 - commit `94e68130d603d71a8221de1b20fddec0116aa3d2`: cache-busted source registry test to `0.1.2`
 - commit `2bff811af962911924bdcf00b8f2fa685afddc3f`: cache-busted source registry page to `0.1.2`
 
-The browser test now reports `36/36 passed`.
+The browser test reports `36/36 passed`.
 
 ## Current next development target
 
-Next step should make saved source registry metadata visible in the live brain packet.
+Next step should verify source registry visibility in browser.
 
-Recommended implementation:
+Recommended test:
 
-1. In `llm-brain-v0-3.html`, read localStorage key `42ndMind_source_registry_v0_1`.
-2. Include a `source_registry_summary` in copied brain packets.
-3. Include the full saved `sourceRegistry` under `kernel_state.sourceRegistry` or a clearly non-scoring adjacent field.
-4. Label it as metadata-only, non-scoring, and not belief movement.
-5. Do not integrate source registry into confidence/gates/root worldview yet.
+1. In `source-registry.html`, make sure a source registry has been saved with `SAVE registry metadata`.
+2. Open `llm-brain-v0-3.html` and hard refresh.
+3. Click `COPY brain packet`.
+4. Confirm the copied packet includes:
+   - `packet_version: "0.3.4-patched"`
+   - `patch_status.source_registry_visibility: "patched_metadata_only"`
+   - `source_registry_summary.available: true`
+   - `source_registry_metadata.available: true`
+   - `source_registry_metadata.meta.non_scoring: true`
+   - `source_registry_metadata.meta.scoring_allowed: false`
+5. Confirm root point / confidence / gates are not moved merely by saving a source registry.
 
-This continues M13/M14: the brain carries provenance/source memory visibly, while still refusing to treat provenance as proof.
+If clean, the next implementation target should be source-registry visibility in `source-trace-bridge.html` explanations, still read-only and non-scoring.
 
 ## Remaining major gaps
 
@@ -268,7 +294,7 @@ This continues M13/M14: the brain carries provenance/source memory visibly, whil
 
 - M1-M11: browser kernel, graph, gates, evidence pressure, benchmark, and patch layer are active.
 - M12: comparison harness, smoke test, and report index exist.
-- M13: dossier import, source traces, non-scoring source registry module, workflow page, trace conversion, and duplicate-provenance rule exist.
+- M13: dossier import, source traces, non-scoring source registry module, workflow page, trace conversion, duplicate-provenance rule, and live brain source-registry visibility exist.
 - M14: read-only source-trace explanation bridge exists.
 - M15: only limited/sandboxed pieces exist; no autonomous self-promotion.
 
@@ -298,7 +324,9 @@ First read CURRENT_PROGRESS.md.
 
 Important state:
 - Main live console: llm-brain-v0-3.html
-- Live brain packet version is 0.3.3-patched
+- Live brain packet version is 0.3.4-patched
+- Brain packet includes source_registry_summary and source_registry_metadata
+- source_registry_metadata is non-scoring metadata only
 - Duplicate import guard records duplicate_import_skipped events
 - Duplicate provenance rule: repeated identical provenance is not independent convergence
 - Dossier importer: dossier-source-graph.html
@@ -321,9 +349,8 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Add source registry visibility into the live brain packet.
-2. Read localStorage key `42ndMind_source_registry_v0_1`.
-3. Include source_registry_summary and saved registry metadata in copied brain packets.
-4. Keep it non-scoring.
-5. Do not integrate into belief scoring yet.
+1. Ask user to verify source registry visibility in copied brain packet.
+2. If clean, add source registry visibility to source-trace-bridge.html explanation packet.
+3. Keep it read-only and non-scoring.
+4. Do not integrate into belief scoring yet.
 ```
