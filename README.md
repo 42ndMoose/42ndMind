@@ -2,7 +2,7 @@
 
 A tiny transparent belief-state prototype based on epistemic pressure, gate updates, scoped belief graphs, and Epistemic Octahedron projection.
 
-This is not an LLM. It does not understand English deeply. It understands structured belief objects: claims, evidence, contradictions, questions, gate states, local octahedron states, and a root worldview aggregate.
+This is not an LLM. It does not understand English deeply. It understands structured belief objects: claims, evidence, contradictions, questions, gate states, local octahedron states, source traces, benchmark cases, and a root worldview aggregate.
 
 The point of this prototype is to put the Epistemic Octahedron beneath the language layer instead of merely training an LLM to sound mature.
 
@@ -10,14 +10,38 @@ The point of this prototype is to put the Epistemic Octahedron beneath the langu
 
 The current system is a browser-based JavaScript prototype hosted through GitHub Pages.
 
-Current live pages:
+The active working stack has moved beyond the original v0 page. The current main console is `llm-brain-v0-3.html`.
 
-- `index.html` — main kernel UI for ingesting claims/evidence, viewing gates, copying LLM context, exporting/importing state.
+Current active pages:
+
+- `llm-brain-v0-3.html` — main patched live brain console for structured command import, benchmark packet export, source traces, local graph inspection, and brain-packet copying.
+- `goal-runner.html` — benchmark, milestone, sandbox, and memory-compression runner.
+- `ordinary-llm-comparison.html` — Milestone 12 harness for comparing pasted generic/prompt-only LLM outputs against kernel-guided benchmark behavior.
+- `ordinary-llm-comparison-test.html` — smoke test for the Milestone 12 comparison harness.
+- `claim-challenge.html` — external-claim challenge workflow with optional kernel-command export.
+- `claim-challenge-test.html` — smoke test for claim-challenge classifications and surface-rule preservation.
+- `dossier-source-graph.html` — curated dossier packet importer. Current module version: `0.1.3`.
+- `dossier-source-graph-test.html` — smoke/regression test for dossier source-graph import behavior.
+- `source-trace-bridge.html` — read-only bridge from persisted source traces to LLM-facing explanation packets/prompts and local explanation preview.
+- `source-trace-bridge-test.html` — smoke test for source-trace explanation packets and guardrails.
+- `milestone-closer.html` — limited M12-M15 harness for making endgame behavior visible as test packets.
 - `belief-graph.html` — graph viewer for local octahedron states, parent links, stance clusters, and the root worldview aggregate.
+- `index.html` — older human-facing kernel UI, still useful but no longer the primary active console.
 
-Current core file:
+Current active implementation files:
 
-- `src/epistemic-kernel.js` — the transparent belief-state engine.
+- `src/epistemic-kernel-v0-2.js` — current browser kernel.
+- `src/epistemic-kernel-v0-2-patches.js` — patch layer for low-signal quarantine and unresolved-contradiction audit pressure.
+- `src/epistemic-benchmark-v0-1.js` — fixed benchmark cases, sandbox overlay runner, milestone status, and memory compression helpers.
+- `src/claim-challenge-v0-1.js` — claim-challenge workflow.
+- `src/dossier-source-graph-v0-1.js` — dossier source-graph importer and kernel-command exporter. Current version: `0.1.3`.
+
+Current stable smoke checks:
+
+- `EpistemicBenchmark.runBenchmark()` currently passes `10 / 10` benchmark cases in the active browser stack.
+- `dossier-source-graph-test.html` confirms dossier counter-considerations export as attacking evidence and that dossier kernel commands use `observations: []`.
+- `source-trace-bridge-test.html` confirms source-trace explanation packets preserve no-mutation and provenance-not-proof guardrails.
+- `ordinary-llm-comparison-test.html` confirms the Milestone 12 comparison packet shape, rubric criteria, scoring lanes, and doctrine guardrails.
 
 Current state persistence:
 
@@ -25,7 +49,7 @@ Current state persistence:
 - Reloading the page should preserve state.
 - Closing/reopening the browser should preserve state unless site data is cleared.
 - State is local to the browser/device. It is not automatically stored in GitHub.
-- For durable transfer, use `Export state JSON` or `Copy LLM context`.
+- For durable transfer, use copied brain packets, exported state JSON, or copied comparison/source-trace packets.
 
 ## What it does now
 
@@ -43,8 +67,20 @@ Current state persistence:
   - G5 reality contact
   - G6 non-self-sealing
 - Projects semantic state onto the Epistemic Octahedron surface for active worldview states.
+- Keeps the null origin separate from active surface states.
 - Exports and imports JSON state.
-- Copies a complete LLM context packet so a future ChatGPT session can see current UI state, unsaved textbox drafts, visible UI text, and saved kernel state.
+- Imports structured extraction packets into the kernel.
+- Imports dossier source-graph packets without treating dossier coherence as automatic truth.
+- Exports dossier counter-considerations as attacking evidence, not low-signal observations.
+- Persists imported source traces into `kernel_state.sourceTraces` as non-scoring provenance metadata.
+- Produces read-only LLM explanation packets from source traces.
+- Produces deterministic local explanation previews before involving an LLM.
+- Challenges external claims and classifies self-sealing, motive-overclaim, contradiction, unresolved, coherent, and evidence-backed cases.
+- Runs fixed benchmark cases.
+- Runs candidate rule overlays in sandbox form without allowing self-promotion.
+- Produces memory-compression packets that separate active pressure from archive traces.
+- Provides a Milestone 12 comparison harness for pasted ordinary LLM outputs.
+- Copies a complete brain packet so a future ChatGPT session can see current kernel state, source traces, benchmark summaries, and command protocol.
 - Builds a scoped `beliefGraph` containing:
   - root worldview node
   - claim nodes
@@ -57,7 +93,7 @@ Current state persistence:
 
 ### Browser mode
 
-Open `index.html` in a browser.
+Open `llm-brain-v0-3.html` in a browser for the main active console.
 
 No install is required.
 
@@ -77,38 +113,54 @@ npm run demo
 
 ## How to use
 
-The fastest path is the Quick Ingest box. Paste something like:
+For serious work, prefer the structured command/import flow over Quick Ingest.
 
-```text
-I submitted the form before the deadline. Actually, I submitted it this morning, but the deadline was yesterday.
-```
+The fastest current path for the active console is:
 
-Then click `Ingest text`.
+1. Open `llm-brain-v0-3.html`.
+2. Paste or load an `epistemic_kernel_command` packet.
+3. Click `IMPORT / RUN`.
+4. Inspect the live Octahedron math, graph nodes, source traces, audit preview, and copied brain packet.
 
-The better path is structured input:
+For dossier work:
 
-1. Add a claim.
-2. Add evidence that supports or attacks the claim.
-3. Watch the kernel update confidence, contradictions, gate states, questions, local graph nodes, and octahedron position.
+1. Open `dossier-source-graph.html`.
+2. Load or paste a dossier packet.
+3. Confirm version `0.1.3`.
+4. Send the command to the live brain.
+5. Import it from `llm-brain-v0-3.html`.
+6. Inspect `source_trace_summary` and `kernel_state.sourceTraces`.
+7. Open `source-trace-bridge.html` for a read-only explanation packet and local preview.
 
-For serious work, prefer structured input over Quick Ingest. Quick Ingest is intentionally crude.
+For ordinary-LLM comparison:
+
+1. Open `ordinary-llm-comparison.html`.
+2. Select a benchmark case.
+3. Copy the generic and prompt-only prompts into external LLMs.
+4. Paste their outputs back into the comparison page.
+5. Fill the kernel-guided output.
+6. Score the comparison and export the comparison packet.
+
+The older `index.html` page remains available, but the current working stack is centered on `llm-brain-v0-3.html`.
 
 ## Important limitation
 
 The quick English parser is intentionally crude. It is not the real intelligence layer.
 
-The intended future architecture is:
+The intended architecture is:
 
 ```text
 Human language
 → LLM extractor
-→ structured claim/evidence/principle packet
+→ structured claim/evidence/principle/source packet
 → Epistemic Kernel
 → belief-state update
 → optional LLM verbal explanation
 ```
 
 In other words, the LLM becomes the eyes and mouth. The kernel owns belief movement.
+
+The repo now has early bridge layers for this architecture, but it still does not have mature retrieval, real external fact verification, or a completed natural-language approval loop.
 
 ## Core design thesis
 
@@ -171,6 +223,8 @@ questions remain open until resolved
 local belief graph nodes can feed a root worldview aggregate
 ```
 
+The current v0.3 stack also proves that a browser kernel can carry source provenance, preserve counter-considerations, expose read-only explanation packets to an LLM layer, and compare pasted LLM outputs against visible epistemic-pressure criteria.
+
 It is not a finished AI. It is the first skeleton of an epistemic operating system.
 
 ## What this prototype does not prove yet
@@ -179,15 +233,15 @@ It does not yet prove that the Epistemic Octahedron is validated.
 
 It does not yet deeply understand English.
 
-It does not yet ingest long philosophical texts reliably.
+It does not yet ingest long philosophical texts reliably without structured extraction help.
 
-It does not yet perform strong inference propagation.
+It does not yet perform mature real-world retrieval or external fact verification.
 
-It does not yet self-audit its own scoring.
+It does not yet prove superiority over generic LLM reasoning because real external model outputs still need to be pasted, scored, preserved, and compared.
 
-It does not yet sandbox and test rule changes.
+It does not yet have a complete natural-language approval/import loop.
 
-It does not yet outperform generic LLM reasoning on a formal benchmark.
+It does not yet have a mature self-improvement lifecycle where proposed rule changes are repeatedly tested, reviewed, and promoted only after user approval.
 
 The implementation should be judged by milestone tests, not by hype.
 
@@ -199,7 +253,7 @@ The end result should be an epistemic operating system where the Epistemic Octah
 
 ### Milestone 0 — Current skeleton
 
-Status: partially complete.
+Status: substantially complete for the browser prototype.
 
 Required capabilities:
 
@@ -483,6 +537,12 @@ Scoring should measure:
 - belief update accuracy
 - unresolved-pressure preservation
 
+Current implementation:
+
+- `ordinary-llm-comparison.html` provides the comparison harness.
+- `ordinary-llm-comparison-test.html` verifies the harness shape and rubric criteria.
+- The harness is conservative: it does not claim superiority unless real model outputs are pasted and preserved.
+
 Pass condition:
 
 Kernel-guided analysis must outperform prompt-only generic answers on the benchmark’s epistemic-pressure criteria.
@@ -500,6 +560,13 @@ Required capabilities:
 - Avoid treating a coherent dossier as automatically true.
 - Let stable evidence-supported claims feed worldview fragments.
 
+Current implementation:
+
+- `dossier-source-graph.html` imports typed dossier packets.
+- `src/dossier-source-graph-v0-1.js` version `0.1.3` exports counter-considerations as attacking evidence.
+- Dossier kernel commands use `observations: []` to avoid low-signal question noise.
+- Imported source traces are persisted into `kernel_state.sourceTraces`.
+
 Pass condition:
 
 The kernel can ingest a dossier section, build claim/evidence/principle nodes, identify unresolved points, and avoid overclaiming beyond the evidence.
@@ -515,6 +582,13 @@ Required capabilities:
 - Kernel updates belief state.
 - LLM explains kernel state back to user.
 - LLM cannot directly mutate core logic or silently alter belief state.
+
+Current implementation:
+
+- `llm-brain-v0-3.html` imports approved command packets.
+- `source-trace-bridge.html` converts persisted source traces into read-only LLM explanation packets and prompts.
+- Local explanation previews exist before any LLM is involved.
+- Guardrails explicitly state that the LLM explains but does not mutate state.
 
 Pass condition:
 
@@ -571,14 +645,14 @@ A proposed action such as “use more compute,” “go online,” “change a r
 
 ## Next immediate tasks
 
-1. Improve the belief graph UI so local states are easier to inspect from the main app.
-2. Add structured extraction packet import.
-3. Add a reusable LLM extraction prompt generator.
-4. Add low-signal/gibberish handling.
-5. Add dependency links between claims.
-6. Add self-audit report generation.
-7. Add the first benchmark cases.
-8. Begin porting selected `profiler.js` math into the kernel one piece at a time:
+1. Run and preserve real ordinary-LLM comparison packets using `ordinary-llm-comparison.html`.
+2. Add a small M12 report saver/export index for comparison packets.
+3. Add a retrieval/source placeholder schema without pretending it verifies facts yet.
+4. Build the natural-language approval loop: extractor output → user approval → kernel command import → explanation packet.
+5. Move source traces deeper into kernel-owned state rather than deriving them mainly from event logs.
+6. Expand philosophical-text ingestion from principle candidates into richer definitions, assumptions, scope limits, counterarguments, and testing requirements.
+7. Strengthen sandboxed self-improvement so rule proposals compare old/new behavior across benchmark cases and remain candidate-only until user approval.
+8. Continue porting selected `profiler.js` math into the kernel one piece at a time:
    - scope weights
    - local-y signal weights
    - gate-to-signal mapping
@@ -595,7 +669,7 @@ The instrument/scoring layer is Philosopher’s Stone / `profiler.js`.
 
 The kernel layer is this repo’s live belief-state engine.
 
-The LLM layer should eventually act as extractor and verbal interface.
+The LLM layer should act as extractor and verbal interface.
 
 The benchmark layer should determine whether the system actually improves epistemic maturity under pressure.
 
