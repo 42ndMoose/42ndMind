@@ -6,7 +6,9 @@ This is the handoff record for continuing work toward the README goal: a transpa
 
 ## Current status
 
-42ndMind is now an early browser-based belief-state engine with:
+42ndMind is an early browser-based kernel-brain: small, incomplete, but already governed by one coherent belief-movement logic.
+
+It currently has:
 
 - live Epistemic Octahedron math
 - browser kernel state
@@ -15,6 +17,8 @@ This is the handoff record for continuing work toward the README goal: a transpa
 - low-signal quarantine
 - audit pressure
 - benchmark packets
+- idempotent structured imports
+- duplicate-provenance audit events
 - claim-challenge workflow
 - dossier source-graph importer
 - imported source traces
@@ -26,7 +30,7 @@ This is the handoff record for continuing work toward the README goal: a transpa
 - trace-to-source-registry conversion
 - limited M12-M15 milestone closer harness
 
-It is still not a full truth machine. It cannot independently verify external facts without a mature retrieval/source layer.
+It is not a full truth machine. It cannot independently verify external facts without a mature retrieval/source layer.
 
 ## Main live entry points
 
@@ -54,7 +58,7 @@ It is still not a full truth machine. It cannot independently verify external fa
 - `src/epistemic-benchmark-v0-1.js` — fixed benchmark cases, sandbox overlay runner, milestone status, and memory compression helpers.
 - `src/claim-challenge-v0-1.js` — claim-challenge workflow.
 - `src/dossier-source-graph-v0-1.js` — dossier source-graph importer and kernel-command exporter. Latest version: `0.1.3`.
-- `src/source-registry-v0-1.js` — non-scoring source registry placeholder schema and trace conversion. Latest version: `0.1.1`.
+- `src/source-registry-v0-1.js` — non-scoring source registry placeholder schema and trace conversion. Latest version: `0.1.2`.
 
 ## Confirmed stable pieces
 
@@ -63,10 +67,50 @@ It is still not a full truth machine. It cannot independently verify external fa
 - patch status loaded: `v02_patches_applied = true`
 - `low_signal_guard = patched`
 - `contradiction_audit = patched`
+- `idempotent_import_packet_guard = patched`
+- `duplicate_provenance_audit = patched`
 - benchmark score: `10 / 10`
 - failed cases: `0`
 - active Octahedron states preserve `|x| + |y| + |z| = 1`
 - null origin stays separate from active surface states
+
+### Duplicate import behavior
+
+`llm-brain-v0-3.html` now prevents exact duplicate `import_packet` commands from being treated as fresh belief pressure.
+
+The live brain packet is now:
+
+```json
+{
+  "packet_type": "42ndMind_live_brain_packet",
+  "packet_version": "0.3.3-patched"
+}
+```
+
+Duplicate imports are skipped and recorded in `kernel_state.eventLog` as:
+
+```json
+{
+  "type": "duplicate_import_skipped",
+  "detail": {
+    "epistemic_rule": "duplicate_provenance_is_not_independent_convergence",
+    "reason": "Repeated identical structured import was already processed. Repetition of the same packet does not add independent evidence or new belief pressure.",
+    "belief_movement": "none",
+    "scoring_effect": "none",
+    "non_scoring": true
+  }
+}
+```
+
+The brain packet also includes:
+
+```json
+{
+  "duplicate_import_audit": []
+}
+```
+
+This makes the rule brain-visible rather than only a hidden UI blocker. The governing principle is: repeated identical provenance is not independent convergence.
 
 ### Dossier source graph
 
@@ -117,7 +161,7 @@ Clean browser packet confirmed:
 
 ### Source registry
 
-`src/source-registry-v0-1.js` is now at version `0.1.1`.
+`src/source-registry-v0-1.js` is now at version `0.1.2`.
 
 It defines a non-scoring source registry layer that represents source objects separately from claims and evidence.
 
@@ -151,12 +195,18 @@ Doctrine/guardrails:
 `source-registry-test.html` now loads:
 
 ```html
-<script src="src/source-registry-v0-1.js?v=0.1.1"></script>
+<script src="src/source-registry-v0-1.js?v=0.1.2"></script>
 ```
 
-It should report `36/36 passed` after the latest trace-conversion update.
+It was verified in-browser as `36/36 passed`.
 
-`source-registry.html` now exists and can:
+`source-registry.html` now loads:
+
+```html
+<script src="src/source-registry-v0-1.js?v=0.1.2"></script>
+```
+
+It can:
 
 - load the sample source registry packet
 - import pasted `42ndMind_source_registry_packet` JSON
@@ -169,32 +219,41 @@ It should report `36/36 passed` after the latest trace-conversion update.
 - copy the normalized report
 - clear saved registry metadata
 
-## Latest important change
+## Latest important changes
 
-Added trace-to-source-registry conversion:
+### Duplicate provenance audit
 
-- commit `0502d8d37a30004fd9314f6e51e6415783916e30`: `src/source-registry-v0-1.js` version `0.1.1`
-- commit `49584d98d8df5f587aa039ca3139b802553f7dc2`: expanded `source-registry-test.html` for trace conversion
-- commit `629a53e4bc5d6d3729347f304d9e71ce28242b3b`: added `LOAD from live sourceTraces` to `source-registry.html`
+- commit `0f0f1346425ada62ed41b32337ae48a995023049`: `llm-brain-v0-3.html`
 
-This connects M13 dossier import, live source traces, and source registry into one provenance chain without moving belief state.
+Exact duplicate structured imports are now skipped and recorded as explicit non-scoring epistemic audit events.
+
+This strengthens the kernel rule:
+
+```text
+Repeated identical provenance is not independent convergence.
+```
+
+### Source registry bug fix
+
+- commit `8295b9b3d176874e84a39a1e899d93c442ed027f`: fixed trace conversion typo and bumped source registry to `0.1.2`
+- commit `94e68130d603d71a8221de1b20fddec0116aa3d2`: cache-busted source registry test to `0.1.2`
+- commit `2bff811af962911924bdcf00b8f2fa685afddc3f`: cache-busted source registry page to `0.1.2`
+
+The browser test now reports `36/36 passed`.
 
 ## Current next development target
 
-Next step should verify the trace-to-registry workflow in browser.
+Next step should make saved source registry metadata visible in the live brain packet.
 
-Recommended test:
+Recommended implementation:
 
-1. Open `source-registry-test.html` and confirm `36/36 passed`.
-2. Make sure a clean dossier import exists in `llm-brain-v0-3.html` with `kernel_state.sourceTraces` populated.
-3. Open `source-registry.html`.
-4. Click `LOAD from live sourceTraces`.
-5. Confirm sources, claim links, evidence links, and unresolved source questions appear.
-6. Click `SAVE registry metadata`.
-7. Click `LOAD saved registry`.
-8. Confirm the report remains non-scoring and says provenance is not proof / retrieval is not verification.
+1. In `llm-brain-v0-3.html`, read localStorage key `42ndMind_source_registry_v0_1`.
+2. Include a `source_registry_summary` in copied brain packets.
+3. Include the full saved `sourceRegistry` under `kernel_state.sourceRegistry` or a clearly non-scoring adjacent field.
+4. Label it as metadata-only, non-scoring, and not belief movement.
+5. Do not integrate source registry into confidence/gates/root worldview yet.
 
-If clean, the next implementation should add source registry visibility into the live brain packet or a small bridge from `sourceRegistry` to source-trace explanation packets. Keep it non-scoring.
+This continues M13/M14: the brain carries provenance/source memory visibly, while still refusing to treat provenance as proof.
 
 ## Remaining major gaps
 
@@ -209,7 +268,7 @@ If clean, the next implementation should add source registry visibility into the
 
 - M1-M11: browser kernel, graph, gates, evidence pressure, benchmark, and patch layer are active.
 - M12: comparison harness, smoke test, and report index exist.
-- M13: dossier import, source traces, non-scoring source registry module, workflow page, and trace conversion exist.
+- M13: dossier import, source traces, non-scoring source registry module, workflow page, trace conversion, and duplicate-provenance rule exist.
 - M14: read-only source-trace explanation bridge exists.
 - M15: only limited/sandboxed pieces exist; no autonomous self-promotion.
 
@@ -239,12 +298,15 @@ First read CURRENT_PROGRESS.md.
 
 Important state:
 - Main live console: llm-brain-v0-3.html
+- Live brain packet version is 0.3.3-patched
+- Duplicate import guard records duplicate_import_skipped events
+- Duplicate provenance rule: repeated identical provenance is not independent convergence
 - Dossier importer: dossier-source-graph.html
 - Dossier module latest version is 0.1.3
 - Source registry module: src/source-registry-v0-1.js
-- Source registry module latest version is 0.1.1
-- source-registry-test.html exists and should report 36/36 passed
-- source-registry.html exists and saves sourceRegistry to localStorage as metadata only
+- Source registry module latest version is 0.1.2
+- source-registry-test.html loads v=0.1.2 and has been verified as 36/36 passed
+- source-registry.html loads v=0.1.2 and saves sourceRegistry to localStorage as metadata only
 - source-registry.html can LOAD from live sourceTraces
 - Source registry is non-scoring metadata only; it must not move belief state.
 - Source objects are separate from claims/evidence.
@@ -259,9 +321,9 @@ Use the SHA write trick:
 5. Make only one small change at a time.
 
 Next task:
-1. Ask user to verify source-registry-test.html reports 36/36 passed.
-2. Ask user to verify source-registry.html can LOAD from live sourceTraces and save/load registry metadata.
-3. If clean, add source registry visibility into the live brain packet or source-trace bridge packet.
+1. Add source registry visibility into the live brain packet.
+2. Read localStorage key `42ndMind_source_registry_v0_1`.
+3. Include source_registry_summary and saved registry metadata in copied brain packets.
 4. Keep it non-scoring.
 5. Do not integrate into belief scoring yet.
 ```
