@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind EES → Kernel Command v0.1</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,520px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    textarea,input,select { width:100%; resize:vertical; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:190px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:520px; }
+    a { color:#9db6ff; }
+    .muted { color:#8b93a7; } .small { font-size:12px; }
+    .metric { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin-bottom:8px; }
+    .metric span { display:block; color:#8b93a7; } .metric b { display:block; font-size:18px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind EES Registry → Kernel Command v0.1</h1>
+  <div class="muted small">Reads saved EES metadata and produces a copyable epistemic_kernel_command candidate. No automatic import. No belief movement.</div>
+</header>
+<main>
+  <div>
+    <section><h2>Navigation</h2><a href="dossier-ees-compiler-v0-1-2.html">Dossier EES compiler</a> · <a href="entity-event-source-bridge.html">EES bridge</a> · <a href="ees-to-kernel-command-test.html">compiler test</a> · <a href="llm-brain-v0-3.html">live brain</a></section>
+    <section>
+      <h2>Controls</h2>
+      <button onclick="loadSaved()">LOAD saved EES registry</button>
+      <button onclick="loadSample()">LOAD sample registry</button>
+      <button onclick="compileSelected()">COMPILE selected mechanism</button>
+      <button onclick="copyCommand()">COPY kernel command</button>
+      <button onclick="copyReport()">COPY compile report</button>
+      <div id="status" class="small muted"></div>
+    </section>
+    <section>
+      <h2>Mechanism selector</h2>
+      <select id="mechanismSelect"></select>
+      <div class="small muted">One mechanism becomes one candidate claim. Linked events become support candidates. Overclaim flags become attacking evidence.</div>
+    </section>
+    <section>
+      <h2>Summary</h2>
+      <div class="row">
+        <div class="metric"><span>claims</span><b id="claims">0</b></div>
+        <div class="metric"><span>supporting evidence</span><b id="support">0</b></div>
+        <div class="metric"><span>attacking evidence</span><b id="attacks">0</b></div>
+        <div class="metric"><span>open questions</span><b id="questions">0</b></div>
+      </div>
+      <div class="metric"><span>belief movement</span><b id="movement">none</b></div>
+    </section>
+    <section>
+      <h2>Registry input</h2>
+      <textarea id="registryInput" spellcheck="false"></textarea>
+    </section>
+  </div>
+  <div>
+    <section><h2>Compile report</h2><pre id="reportOut">No report yet.</pre></section>
+    <section><h2>Copyable epistemic_kernel_command</h2><textarea id="commandOut" spellcheck="false"></textarea></section>
+  </div>
+</main>
+<script src="src/ees-to-kernel-command-v0-1.js?v=0.1.0"></script>
+<script>
+  let currentRegistry = null;
+  let currentReport = null;
+  function $(id){ return document.getElementById(id); }
+  function setStatus(msg){ $('status').textContent = msg; }
+  function getRegistryFromInput(){ return EESToKernelCommandV01.extractRegistry($('registryInput').value); }
+  function renderMechanisms(registry){
+    currentRegistry = registry;
+    const mechanisms = (registry && registry.mechanisms) || [];
+    $('mechanismSelect').innerHTML = mechanisms.map((m, i) => `<option value="${String(m.id || i).replace(/[&<>'\"]/g,'')}">${m.id || i} — ${String(m.label || 'Unlabeled mechanism').slice(0,120)}</option>`).join('');
+    setStatus(`Loaded registry with ${mechanisms.length} mechanism(s).`);
+  }
+  function loadSaved(){
+    const loaded = EESToKernelCommandV01.loadSavedRegistry();
+    if(!loaded.ok){ setStatus(`Saved registry not loaded: ${loaded.reason}.`); return; }
+    $('registryInput').value = JSON.stringify(loaded.registry, null, 2);
+    renderMechanisms(loaded.registry);
+  }
+  function loadSample(){
+    const sample = EESToKernelCommandV01.sampleRegistry();
+    $('registryInput').value = JSON.stringify(sample, null, 2);
+    renderMechanisms(sample);
+    compileSelected();
+  }
+  function compileSelected(){
+    try {
+      const registry = getRegistryFromInput();
+      if(!registry) throw new Error('No registry found in input.');
+      renderMechanisms(registry);
+      const mechanismId = $('mechanismSelect').value;
+      currentReport = EESToKernelCommandV01.compileMechanism(registry, { mechanism_id:mechanismId });
+      $('claims').textContent = currentReport.counts.claims;
+      $('support').textContent = currentReport.counts.supporting_evidence;
+      $('attacks').textContent = currentReport.counts.attacking_evidence;
+      $('questions').textContent = currentReport.counts.open_questions;
+      $('movement').textContent = currentReport.doctrine.belief_movement;
+      $('reportOut').textContent = JSON.stringify(currentReport, null, 2);
+      $('commandOut').value = JSON.stringify(currentReport.epistemic_kernel_command, null, 2);
+      setStatus(`Compiled mechanism ${currentReport.selected_mechanism_id}. Copy command only after reviewing it.`);
+    } catch(error) { setStatus('Compile failed: ' + error.message); }
+  }
+  async function copyCommand(){
+    const text = $('commandOut').value;
+    if(!text) return;
+    try { await navigator.clipboard.writeText(text); setStatus(`Copied kernel command (${text.length.toLocaleString()} chars).`); } catch(e) { setStatus('Could not auto-copy command. Select manually.'); }
+  }
+  async function copyReport(){
+    if(!currentReport) compileSelected();
+    if(!currentReport) return;
+    const text = JSON.stringify(currentReport, null, 2);
+    try { await navigator.clipboard.writeText(text); setStatus(`Copied compile report (${text.length.toLocaleString()} chars).`); } catch(e) { setStatus('Could not auto-copy report. Select manually.'); }
+  }
+  loadSample();
+</script>
+</body>
+</html>
