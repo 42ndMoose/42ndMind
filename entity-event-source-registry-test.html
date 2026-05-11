@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Entity/Event/Source Registry Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:700px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Entity/Event/Source Registry Test</h1><div>Smoke tests for the non-scoring named reality-map layer.</div></header>
+<main><section><h2 id="summary">Running...</h2><pre id="out"></pre></section></main>
+<script src="src/entity-event-source-registry-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.EntityEventSourceRegistryV01, 'EntityEventSourceRegistryV01 missing');
+    assert(EntityEventSourceRegistryV01.VERSION === '0.1.0', 'wrong version');
+  });
+
+  add('sample packet imports', () => {
+    const report = EntityEventSourceRegistryV01.importPacket(EntityEventSourceRegistryV01.samplePacket());
+    assert(report.packet_type === '42ndMind_entity_event_source_registry_report', 'wrong report type');
+    assert(report.entity_event_source_registry.counts.entities === 2, 'wrong entity count');
+    assert(report.entity_event_source_registry.counts.events === 1, 'wrong event count');
+    assert(report.entity_event_source_registry.counts.mechanisms === 2, 'wrong mechanism count');
+  });
+
+  add('layer is metadata-only and non-scoring', () => {
+    const report = EntityEventSourceRegistryV01.importPacket(EntityEventSourceRegistryV01.samplePacket());
+    const reg = report.entity_event_source_registry;
+    assert(reg.meta.non_scoring === true, 'not non-scoring');
+    assert(reg.meta.metadata_only === true, 'not metadata-only');
+    assert(reg.meta.belief_movement === 'none', 'belief movement was not none');
+    assert(report.next_kernel_state_extension.scoring_allowed === false, 'scoring unexpectedly allowed');
+  });
+
+  add('links reference known ids', () => {
+    const report = EntityEventSourceRegistryV01.importPacket(EntityEventSourceRegistryV01.samplePacket());
+    assert(report.pass_checks.links_reference_known_ids === true, 'links do not reference known ids');
+    assert(report.pass_checks.mechanisms_reference_known_entities === true, 'mechanisms do not reference known entities');
+    assert(report.pass_checks.mechanisms_reference_known_events === true, 'mechanisms do not reference known events');
+  });
+
+  add('mechanism classes are counted', () => {
+    const report = EntityEventSourceRegistryV01.importPacket(EntityEventSourceRegistryV01.samplePacket());
+    const counts = report.entity_event_source_registry.counts.mechanism_classes;
+    assert(counts.shared_enforcement_pipeline === 1, 'shared enforcement count wrong');
+    assert(counts.unresolved_mechanism === 1, 'unresolved mechanism count wrong');
+  });
+
+  add('direct coordination requires direct source', () => {
+    const packet = EntityEventSourceRegistryV01.samplePacket();
+    packet.mechanisms.push({ id:'mechanism_bad_direct', label:'Bad direct claim', mechanism_class:'direct_coordination', support_status:'unreviewed', entity_ids:['entity_platform_x'], event_ids:['event_policy_change_2021'], source_ids:[], overclaim_flags:['no_direct_coordination_source'] });
+    const report = EntityEventSourceRegistryV01.importPacket(packet);
+    assert(report.pass_checks.direct_coordination_requires_direct_evidence === false, 'bad direct coordination passed');
+  });
+
+  add('unsupported conspiracy overclaim must be flagged', () => {
+    const packet = EntityEventSourceRegistryV01.samplePacket();
+    packet.mechanisms.push({ id:'mechanism_overclaim', label:'Unsupported command conspiracy', mechanism_class:'unsupported_conspiracy_overclaim', support_status:'unreviewed', entity_ids:['entity_platform_x'], event_ids:['event_policy_change_2021'], source_ids:[] });
+    const report = EntityEventSourceRegistryV01.importPacket(packet);
+    assert(report.pass_checks.unsupported_overclaims_are_flagged === false, 'unflagged overclaim passed');
+  });
+
+  add('flagged unsupported overclaim passes integrity while remaining visible', () => {
+    const packet = EntityEventSourceRegistryV01.samplePacket();
+    packet.mechanisms.push({ id:'mechanism_flagged_overclaim', label:'Flagged unsupported command conspiracy', mechanism_class:'unsupported_conspiracy_overclaim', support_status:'unreviewed', entity_ids:['entity_platform_x'], event_ids:['event_policy_change_2021'], source_ids:[], overclaim_flags:['no_direct_command_source'], unresolved_questions:['What direct evidence would support command?'] });
+    const report = EntityEventSourceRegistryV01.importPacket(packet);
+    assert(report.pass_checks.unsupported_overclaims_are_flagged === true, 'flagged overclaim failed integrity');
+    assert(report.entity_event_source_registry.counts.unsupported_conspiracy_overclaims === 1, 'overclaim count wrong');
+  });
+
+  add('doctrine preserves entity/event/mechanism humility', () => {
+    const packet = EntityEventSourceRegistryV01.normalizePacket(EntityEventSourceRegistryV01.samplePacket());
+    assert(packet.doctrine.named_entities_are_not_guilt === true, 'entity humility missing');
+    assert(packet.doctrine.events_are_not_proof_of_motive === true, 'event humility missing');
+    assert(packet.doctrine.mechanisms_are_classifications_not_verdicts === true, 'mechanism humility missing');
+    assert(packet.doctrine.kernel_owns_belief_movement === true, 'kernel movement doctrine missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_entity_event_source_registry_test_report', results }, null, 2);
+</script>
+</body>
+</html>
