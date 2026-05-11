@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Maturity Fusion Bridge</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(320px,460px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    a { color:#9db6ff; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 10px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:640px; }
+    .muted { color:#8b93a7; }
+    .small { font-size:12px; }
+    .metric { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin-bottom:8px; }
+    .metric span { display:block; color:#8b93a7; }
+    .metric b { display:block; font-size:18px; }
+    @media (max-width:900px) { main { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Maturity Fusion Bridge</h1>
+  <div class="muted small">Shows proposed y-movement caps from maturity assessment. Does not apply them.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="llm-brain-v0-3.html">live brain v0.3</a> ·
+      <a href="maturity-objective-bridge.html">maturity objective bridge</a> ·
+      <a href="maturity-objective-benchmark.html">maturity benchmark</a>
+    </section>
+    <section>
+      <h2>Controls</h2>
+      <button onclick="buildProposal()">BUILD fusion proposal</button>
+      <button onclick="copyPacket()">COPY proposal packet</button>
+      <div id="status" class="muted small"></div>
+    </section>
+    <section>
+      <h2>Summary</h2>
+      <div class="metric"><span>action</span><b id="action">none</b></div>
+      <div class="metric"><span>proposed y</span><b id="proposedY">0</b></div>
+      <div class="metric"><span>allowed y</span><b id="allowedY">0</b></div>
+      <div class="metric"><span>applied to kernel</span><b id="applied">false</b></div>
+    </section>
+    <section>
+      <h2>Doctrine</h2>
+      <div class="small muted">Sidecar only. Metadata-only until promoted. User approval is required before hard fusion. Retrieval is not verification. Provenance is not proof.</div>
+    </section>
+  </div>
+  <div>
+    <section>
+      <h2>42ndMind_maturity_fusion_proposal</h2>
+      <pre id="packetOut">No proposal yet.</pre>
+    </section>
+  </div>
+</main>
+<script src="src/maturity-objective-v0-1.js?v=0.1.0"></script>
+<script src="src/maturity-fusion-v0-1.js?v=0.1.0"></script>
+<script>
+  const LIVE_KERNEL_STORAGE_KEY = 'epistemic_kernel_v0_state';
+  const SOURCE_REGISTRY_KEY = '42ndMind_source_registry_v0_1';
+  let currentPacket = null;
+
+  function $(id) { return document.getElementById(id); }
+  function asArray(v) { return Array.isArray(v) ? v : []; }
+  function safeNumber(v, fallback = 0) { const n = Number(v); return Number.isFinite(n) ? n : fallback; }
+  function setStatus(msg) { $('status').textContent = msg; }
+  function loadJson(key) { const raw = localStorage.getItem(key); if (!raw) return null; try { return JSON.parse(raw); } catch (e) { return null; } }
+
+  function pointFromState(state) {
+    const root = state.rootWorldview || state.root_worldview || state.root || {};
+    const p = root.octahedron || root.point || state.octahedron || state.point || state.root_point || {};
+    return { x:safeNumber(p.x), y:safeNumber(p.y), z:safeNumber(p.z) };
+  }
+  function sourceRegistrySummary() {
+    const payload = loadJson(SOURCE_REGISTRY_KEY);
+    const registry = payload?.sourceRegistry || payload?.sourceRegistryReport?.source_registry || null;
+    return { available:Boolean(registry), source_count:safeNumber(registry?.counts?.sources, 0), unresolved_source_questions:safeNumber(registry?.counts?.unresolved_source_questions, 0) };
+  }
+  function inputFromLiveState() {
+    const state = loadJson(LIVE_KERNEL_STORAGE_KEY);
+    if (!state) return null;
+    return {
+      point: pointFromState(state),
+      gates: state.gates || state.gate_scores || state.gateSnapshot || state.gate_snapshot || {},
+      evidence: asArray(state.evidence || state.evidenceRows || state.evidence_rows),
+      contradictions: asArray(state.contradictions || state.contradictionNodes || state.contradiction_nodes),
+      open_questions: asArray(state.openQuestions || state.open_questions || state.questions),
+      source_registry_summary: sourceRegistrySummary()
+    };
+  }
+
+  function buildProposal() {
+    const input = inputFromLiveState();
+    if (!input) { setStatus(`No saved live kernel state found under ${LIVE_KERNEL_STORAGE_KEY}.`); return; }
+    currentPacket = MaturityFusionV01.proposal(input);
+    currentPacket.bridge = { packet_type:'42ndMind_maturity_fusion_bridge_packet', read_from:LIVE_KERNEL_STORAGE_KEY, read_only:true, metadata_only:true, applied_to_kernel:false };
+    render(currentPacket);
+    setStatus('Built maturity fusion proposal. Not applied to kernel.');
+  }
+  function render(packet) {
+    $('action').textContent = packet.action;
+    $('proposedY').textContent = packet.proposed_y.toFixed(3);
+    $('allowedY').textContent = packet.allowed_y.toFixed(3);
+    $('applied').textContent = String(packet.belief_state_effect.applied_to_kernel);
+    $('packetOut').textContent = JSON.stringify(packet, null, 2);
+  }
+  async function copyPacket() {
+    if (!currentPacket) buildProposal();
+    if (!currentPacket) return;
+    const text = JSON.stringify(currentPacket, null, 2);
+    try { await navigator.clipboard.writeText(text); setStatus(`Copied fusion proposal (${text.length.toLocaleString()} chars).`); }
+    catch (e) { setStatus('Could not auto-copy. Select packet manually.'); }
+  }
+  buildProposal();
+</script>
+</body>
+</html>
