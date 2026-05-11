@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Maturity Objective Bridge</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(320px,460px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    a { color:#9db6ff; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 10px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:620px; }
+    .muted { color:#8b93a7; }
+    .small { font-size:12px; }
+    .metric { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin-bottom:8px; }
+    .metric span { display:block; color:#8b93a7; }
+    .metric b { display:block; font-size:18px; }
+    @media (max-width:900px) { main { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Maturity Objective Bridge</h1>
+  <div class="muted small">Reads live saved kernel state and emits a non-mutating maturity assessment. Metadata only.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="llm-brain-v0-3.html">live brain v0.3</a> ·
+      <a href="maturity-objective-test.html">maturity test</a> ·
+      <a href="source-registry.html">source registry</a>
+    </section>
+    <section>
+      <h2>Controls</h2>
+      <button onclick="assessLiveState()">ASSESS live saved kernel state</button>
+      <button onclick="copyPacket()">COPY assessment packet</button>
+      <div id="status" class="muted small"></div>
+    </section>
+    <section>
+      <h2>Summary</h2>
+      <div class="metric"><span>classification</span><b id="classification">none</b></div>
+      <div class="metric"><span>capped maturity score</span><b id="score">0</b></div>
+      <div class="metric"><span>active surface</span><b id="surface">unknown</b></div>
+      <div class="metric"><span>belief movement</span><b id="movement">none</b></div>
+    </section>
+    <section>
+      <h2>Doctrine</h2>
+      <div class="small muted">This bridge does not mutate kernel state, score belief movement, retrieve sources, verify facts, or promote rules. It only reports maturity pressure from already-saved state.</div>
+    </section>
+  </div>
+  <div>
+    <section>
+      <h2>42ndMind_maturity_objective_assessment</h2>
+      <pre id="packetOut">No assessment yet.</pre>
+    </section>
+  </div>
+</main>
+<script src="src/maturity-objective-v0-1.js?v=0.1.0"></script>
+<script>
+  const LIVE_KERNEL_STORAGE_KEY = 'epistemic_kernel_v0_state';
+  const SOURCE_REGISTRY_KEY = '42ndMind_source_registry_v0_1';
+  let currentPacket = null;
+
+  function $(id) { return document.getElementById(id); }
+  function asArray(value) { return Array.isArray(value) ? value : []; }
+  function setStatus(message) { $('status').textContent = message; }
+  function safeNumber(value, fallback = 0) { const n = Number(value); return Number.isFinite(n) ? n : fallback; }
+
+  function loadJson(key) {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (error) { return null; }
+  }
+
+  function pointFromState(state) {
+    const root = state.rootWorldview || state.root_worldview || state.root || {};
+    const p = root.octahedron || root.point || state.octahedron || state.point || state.root_point || {};
+    return { x:safeNumber(p.x), y:safeNumber(p.y), z:safeNumber(p.z) };
+  }
+
+  function gatesFromState(state) {
+    return state.gates || state.gate_scores || state.gateSnapshot || state.gate_snapshot || {};
+  }
+
+  function evidenceFromState(state) {
+    return asArray(state.evidence || state.evidenceRows || state.evidence_rows);
+  }
+
+  function contradictionsFromState(state) {
+    return asArray(state.contradictions || state.contradictionNodes || state.contradiction_nodes);
+  }
+
+  function questionsFromState(state) {
+    return asArray(state.openQuestions || state.open_questions || state.questions);
+  }
+
+  function sourceRegistrySummary() {
+    const payload = loadJson(SOURCE_REGISTRY_KEY);
+    const registry = payload?.sourceRegistry || payload?.sourceRegistryReport?.source_registry || null;
+    return {
+      available: Boolean(registry),
+      source_count: safeNumber(registry?.counts?.sources, 0),
+      unresolved_source_questions: safeNumber(registry?.counts?.unresolved_source_questions, 0),
+      metadata_only: true,
+      scoring_allowed: false
+    };
+  }
+
+  function assessLiveState() {
+    const state = loadJson(LIVE_KERNEL_STORAGE_KEY);
+    if (!state) {
+      setStatus(`No saved live kernel state found under ${LIVE_KERNEL_STORAGE_KEY}.`);
+      return;
+    }
+    const input = {
+      point: pointFromState(state),
+      gates: gatesFromState(state),
+      evidence: evidenceFromState(state),
+      contradictions: contradictionsFromState(state),
+      open_questions: questionsFromState(state),
+      source_registry_summary: sourceRegistrySummary()
+    };
+    currentPacket = MaturityObjectiveV01.assess(input);
+    currentPacket.bridge = {
+      packet_type: '42ndMind_maturity_objective_bridge_packet',
+      read_from: LIVE_KERNEL_STORAGE_KEY,
+      source_registry_key: SOURCE_REGISTRY_KEY,
+      read_only: true,
+      metadata_only: true,
+      scoring_allowed: false,
+      kernel_state_mutation: false
+    };
+    render(currentPacket);
+    setStatus('Assessed saved live kernel state as metadata only.');
+  }
+
+  function render(packet) {
+    $('classification').textContent = packet.classification;
+    $('score').textContent = packet.lanes.capped_maturity_score.toFixed(3);
+    $('surface').textContent = packet.surface.is_active_surface ? 'yes' : (packet.surface.is_null_origin ? 'null origin' : 'no');
+    $('movement').textContent = packet.belief_state_effect.belief_movement;
+    $('packetOut').textContent = JSON.stringify(packet, null, 2);
+  }
+
+  async function copyPacket() {
+    if (!currentPacket) assessLiveState();
+    if (!currentPacket) return;
+    const text = JSON.stringify(currentPacket, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus(`Copied maturity assessment packet (${text.length.toLocaleString()} chars).`);
+    } catch (error) {
+      setStatus('Could not auto-copy. Select the packet manually.');
+    }
+  }
+
+  assessLiveState();
+</script>
+</body>
+</html>
