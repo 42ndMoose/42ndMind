@@ -15,10 +15,15 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Kernel Command Preflight Test</h1><div>Deterministic import-boundary tests.</div></header>
+<header><h1>42ndMind Kernel Command Preflight Test</h1><div>Deterministic import-boundary tests using the unified governor.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="kernel-command-preflight.html">preflight page</a> · <a href="llm-brain-v0-3.html">live brain</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
 <script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
 <script>
   const tests = [];
   function add(name, fn) { tests.push({ name, fn }); }
@@ -43,21 +48,24 @@
     };
   }
 
-  add('module and patch load', () => {
+  add('module and governor patches load', () => {
     assert(window.KernelCommandPreflightV01, 'KernelCommandPreflightV01 missing');
-    assert(KernelCommandPreflightV01.VERSION === '0.1.1', 'patch version did not load');
+    assert(window.KernelEpistemicGovernorV01, 'KernelEpistemicGovernorV01 missing');
+    assert(KernelCommandPreflightV01.VERSION === '0.1.3-governor-evidence-patch', 'preflight governor patch version did not load');
+    assert(KernelEpistemicGovernorV01.VERSION === '0.1.2', 'governor version did not load');
   });
 
   add('reviewed bounded command is safe', () => {
     const report = KernelCommandPreflightV01.analyze(reviewedCommand());
     assert(report.decision === 'SAFE_TO_IMPORT', 'reviewed command should be safe');
     assert(report.import_allowed === true, 'reviewed command should be allowed');
+    assert(report.governor_bridge && report.governor_bridge.available === true, 'governor bridge missing');
   });
 
   add('source-empty unreviewed sample imports only with caution', () => {
     const report = KernelCommandPreflightV01.analyze(KernelCommandPreflightV01.sampleSafeCautionCommand());
     assert(report.decision === 'IMPORT_WITH_CAUTION', 'source-empty unreviewed sample should import with caution');
-    assert(report.issues.some(i => i.code === 'source_empty_unreviewed_import'), 'missing source-empty unreviewed caution');
+    assert(report.issues.some(i => i.code === 'source_empty_unreviewed_import' || i.code === 'governor_capped_maturity'), 'missing source-empty/governor caution');
   });
 
   add('blocked sample blocks import', () => {
@@ -68,7 +76,7 @@
 
   add('direct coordination without source is blocked', () => {
     const report = KernelCommandPreflightV01.analyze(KernelCommandPreflightV01.sampleBlockedCommand());
-    assert(report.issues.some(i => i.code === 'direct_coordination_without_direct_source'), 'direct coordination block missing');
+    assert(report.issues.some(i => i.code === 'direct_coordination_without_direct_source' || i.code === 'governor_blocked_movement'), 'direct coordination block missing');
   });
 
   add('rule promotion op is blocked', () => {
@@ -91,6 +99,7 @@
     const packet = report.sanitized_command.commands[0].packet;
     assert(packet.meta.preflight_sanitized === true, 'preflight sanitized flag missing');
     assert(report.sanitized_command.requires_user_approval === true, 'approval not forced true');
+    assert(report.sanitized_command.preflight.governor_version === '0.1.2', 'governor version missing from sanitized command');
   });
 
   add('sanitizer caps source-empty overconfidence when still allowed', () => {
@@ -112,6 +121,13 @@
     assert(report.doctrine.deterministic_boundary === true, 'deterministic boundary missing');
     assert(report.doctrine.first_principles_before_belief_movement === true, 'first-principles doctrine missing');
     assert(report.doctrine.unresolved_pressure_must_remain_visible === true, 'unresolved pressure doctrine missing');
+    assert(report.governor_bridge.doctrine.preflight_is_adapter_not_brain === true, 'preflight adapter doctrine missing');
+  });
+
+  add('support evidence counter cap is not treated as independent node failure', () => {
+    const report = KernelCommandPreflightV01.analyze(reviewedCommand());
+    assert(report.governor_bridge.evidence_counter_cap_handling && report.governor_bridge.evidence_counter_cap_handling.applied === true, 'evidence counter-cap handling missing');
+    assert(report.decision === 'SAFE_TO_IMPORT', 'reviewed command should remain safe after evidence handling');
   });
 
   const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
