@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Kernel State v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Kernel State v0.4 Test</h1><div>Tests explicit controlled v0.4 state application without touching v0.3 state or executing imports.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="llm-brain-v0-4.html">v0.4 preview console</a> · <a href="kernel-brain-v0-4-runtime-bindings-test.html">runtime bindings test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-state-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  const TEST_STATE_KEY = '42ndMind_kernel_state_v0_4_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function report(kind) { return KernelBrainV04.process(KernelBrainV04.sampleInput(kind)); }
+
+  add('state module loads', () => {
+    assert(window.KernelStateV04, 'KernelStateV04 missing');
+    assert(KernelStateV04.VERSION === '0.4.0', 'wrong state version');
+    assert(KernelStateV04.DEFAULT_STATE_KEY === '42ndMind_kernel_state_v0_4', 'wrong default state key');
+  });
+
+  add('empty state has doctrine and zero counters', () => {
+    KernelStateV04.clearState(TEST_STATE_KEY);
+    const state = KernelStateV04.loadState(TEST_STATE_KEY);
+    assert(state.state_type === '42ndMind_kernel_state_v0_4', 'wrong state type');
+    assert(state.doctrine.one_brain_runtime_state === true, 'one brain doctrine missing');
+    assert(state.counters.applied_reports === 0, 'applied reports should start at 0');
+  });
+
+  add('invalid report is rejected', () => {
+    const result = KernelStateV04.applyReport({ bad:true }, { state_key:TEST_STATE_KEY, explicit_apply:true });
+    assert(result.ok === false, 'invalid report should fail');
+    assert(result.reason === 'invalid_v0_4_report', 'wrong invalid reason');
+  });
+
+  add('explicit apply is required', () => {
+    const result = KernelStateV04.applyReport(report('gibberish'), { state_key:TEST_STATE_KEY });
+    assert(result.ok === false, 'apply without explicit flag should fail');
+    assert(result.reason === 'explicit_apply_required', 'wrong missing explicit reason');
+    assert(KernelStateV04.loadState(TEST_STATE_KEY).counters.applied_reports === 0, 'state should not change without explicit apply');
+  });
+
+  add('near-null report applies as non-scoring observation', () => {
+    const result = KernelStateV04.applyReport(report('gibberish'), { state_key:TEST_STATE_KEY, explicit_apply:true });
+    assert(result.ok === true, 'near-null apply failed');
+    assert(result.entry.entry_type === 'near_null_observation', 'wrong near-null entry type');
+    assert(result.entry.non_scoring === true, 'near-null should be non-scoring');
+    assert(result.entry.v0_3_untouched === true, 'v0.3 should be untouched');
+    assert(result.state.counters.near_null_observations === 1, 'near-null counter wrong');
+  });
+
+  add('clarification report applies as clarification request', () => {
+    const result = KernelStateV04.applyReport(report('ambiguous'), { state_key:TEST_STATE_KEY, explicit_apply:true });
+    assert(result.entry.entry_type === 'clarification_request', 'wrong clarification entry');
+    assert(result.state.counters.clarification_requests === 1, 'clarification counter wrong');
+  });
+
+  add('blocked report applies as audit only', () => {
+    const result = KernelStateV04.applyReport(report('rule_smuggling'), { state_key:TEST_STATE_KEY, explicit_apply:true });
+    assert(result.entry.entry_type === 'blocked_audit', 'wrong block entry');
+    assert(result.entry.belief_movement === 'none', 'blocked audit should not move belief');
+    assert(result.state.counters.blocked_audits === 1, 'blocked counter wrong');
+  });
+
+  add('candidate report applies as candidate pressure only', () => {
+    const result = KernelStateV04.applyReport(report('claim'), { state_key:TEST_STATE_KEY, explicit_apply:true });
+    assert(['candidate_pressure_capped','candidate_pressure_held','allowed_pressure_unapplied'].includes(result.entry.entry_type), 'wrong candidate entry type');
+    assert(result.entry.belief_movement === 'none', 'candidate should not move belief directly');
+    assert(result.state.counters.candidate_pressures + result.state.counters.allowed_pressures >= 1, 'candidate/allowed counter missing');
+  });
+
+  add('pending import stores sanitized command but does not execute it', () => {
+    const result = KernelStateV04.applyReport(report('reviewed_command'), { state_key:TEST_STATE_KEY, explicit_apply:true });
+    assert(result.entry.entry_type === 'pending_import_caution', 'wrong pending import entry');
+    assert(result.entry.pending_import.sanitized_command, 'sanitized command missing');
+    assert(result.entry.pending_import.command_import_executed === false, 'pending import should not execute');
+    assert(result.doctrine.imports_not_executed === true, 'imports-not-executed doctrine missing');
+    assert(result.state.counters.pending_imports === 1, 'pending import counter wrong');
+  });
+
+  add('snapshot summarizes state without importing', () => {
+    const snap = KernelStateV04.snapshot(TEST_STATE_KEY);
+    assert(snap.packet_type === '42ndMind_kernel_state_v0_4_snapshot', 'wrong snapshot type');
+    assert(snap.counters.applied_reports >= 5, 'applied reports counter too low');
+    assert(snap.doctrine.v0_3_untouched === true, 'v0.3 doctrine missing from snapshot');
+  });
+
+  add('clear state removes test state', () => {
+    const cleared = KernelStateV04.clearState(TEST_STATE_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelStateV04.loadState(TEST_STATE_KEY).counters.applied_reports === 0, 'state did not reset');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_kernel_state_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
