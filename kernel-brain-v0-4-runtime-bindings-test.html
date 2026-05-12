@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind v0.4 Runtime Bindings Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind v0.4 Runtime Bindings Test</h1><div>Tests non-scoring runtime binding from v0.4 reports into browser memory.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="llm-brain-v0-4.html">v0.4 preview console</a> · <a href="llm-brain-v0-4-test.html">v0.4 preview test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-brain-v0-4-runtime-bindings.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  const TEST_LOG_KEY = '42ndMind_v0_4_runtime_log_test';
+  const TEST_PENDING_KEY = '42ndMind_pending_kernel_command_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('runtime bindings module loads', () => {
+    assert(window.KernelBrainV04RuntimeBindings, 'KernelBrainV04RuntimeBindings missing');
+    assert(KernelBrainV04RuntimeBindings.VERSION === '0.1.0', 'wrong runtime binding version');
+    assert(KernelBrainV04RuntimeBindings.DEFAULT_LOG_KEY === '42ndMind_v0_4_runtime_log', 'wrong default log key');
+  });
+
+  add('invalid report is rejected and does not move state', () => {
+    const result = KernelBrainV04RuntimeBindings.bindReport({ bad:true }, { log_key:TEST_LOG_KEY });
+    assert(result.ok === false, 'invalid report should fail');
+    assert(result.reason === 'invalid_v0_4_report', 'wrong invalid reason');
+    assert(result.doctrine.invalid_reports_do_not_move_state === true, 'invalid doctrine missing');
+  });
+
+  add('near-null report logs non-scoring observation', () => {
+    KernelBrainV04RuntimeBindings.clearLog(TEST_LOG_KEY);
+    const report = KernelBrainV04RuntimeBindings.sampleReport('gibberish');
+    const result = KernelBrainV04RuntimeBindings.bindReport(report, { log_key:TEST_LOG_KEY });
+    assert(result.ok === true, 'near-null bind failed');
+    assert(result.entry.entry_type === 'near_null_observation', 'wrong entry type');
+    assert(result.entry.non_scoring === true, 'entry should be non-scoring');
+    assert(result.entry.belief_movement === 'none', 'entry moved belief');
+    assert(result.entry.kernel_state_mutation === false, 'entry mutated kernel state');
+  });
+
+  add('clarification report logs clarification-needed observation', () => {
+    const report = KernelBrainV04RuntimeBindings.sampleReport('ambiguous');
+    const result = KernelBrainV04RuntimeBindings.bindReport(report, { log_key:TEST_LOG_KEY });
+    assert(result.entry.entry_type === 'clarification_needed_observation', 'wrong clarification entry');
+    assert(result.entry.observation.observation_type === 'clarification_needed', 'wrong observation type');
+  });
+
+  add('blocked report logs audit event only', () => {
+    const report = KernelBrainV04RuntimeBindings.sampleReport('rule_smuggling');
+    const result = KernelBrainV04RuntimeBindings.bindReport(report, { log_key:TEST_LOG_KEY });
+    assert(result.entry.entry_type === 'blocked_pressure_audit_event', 'wrong blocked entry');
+    assert(result.entry.audit_event.block_is_belief_movement === false, 'block should not be belief movement');
+  });
+
+  add('candidate report logs candidate pressure without applying it', () => {
+    const report = KernelBrainV04RuntimeBindings.sampleReport('claim');
+    const result = KernelBrainV04RuntimeBindings.bindReport(report, { log_key:TEST_LOG_KEY });
+    assert(['capped_candidate_pressure','held_candidate_pressure','allowed_pressure_candidate'].includes(result.entry.entry_type), 'wrong candidate entry');
+    assert(result.entry.candidate_pressure, 'candidate pressure detail missing');
+    assert(result.entry.kernel_state_mutation === false, 'candidate should not mutate kernel state');
+  });
+
+  add('pending import is not saved unless explicit option is set', () => {
+    localStorage.removeItem(TEST_PENDING_KEY);
+    const report = KernelBrainV04RuntimeBindings.sampleReport('reviewed_command');
+    const result = KernelBrainV04RuntimeBindings.bindReport(report, { log_key:TEST_LOG_KEY, pending_command_key:TEST_PENDING_KEY });
+    assert(result.entry.entry_type === 'pending_import_caution', 'wrong pending import type');
+    assert(result.saved_pending_command === null, 'pending command should not save by default');
+    assert(localStorage.getItem(TEST_PENDING_KEY) === null, 'pending key should remain empty');
+  });
+
+  add('pending import saves sanitized command only when explicit', () => {
+    localStorage.removeItem(TEST_PENDING_KEY);
+    const report = KernelBrainV04RuntimeBindings.sampleReport('reviewed_command');
+    const result = KernelBrainV04RuntimeBindings.bindReport(report, { log_key:TEST_LOG_KEY, pending_command_key:TEST_PENDING_KEY, save_pending_import:true });
+    assert(result.saved_pending_command && result.saved_pending_command.ok === true, 'pending command save failed');
+    assert(result.entry.pending_import.saved_to_pending_key === true, 'entry did not record pending save');
+    assert(localStorage.getItem(TEST_PENDING_KEY), 'pending command missing from localStorage');
+  });
+
+  add('exported log is non-scoring and not kernel state', () => {
+    const exported = KernelBrainV04RuntimeBindings.exportLog(TEST_LOG_KEY);
+    assert(exported.packet_type === '42ndMind_v0_4_runtime_log_export', 'wrong export packet type');
+    assert(exported.entries.length >= 5, 'expected log entries missing');
+    assert(exported.doctrine.non_scoring === true, 'export should be non-scoring');
+    assert(exported.doctrine.not_kernel_state === true, 'export should not be kernel state');
+  });
+
+  add('clear log removes runtime memory', () => {
+    const cleared = KernelBrainV04RuntimeBindings.clearLog(TEST_LOG_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelBrainV04RuntimeBindings.loadLog(TEST_LOG_KEY).length === 0, 'log not cleared');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_v0_4_runtime_bindings_test_report', results }, null, 2);
+</script>
+</body>
+</html>
