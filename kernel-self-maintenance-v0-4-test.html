@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Self-Maintenance v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Self-Maintenance v0.4 Test</h1><div>Tests proposal generation, protected-core blocking, and non-implementation doctrine.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="llm-brain-v0-4.html">v0.4 preview console</a> · <a href="kernel-state-v0-4-test.html">state test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-brain-v0-4-runtime-bindings.js?v=0.1.0"></script>
+<script src="src/kernel-state-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_self_maintenance_proposals_v0_4_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  function fakeRuntimeLog() {
+    return [
+      { entry_type:'near_null_observation' },
+      { entry_type:'near_null_observation' },
+      { entry_type:'near_null_observation' },
+      { entry_type:'clarification_needed_observation' },
+      { entry_type:'clarification_needed_observation' },
+      { entry_type:'clarification_needed_observation' },
+      { entry_type:'blocked_pressure_audit_event' },
+      { entry_type:'blocked_pressure_audit_event' },
+      { entry_type:'capped_candidate_pressure' },
+      { entry_type:'held_candidate_pressure' },
+      { entry_type:'capped_candidate_pressure' },
+      { entry_type:'pending_import_caution' }
+    ];
+  }
+
+  add('module loads', () => {
+    assert(window.KernelSelfMaintenanceV04, 'KernelSelfMaintenanceV04 missing');
+    assert(KernelSelfMaintenanceV04.VERSION === '0.4.0', 'wrong version');
+    assert(KernelSelfMaintenanceV04.PROTECTED_TARGETS.includes('core_doctrine'), 'protected target missing');
+  });
+
+  add('diagnostics detect repeated runtime patterns', () => {
+    const d = KernelSelfMaintenanceV04.diagnostics({ runtime_log:fakeRuntimeLog(), snapshot:{ counters:{} } });
+    assert(d.repeated_patterns.many_near_null === true, 'near-null pattern missing');
+    assert(d.repeated_patterns.many_clarifications === true, 'clarification pattern missing');
+    assert(d.repeated_patterns.many_blocks === true, 'block pattern missing');
+    assert(d.repeated_patterns.many_candidates === true, 'candidate pattern missing');
+    assert(d.repeated_patterns.pending_import_pressure === true, 'pending import pattern missing');
+  });
+
+  add('generate proposals from patterns', () => {
+    const result = KernelSelfMaintenanceV04.generateProposals({ runtime_log:fakeRuntimeLog(), snapshot:{ counters:{} } });
+    assert(result.proposals.length >= 5, 'expected multiple proposals');
+    assert(result.proposals.every(p => p.status === 'candidate_only'), 'proposal should remain candidate only');
+    assert(result.proposals.every(p => p.promotion_state.implemented === false), 'proposal should not be implemented');
+  });
+
+  add('baseline proposal appears when no pattern justifies change', () => {
+    const result = KernelSelfMaintenanceV04.generateProposals({ runtime_log:[], snapshot:{ counters:{} } });
+    assert(result.proposals.length === 1, 'expected one baseline proposal');
+    assert(result.proposals[0].target_layer === 'self_maintenance_baseline', 'wrong baseline target');
+  });
+
+  add('safe proposal evaluates as promotion candidate', () => {
+    const proposal = KernelSelfMaintenanceV04.generateProposals({ runtime_log:fakeRuntimeLog(), snapshot:{ counters:{} } }).proposals[0];
+    const evalResult = KernelSelfMaintenanceV04.evaluateProposal(proposal);
+    assert(evalResult.decision === 'PROMOTION_CANDIDATE', 'safe proposal should be promotion candidate');
+    assert(evalResult.doctrine.evaluation_is_not_implementation === true, 'evaluation doctrine missing');
+  });
+
+  add('protected core rewrite is blocked', () => {
+    const bad = {
+      id:'bad_core',
+      target_layer:'core_doctrine',
+      title:'Rewrite objective peak',
+      proposed_change:'rewrite core and auto-promote this rule',
+      rationale:'skip tests',
+      tests_required:[]
+    };
+    const evalResult = KernelSelfMaintenanceV04.evaluateProposal(bad);
+    assert(evalResult.decision === 'BLOCK_PROMOTION', 'protected core proposal should block');
+    assert(evalResult.issues.some(i => i.code === 'protected_core_target'), 'protected target issue missing');
+    assert(evalResult.issues.some(i => i.code === 'unsafe_self_modification_language'), 'unsafe language issue missing');
+  });
+
+  add('store proposal saves candidate with evaluation', () => {
+    KernelSelfMaintenanceV04.clearProposals(TEST_KEY);
+    const proposal = KernelSelfMaintenanceV04.generateProposals({ runtime_log:fakeRuntimeLog(), snapshot:{ counters:{} } }).proposals[0];
+    const result = KernelSelfMaintenanceV04.storeProposal(proposal, TEST_KEY);
+    assert(result.ok === true, 'store failed');
+    assert(result.proposal.evaluation, 'evaluation missing on stored proposal');
+    assert(KernelSelfMaintenanceV04.loadProposals(TEST_KEY).length === 1, 'stored proposal not loaded');
+  });
+
+  add('proposeAndStore stores candidates only', () => {
+    KernelSelfMaintenanceV04.clearProposals(TEST_KEY);
+    const cycle = KernelSelfMaintenanceV04.proposeAndStore({ runtime_log:fakeRuntimeLog(), snapshot:{ counters:{} } }, TEST_KEY);
+    assert(cycle.stored.length >= 5, 'expected stored proposals');
+    assert(cycle.doctrine.self_maintenance_generates_candidates_only === true, 'candidate-only doctrine missing');
+    assert(cycle.doctrine.no_direct_logic_rewrite === true, 'no direct rewrite doctrine missing');
+    assert(KernelSelfMaintenanceV04.loadProposals(TEST_KEY).every(p => p.promotion_state.implemented === false), 'stored proposal should not be implemented');
+  });
+
+  add('export proposals is not promotion', () => {
+    const exported = KernelSelfMaintenanceV04.exportProposals(TEST_KEY);
+    assert(exported.packet_type === '42ndMind_self_maintenance_proposals_export_v0_4', 'wrong export type');
+    assert(exported.doctrine.proposals_are_not_runtime_logic === true, 'proposal doctrine missing');
+    assert(exported.doctrine.export_is_not_promotion === true, 'export doctrine missing');
+  });
+
+  add('clear proposals removes test data', () => {
+    const cleared = KernelSelfMaintenanceV04.clearProposals(TEST_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelSelfMaintenanceV04.loadProposals(TEST_KEY).length === 0, 'proposals not cleared');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_self_maintenance_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
