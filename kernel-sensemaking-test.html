@@ -21,6 +21,7 @@
 <script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
 <script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
 <script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
 <script>
   const tests = [];
   function add(name, fn) { tests.push({ name, fn }); }
@@ -28,7 +29,7 @@
 
   add('module loads', () => {
     assert(window.KernelSensemakingV01, 'KernelSensemakingV01 missing');
-    assert(KernelSensemakingV01.VERSION === '0.1.0', 'wrong version');
+    assert(KernelSensemakingV01.VERSION === '0.1.1', 'patch version did not load');
   });
 
   add('gibberish is quarantined near null', () => {
