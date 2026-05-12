@@ -18,6 +18,7 @@
 <header><h1>42ndMind Kernel Epistemic Governor Test</h1><div>Tests one governing logic for imports, node maturity, and self-maintenance proposals.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="llm-brain-v0-3-guarded.html">guarded live brain</a> · <a href="kernel-command-preflight-test.html">preflight test</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
 <script>
   const tests = [];
   function add(name, fn) { tests.push({ name, fn }); }
@@ -25,7 +26,7 @@
 
   add('module loads with core doctrine', () => {
     assert(window.KernelEpistemicGovernorV01, 'KernelEpistemicGovernorV01 missing');
-    assert(KernelEpistemicGovernorV01.VERSION === '0.1.0', 'wrong version');
+    assert(KernelEpistemicGovernorV01.VERSION === '0.1.1', 'patch version did not load');
     const doctrine = KernelEpistemicGovernorV01.doctrine();
     assert(doctrine.one_governing_logic === true, 'one governing logic missing');
     assert(doctrine.kernel_owns_belief_movement === true, 'kernel movement doctrine missing');
