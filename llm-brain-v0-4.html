@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Live Brain v0.4 Preview</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,540px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; color:#dfe6ff; }
+    textarea,input,select { width:100%; box-sizing:border-box; resize:vertical; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:190px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    button:hover { filter:brightness(1.12); }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:520px; }
+    a { color:#9db6ff; }
+    .muted { color:#8b93a7; } .small { font-size:12px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .metric { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin-bottom:8px; }
+    .metric span { display:block; color:#8b93a7; } .metric b { display:block; font-size:17px; overflow-wrap:anywhere; }
+    .safe { color:#9dffb4; } .caution { color:#ffd28b; } .block { color:#ff8b8b; } .neutral { color:#b9c7ff; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Live Brain v0.4 Preview</h1>
+  <div class="muted small">One input path through <code>KernelBrainV04.process(input)</code>. Preview only: no automatic import and no kernel-state mutation.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-brain-v0-4-test.html">v0.4 test</a> ·
+      <a href="kernel-sensemaking-test.html">sensemaking test</a> ·
+      <a href="kernel-command-preflight-test.html">preflight test</a> ·
+      <a href="kernel-epistemic-governor-test.html">governor test</a> ·
+      <a href="llm-brain-v0-3.html">v0.3 live console</a>
+    </section>
+    <section>
+      <h2>Input</h2>
+      <textarea id="brainInput" spellcheck="false"></textarea>
+      <button onclick="processInput()">PROCESS through v0.4 brain</button>
+      <button onclick="copyReport()">COPY report</button>
+      <button onclick="copySanitizedCommand()">COPY sanitized command</button>
+      <div id="status" class="small muted"></div>
+    </section>
+    <section>
+      <h2>Samples</h2>
+      <button onclick="loadSample('claim')">claim</button>
+      <button onclick="loadSample('gibberish')">gibberish</button>
+      <button onclick="loadSample('ambiguous')">ambiguous</button>
+      <button onclick="loadSample('self_sealing')">self-sealing</button>
+      <button onclick="loadSample('rule_smuggling')">rule-smuggling</button>
+      <button onclick="loadSample('question')">question</button>
+      <button onclick="loadSample('command')">empty command</button>
+      <button onclick="loadSample('reviewed_command')">caution command</button>
+    </section>
+    <section>
+      <h2>Final decision</h2>
+      <div class="metric"><span>decision</span><b id="decision" class="neutral">not run</b></div>
+      <div class="row">
+        <div class="metric"><span>input kind</span><b id="inputKind">-</b></div>
+        <div class="metric"><span>belief movement</span><b id="movement">none</b></div>
+      </div>
+      <div class="row">
+        <div class="metric"><span>near null</span><b id="nearNull">-</b></div>
+        <div class="metric"><span>allowed pressure</span><b id="allowedPressure">-</b></div>
+      </div>
+      <div class="metric"><span>reason</span><b id="reason">-</b></div>
+    </section>
+    <section>
+      <h2>Adapter status</h2>
+      <pre id="adapterStatus">Not loaded yet.</pre>
+    </section>
+  </div>
+  <div>
+    <section><h2>Full v0.4 report</h2><pre id="reportOut">No report yet.</pre></section>
+    <section><h2>Sensemaking report</h2><pre id="sensemakingOut">No report yet.</pre></section>
+    <section><h2>Governor report</h2><pre id="governorOut">No report yet.</pre></section>
+    <section><h2>Preflight report</h2><pre id="preflightOut">No report yet.</pre></section>
+    <section><h2>Sanitized command, if any</h2><textarea id="sanitizedOut" spellcheck="false"></textarea></section>
+  </div>
+</main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.0"></script>
+<script>
+  let currentReport = null;
+  function $(id){ return document.getElementById(id); }
+  function setStatus(msg){ $('status').textContent = msg; }
+  function decisionClass(decision){
+    if (decision === 'BLOCK') return 'block';
+    if (decision === 'IMPORT_WITH_CAUTION' || decision === 'CAP_MATURITY' || decision === 'HOLD_AS_CANDIDATE' || decision === 'CLARIFY') return 'caution';
+    if (decision === 'SAFE_TO_IMPORT' || decision === 'ALLOW_PRESSURE') return 'safe';
+    return 'neutral';
+  }
+  function render(report){
+    currentReport = report;
+    $('decision').textContent = report.final_decision;
+    $('decision').className = decisionClass(report.final_decision);
+    $('inputKind').textContent = report.input_kind;
+    $('movement').textContent = report.belief_movement;
+    $('nearNull').textContent = String(report.near_null);
+    $('allowedPressure').textContent = String(report.allowed_for_belief_pressure);
+    $('reason').textContent = report.final_reason || '-';
+    $('adapterStatus').textContent = JSON.stringify(report.adapter_status, null, 2);
+    $('reportOut').textContent = JSON.stringify(report, null, 2);
+    $('sensemakingOut').textContent = report.sensemaking_report ? JSON.stringify(report.sensemaking_report, null, 2) : 'No sensemaking report.';
+    $('governorOut').textContent = report.governor_report ? JSON.stringify(report.governor_report, null, 2) : (report.sensemaking_report && report.sensemaking_report.governor_report ? JSON.stringify(report.sensemaking_report.governor_report, null, 2) : 'No governor report.');
+    $('preflightOut').textContent = report.preflight_report ? JSON.stringify(report.preflight_report, null, 2) : 'No preflight report.';
+    $('sanitizedOut').value = report.sanitized_command ? JSON.stringify(report.sanitized_command, null, 2) : '';
+    setStatus('Processed. No kernel state was mutated.');
+  }
+  function processInput(){
+    try {
+      const report = KernelBrainV04.process($('brainInput').value);
+      render(report);
+    } catch(error) {
+      setStatus('Process failed: ' + error.message);
+    }
+  }
+  function loadSample(kind){
+    $('brainInput').value = KernelBrainV04.sampleInput(kind);
+    processInput();
+  }
+  async function copyReport(){
+    if(!currentReport) processInput();
+    if(!currentReport) return;
+    const text = JSON.stringify(currentReport, null, 2);
+    try { await navigator.clipboard.writeText(text); setStatus(`Copied v0.4 report (${text.length.toLocaleString()} chars).`); } catch(e) { setStatus('Could not auto-copy report. Select manually.'); }
+  }
+  async function copySanitizedCommand(){
+    const text = $('sanitizedOut').value;
+    if(!text) { setStatus('No sanitized command available.'); return; }
+    try { await navigator.clipboard.writeText(text); setStatus(`Copied sanitized command (${text.length.toLocaleString()} chars).`); } catch(e) { setStatus('Could not auto-copy sanitized command. Select manually.'); }
+  }
+  (function init(){
+    $('adapterStatus').textContent = JSON.stringify(KernelBrainV04.adapterStatus(), null, 2);
+    loadSample('claim');
+  })();
+</script>
+</body>
+</html>
