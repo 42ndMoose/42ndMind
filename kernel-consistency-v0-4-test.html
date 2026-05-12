@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Consistency v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Consistency v0.4 Test</h1><div>Tests visible contradiction, duplicate provenance, and consistency constraints before probability calibration.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="llm-brain-v0-4.html">v0.4 preview console</a> · <a href="kernel-intention-recovery-v0-4-test.html">intention recovery test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-consistency-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelConsistencyV04, 'KernelConsistencyV04 missing');
+    assert(KernelConsistencyV04.VERSION === '0.4.0', 'wrong version');
+  });
+
+  add('contradiction is made visible', () => {
+    const report = KernelConsistencyV04.analyze(KernelConsistencyV04.sampleItems('contradiction'));
+    assert(report.decision === 'CONTRADICTION_VISIBLE', 'contradiction should be visible');
+    assert(report.conflicts.length === 1, 'expected one conflict');
+    assert(report.probability_constraints.max_probability_if_contradiction_visible === 0.5, 'contradiction probability cap missing');
+  });
+
+  add('duplicate same provenance creates tension, not independent convergence', () => {
+    const report = KernelConsistencyV04.analyze(KernelConsistencyV04.sampleItems('duplicate_same_provenance'));
+    assert(report.decision === 'TENSION_VISIBLE', 'same-provenance duplicate should create tension');
+    assert(report.duplicates.some(d => d.type === 'duplicate_same_provenance'), 'same provenance duplicate missing');
+    assert(report.probability_constraints.duplicate_same_provenance_counts_as_independent === false, 'duplicate provenance rule missing');
+  });
+
+  add('consistent independent items remain consistent', () => {
+    const report = KernelConsistencyV04.analyze([
+      { id:'a', text:'The timestamp supports the bounded claim.', source_ids:['s1'], confidence:0.6 },
+      { id:'b', text:'The document supports a separate bounded claim.', source_ids:['s2'], confidence:0.6 }
+    ]);
+    assert(report.decision === 'CONSISTENT', 'independent compatible items should be consistent');
+    assert(report.consistency_score >= 0.78, 'consistent score too low');
+  });
+
+  add('insufficient structure is detected', () => {
+    const report = KernelConsistencyV04.analyze(['?', 'ok']);
+    assert(report.decision === 'INSUFFICIENT_STRUCTURE', 'low-structure items should be insufficient');
+  });
+
+  add('normalization extracts polarity and provenance', () => {
+    const item = KernelConsistencyV04.normalizeItem({ id:'x', text:'The form was not submitted.', source_ids:['s1'] }, 0);
+    assert(item.negated === true, 'negation not detected');
+    assert(item.source_ids.includes('s1'), 'source ID missing');
+    assert(item.signature.includes('submitted'), 'signature missing content token');
+  });
+
+  add('overlap catches similar claims', () => {
+    const sim = KernelConsistencyV04.overlap('The form was submitted before the deadline.', 'The form was not submitted before the deadline.');
+    assert(sim >= 0.75, 'similar claims should overlap strongly');
+  });
+
+  add('doctrine states hidden contradiction is failure', () => {
+    const report = KernelConsistencyV04.analyze(KernelConsistencyV04.sampleItems('contradiction'));
+    assert(report.doctrine.contradiction_is_not_failure_hidden_contradiction_is_failure === true, 'contradiction doctrine missing');
+    assert(report.doctrine.duplicate_provenance_is_not_independent_convergence === true, 'duplicate doctrine missing');
+    assert(report.doctrine.consistency_precedes_probability_calibration === true, 'probability doctrine missing');
+  });
+
+  add('consistency report does not decide truth', () => {
+    const report = KernelConsistencyV04.analyze(KernelConsistencyV04.sampleItems('contradiction'));
+    assert(report.packet_type === '42ndMind_kernel_consistency_report_v0_4', 'wrong packet type');
+    assert(report.items.length === 2, 'items missing');
+    assert(typeof report.consistency_score === 'number', 'score missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_consistency_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
