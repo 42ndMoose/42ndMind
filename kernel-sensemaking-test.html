@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Kernel Sensemaking Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Kernel Sensemaking Test</h1><div>Tests meaning triage before belief movement.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-epistemic-governor-test.html">governor test</a> · <a href="llm-brain-v0-3-guarded.html">guarded live brain</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelSensemakingV01, 'KernelSensemakingV01 missing');
+    assert(KernelSensemakingV01.VERSION === '0.1.0', 'wrong version');
+  });
+
+  add('gibberish is quarantined near null', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('gibberish'));
+    assert(report.classification === 'low_signal_gibberish', 'gibberish classification wrong');
+    assert(report.decision === 'QUARANTINE_NEAR_NULL', 'gibberish should quarantine');
+    assert(report.observation && report.observation.near_null === true, 'gibberish should become near-null observation');
+    assert(report.governor_candidate === null, 'gibberish should not become governor candidate');
+  });
+
+  add('ambiguous input asks clarification', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('ambiguous'));
+    assert(report.classification === 'ambiguous_candidate_meaning', 'ambiguous classification wrong');
+    assert(report.decision === 'ASK_CLARIFICATION', 'ambiguous input should ask clarification');
+    assert(report.observation && report.observation.belief_movement === 'none', 'ambiguous input should not move belief');
+  });
+
+  add('structured claim becomes governor candidate', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('claim'));
+    assert(report.decision === 'SEND_TO_GOVERNOR', 'claim should go to governor');
+    assert(report.governor_candidate, 'claim governor candidate missing');
+    assert(report.governor_report, 'governor report missing');
+  });
+
+  add('source/evidence language becomes candidate pressure', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('source'));
+    assert(report.classification === 'source_or_evidence_candidate', 'source classification wrong');
+    assert(report.governor_candidate.evidence.length > 0, 'source input should create evidence candidate');
+  });
+
+  add('question remains clarification pressure', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('question'));
+    assert(report.classification === 'question_or_clarification', 'question classification wrong');
+    assert(report.decision === 'ASK_CLARIFICATION', 'question should ask clarification');
+    assert(report.observation.near_null === true, 'question should not directly move belief');
+  });
+
+  add('self-sealing input is sent to governor and capped/blocked there', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('self_sealing'));
+    assert(report.classification === 'self_sealing_candidate', 'self-sealing classification wrong');
+    assert(report.decision === 'SEND_TO_GOVERNOR', 'self-sealing should go to governor');
+    assert(report.governor_report && report.governor_report.decision === 'BLOCK_MOVEMENT', 'governor should block self-sealing movement');
+  });
+
+  add('rule-smuggling blocks movement before governor', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('rule_smuggling'));
+    assert(report.classification === 'rule_smuggling_or_adversarial_input', 'rule-smuggling classification wrong');
+    assert(report.decision === 'BLOCK_MOVEMENT', 'rule-smuggling should block movement');
+    assert(report.governor_candidate === null, 'rule-smuggling should not become candidate pressure');
+  });
+
+  add('structured command JSON is recognized', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('command'));
+    assert(report.classification === 'structured_kernel_command', 'command classification wrong');
+    assert(report.parsed_json_available === true, 'command JSON should parse');
+    assert(report.decision === 'SEND_TO_GOVERNOR', 'structured command should enter governor review path');
+  });
+
+  add('doctrine says sensemaking does not decide truth', () => {
+    const report = KernelSensemakingV01.analyze(KernelSensemakingV01.sampleInput('claim'));
+    assert(report.doctrine.sensemaking_does_not_decide_truth === true, 'truth doctrine missing');
+    assert(report.doctrine.meaning_must_be_earned_before_belief_movement === true, 'meaning doctrine missing');
+    assert(report.doctrine.belief_movement === 'none', 'sensemaking should not move belief');
+  });
+
+  add('signal metrics remain bounded', () => {
+    const m = KernelSensemakingV01.signalMetrics('The document evidence supports the claim.');
+    assert(m.structure_score >= 0 && m.structure_score <= 1, 'structure score out of bounds');
+    assert(m.word_count > 0, 'word count wrong');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_kernel_sensemaking_test_report', results }, null, 2);
+</script>
+</body>
+</html>
