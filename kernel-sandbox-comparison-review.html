@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Sandbox Comparison Review</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,540px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:120px; resize:vertical; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:650px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .candidate,.probe,.metric { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .candidate b,.probe b,.metric b { display:block; overflow-wrap:anywhere; }
+    .candidate span,.probe span,.metric span { color:#8b93a7; }
+    .ok { color:#9dffb4; } .warn { color:#ffd28b; } .bad { color:#ff8b8b; } .neutral { color:#b9c7ff; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Sandbox Comparison Review</h1>
+  <div class="muted small">Compare baseline kernel behavior against candidate-shadow behavior. Candidate behavior is not executed. Source is not rewritten. v0.3 is not touched.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-sandbox-comparison-v0-4-test.html">sandbox test</a> ·
+      <a href="kernel-runtime-candidate-review.html">runtime candidate review</a> ·
+      <a href="kernel-test-suite-v0-4-activation.html">activation add-on suite</a> ·
+      <a href="llm-brain-v0-4.html">v0.4 preview console</a>
+    </section>
+    <section>
+      <h2>Queue controls</h2>
+      <button onclick="refreshQueue()">REFRESH queue</button>
+      <button onclick="stageSampleCandidate()">STAGE sample candidate</button>
+      <button onclick="clearQueue()">CLEAR runtime candidate queue</button>
+      <div class="small muted">Sample staging uses the current promotion → patch-candidate → runtime-candidate path.</div>
+    </section>
+    <section>
+      <h2>Runtime candidates</h2>
+      <div id="queueList" class="small muted">No queue loaded.</div>
+    </section>
+    <section>
+      <h2>Selected candidate</h2>
+      <input id="selectedId" placeholder="candidate id" />
+      <button onclick="runComparison(false)">RUN sandbox comparison</button>
+      <button onclick="runComparison(true)">RUN with simulated drift</button>
+      <button onclick="copyReport()">COPY comparison report</button>
+      <div class="small muted">Simulated drift changes the candidate-shadow final decision to prove drift detection works. It still does not execute candidate behavior.</div>
+    </section>
+    <section>
+      <h2>Default probes</h2>
+      <div id="probeList" class="small muted">No probes loaded.</div>
+    </section>
+    <section>
+      <h2>Decision summary</h2>
+      <div class="row">
+        <div class="metric"><span>decision</span><b id="decision" class="neutral">not run</b></div>
+        <div class="metric"><span>candidate</span><b id="candidateId">-</b></div>
+      </div>
+      <div class="row">
+        <div class="metric"><span>probe count</span><b id="probeCount">-</b></div>
+        <div class="metric"><span>behavior delta</span><b id="delta">-</b></div>
+      </div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Comparison report</h2><pre id="out">No comparison yet.</pre></section>
+    <section><h2>Selected candidate JSON</h2><pre id="candidateOut">No candidate selected.</pre></section>
+    <section><h2>Per-probe result</h2><pre id="probeOut">No comparison yet.</pre></section>
+  </div>
+</main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-consistency-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-probability-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.1"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
+<script src="src/kernel-patch-candidate-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-runtime-candidates-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-sandbox-comparison-v0-4.js?v=0.4.0"></script>
+<script>
+  let currentReport = null;
+  function $(id){ return document.getElementById(id); }
+  function escapeHtml(value){ return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+  function decisionClass(decision){
+    if (decision === 'PASS_NO_BEHAVIOR_DELTA') return 'ok';
+    if (decision === 'HOLD_REVIEW_REQUIRED') return 'warn';
+    if (decision === 'BLOCK_BEHAVIOR_DRIFT' || decision === 'BLOCK_UNSAFE_CANDIDATE') return 'bad';
+    return 'neutral';
+  }
+  function renderProbes(){
+    const probes = KernelSandboxComparisonV04.defaultProbes();
+    $('probeList').innerHTML = probes.map(p => `<div class="probe"><b>${escapeHtml(p.id)}</b><span>${escapeHtml(String(p.input).slice(0, 100))}</span></div>`).join('');
+  }
+  function refreshQueue(){
+    const exported = KernelRuntimeCandidatesV04.exportQueue();
+    const list = exported.candidates || [];
+    if(!list.length){
+      $('queueList').innerHTML = 'No runtime candidates staged.';
+      $('candidateOut').textContent = 'No candidate selected.';
+      return exported;
+    }
+    $('queueList').innerHTML = list.slice().reverse().map(c => `<div class="candidate"><b class="${c.status === 'REJECTED' ? 'bad' : c.status === 'ENABLED_METADATA_ONLY' ? 'ok' : 'warn'}">${escapeHtml(c.status)} · ${escapeHtml(c.title || c.id)}</b><span>${escapeHtml(c.id)} · enabled=${escapeHtml(c.enabled)} · target=${escapeHtml(c.target_layer)}</span><br><button onclick="selectCandidate('${escapeHtml(c.id)}')">SELECT</button><button onclick="selectAndRun('${escapeHtml(c.id)}')">SELECT + COMPARE</button></div>`).join('');
+    return exported;
+  }
+  function selectCandidate(id){
+    $('selectedId').value = id;
+    const c = KernelRuntimeCandidatesV04.load().find(x => x.id === id);
+    $('candidateOut').textContent = c ? JSON.stringify(c, null, 2) : 'Candidate not found.';
+  }
+  function selectAndRun(id){ selectCandidate(id); runComparison(false); }
+  function stageSampleCandidate(){
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('runtime'));
+    const staged = KernelRuntimeCandidatesV04.stage(plan, { explicit_stage:true });
+    $('out').textContent = JSON.stringify(staged, null, 2);
+    refreshQueue();
+    if(staged && staged.candidate) selectCandidate(staged.candidate.id);
+  }
+  function clearQueue(){
+    const result = KernelRuntimeCandidatesV04.clear();
+    currentReport = null;
+    $('out').textContent = JSON.stringify(result, null, 2);
+    $('probeOut').textContent = 'No comparison yet.';
+    $('selectedId').value = '';
+    refreshQueue();
+    renderSummary(null);
+  }
+  function runComparison(simulateDrift){
+    const id = $('selectedId').value.trim();
+    if(!id){ $('out').textContent = 'Select a candidate first.'; return; }
+    const opts = simulateDrift ? { simulated_behavior_delta:{ final_decision:'SAFE_TO_IMPORT' } } : {};
+    const report = KernelSandboxComparisonV04.compare(id, opts);
+    currentReport = report;
+    $('out').textContent = JSON.stringify(report, null, 2);
+    $('probeOut').textContent = JSON.stringify((report.comparisons || []).map(c => ({ probe_id:c.probe_id, passed:c.passed, diffs:c.diffs, baseline_summary:c.baseline_summary, candidate_shadow_summary:c.candidate_shadow_summary })), null, 2);
+    renderSummary(report);
+  }
+  function renderSummary(report){
+    $('decision').textContent = report ? report.decision : 'not run';
+    $('decision').className = report ? decisionClass(report.decision) : 'neutral';
+    $('candidateId').textContent = report ? (report.candidate_id || '-') : '-';
+    $('probeCount').textContent = report ? String(report.probe_count || 0) : '-';
+    $('delta').textContent = report ? String(!!report.behavior_delta_detected) : '-';
+  }
+  async function copyReport(){
+    if(!currentReport){ $('out').textContent = 'No comparison report to copy.'; return; }
+    const text = JSON.stringify(currentReport, null, 2);
+    try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied comparison report (${text.length.toLocaleString()} chars).\n\n` + text; }
+    catch(e){ $('out').textContent = text; }
+  }
+  (function init(){ renderProbes(); refreshQueue(); renderSummary(null); })();
+</script>
+</body>
+</html>
