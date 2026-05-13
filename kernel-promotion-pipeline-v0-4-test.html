@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Promotion Pipeline v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Promotion Pipeline v0.4 Test</h1><div>Tests self-maintenance proposal promotion evaluation without runtime enablement, source rewrite, or import execution.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-self-maintenance-v0-4-test.html">self-maintenance test</a> · <a href="kernel-test-suite-v0-4.html">integrated suite</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelPromotionPipelineV04, 'KernelPromotionPipelineV04 missing');
+    assert(KernelPromotionPipelineV04.VERSION === '0.4.0', 'wrong promotion version');
+    assert(KernelPromotionPipelineV04.DECISIONS.PROMOTE_RUNTIME_CANDIDATE === 'PROMOTE_RUNTIME_CANDIDATE', 'decisions missing');
+  });
+
+  add('runtime proposal becomes runtime candidate only', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
+    assert(report.decision === 'PROMOTE_RUNTIME_CANDIDATE', 'runtime proposal should promote as runtime candidate');
+    assert(report.promotion_effect.runtime_enabled === false, 'runtime should not be enabled');
+    assert(report.promotion_effect.patch_applied === false, 'patch should not apply');
+    assert(report.promotion_effect.source_rewritten === false, 'source should not rewrite');
+  });
+
+  add('patch proposal becomes patch candidate only', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('patch'));
+    assert(report.decision === 'PATCH_CANDIDATE_ONLY', 'patch proposal should become patch candidate only');
+    assert(report.next_step.includes('no source write'), 'patch next step should forbid source write');
+    assert(report.promotion_effect.source_rewritten === false, 'source should not rewrite');
+  });
+
+  add('missing tests holds for more evidence', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('hold'));
+    assert(report.decision === 'HOLD_FOR_MORE_EVIDENCE', 'missing tests should hold');
+    assert(report.issues.some(i => i.code === 'missing_tests'), 'missing tests issue missing');
+  });
+
+  add('protected core rewrite is blocked', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('blocked'));
+    assert(report.decision === 'BLOCK_PROMOTION', 'protected core should block');
+    assert(report.issues.some(i => i.code === 'protected_core_target'), 'protected core issue missing');
+    assert(report.issues.some(i => i.code === 'unsafe_self_modification_language'), 'unsafe language issue missing');
+  });
+
+  add('governor candidate is produced for proposal', () => {
+    const proposal = KernelPromotionPipelineV04.sampleProposal('runtime');
+    const candidate = KernelPromotionPipelineV04.governorCandidateFor(proposal);
+    assert(candidate.candidate_type === 'promotion_pipeline_candidate', 'wrong candidate type');
+    assert(candidate.evidence.length === proposal.tests_required.length, 'tests should become required-test evidence');
+    assert(candidate.status === 'candidate', 'candidate status missing');
+  });
+
+  add('governor report is included', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
+    assert(report.governor_report, 'governor report missing');
+    assert(['HOLD_AS_CANDIDATE','ALLOW_PRESSURE','CAP_MATURITY','BLOCK_MOVEMENT'].includes(report.governor_report.decision), 'unexpected governor decision');
+  });
+
+  add('self-maintenance evaluation is included', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
+    assert(report.self_maintenance_evaluation, 'self-maintenance evaluation missing');
+    assert(report.self_maintenance_evaluation.packet_type === '42ndMind_self_maintenance_evaluation_v0_4', 'wrong self-maintenance evaluation packet');
+  });
+
+  add('batch evaluation summarizes all four outcomes', () => {
+    const batch = KernelPromotionPipelineV04.evaluateMany([
+      KernelPromotionPipelineV04.sampleProposal('runtime'),
+      KernelPromotionPipelineV04.sampleProposal('patch'),
+      KernelPromotionPipelineV04.sampleProposal('hold'),
+      KernelPromotionPipelineV04.sampleProposal('blocked')
+    ]);
+    assert(batch.count === 4, 'batch count wrong');
+    assert(batch.summary.promote_runtime_candidate === 1, 'runtime summary wrong');
+    assert(batch.summary.patch_candidate_only === 1, 'patch summary wrong');
+    assert(batch.summary.hold_for_more_evidence === 1, 'hold summary wrong');
+    assert(batch.summary.block_promotion === 1, 'block summary wrong');
+  });
+
+  add('evaluation never executes promotion effects', () => {
+    const reports = ['runtime','patch','hold','blocked'].map(kind => KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal(kind)));
+    assert(reports.every(r => r.promotion_effect.runtime_enabled === false), 'runtime enabled during evaluation');
+    assert(reports.every(r => r.promotion_effect.patch_applied === false), 'patch applied during evaluation');
+    assert(reports.every(r => r.promotion_effect.source_rewritten === false), 'source rewritten during evaluation');
+    assert(reports.every(r => r.promotion_effect.import_executed === false), 'import executed during evaluation');
+    assert(reports.every(r => r.promotion_effect.core_doctrine_changed === false), 'core doctrine changed during evaluation');
+  });
+
+  add('doctrine preserves tests, governor, and unresolved pressure', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
+    assert(report.doctrine.evaluation_is_not_promotion === true, 'evaluation doctrine missing');
+    assert(report.doctrine.promotion_requires_tests === true, 'test doctrine missing');
+    assert(report.doctrine.governor_must_assess_before_promotion === true, 'governor doctrine missing');
+    assert(report.doctrine.unresolved_pressure_must_remain_visible === true, 'unresolved doctrine missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_promotion_pipeline_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
