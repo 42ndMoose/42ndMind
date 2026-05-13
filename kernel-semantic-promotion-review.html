@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Promotion Review</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,560px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:130px; resize:vertical; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:660px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .metric,.rowcard { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.rowcard span { color:#8b93a7; display:block; } .metric b,.rowcard b { display:block; overflow-wrap:anywhere; }
+    .ok { color:#9dffb4; } .warn { color:#ffd28b; } .bad { color:#ff8b8b; } .neutral { color:#b9c7ff; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Semantic Promotion Review</h1>
+  <div class="muted small">Review stable semantic invariant proposals through the promotion pipeline and patch planner. No runtime enablement, source write, import, or belief movement occurs here.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-semantic-invariant-review.html">semantic invariant review</a> ·
+      <a href="kernel-semantic-promotion-bridge-v0-4-test.html">semantic promotion test</a> ·
+      <a href="kernel-promotion-pipeline-v0-4-test.html">promotion test</a> ·
+      <a href="kernel-patch-candidate-v0-4-test.html">patch planner test</a>
+    </section>
+    <section>
+      <h2>Controls</h2>
+      <button onclick="loadStableFromLedger()">LOAD stable proposals from ledger</button>
+      <button onclick="loadSampleProposal()">LOAD sample semantic proposal</button>
+      <button onclick="runPromotion()">RUN promotion bridge</button>
+      <button onclick="generatePatchPlans()">GENERATE patch plans</button>
+      <button onclick="copyOutput()">COPY output</button>
+      <button onclick="clearInput()">CLEAR input</button>
+      <div class="small muted">Stable semantic invariant proposals should evaluate as patch candidates only. They do not become live doctrine.</div>
+    </section>
+    <section>
+      <h2>Proposal packet input</h2>
+      <textarea id="proposalInput" spellcheck="false"></textarea>
+    </section>
+    <section>
+      <h2>Summary</h2>
+      <div class="grid">
+        <div class="metric"><span>bridge decision</span><b id="bridgeDecision" class="neutral">not run</b></div>
+        <div class="metric"><span>proposal count</span><b id="proposalCount">0</b></div>
+        <div class="metric"><span>patch candidates</span><b id="patchCandidateCount">0</b></div>
+        <div class="metric"><span>patch plans</span><b id="patchPlanCount">0</b></div>
+      </div>
+    </section>
+    <section>
+      <h2>Promotion decisions</h2>
+      <div id="decisionList" class="small muted">No promotion run yet.</div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Bridge report / patch plan report</h2><pre id="out">No output yet.</pre></section>
+    <section><h2>Patch plans</h2><pre id="patchOut">No patch plans yet.</pre></section>
+    <section><h2>Doctrine</h2><pre id="doctrineOut"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
+<script src="src/kernel-patch-candidate-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-semantic-promotion-bridge-v0-4.js?v=0.4.0"></script>
+<script>
+  let lastOutput = null;
+  function $(id){ return document.getElementById(id); }
+  function parseInput(){ const raw = $('proposalInput').value.trim(); return raw ? JSON.parse(raw) : KernelSemanticPromotionBridgeV04.sampleProposalPacket(); }
+  function cls(decision){ if(decision === 'PROMOTION_BRIDGE_READY' || decision === 'PATCH_CANDIDATE_ONLY') return 'ok'; if(String(decision).includes('HOLD')) return 'warn'; if(String(decision).includes('BLOCK')) return 'bad'; return 'neutral'; }
+  function renderSummary(report){
+    const batch = report && report.promotion_batch;
+    const summary = batch && batch.summary || {};
+    $('bridgeDecision').textContent = report ? report.decision : 'not run';
+    $('bridgeDecision').className = report ? cls(report.decision) : 'neutral';
+    $('proposalCount').textContent = String(report && report.proposal_count || 0);
+    $('patchCandidateCount').textContent = String(summary.patch_candidate_only || 0);
+    $('patchPlanCount').textContent = String(report && report.patch_plan_count || 0);
+    $('decisionList').innerHTML = batch && batch.reports && batch.reports.length ? batch.reports.map(r => `<div class="rowcard"><b class="${cls(r.decision)}">${r.decision} · ${r.proposal_id}</b><span>${r.target_layer}</span><br>${(r.issues||[]).map(i => i.code).join(', ') || 'no issues'}</div>`).join('') : 'No promotion reports.';
+  }
+  function show(report){ lastOutput = report; $('out').textContent = JSON.stringify(report, null, 2); renderSummary(report); }
+  function loadStableFromLedger(){ const packet = KernelSemanticInvariantLearnerV04.proposeStable(); $('proposalInput').value = JSON.stringify(packet, null, 2); show(packet); }
+  function loadSampleProposal(){ const packet = KernelSemanticPromotionBridgeV04.sampleProposalPacket(); $('proposalInput').value = JSON.stringify(packet, null, 2); show(packet); }
+  function runPromotion(){ try { const report = KernelSemanticPromotionBridgeV04.evaluate(parseInput()); show(report); } catch(e){ $('out').textContent = 'Promotion failed: ' + e.message; } }
+  function generatePatchPlans(){ try { const report = KernelSemanticPromotionBridgeV04.stableToPatchPlans(parseInput()); lastOutput = report; $('out').textContent = JSON.stringify(report, null, 2); $('patchOut').textContent = JSON.stringify(report.patch_plans || [], null, 2); renderSummary(report); } catch(e){ $('out').textContent = 'Patch plan generation failed: ' + e.message; } }
+  function clearInput(){ $('proposalInput').value = ''; $('out').textContent = 'No output yet.'; $('patchOut').textContent = 'No patch plans yet.'; lastOutput = null; renderSummary(null); }
+  async function copyOutput(){ const text = JSON.stringify(lastOutput || parseInput(), null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  (function init(){ $('doctrineOut').textContent = JSON.stringify(KernelSemanticPromotionBridgeV04.doctrine(), null, 2); loadSampleProposal(); })();
+</script>
+</body>
+</html>
