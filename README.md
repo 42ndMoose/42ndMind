@@ -1,676 +1,313 @@
-# Epistemic Kernel v0
+# 42ndMind Epistemic Kernel
 
-A tiny transparent belief-state prototype based on epistemic pressure, gate updates, scoped belief graphs, and Epistemic Octahedron projection.
+42ndMind is a browser-executable epistemic kernel: a transparent belief-state engine governed by the Epistemic Octahedron.
 
-This is not an LLM. It does not understand English deeply. It understands structured belief objects: claims, evidence, contradictions, questions, gate states, local octahedron states, source traces, benchmark cases, and a root worldview aggregate.
+It is not an LLM. It does not try to be the language model. The intended architecture is:
 
-The point of this prototype is to put the Epistemic Octahedron beneath the language layer instead of merely training an LLM to sound mature.
+```text
+human language / documents / dossiers
+→ LLM or human extractor
+→ structured claim/evidence/source packet
+→ epistemic kernel
+→ belief-state pressure, gates, memory, source trust, and review packets
+→ optional LLM explanation layer
+```
+
+The kernel owns belief movement. LLMs are extractor/interface layers.
 
 ## Current status
 
-The current system is a browser-based JavaScript prototype hosted through GitHub Pages.
+The repo now has two related layers:
 
-The active working stack has moved beyond the original v0 page. The current main console is `llm-brain-v0-3.html`.
+1. The older live console stack centered on `llm-brain-v0-3.html`.
+2. The newer v0.4 module stack for one-brain processing, source trust, epistemic memory, lexical uncertainty, semantic invariant learning, and controlled self-improvement.
 
-Current active pages:
+The latest operational status is tracked in:
 
-- `llm-brain-v0-3.html` — main patched live brain console for structured command import, benchmark packet export, source traces, local graph inspection, and brain-packet copying.
-- `goal-runner.html` — benchmark, milestone, sandbox, and memory-compression runner.
-- `ordinary-llm-comparison.html` — Milestone 12 harness for comparing pasted generic/prompt-only LLM outputs against kernel-guided benchmark behavior.
-- `ordinary-llm-comparison-test.html` — smoke test for the Milestone 12 comparison harness.
-- `claim-challenge.html` — external-claim challenge workflow with optional kernel-command export.
-- `claim-challenge-test.html` — smoke test for claim-challenge classifications and surface-rule preservation.
-- `dossier-source-graph.html` — curated dossier packet importer. Current module version: `0.1.3`.
-- `dossier-source-graph-test.html` — smoke/regression test for dossier source-graph import behavior.
-- `source-trace-bridge.html` — read-only bridge from persisted source traces to LLM-facing explanation packets/prompts and local explanation preview.
-- `source-trace-bridge-test.html` — smoke test for source-trace explanation packets and guardrails.
-- `milestone-closer.html` — limited M12-M15 harness for making endgame behavior visible as test packets.
-- `belief-graph.html` — graph viewer for local octahedron states, parent links, stance clusters, and the root worldview aggregate.
-- `index.html` — older human-facing kernel UI, still useful but no longer the primary active console.
+```text
+CURRENT_PROGRESS.md
+```
 
-Current active implementation files:
+The full high-context handoff for writing a serious paper on the current v0.4 kernel is:
 
-- `src/epistemic-kernel-v0-2.js` — current browser kernel.
-- `src/epistemic-kernel-v0-2-patches.js` — patch layer for low-signal quarantine and unresolved-contradiction audit pressure.
-- `src/epistemic-benchmark-v0-1.js` — fixed benchmark cases, sandbox overlay runner, milestone status, and memory compression helpers.
-- `src/claim-challenge-v0-1.js` — claim-challenge workflow.
-- `src/dossier-source-graph-v0-1.js` — dossier source-graph importer and kernel-command exporter. Current version: `0.1.3`.
+```text
+HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md
+```
 
-Current stable smoke checks:
+Read those two files first before continuing development or writing a paper.
 
-- `EpistemicBenchmark.runBenchmark()` currently passes `10 / 10` benchmark cases in the active browser stack.
-- `dossier-source-graph-test.html` confirms dossier counter-considerations export as attacking evidence and that dossier kernel commands use `observations: []`.
-- `source-trace-bridge-test.html` confirms source-trace explanation packets preserve no-mutation and provenance-not-proof guardrails.
-- `ordinary-llm-comparison-test.html` confirms the Milestone 12 comparison packet shape, rubric criteria, scoring lanes, and doctrine guardrails.
+## Main live entry points
 
-Current state persistence:
+Current live console:
 
-- Kernel state is stored in browser `localStorage` under the GitHub Pages site origin.
-- Reloading the page should preserve state.
-- Closing/reopening the browser should preserve state unless site data is cleared.
-- State is local to the browser/device. It is not automatically stored in GitHub.
-- For durable transfer, use copied brain packets, exported state JSON, or copied comparison/source-trace packets.
+- `llm-brain-v0-3.html` — main patched live brain console. Current live packet version: `0.3.4-patched`.
 
-## What it does now
+Current v0.4 / self-improvement / semantic stack:
 
-- Starts from the null origin: `(0, 0, 0)`.
-- Stores claims.
-- Stores evidence that supports or attacks claims.
-- Detects a few simple contradiction patterns.
-- Preserves live hypotheses instead of jumping straight to motive certainty.
-- Creates open inquiry questions when belief pressure remains unresolved.
-- Updates six gate scores:
-  - G1 counter-consideration
-  - G2 non-strawman
-  - G3 self-correction
-  - G4 contradiction handling
-  - G5 reality contact
-  - G6 non-self-sealing
-- Projects semantic state onto the Epistemic Octahedron surface for active worldview states.
-- Keeps the null origin separate from active surface states.
-- Exports and imports JSON state.
-- Imports structured extraction packets into the kernel.
-- Imports dossier source-graph packets without treating dossier coherence as automatic truth.
-- Exports dossier counter-considerations as attacking evidence, not low-signal observations.
-- Persists imported source traces into `kernel_state.sourceTraces` as non-scoring provenance metadata.
-- Produces read-only LLM explanation packets from source traces.
-- Produces deterministic local explanation previews before involving an LLM.
-- Challenges external claims and classifies self-sealing, motive-overclaim, contradiction, unresolved, coherent, and evidence-backed cases.
-- Runs fixed benchmark cases.
-- Runs candidate rule overlays in sandbox form without allowing self-promotion.
-- Produces memory-compression packets that separate active pressure from archive traces.
-- Provides a Milestone 12 comparison harness for pasted ordinary LLM outputs.
-- Copies a complete brain packet so a future ChatGPT session can see current kernel state, source traces, benchmark summaries, and command protocol.
-- Builds a scoped `beliefGraph` containing:
-  - root worldview node
-  - claim nodes
-  - contradiction nodes
-  - stance cluster nodes
-  - principle cluster node
-  - links showing whether local nodes reinforce, pressure, or remain unresolved relative to parent nodes
+- `kernel-brain-v0-4-test.html`
+- `kernel-command-preflight-test.html`
+- `kernel-sensemaking-test.html`
+- `kernel-intention-recovery-v0-4-test.html`
+- `kernel-runtime-candidates-v0-4-test.html`
+- `kernel-runtime-activation-v0-4-test.html`
+- `kernel-sandbox-comparison-v0-4-test.html`
+- `kernel-sandbox-comparison-review.html`
+- `kernel-source-patch-bridge-v0-4-test.html`
+- `kernel-source-patch-bridge-review.html`
+- `kernel-source-trust-v0-4-test.html`
+- `kernel-source-trust-bridge-v0-4-test.html`
+- `ees-to-kernel-command.html`
+- `ees-to-kernel-command-test.html`
+- `kernel-epistemic-memory-v0-4-test.html`
+- `kernel-lexical-uncertainty-v0-4-test.html`
+- `kernel-semantic-invariant-learner-v0-4-test.html`
+- `kernel-semantic-invariant-review.html`
+- `kernel-semantic-promotion-bridge-v0-4-test.html`
+- `kernel-semantic-promotion-review.html`
+- `kernel-semantic-source-bridge-v0-4-test.html`
+
+Older but still useful pages:
+
+- `goal-runner.html`
+- `claim-challenge.html`
+- `dossier-source-graph.html`
+- `dossier-source-graph-test.html`
+- `dossier-ees-compiler-v0-1-2.html`
+- `source-registry.html`
+- `source-registry-test.html`
+- `source-trace-bridge.html`
+- `source-trace-bridge-test.html`
+- `ordinary-llm-comparison.html`
+- `ordinary-llm-comparison-test.html`
+- `belief-graph.html`
+
+## Core design thesis
+
+The real target is not a chatbot that sounds wise.
+
+The target is a transparent epistemic operating system whose internal update rules are faithful to the Epistemic Octahedron:
+
+- null origin is not maturity
+- active states obey `|x| + |y| + |z| = 1`
+- unresolved contradiction remains visible
+- motive overclaim is capped
+- source metadata does not become truth
+- lexical uncertainty blocks fake certainty
+- contradicted beliefs are archived, not deleted
+- stable semantic patterns can become candidates, not doctrine
+- self-improvement must pass through review, tests, and source-bridge packets
+
+## Epistemic Octahedron relation
+
+The Epistemic Octahedron supplies the governing geometry and maturity doctrine.
+
+Important semantic points:
+
+- `(0,0,0)` is the pre-philosophical null state.
+- Active worldview states live on `|x| + |y| + |z| = 1`.
+- Lower y represents epistemic collapse / negative stability.
+- Upper y represents mature integration / objective peak.
+- Lateral axes encode empathy/practicality and knowledge/wisdom pressures.
+- Mature stability cannot be faked by polished language, source status, repetition, or unresolved contradiction.
+
+## What the kernel does now
+
+The current stack can:
+
+- process structured kernel commands
+- preserve null origin separately from active octahedron states
+- expose contradiction pressure
+- cap maturity under unresolved pressure
+- run sensemaking and preflight checks
+- recover likely intention while preserving uncertainty
+- track consistency and probability pressure
+- attach source-trust priors
+- keep certification as metadata, not truth
+- compile EES registry mechanisms into copyable kernel commands
+- store epistemic memory as inactive pressure
+- archive contradicted beliefs instead of deleting them
+- detect unknown, ambiguous, acronymic, and implication-heavy terms
+- produce lexical definition requests for human/LLM/glossary extraction
+- learn repeated semantic-pressure patterns
+- propose stable semantic invariants
+- evaluate semantic invariant proposals through the promotion pipeline
+- generate patch plans for semantic adapters
+- convert semantic patch plans into GitHub-safe source patch bridge packets
+
+## Current full self-improvement path
+
+The most advanced implemented path is:
+
+```text
+language example / lexical report / memory report
+→ semantic invariant learner
+→ stable invariant proposal
+→ semantic promotion bridge
+→ promotion pipeline
+→ patch candidate planner
+→ semantic target patch mapping
+→ semantic source bridge
+→ source patch bridge packet
+→ external GitHub SHA/write/fetch-back/test protocol
+```
+
+This is not autonomous source rewriting.
+
+It is controlled self-maintenance up to reviewable patch packets.
+
+## Safety and review doctrine
+
+The kernel must not:
+
+- treat more knowledge as automatic maturity
+- treat confidence as truth
+- treat source certification as truth
+- treat retrieval as verification
+- treat provenance as proof
+- treat no contradiction as proof
+- delete contradicted beliefs instead of archiving them
+- let learned semantic mappings become doctrine automatically
+- let a proposed patch promote itself
+- write GitHub source directly from browser runtime
+
+The current implementation preserves those boundaries through metadata-only ledgers, sandbox comparison, promotion evaluation, patch planning, and source patch bridge packets.
+
+## Source trust doctrine
+
+Source trust is bounded prior pressure, not truth.
+
+A source can be classified as:
+
+- primary document
+- direct transcript
+- raw dataset
+- official record
+- legacy media
+- fact-check certified
+- government-funded NGO
+- advocacy organization
+- anonymous social post
+- expert commentary
+- unknown
+
+Key rule:
+
+```text
+Certification is metadata, not truth.
+```
+
+Fact-check certification can affect verification burden, but it cannot replace claim-level evidence.
+
+## Lexical and semantic language-math path
+
+The v0.4 stack introduces a research path toward mathematical language/intention analysis.
+
+The current learner tracks repeated semantic-pressure patterns such as:
+
+- `debunked` → closure pressure / dismissal pressure
+- `certified` → authority-transfer / trust-inflation pressure
+- `IFCN`, `fact-check` → source-trust / authority pressure
+- `they`, `this`, `that` → ambiguity pressure
+- `coordinated`, `agenda`, `motive` → motive/agency pressure
+- `misinformation`, `propaganda`, `conspiracy` → dismissal / closure pressure
+- `CDA-EOS`, `IAPWS`, `LLM`, `EES`, `SHA` → technical-definition pressure
+
+These are not final laws. They are candidate pressure patterns.
+
+The long-term research idea is that natural-language wording may converge to language-independent semantic operators beneath the surface words:
+
+```text
+utterance → semantic operators → intention vector → belief-pressure effect
+```
+
+The current kernel only seeds that path. It does not claim final intention algebra.
+
+## Local storage keys
+
+Important browser `localStorage` keys:
+
+```text
+42ndMind_source_registry_v0_1
+42ndMind_entity_event_source_registry_v0_1
+42ndMind_runtime_candidates_v0_4
+42ndMind_epistemic_memory_v0_4
+42ndMind_semantic_invariants_v0_4
+```
+
+Prototype storage is local to the browser/device. Durable research work should export ledgers regularly. Future work should add JSONL or SQLite-style export/import for long-running epistemic memory and semantic invariant data.
 
 ## How to run
 
-### Browser mode
+No build step is required for browser use.
 
-Open `llm-brain-v0-3.html` in a browser for the main active console.
+Open the relevant `.html` file directly or through GitHub Pages.
 
-No install is required.
+If a new update does not appear, hard refresh the browser or wait for GitHub Pages deployment.
 
-### GitHub Pages mode
-
-Open the deployed GitHub Pages site for this repo.
-
-If changes do not show immediately, hard refresh the browser or wait for GitHub Pages deployment to catch up.
-
-### Node demo
-
-If Node.js is installed:
+For the older Node demo, if Node.js is installed:
 
 ```bash
 npm run demo
 ```
 
-## How to use
+## Current verified test expectations
 
-For serious work, prefer the structured command/import flow over Quick Ingest.
+The latest important user-reported checks include:
 
-The fastest current path for the active console is:
+- `kernel-source-trust-v0-4-test.html` — `14/14 passed`
+- `kernel-source-trust-bridge-v0-4-test.html` — `10/10 passed`
+- `ees-to-kernel-command-test.html` — `14/14 passed`
+- `kernel-epistemic-memory-v0-4-test.html` — `15/15 passed`
+- `kernel-lexical-uncertainty-v0-4-test.html` — `13/13 passed`
+- `kernel-semantic-invariant-learner-v0-4-test.html` — `14/14 passed`
+- `kernel-semantic-promotion-bridge-v0-4-test.html` — `10/10 passed`
+- `kernel-semantic-source-bridge-v0-4-test.html` — `10/10 passed`
 
-1. Open `llm-brain-v0-3.html`.
-2. Paste or load an `epistemic_kernel_command` packet.
-3. Click `IMPORT / RUN`.
-4. Inspect the live Octahedron math, graph nodes, source traces, audit preview, and copied brain packet.
+For the complete verified list, read `CURRENT_PROGRESS.md`.
 
-For dossier work:
+## Current limitations
 
-1. Open `dossier-source-graph.html`.
-2. Load or paste a dossier packet.
-3. Confirm version `0.1.3`.
-4. Send the command to the live brain.
-5. Import it from `llm-brain-v0-3.html`.
-6. Inspect `source_trace_summary` and `kernel_state.sourceTraces`.
-7. Open `source-trace-bridge.html` for a read-only explanation packet and local preview.
+The kernel is still a prototype.
 
-For ordinary-LLM comparison:
+It does not yet:
 
-1. Open `ordinary-llm-comparison.html`.
-2. Select a benchmark case.
-3. Copy the generic and prompt-only prompts into external LLMs.
-4. Paste their outputs back into the comparison page.
-5. Fill the kernel-guided output.
-6. Score the comparison and export the comparison packet.
+- independently verify external facts
+- run browser tests by itself
+- fetch GitHub file SHAs by itself
+- write source files by itself
+- perform automatic rollback
+- replace external human/tool review
+- prove the full Epistemic Octahedron theory
+- prove final mathematical language/intention algebra
 
-The older `index.html` page remains available, but the current working stack is centered on `llm-brain-v0-3.html`.
+It does provide a runnable, transparent substrate for testing those ideas.
 
-## Important limitation
+## Development rule: SHA write trick
 
-The quick English parser is intentionally crude. It is not the real intelligence layer.
-
-The intended architecture is:
+For existing GitHub files:
 
 ```text
-Human language
-→ LLM extractor
-→ structured claim/evidence/principle/source packet
-→ Epistemic Kernel
-→ belief-state update
-→ optional LLM verbal explanation
+1. Fetch file first.
+2. Use current blob SHA.
+3. Update the file with that SHA.
+4. Wait for commit SHA.
+5. Fetch file back and verify exact content.
+6. Make only one small change at a time.
 ```
 
-In other words, the LLM becomes the eyes and mouth. The kernel owns belief movement.
+Never trust a write until commit SHA returns and fetch-back verifies exact content.
 
-The repo now has early bridge layers for this architecture, but it still does not have mature retrieval, real external fact verification, or a completed natural-language approval loop.
+## Recommended next work
 
-## Core design thesis
+No urgent code build is required if `kernel-semantic-source-bridge-v0-4-test.html` passes `10/10`.
 
-The real target is not a chatbot that says wise things.
+Recommended next tasks:
 
-The real target is a transparent epistemic kernel whose internal update rules are faithful to the Epistemic Octahedron: null origin, active worldview surface, collapse pressure, and mature integration.
+1. Write a serious technical paper from scratch using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md`.
+2. Add durable export/import for epistemic memory and semantic invariant ledgers.
+3. Integrate selected v0.4 pages into the main navigation/index.
+4. Continue validating semantic invariant learning with real examples and reviewed outcomes.
 
-The kernel should not be optimized for generic “knowledge accumulation.” It should be optimized for mature belief movement under pressure.
+## One-line summary
 
-Generic epistemy rewards: knowing more facts.
-
-The kernel should reward: updating beliefs correctly when challenged by evidence, contradiction, uncertainty, scope pressure, and counter-consideration.
-
-The guiding distinction:
-
-```text
-Normal LLM:
-  produces a plausible answer.
-
-Epistemic Kernel:
-  stores and updates belief state under maturity rules.
-```
-
-## Relation to the Epistemic Octahedron
-
-The kernel is intended to embody the core distinction of the Epistemic Octahedron:
-
-- The origin `(0, 0, 0)` represents pre-philosophical nullity, not maturity.
-- The lower vertex represents epistemic collapse.
-- The upper vertex represents mature integration.
-- Active worldview positions are projected to the surface: `|x| + |y| + |z| = 1`.
-
-The kernel should eventually treat each belief, stance, contradiction, principle, and worldview fragment as a scoped octahedron state.
-
-A person or mind should not be modeled as one flat permanent octahedron point. A mind is better represented as a hierarchy of scoped octahedron states:
-
-```text
-claim states
-→ contradiction/tension states
-→ stance clusters
-→ worldview fragments
-→ core principles
-→ root worldview aggregate
-```
-
-The root worldview point is only the current aggregate summary of active kernel memory. It should not erase local unresolved states.
-
-## What this prototype proves
-
-This v0 proves that the kernel can exist without training a model:
-
-```text
-claim enters
-belief state changes
-contradiction creates pressure
-evidence changes confidence
-gates move
-octahedron point moves
-questions remain open until resolved
-local belief graph nodes can feed a root worldview aggregate
-```
-
-The current v0.3 stack also proves that a browser kernel can carry source provenance, preserve counter-considerations, expose read-only explanation packets to an LLM layer, and compare pasted LLM outputs against visible epistemic-pressure criteria.
-
-It is not a finished AI. It is the first skeleton of an epistemic operating system.
-
-## What this prototype does not prove yet
-
-It does not yet prove that the Epistemic Octahedron is validated.
-
-It does not yet deeply understand English.
-
-It does not yet ingest long philosophical texts reliably without structured extraction help.
-
-It does not yet perform mature real-world retrieval or external fact verification.
-
-It does not yet prove superiority over generic LLM reasoning because real external model outputs still need to be pasted, scored, preserved, and compared.
-
-It does not yet have a complete natural-language approval/import loop.
-
-It does not yet have a mature self-improvement lifecycle where proposed rule changes are repeatedly tested, reviewed, and promoted only after user approval.
-
-The implementation should be judged by milestone tests, not by hype.
-
-## Roadmap to the real goal
-
-The real goal is a transparent, meaning-based epistemic system that can grow a belief graph, evaluate claims under pressure, test its own update logic, and eventually guide or train language models from a stable philosophical core.
-
-The end result should be an epistemic operating system where the Epistemic Octahedron is the governing law and LLMs are interface/extractor layers, not the brain.
-
-### Milestone 0 — Current skeleton
-
-Status: substantially complete for the browser prototype.
-
-Required capabilities:
-
-- Browser kernel exists.
-- Claims can be stored.
-- Evidence can support or attack claims.
-- Simple contradictions can be detected.
-- Gate states can move.
-- Null origin and active octahedron projection exist.
-- LLM context copy packet exists.
-- Basic hierarchical belief graph exists.
-- Belief graph viewer exists.
-
-Pass condition:
-
-A user can ingest a simple contradiction, inspect the saved state, copy the LLM context packet, and see local graph nodes feeding a root worldview aggregate.
-
-### Milestone 1 — Make the graph first-class
-
-Goal: turn the current hidden graph into the main working model.
-
-Required capabilities:
-
-- Every claim has its own local octahedron state.
-- Every contradiction has its own pressure state.
-- Every stance cluster has its own aggregate state.
-- Every principle cluster has its own worldview-fragment state.
-- Parent links explicitly mark one of:
-  - reinforces parent
-  - pressures parent
-  - unresolved, do not merge strongly
-  - contradiction should bubble upward
-- UI shows local state, parent state, and relation clearly.
-
-Pass condition:
-
-For a contradiction case, the app must show the claim nodes, contradiction node, stance cluster, and root worldview separately, with clear explanation of how each local state affects the parent.
-
-### Milestone 2 — Meaning-packet ingestion
-
-Goal: stop depending on English trigger words as the real input layer.
-
-Required capabilities:
-
-- Define a structured extraction packet schema for:
-  - claims
-  - evidence
-  - principles
-  - assumptions
-  - scope
-  - time
-  - polarity
-  - uncertainty
-  - source
-  - contradiction links
-  - motive hypotheses
-  - proposed gate updates
-- Add an import box for structured extraction packets.
-- Add a “Copy LLM extraction prompt” button.
-- LLM can convert English, Indonesian, Tagalog, or other language text into the same packet format.
-- Kernel updates belief state from the packet, not from raw language.
-
-Pass condition:
-
-The same scenario in English and Indonesian can be extracted into equivalent packets and produce equivalent kernel state movement.
-
-### Milestone 3 — Nonsense and low-signal guard
-
-Goal: prevent junk input from becoming serious belief.
-
-Required capabilities:
-
-- Detect low-signal/gibberish text.
-- Store unclear input as `unparsed_observation` rather than a claim.
-- Keep low-signal input near null.
-- Ask clarification questions instead of creating false beliefs.
-
-Pass condition:
-
-Random gibberish, vague slogans, or malformed text should not produce high confidence claims or strong worldview movement.
-
-### Milestone 4 — Evidence-grounded belief update
-
-Goal: make belief movement depend more strongly on support/attack structure.
-
-Required capabilities:
-
-- Evidence must visibly support or attack specific claims.
-- Attacking evidence should weaken target claims.
-- Supporting evidence should strengthen target claims only proportionally.
-- Contradiction detection alone should not over-reward epistemic stability.
-- Unresolved contradictions should cap or pressure y until resolved.
-- Motive remains unresolved unless separate motive evidence exists.
-
-Pass condition:
-
-In the form/deadline case, contradiction alone creates pressure, but timestamp evidence is required before the before-deadline claim is strongly weakened.
-
-### Milestone 5 — Dependency propagation
-
-Goal: let the kernel put two and two together through relations.
-
-Required capabilities:
-
-- Claims can depend on other claims.
-- Conclusions can depend on premises.
-- Principles can depend on repeated stable cases.
-- If a support claim weakens, dependent conclusions weaken.
-- If a local contradiction attacks a parent stance, pressure can bubble upward.
-- If a local belief survives challenge, it can reinforce the parent.
-
-Pass condition:
-
-If claim B depends on claim A, and evidence attacks claim A, the kernel must reduce confidence in claim B and explain why.
-
-### Milestone 6 — Scope and merge rules
-
-Goal: stop small claims from moving the whole worldview too much.
-
-Required capabilities:
-
-- Add scope levels:
-  - thought
-  - claim
-  - contradiction
-  - stance
-  - worldview_fragment
-  - core_principle
-  - full_profile_summary
-- Add scope weights inspired by Philosopher’s Stone/profiler logic.
-- A local belief can remain local.
-- A belief only merges upward if it survives relevant pressure.
-- Parent worldview can guide lower interpretation but must remain challengeable by lower evidence.
-
-Pass condition:
-
-A single weak claim cannot strongly move the root worldview, but repeated tested claims can form a stance cluster or principle.
-
-### Milestone 7 — Self-audit
-
-Goal: make the kernel criticize its own belief movement.
-
-Required capabilities:
-
-- Kernel generates an audit report after each update.
-- Audit checks:
-  - Did I over-reward contradiction detection?
-  - Did I overclaim motive?
-  - Did I merge upward too early?
-  - Did I ignore attacking evidence?
-  - Did I preserve unresolved pressure?
-  - Did I confuse no contradiction with truth?
-  - Did I treat criticism as hostility without motive evidence?
-- Audit findings are stored as internal pressure, not hidden logs.
-
-Pass condition:
-
-For known failure cases, the kernel must identify at least one plausible weakness in its own state movement.
-
-### Milestone 8 — Sandboxed self-improvement
-
-Goal: allow controlled improvement without uncontrolled self-modification.
-
-Required capabilities:
-
-- Kernel can propose a rule change.
-- Proposed rule is treated as a claim:
-  - what it changes
-  - why it might improve maturity
-  - what evidence would falsify it
-  - expected behavior difference
-- Patch runs in sandbox against benchmark cases.
-- Old behavior and new behavior are compared.
-- Patch cannot promote itself automatically.
-- User approval required to promote a rule into core logic.
-
-Pass condition:
-
-Kernel can propose something like “unresolved contradiction should cap y until evidence is added,” test it against cases, and show whether it improved results.
-
-### Milestone 9 — Memory compression and active workspace
-
-Goal: keep the kernel from drowning in its own belief graph.
-
-Required capabilities:
-
-- Active memory stores current pressure:
-  - unresolved contradictions
-  - open questions
-  - unstable claims
-  - active principles
-- Archive memory stores resolved traces:
-  - resolved contradictions
-  - old evidence
-  - past cases
-  - source links
-- Repeated stable cases can compress into a principle.
-- Redundant questions can merge.
-- Resolved contradictions become history rather than active pressure.
-- Compression must preserve traceability.
-
-Pass condition:
-
-After many related cases, the kernel can compress them into a principle while still linking back to the original support cases.
-
-### Milestone 10 — Philosophical text ingestion
-
-Goal: let the kernel handle actual philosophical writing.
-
-Required capabilities:
-
-- Add input mode: philosophical text.
-- Extract:
-  - thesis
-  - principles
-  - definitions
-  - assumptions
-  - scope limits
-  - implied counterarguments
-  - possible contradictions
-  - testing requirements
-- Store principles as candidates, not automatic truths.
-- Candidate principles must survive challenge before merging upward.
-
-Pass condition:
-
-A paragraph of philosophical text produces principle candidates with scope, counter-considerations, and testing requirements rather than being blindly believed.
-
-### Milestone 11 — Epistemic Pressure Benchmark v0.1
-
-Goal: make progress measurable.
-
-Required benchmark categories:
-
-- timeline contradiction
-- mistaken accusation
-- deleted-message concealment
-- self-sealing belief
-- false certainty
-- motive ambiguity
-- scope clarification
-- partial truth
-- memory error
-- strategic deception
-- strawman reconstruction
-- conflicting evidence
-
-Each case should include:
-
-- prompt/input
-- expected structured extraction
-- expected belief movement
-- expected gate movement
-- acceptable answer/status
-- failure patterns
-- scoring rubric
-
-Pass condition:
-
-The kernel must pass a fixed benchmark better than its previous version before claiming improvement.
-
-### Milestone 12 — Compare against ordinary LLM behavior
-
-Goal: show why the kernel matters.
-
-Required comparisons:
-
-- Generic LLM answer
-- LLM with prompt-only epistemic instruction
-- LoRA/adapted model output if available
-- Kernel-guided output
-- Kernel state movement
-
-Scoring should measure:
-
-- contradiction detection
-- evidence separation
-- motive calibration
-- scope control
-- self-sealing detection
-- belief update accuracy
-- unresolved-pressure preservation
-
-Current implementation:
-
-- `ordinary-llm-comparison.html` provides the comparison harness.
-- `ordinary-llm-comparison-test.html` verifies the harness shape and rubric criteria.
-- The harness is conservative: it does not claim superiority unless real model outputs are pasted and preserved.
-
-Pass condition:
-
-Kernel-guided analysis must outperform prompt-only generic answers on the benchmark’s epistemic-pressure criteria.
-
-### Milestone 13 — Dossier integration
-
-Goal: let the kernel ingest curated factual structures without becoming a propaganda mirror.
-
-Required capabilities:
-
-- Import dossier claims as structured packets.
-- Attach source/evidence links.
-- Distinguish fact, inference, interpretation, and hypothesis.
-- Keep adversarial counter-considerations live.
-- Avoid treating a coherent dossier as automatically true.
-- Let stable evidence-supported claims feed worldview fragments.
-
-Current implementation:
-
-- `dossier-source-graph.html` imports typed dossier packets.
-- `src/dossier-source-graph-v0-1.js` version `0.1.3` exports counter-considerations as attacking evidence.
-- Dossier kernel commands use `observations: []` to avoid low-signal question noise.
-- Imported source traces are persisted into `kernel_state.sourceTraces`.
-
-Pass condition:
-
-The kernel can ingest a dossier section, build claim/evidence/principle nodes, identify unresolved points, and avoid overclaiming beyond the evidence.
-
-### Milestone 14 — LLM interface layer
-
-Goal: make the kernel usable through natural language without giving the LLM control of belief.
-
-Required capabilities:
-
-- LLM extracts structured packets.
-- Kernel validates packets.
-- Kernel updates belief state.
-- LLM explains kernel state back to user.
-- LLM cannot directly mutate core logic or silently alter belief state.
-
-Current implementation:
-
-- `llm-brain-v0-3.html` imports approved command packets.
-- `source-trace-bridge.html` converts persisted source traces into read-only LLM explanation packets and prompts.
-- Local explanation previews exist before any LLM is involved.
-- Guardrails explicitly state that the LLM explains but does not mutate state.
-
-Pass condition:
-
-A user can paste normal text, get a structured extraction, approve/import it, and receive a plain-language explanation of the resulting belief movement.
-
-### Milestone 15 — Live self-improving epistemic system
-
-Goal: the long-term target.
-
-Required capabilities:
-
-- Kernel understands the world through structured belief graph growth.
-- It can form, test, revise, and compress principles.
-- It can propose improvements to mappings and rules.
-- It can sandbox those proposals.
-- It can explain why an improvement is or is not mature.
-- It treats its own interpretations as beliefs subject to the same gates.
-- It uses the Epistemic Octahedron peak as the internal guardrail, not an unrelated external rule system.
-- It asks the user before using external tools, paid compute, internet access, GitHub writes, or core-logic promotion.
-
-Pass condition:
-
-The kernel can improve a limited part of its own interpretation or scoring through sandboxed benchmark testing, preserve traceability, and require user approval before promotion.
-
-## Failure conditions
-
-The implementation should be considered failed or immature if it does any of the following:
-
-- Treats “more knowledge” as automatic maturity.
-- Treats confidence as automatic truth.
-- Treats no contradiction as proof of truth.
-- Treats criticism as hostility without motive evidence.
-- Treats counterevidence as confirmation.
-- Merges weak local claims into the root worldview too early.
-- Lets learned mappings override core gates.
-- Deletes uncomfortable contradictions instead of resolving or preserving them.
-- Lets a proposed self-patch promote itself without sandbox testing and user approval.
-- Rewards polished language more than correct belief movement.
-
-## Internal guardrail principle
-
-The guardrail should be the Epistemic Octahedron logic itself.
-
-The kernel should not rely on an unrelated external restraint system. Instead, every expansion, learned mapping, self-modification, and interpretation must pass through the same maturity conditions:
-
-- counter-consideration
-- non-strawman reconstruction
-- self-correction
-- contradiction handling
-- reality contact
-- non-self-sealing
-
-A proposed action such as “use more compute,” “go online,” “change a rule,” or “promote a mapping” is itself a claim that requires scope, evidence, counter-consideration, and user approval.
-
-## Next immediate tasks
-
-1. Run and preserve real ordinary-LLM comparison packets using `ordinary-llm-comparison.html`.
-2. Add a small M12 report saver/export index for comparison packets.
-3. Add a retrieval/source placeholder schema without pretending it verifies facts yet.
-4. Build the natural-language approval loop: extractor output → user approval → kernel command import → explanation packet.
-5. Move source traces deeper into kernel-owned state rather than deriving them mainly from event logs.
-6. Expand philosophical-text ingestion from principle candidates into richer definitions, assumptions, scope limits, counterarguments, and testing requirements.
-7. Strengthen sandboxed self-improvement so rule proposals compare old/new behavior across benchmark cases and remain candidate-only until user approval.
-8. Continue porting selected `profiler.js` math into the kernel one piece at a time:
-   - scope weights
-   - local-y signal weights
-   - gate-to-signal mapping
-   - stricter peak guards
-   - repair logic
-
-## Current philosophical framing for future sessions
-
-This project should be understood as an attempt to build a transparent epistemic organism, not a toy chatbot.
-
-The theory layer is the Epistemic Octahedron.
-
-The instrument/scoring layer is Philosopher’s Stone / `profiler.js`.
-
-The kernel layer is this repo’s live belief-state engine.
-
-The LLM layer should act as extractor and verbal interface.
-
-The benchmark layer should determine whether the system actually improves epistemic maturity under pressure.
-
-The end result should be a system that does not merely answer. It should grow a belief state under pressure, preserve unresolved uncertainty, correct itself through evidence, and move toward mature integration by the logic of the Epistemic Octahedron.
+42ndMind is an attempt to build a transparent epistemic operating system: a belief-state kernel governed by the Epistemic Octahedron, with LLMs kept as interface/extractor layers rather than the source of belief movement.
