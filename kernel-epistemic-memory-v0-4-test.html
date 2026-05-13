@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Epistemic Memory v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Epistemic Memory v0.4 Test</h1><div>Tests inactive-pressure memory for contradictions, source trust, sandbox drift, activation failures, rejected candidates, and archived beliefs.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-source-trust-v0-4-test.html">source trust test</a> · <a href="kernel-sandbox-comparison-v0-4-test.html">sandbox test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-memory-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_epistemic_memory_v0_4_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelEpistemicMemoryV04, 'KernelEpistemicMemoryV04 missing');
+    assert(KernelEpistemicMemoryV04.VERSION === '0.4.0', 'wrong memory version');
+    assert(KernelEpistemicMemoryV04.DEFAULT_KEY === '42ndMind_epistemic_memory_v0_4', 'wrong default key');
+  });
+
+  add('clear starts empty', () => {
+    KernelEpistemicMemoryV04.clear(TEST_KEY);
+    const ledger = KernelEpistemicMemoryV04.load(TEST_KEY);
+    assert(ledger.entries.length === 0, 'ledger should start empty');
+    assert(ledger.counters.total_entries === 0, 'counter should start zero');
+  });
+
+  add('records contradicted belief as inactive pressure, not deletion', () => {
+    const result = KernelEpistemicMemoryV04.record(KernelEpistemicMemoryV04.samplePacket('contradiction'), { key:TEST_KEY });
+    assert(result.ok === true, 'record contradiction failed');
+    assert(result.decision === 'MEMORY_RECORDED', 'wrong memory decision');
+    assert(result.recorded[0].entry_type === 'contradiction_memory', 'wrong entry type');
+    assert(result.recorded[0].memory_effect.deleted === false, 'contradiction was deleted');
+    assert(result.recorded[0].memory_effect.archived === true, 'contradiction not archived');
+    assert(result.recorded[0].active_belief_effect === 'none', 'memory moved active belief');
+  });
+
+  add('records conflicted source-trust memory', () => {
+    const result = KernelEpistemicMemoryV04.record(KernelEpistemicMemoryV04.samplePacket('source_conflicted'), { key:TEST_KEY });
+    assert(result.ok === true, 'record source trust failed');
+    assert(result.recorded[0].entry_type === 'source_trust_memory', 'wrong source entry type');
+    assert(result.recorded[0].severity === 'high', 'conflicted source should be high severity');
+    assert(result.recorded[0].memory_effect.future_trust_prior_pressure === true, 'future trust pressure missing');
+  });
+
+  add('records sandbox drift as future promotion pressure', () => {
+    const result = KernelEpistemicMemoryV04.record(KernelEpistemicMemoryV04.samplePacket('sandbox_drift'), { key:TEST_KEY });
+    assert(result.ok === true, 'record sandbox drift failed');
+    assert(result.recorded[0].entry_type === 'sandbox_drift_memory', 'wrong sandbox entry type');
+    assert(result.recorded[0].pressure_score >= 0.8, 'sandbox drift pressure too low');
+    assert(result.recorded[0].memory_effect.future_promotion_pressure === true, 'promotion pressure missing');
+  });
+
+  add('records activation failure as reviewable pressure', () => {
+    const result = KernelEpistemicMemoryV04.record(KernelEpistemicMemoryV04.samplePacket('activation_failure'), { key:TEST_KEY });
+    assert(result.ok === true, 'record activation failure failed');
+    assert(result.recorded[0].entry_type === 'activation_failure_memory', 'wrong activation entry type');
+    assert(result.recorded[0].memory_effect.reviewable === true, 'activation memory not reviewable');
+  });
+
+  add('archiveBelief removes active support without erasing memory', () => {
+    const result = KernelEpistemicMemoryV04.archiveBelief({ id:'belief_1', text:'Old claim that failed contradiction', source_ids:['source_bad'] }, { key:TEST_KEY, reason:'contradicted_by_new_evidence' });
+    assert(result.ok === true, 'archive belief failed');
+    assert(result.recorded[0].entry_type === 'archived_belief_memory', 'wrong archive type');
+    assert(result.recorded[0].memory_effect.active_support_removed === true, 'active support not removed');
+    assert(result.recorded[0].memory_effect.deleted === false, 'archived belief was deleted');
+  });
+
+  add('summary counts memory categories', () => {
+    const summary = KernelEpistemicMemoryV04.summarize(KernelEpistemicMemoryV04.load(TEST_KEY));
+    assert(summary.counters.total_entries === 5, 'total entry count wrong');
+    assert(summary.counters.contradictions === 1, 'contradiction count wrong');
+    assert(summary.counters.source_trust_events === 1, 'source trust count wrong');
+    assert(summary.counters.sandbox_drifts === 1, 'sandbox drift count wrong');
+    assert(summary.counters.activation_failures === 1, 'activation failure count wrong');
+    assert(summary.counters.archived_beliefs === 1, 'archived belief count wrong');
+  });
+
+  add('recall by type works without belief movement', () => {
+    const recall = KernelEpistemicMemoryV04.recall({ entry_type:'source_trust_memory' }, { key:TEST_KEY });
+    assert(recall.count === 1, 'source trust recall count wrong');
+    assert(recall.entries[0].subject_id === 'source_bad', 'source recall subject wrong');
+    assert(recall.belief_movement === 'none', 'recall moved belief');
+  });
+
+  add('recall by pressure threshold works', () => {
+    const recall = KernelEpistemicMemoryV04.recall({ min_pressure:0.8 }, { key:TEST_KEY });
+    assert(recall.count >= 2, 'high pressure recall should include contradiction and sandbox/source pressure');
+    assert(recall.entries.every(e => e.pressure_score >= 0.8), 'low pressure entry included');
+  });
+
+  add('entriesFrom ignores non-pressure success packets', () => {
+    const entries = KernelEpistemicMemoryV04.entriesFrom({ packet_type:'42ndMind_sandbox_comparison_report_v0_4', decision:'PASS_NO_BEHAVIOR_DELTA', behavior_delta_detected:false });
+    assert(entries.length === 0, 'successful sandbox comparison should not produce memory pressure');
+  });
+
+  add('record of empty input holds safely', () => {
+    const result = KernelEpistemicMemoryV04.record({}, { key:TEST_KEY });
+    assert(result.ok === false, 'empty input should not record');
+    assert(result.decision === 'MEMORY_EMPTY', 'empty input decision wrong');
+  });
+
+  add('ledger persists through load', () => {
+    const ledger = KernelEpistemicMemoryV04.load(TEST_KEY);
+    assert(ledger.entries.length === 5, 'persisted ledger entry count wrong');
+    assert(ledger.counters.total_entries === 5, 'persisted counter wrong');
+  });
+
+  add('doctrine says memory is not active belief', () => {
+    const doctrine = KernelEpistemicMemoryV04.doctrine();
+    assert(doctrine.epistemic_memory_is_not_active_belief === true, 'memory active belief doctrine missing');
+    assert(doctrine.contradicted_beliefs_are_archived_not_deleted === true, 'archive doctrine missing');
+    assert(doctrine.memory_records_pressure_not_truth === true, 'pressure not truth doctrine missing');
+    assert(doctrine.memory_does_not_mutate_v0_3 === true, 'v0.3 isolation doctrine missing');
+  });
+
+  add('cleanup clears ledger', () => {
+    const cleared = KernelEpistemicMemoryV04.clear(TEST_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelEpistemicMemoryV04.load(TEST_KEY).entries.length === 0, 'ledger not cleared');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_epistemic_memory_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
