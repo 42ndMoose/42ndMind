@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Runtime Activation v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Runtime Activation v0.4 Test</h1><div>Tests supplied test-packet validation before metadata-only runtime candidate activation.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-runtime-candidates-v0-4-test.html">runtime candidates test</a> · <a href="kernel-test-suite-v0-4.html">integrated suite</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
+<script src="src/kernel-patch-candidate-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-runtime-candidates-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-runtime-activation-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_runtime_activation_v0_4_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function stageCandidate() {
+    KernelRuntimeCandidatesV04.clear(TEST_KEY);
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('runtime'));
+    const staged = KernelRuntimeCandidatesV04.stage(plan, { key:TEST_KEY, explicit_stage:true });
+    if (!staged.ok) throw new Error('failed to stage candidate');
+    return staged.candidate;
+  }
+  function passPackets() { return [KernelRuntimeActivationV04.sampleLocalPassPacket(), KernelRuntimeActivationV04.sampleIntegratedPassPacket()]; }
+
+  add('module loads', () => {
+    assert(window.KernelRuntimeActivationV04, 'KernelRuntimeActivationV04 missing');
+    assert(KernelRuntimeActivationV04.VERSION === '0.4.0', 'wrong activation version');
+    assert(KernelRuntimeActivationV04.DECISIONS.ACTIVATE_METADATA_ONLY === 'ACTIVATE_METADATA_ONLY', 'decisions missing');
+  });
+
+  add('packetPassed recognizes result packets', () => {
+    assert(KernelRuntimeActivationV04.packetPassed(KernelRuntimeActivationV04.sampleLocalPassPacket()) === true, 'local pass packet not recognized');
+    assert(KernelRuntimeActivationV04.packetPassed(KernelRuntimeActivationV04.sampleIntegratedPassPacket()) === true, 'integrated pass packet not recognized');
+    assert(KernelRuntimeActivationV04.packetPassed(KernelRuntimeActivationV04.sampleFailPacket()) === false, 'fail packet recognized as pass');
+  });
+
+  add('classifyPackets records failures', () => {
+    const classified = KernelRuntimeActivationV04.classifyPackets([KernelRuntimeActivationV04.sampleFailPacket()]);
+    assert(classified.length === 1, 'classification missing');
+    assert(classified[0].passed === false, 'failed packet should be false');
+    assert(classified[0].failed.length === 1, 'failed row missing');
+  });
+
+  add('missing candidate blocks activation', () => {
+    KernelRuntimeCandidatesV04.clear(TEST_KEY);
+    const evalResult = KernelRuntimeActivationV04.evaluate('missing', { key:TEST_KEY, test_packets:passPackets(), manual_reviewed:true });
+    assert(evalResult.decision === 'BLOCK_NOT_STAGED', 'missing candidate should block');
+    assert(evalResult.issues.some(i => i.code === 'candidate_not_found'), 'candidate-not-found issue missing');
+  });
+
+  add('missing packets hold activation', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, manual_reviewed:true });
+    assert(evalResult.decision === 'HOLD_TESTS_MISSING', 'missing packets should hold');
+    assert(evalResult.issues.some(i => i.code === 'test_packets_missing'), 'missing packets issue missing');
+  });
+
+  add('failed packet holds activation', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:[KernelRuntimeActivationV04.sampleFailPacket(), KernelRuntimeActivationV04.sampleIntegratedPassPacket()], manual_reviewed:true });
+    assert(evalResult.decision === 'HOLD_TESTS_FAILED', 'failed packet should hold failed');
+    assert(evalResult.issues.some(i => i.code === 'test_packet_failed'), 'failed packet issue missing');
+  });
+
+  add('local pass is required', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:[KernelRuntimeActivationV04.sampleIntegratedPassPacket()], manual_reviewed:true });
+    assert(evalResult.decision === 'HOLD_TESTS_MISSING', 'missing local pass should hold');
+    assert(evalResult.issues.some(i => i.code === 'local_test_pass_required'), 'local pass issue missing');
+  });
+
+  add('integrated suite pass is required', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:[KernelRuntimeActivationV04.sampleLocalPassPacket()], manual_reviewed:true });
+    assert(evalResult.decision === 'HOLD_TESTS_MISSING', 'missing integrated pass should hold');
+    assert(evalResult.issues.some(i => i.code === 'integrated_suite_pass_required'), 'integrated suite issue missing');
+  });
+
+  add('manual review is required', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:passPackets() });
+    assert(evalResult.decision === 'HOLD_TESTS_MISSING', 'missing manual review should hold');
+    assert(evalResult.issues.some(i => i.code === 'manual_review_required'), 'manual review issue missing');
+  });
+
+  add('all requirements allow metadata-only activation decision', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:passPackets(), manual_reviewed:true });
+    assert(evalResult.decision === 'ACTIVATE_METADATA_ONLY', 'should be ready for metadata-only activation');
+    assert(evalResult.requirements.candidate_staged === true, 'candidate staged requirement wrong');
+    assert(evalResult.requirements.local_test_passed === true, 'local pass requirement wrong');
+    assert(evalResult.requirements.integrated_suite_passed === true, 'integrated pass requirement wrong');
+    assert(evalResult.requirements.manual_reviewed === true, 'manual review requirement wrong');
+  });
+
+  add('activate holds when evaluation is not ready', () => {
+    const candidate = stageCandidate();
+    const result = KernelRuntimeActivationV04.activate(candidate.id, { key:TEST_KEY, test_packets:[], manual_reviewed:true });
+    assert(result.ok === false, 'activation should fail without tests');
+    assert(result.reason === 'activation_evaluation_not_ready', 'wrong not-ready reason');
+    assert(result.enable_result === null, 'enable result should be null');
+  });
+
+  add('activate enables metadata only after pass packets', () => {
+    const candidate = stageCandidate();
+    const result = KernelRuntimeActivationV04.activate(candidate.id, { key:TEST_KEY, test_packets:passPackets(), manual_reviewed:true });
+    assert(result.ok === true, 'activation failed');
+    assert(result.activated === true, 'activated flag missing');
+    assert(result.enable_result.candidate.status === 'ENABLED_METADATA_ONLY', 'candidate not metadata enabled');
+    assert(result.doctrine.activation_is_metadata_only === true, 'metadata doctrine missing');
+    assert(result.doctrine.behavior_executed === false, 'activation executed behavior');
+    assert(result.enable_result.candidate.runtime_effect.source_rewritten === false, 'source rewritten');
+    assert(result.enable_result.candidate.runtime_effect.import_executed === false, 'import executed');
+  });
+
+  add('rejected candidate blocks activation', () => {
+    const candidate = stageCandidate();
+    KernelRuntimeCandidatesV04.reject(candidate.id, { key:TEST_KEY, reason:'test_reject' });
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:passPackets(), manual_reviewed:true });
+    assert(evalResult.decision === 'BLOCK_NOT_STAGED', 'rejected candidate should block');
+    assert(evalResult.issues.some(i => i.code === 'candidate_rejected'), 'rejected issue missing');
+  });
+
+  add('doctrine preserves non-execution and v0.3 isolation', () => {
+    const candidate = stageCandidate();
+    const evalResult = KernelRuntimeActivationV04.evaluate(candidate.id, { key:TEST_KEY, test_packets:passPackets(), manual_reviewed:true });
+    assert(evalResult.doctrine.activation_evaluation_does_not_execute_behavior === true, 'non-execution doctrine missing');
+    assert(evalResult.doctrine.supplied_test_packets_required === true, 'test-packet doctrine missing');
+    assert(evalResult.doctrine.metadata_enablement_is_not_runtime_execution === true, 'metadata doctrine missing');
+    assert(evalResult.doctrine.v0_3_untouched === true, 'v0.3 doctrine missing');
+  });
+
+  add('cleanup clears queue', () => {
+    const cleared = KernelRuntimeCandidatesV04.clear(TEST_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelRuntimeCandidatesV04.load(TEST_KEY).length === 0, 'queue not cleared');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_runtime_activation_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
