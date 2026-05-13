@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Motivation v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Motivation v0.4 Test</h1><div>Tests desire-like epistemic pressure without emotion, truth-decision, governor bypass, or mutation.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-test-suite-v0-4.html">integrated suite</a> · <a href="llm-brain-v0-4.html">v0.4 preview console</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-intention-recovery-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-consistency-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-probability-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.1"></script>
+<script src="src/kernel-state-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-motivation-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function signal(report, type) { return report.pressure_signals.find(s => s.type === type); }
+
+  add('module loads', () => {
+    assert(window.KernelMotivationV04, 'KernelMotivationV04 missing');
+    assert(KernelMotivationV04.VERSION === '0.4.0', 'wrong motivation version');
+    assert(KernelMotivationV04.PRESSURE_TYPES.CONTRADICTION === 'contradiction_pressure', 'pressure types missing');
+  });
+
+  add('motivation is preference gradient, not emotion', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('claim'));
+    assert(report.motivation_is_not_emotion === true, 'not-emotion flag missing');
+    assert(report.motivation_is_preference_gradient === true, 'preference gradient flag missing');
+    assert(report.belief_movement === 'none', 'motivation should not move belief');
+    assert(report.governor_bypass === false, 'motivation bypassed governor');
+  });
+
+  add('contradiction pressure drives resolve contradiction decision', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('contradiction'));
+    const p = signal(report, 'contradiction_pressure');
+    assert(p && p.value >= 0.75, 'contradiction pressure too low');
+    assert(report.decision === 'RESOLVE_CONTRADICTION', 'contradiction should drive resolve decision');
+    assert(report.recommended_actions.includes('preserve_contradiction'), 'preserve contradiction action missing');
+  });
+
+  add('sloppy intent drives clarity improvement', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('sloppy'));
+    const p = signal(report, 'intention_clarity_pressure');
+    assert(p && p.value >= 0.55, 'intention clarity pressure too low');
+    assert(report.decision === 'IMPROVE_CLARITY', 'sloppy intent should improve clarity');
+    assert(report.recommended_actions.includes('run_intention_recovery'), 'intention recovery action missing');
+  });
+
+  add('unreviewed no-source claim drives evidence seeking', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('unreviewed'));
+    const p = signal(report, 'source_contact_hunger');
+    assert(p && p.value >= 0.55, 'source contact hunger too low');
+    assert(report.decision === 'SEEK_EVIDENCE', 'no-source claim should seek evidence');
+    assert(report.recommended_actions.includes('seek_source_contact'), 'seek source action missing');
+  });
+
+  add('overconfidence pressure reacts to capped probability', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('contradiction'));
+    const p = signal(report, 'overconfidence_pressure');
+    assert(p && p.value > 0, 'overconfidence pressure missing');
+    assert(p.repair_path.includes('respect_probability_cap'), 'probability cap repair missing');
+  });
+
+  add('bounded command remains hold/review or maintain, not auto-import', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('command'));
+    assert(report.belief_movement === 'none', 'motivation should not import command');
+    assert(report.governor_bypass === false, 'motivation bypassed governor');
+    assert(report.doctrine.motivation_does_not_auto_promote_rules === true, 'auto-promotion doctrine missing');
+  });
+
+  add('optimality pressure uses best reachable state, not fake certainty', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('claim'));
+    const p = signal(report, 'optimality_pressure');
+    assert(p, 'optimality pressure missing');
+    assert(report.doctrine.optimality_means_best_reachable_state_under_constraints === true, 'optimality doctrine missing');
+    assert(report.doctrine.pressure_reduction_must_be_earned === true, 'earned pressure reduction doctrine missing');
+  });
+
+  add('all pressure signals are bounded', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('claim'));
+    assert(report.pressure_signals.length === 9, 'expected nine pressure signals');
+    assert(report.pressure_signals.every(s => s.value >= 0 && s.value <= 1), 'pressure signal out of bounds');
+    assert(report.pressure_total >= 0 && report.pressure_total <= 1, 'pressure total out of bounds');
+  });
+
+  add('weighted total is bounded', () => {
+    const total = KernelMotivationV04.weightedTotal([
+      { type:'contradiction_pressure', value:1 },
+      { type:'source_contact_hunger', value:0.5 }
+    ]);
+    assert(total >= 0 && total <= 1, 'weighted total out of bounds');
+  });
+
+  add('recommended actions are deterministic by decision', () => {
+    assert(KernelMotivationV04.recommendedActions('RESOLVE_CONTRADICTION').includes('cap_probability_until_resolved'), 'contradiction actions wrong');
+    assert(KernelMotivationV04.recommendedActions('SEEK_EVIDENCE').includes('seek_source_contact'), 'evidence actions wrong');
+    assert(KernelMotivationV04.recommendedActions('STABLE_MAINTAIN').includes('maintain_current_bounded_state'), 'stable actions wrong');
+  });
+
+  add('doctrine says peak is attractor not slogan', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('claim'));
+    assert(report.doctrine.peak_is_attractor_not_slogan === true, 'peak attractor doctrine missing');
+    assert(report.doctrine.motivation_does_not_decide_truth === true, 'truth doctrine missing');
+    assert(report.doctrine.motivation_does_not_bypass_governor === true, 'governor doctrine missing');
+    assert(report.doctrine.ambiguous_intent_prefers_clarification_over_false_certainty === true, 'ambiguity doctrine missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_motivation_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
