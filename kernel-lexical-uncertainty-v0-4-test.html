@@ -18,15 +18,16 @@
 <header><h1>42ndMind Lexical Uncertainty v0.4 Test</h1><div>Tests unknown terms, implication-heavy terms, ambiguous references, glossary definitions, extractor requests, and command attachment.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="kernel-epistemic-memory-v0-4-test.html">epistemic memory test</a> · <a href="kernel-source-trust-v0-4-test.html">source trust test</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-lexical-uncertainty-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-lexical-uncertainty-v0-4-1-patch.js?v=0.4.1"></script>
 <script>
   const tests = [];
   function add(name, fn) { tests.push({ name, fn }); }
   function assert(cond, msg) { if (!cond) throw new Error(msg); }
   function sampleCommand(){ return { command_type:'epistemic_kernel_command', commands:[{ op:'import_packet', packet:{ claims:[{ text:'The IFCN-certified article debunked the claim.' }], evidence:[], questions:[], meta:{} } }] }; }
 
-  add('module loads', () => {
+  add('module loads with v0.4.1 patch', () => {
     assert(window.KernelLexicalUncertaintyV04, 'KernelLexicalUncertaintyV04 missing');
-    assert(KernelLexicalUncertaintyV04.VERSION === '0.4.0', 'wrong lexical version');
+    assert(KernelLexicalUncertaintyV04.VERSION === '0.4.1', 'wrong lexical version');
     assert(KernelLexicalUncertaintyV04.DECISIONS.HOLD_FOR_DEFINITION === 'HOLD_FOR_DEFINITION', 'decisions missing');
   });
 
@@ -36,6 +37,7 @@
     assert(report.unresolved_terms.some(t => t.term === 'CDA-EOS'), 'CDA-EOS unknown term missing');
     assert(report.unresolved_terms.some(t => t.term === 'IAPWS'), 'IAPWS unknown term missing');
     assert(report.claim_pressure_allowed === false, 'claim pressure should not be allowed');
+    assert(report.v041_patch && report.v041_patch.applied === true, 'v0.4.1 patch should apply to CDA-EOS');
   });
 
   add('implication-heavy terms clarify rather than decide truth', () => {
