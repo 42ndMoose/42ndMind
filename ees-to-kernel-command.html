@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>42ndMind EES → Kernel Command v0.1</title>
+  <title>42ndMind EES → Kernel Command v0.1.1</title>
   <style>
     body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
     header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
@@ -18,19 +18,19 @@
     a { color:#9db6ff; }
     .muted { color:#8b93a7; } .small { font-size:12px; }
     .metric { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin-bottom:8px; }
-    .metric span { display:block; color:#8b93a7; } .metric b { display:block; font-size:18px; }
+    .metric span { display:block; color:#8b93a7; } .metric b { display:block; font-size:18px; overflow-wrap:anywhere; }
     .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
 <header>
-  <h1>42ndMind EES Registry → Kernel Command v0.1</h1>
-  <div class="muted small">Reads saved EES metadata and produces a copyable epistemic_kernel_command candidate. No automatic import. No belief movement.</div>
+  <h1>42ndMind EES Registry → Kernel Command v0.1.1</h1>
+  <div class="muted small">Reads saved EES metadata and produces a copyable epistemic_kernel_command candidate. Source-trust pressure is attached as metadata. No automatic import. No belief movement.</div>
 </header>
 <main>
   <div>
-    <section><h2>Navigation</h2><a href="dossier-ees-compiler-v0-1-2.html">Dossier EES compiler</a> · <a href="entity-event-source-bridge.html">EES bridge</a> · <a href="ees-to-kernel-command-test.html">compiler test</a> · <a href="llm-brain-v0-3.html">live brain</a></section>
+    <section><h2>Navigation</h2><a href="dossier-ees-compiler-v0-1-2.html">Dossier EES compiler</a> · <a href="entity-event-source-bridge.html">EES bridge</a> · <a href="ees-to-kernel-command-test.html">compiler test</a> · <a href="kernel-source-trust-bridge-v0-4-test.html">source-trust bridge test</a> · <a href="llm-brain-v0-3.html">live brain</a></section>
     <section>
       <h2>Controls</h2>
       <button onclick="loadSaved()">LOAD saved EES registry</button>
@@ -43,7 +43,7 @@
     <section>
       <h2>Mechanism selector</h2>
       <select id="mechanismSelect"></select>
-      <div class="small muted">One mechanism becomes one candidate claim. Linked events become support candidates. Overclaim flags become attacking evidence.</div>
+      <div class="small muted">One mechanism becomes one candidate claim. Linked events become support candidates. Overclaim flags and source-trust priors become attacking/constraint pressure.</div>
     </section>
     <section>
       <h2>Summary</h2>
@@ -51,7 +51,9 @@
         <div class="metric"><span>claims</span><b id="claims">0</b></div>
         <div class="metric"><span>supporting evidence</span><b id="support">0</b></div>
         <div class="metric"><span>attacking evidence</span><b id="attacks">0</b></div>
+        <div class="metric"><span>source-trust pressure</span><b id="sourceTrust">0</b></div>
         <div class="metric"><span>open questions</span><b id="questions">0</b></div>
+        <div class="metric"><span>source-trust decision</span><b id="sourceTrustDecision">-</b></div>
       </div>
       <div class="metric"><span>belief movement</span><b id="movement">none</b></div>
     </section>
@@ -62,10 +64,14 @@
   </div>
   <div>
     <section><h2>Compile report</h2><pre id="reportOut">No report yet.</pre></section>
+    <section><h2>Source-trust bridge</h2><pre id="sourceTrustOut">No source-trust bridge yet.</pre></section>
     <section><h2>Copyable epistemic_kernel_command</h2><textarea id="commandOut" spellcheck="false"></textarea></section>
   </div>
 </main>
+<script src="src/kernel-source-trust-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-source-trust-bridge-v0-4.js?v=0.4.0"></script>
 <script src="src/ees-to-kernel-command-v0-1.js?v=0.1.0"></script>
+<script src="src/ees-to-kernel-command-v0-1-1-source-trust-patch.js?v=0.1.1"></script>
 <script>
   let currentRegistry = null;
   let currentReport = null;
@@ -100,11 +106,14 @@
       $('claims').textContent = currentReport.counts.claims;
       $('support').textContent = currentReport.counts.supporting_evidence;
       $('attacks').textContent = currentReport.counts.attacking_evidence;
+      $('sourceTrust').textContent = currentReport.counts.source_trust_pressure_evidence || 0;
       $('questions').textContent = currentReport.counts.open_questions;
+      $('sourceTrustDecision').textContent = currentReport.source_trust_bridge ? currentReport.source_trust_bridge.decision : '-';
       $('movement').textContent = currentReport.doctrine.belief_movement;
       $('reportOut').textContent = JSON.stringify(currentReport, null, 2);
+      $('sourceTrustOut').textContent = currentReport.source_trust_bridge ? JSON.stringify(currentReport.source_trust_bridge, null, 2) : 'No source-trust bridge attached.';
       $('commandOut').value = JSON.stringify(currentReport.epistemic_kernel_command, null, 2);
-      setStatus(`Compiled mechanism ${currentReport.selected_mechanism_id}. Copy command only after reviewing it.`);
+      setStatus(`Compiled mechanism ${currentReport.selected_mechanism_id}. Source-trust pressure=${currentReport.counts.source_trust_pressure_evidence || 0}. Copy command only after reviewing it.`);
     } catch(error) { setStatus('Compile failed: ' + error.message); }
   }
   async function copyCommand(){
