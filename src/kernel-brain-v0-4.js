@@ -5,19 +5,22 @@
  * This module is the single entry point for raw language, JSON commands,
  * source/evidence snippets, self-sealing pressure, gibberish, and import
  * packets. Sensemaking and preflight are adapters. The governor is the shared
- * movement law. This module produces one final decision surface.
+ * movement law. Consistency and probability are epistemic pressure adapters.
+ * This module produces one final decision surface.
  *
  * Doctrine:
  * - one brain, not stacked independent logic
  * - meaning must be earned before belief movement
  * - every path answers to the same epistemic governor
+ * - consistency must be visible before probability is trusted
+ * - probability is belief pressure, not truth
  * - adapters may parse/format, but they do not own belief movement
  * - no belief movement occurs inside this v0.4 module by itself
  */
 (function (global) {
   'use strict';
 
-  const VERSION = '0.4.0';
+  const VERSION = '0.4.1';
   const DECISIONS = Object.freeze({
     NEAR_NULL: 'NEAR_NULL',
     CLARIFY: 'CLARIFY',
@@ -31,6 +34,15 @@
 
   function text(value) { return String(value ?? '').trim(); }
   function asArray(value) { return Array.isArray(value) ? value : []; }
+  function sourceIds(item) {
+    const links = item && item.links || {};
+    const meta = item && item.meta || {};
+    return asArray(item && item.source_ids)
+      .concat(asArray(links.source_ids))
+      .concat(asArray(meta.source_ids))
+      .concat(asArray(item && item.sources))
+      .map(text).filter(Boolean);
+  }
 
   function parseJson(raw) {
     try { return { ok:true, value:JSON.parse(raw), error:'' }; }
@@ -74,7 +86,9 @@
     return {
       sensemaking: !!(global.KernelSensemakingV01 && typeof global.KernelSensemakingV01.analyze === 'function'),
       governor: !!(global.KernelEpistemicGovernorV01 && typeof global.KernelEpistemicGovernorV01.assess === 'function'),
-      preflight: !!(global.KernelCommandPreflightV01 && typeof global.KernelCommandPreflightV01.analyze === 'function')
+      preflight: !!(global.KernelCommandPreflightV01 && typeof global.KernelCommandPreflightV01.analyze === 'function'),
+      consistency: !!(global.KernelConsistencyV04 && typeof global.KernelConsistencyV04.analyze === 'function'),
+      probability: !!(global.KernelProbabilityV04 && typeof global.KernelProbabilityV04.analyze === 'function')
     };
   }
 
@@ -84,6 +98,8 @@
       one_final_decision_surface: true,
       adapters_are_not_separate_brains: true,
       governor_is_shared_movement_law: true,
+      consistency_precedes_probability_calibration: true,
+      probability_is_belief_pressure_not_truth: true,
       meaning_must_be_earned_before_belief_movement: true,
       gibberish_stays_near_null: true,
       ambiguity_requests_clarification_not_belief: true,
@@ -92,6 +108,93 @@
       no_belief_movement_inside_v0_4_processor: true,
       kernel_state_updates_require_explicit_import_or_later_runtime_binding: true
     };
+  }
+
+  function commandPacketRows(command) {
+    return asArray(command && command.commands)
+      .map((cmd, index) => ({ cmd, index, packet:(cmd && (cmd.packet || cmd.extraction_packet)) || {} }))
+      .filter(row => row.cmd && row.cmd.op === 'import_packet');
+  }
+
+  function itemFromClaim(claim, packet, index) {
+    const meta = packet && packet.meta || {};
+    const links = claim && claim.links || {};
+    return {
+      id: text(claim && (claim.client_id || claim.id)) || `claim_${index}`,
+      text: text(claim && claim.text),
+      confidence: Number.isFinite(Number(claim && claim.confidence)) ? Number(claim.confidence) : null,
+      source_ids: sourceIds(claim).concat(sourceIds(meta)).concat(sourceIds(links)),
+      support_status: text(links.support_status || claim && claim.support_status || meta.support_status || '')
+    };
+  }
+
+  function itemFromEvidence(evidence, packet, index) {
+    const meta = packet && packet.meta || {};
+    const links = evidence && evidence.links || {};
+    return {
+      id: text(evidence && (evidence.client_id || evidence.id)) || `evidence_${index}`,
+      text: text(evidence && evidence.text),
+      confidence: Number.isFinite(Number(evidence && evidence.confidence)) ? Number(evidence.confidence) : null,
+      source_ids: sourceIds(evidence).concat(sourceIds(meta)).concat(sourceIds(links)),
+      support_status: text(links.support_status || evidence && evidence.support_status || meta.support_status || '')
+    };
+  }
+
+  function collectEpistemicItems(report, parsedCommand) {
+    const items = [];
+    const pressure = { questions:[], attacks:[] };
+
+    const candidate = report && report.sensemaking_report && report.sensemaking_report.governor_candidate;
+    if (candidate && candidate.text) {
+      items.push({
+        id: 'sensemaking_candidate',
+        text: text(candidate.text),
+        confidence: Number.isFinite(Number(candidate.confidence)) ? Number(candidate.confidence) : null,
+        source_ids: sourceIds(candidate),
+        support_status: text(candidate.support_status || '')
+      });
+      pressure.questions = pressure.questions.concat(asArray(candidate.questions));
+      pressure.attacks = pressure.attacks.concat(asArray(candidate.attacks));
+    }
+
+    if (parsedCommand) {
+      commandPacketRows(parsedCommand).forEach(row => {
+        asArray(row.packet.claims).forEach((claim, index) => {
+          const item = itemFromClaim(claim, row.packet, index);
+          if (item.text) items.push(item);
+        });
+        asArray(row.packet.evidence).forEach((evidence, index) => {
+          const item = itemFromEvidence(evidence, row.packet, index);
+          if (item.text) items.push(item);
+        });
+        pressure.questions = pressure.questions.concat(asArray(row.packet.questions).map(q => text(q && (q.text || q))).filter(Boolean));
+        pressure.attacks = pressure.attacks.concat(asArray(row.packet.evidence).filter(e => text(e && e.relation) === 'attacks').map(e => text(e.text)).filter(Boolean));
+      });
+    }
+
+    return { items, questions:pressure.questions.filter(Boolean), attacks:pressure.attacks.filter(Boolean) };
+  }
+
+  function attachConsistencyAndProbability(report, parsedCommand) {
+    const status = report.adapter_status || adapterStatus();
+    const collected = collectEpistemicItems(report, parsedCommand);
+    report.epistemic_items = collected.items;
+    report.consistency_report = null;
+    report.probability_report = null;
+    if (!collected.items.length) return report;
+
+    if (status.consistency) {
+      report.consistency_report = global.KernelConsistencyV04.analyze(collected.items);
+    }
+    if (status.probability) {
+      report.probability_report = global.KernelProbabilityV04.analyze({
+        items: collected.items,
+        questions: collected.questions,
+        attacks: collected.attacks,
+        consistency_report: report.consistency_report
+      });
+    }
+    return report;
   }
 
   function process(input, options = {}) {
@@ -115,6 +218,9 @@
       sensemaking_report: null,
       governor_report: null,
       preflight_report: null,
+      consistency_report: null,
+      probability_report: null,
+      epistemic_items: [],
       adapter_status: status,
       doctrine: doctrine()
     };
@@ -136,13 +242,13 @@
       if (!status.preflight) {
         report.final_decision = DECISIONS.BLOCK;
         report.final_reason = 'Command-shaped input requires preflight adapter, but it is not loaded.';
-        return report;
+        return attachConsistencyAndProbability(report, parsed.value);
       }
       report.preflight_report = global.KernelCommandPreflightV01.analyze(raw, options);
       report.final_decision = mapPreflightDecision(report.preflight_report);
       report.sanitized_command = report.preflight_report && report.preflight_report.sanitized_command ? report.preflight_report.sanitized_command : null;
       report.final_reason = report.preflight_report && report.preflight_report.import_allowed
-        ? 'Structured command passed through sensemaking and governor-backed preflight adapter.'
+        ? 'Structured command passed through sensemaking, governor-backed preflight, consistency, and probability adapters.'
         : 'Structured command was blocked by sensemaking/preflight/governor path.';
     } else {
       report.governor_report = report.sensemaking_report && report.sensemaking_report.governor_report ? report.sensemaking_report.governor_report : null;
@@ -156,7 +262,8 @@
     report.runtime_note = report.final_decision === DECISIONS.SAFE_IMPORT || report.final_decision === DECISIONS.CAUTION_IMPORT
       ? 'Import is allowed only if a live runtime explicitly applies the sanitized command.'
       : 'This processor emits pressure/decision only; it does not mutate kernel state.';
-    return report;
+
+    return attachConsistencyAndProbability(report, isCommand ? parsed.value : null);
   }
 
   function sampleInput(kind) {
@@ -175,6 +282,7 @@
     process,
     doctrine,
     adapterStatus,
-    sampleInput
+    sampleInput,
+    collectEpistemicItems
   });
 })(typeof window !== 'undefined' ? window : globalThis);
