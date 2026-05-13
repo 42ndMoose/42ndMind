@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Probability v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Probability v0.4 Test</h1><div>Tests confidence calibration under consistency, source status, unresolved pressure, and contradiction caps.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-consistency-v0-4-test.html">consistency test</a> · <a href="llm-brain-v0-4.html">v0.4 preview console</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-consistency-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-probability-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelProbabilityV04, 'KernelProbabilityV04 missing');
+    assert(KernelProbabilityV04.VERSION === '0.4.0', 'wrong probability version');
+    assert(window.KernelConsistencyV04, 'KernelConsistencyV04 missing');
+  });
+
+  add('reviewed independent support calibrates higher than unreviewed no-source claim', () => {
+    const reviewed = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('reviewed'));
+    const unreviewed = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('unreviewed'));
+    assert(reviewed.probability > unreviewed.probability, 'reviewed support should score higher than unreviewed no-source');
+    assert(reviewed.independent_source_count === 2, 'reviewed sample should have two independent sources');
+    assert(unreviewed.independent_source_count === 0, 'unreviewed sample should have zero sources');
+  });
+
+  add('contradiction caps probability', () => {
+    const report = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('contradiction'));
+    assert(report.consistency_report.decision === 'CONTRADICTION_VISIBLE', 'contradiction not detected');
+    assert(report.probability <= 0.5, 'contradiction should cap probability at 0.5 or lower');
+    assert(report.cap.reasons.includes('contradiction_visible'), 'contradiction cap reason missing');
+    assert(report.probability_band === 'CAPPED_BY_EPISTEMIC_PRESSURE', 'contradiction should produce capped band');
+  });
+
+  add('duplicate same provenance creates tension cap', () => {
+    const report = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('duplicate'));
+    assert(report.consistency_report.decision === 'TENSION_VISIBLE', 'duplicate same provenance should create tension');
+    assert(report.cap.value === 0.68, 'tension cap should be 0.68');
+    assert(report.doctrine.duplicate_provenance_cannot_boost_probability_as_independent === true, 'duplicate doctrine missing');
+  });
+
+  add('unresolved questions reduce probability', () => {
+    const plain = KernelProbabilityV04.analyze({ items:[{ id:'a', text:'Candidate claim.', source_ids:['s1'], support_status:'candidate', confidence:0.55 }] });
+    const unresolved = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('unresolved'));
+    assert(unresolved.unresolved_penalty > 0, 'unresolved penalty missing');
+    assert(unresolved.probability < plain.probability, 'unresolved pressure should reduce probability');
+  });
+
+  add('probability interval widens when source is missing', () => {
+    const reviewed = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('reviewed'));
+    const unreviewed = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('unreviewed'));
+    const reviewedWidth = reviewed.interval.high - reviewed.interval.low;
+    const unreviewedWidth = unreviewed.interval.high - unreviewed.interval.low;
+    assert(unreviewedWidth > reviewedWidth, 'no-source uncertainty interval should be wider');
+  });
+
+  add('confidence is not probability until calibrated', () => {
+    const report = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('unreviewed'));
+    assert(report.raw_confidence_mean === 0.72, 'raw confidence mean should preserve original confidence');
+    assert(report.probability < report.raw_confidence_mean, 'calibrated probability should be lower than unsupported raw confidence');
+    assert(report.doctrine.confidence_is_not_probability_until_calibrated === true, 'confidence doctrine missing');
+  });
+
+  add('manual consistency report can be supplied', () => {
+    const consistency_report = { decision:'INSUFFICIENT_STRUCTURE' };
+    const report = KernelProbabilityV04.analyze({
+      items:[{ id:'x', text:'ok', confidence:0.9, source_ids:['s1'], support_status:'reviewed' }],
+      consistency_report
+    });
+    assert(report.cap.value === 0.42, 'manual insufficient structure cap missing');
+    assert(report.cap.reasons.includes('insufficient_structure'), 'manual cap reason missing');
+  });
+
+  add('doctrine says probability is belief pressure only', () => {
+    const report = KernelProbabilityV04.analyze(KernelProbabilityV04.sampleInput('reviewed'));
+    assert(report.belief_pressure_only === true, 'belief pressure flag missing');
+    assert(report.doctrine.probability_is_not_truth === true, 'probability truth doctrine missing');
+    assert(report.doctrine.consistency_constrains_probability === true, 'consistency doctrine missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_probability_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
