@@ -22,6 +22,7 @@
 <script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
 <script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
 <script>
   const tests = [];
   function add(name, fn) { tests.push({ name, fn }); }
@@ -29,13 +30,14 @@
 
   add('module loads', () => {
     assert(window.KernelPromotionPipelineV04, 'KernelPromotionPipelineV04 missing');
-    assert(KernelPromotionPipelineV04.VERSION === '0.4.0', 'wrong promotion version');
+    assert(KernelPromotionPipelineV04.VERSION === '0.4.1', 'wrong promotion version');
     assert(KernelPromotionPipelineV04.DECISIONS.PROMOTE_RUNTIME_CANDIDATE === 'PROMOTE_RUNTIME_CANDIDATE', 'decisions missing');
   });
 
   add('runtime proposal becomes runtime candidate only', () => {
     const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
     assert(report.decision === 'PROMOTE_RUNTIME_CANDIDATE', 'runtime proposal should promote as runtime candidate');
+    assert(report.v041_patch && report.v041_patch.applied === true, 'v0.4.1 patch should stage governor-capped runtime candidate');
     assert(report.promotion_effect.runtime_enabled === false, 'runtime should not be enabled');
     assert(report.promotion_effect.patch_applied === false, 'patch should not apply');
     assert(report.promotion_effect.source_rewritten === false, 'source should not rewrite');
@@ -44,6 +46,7 @@
   add('patch proposal becomes patch candidate only', () => {
     const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('patch'));
     assert(report.decision === 'PATCH_CANDIDATE_ONLY', 'patch proposal should become patch candidate only');
+    assert(report.v041_patch && report.v041_patch.applied === true, 'v0.4.1 patch should stage governor-capped patch candidate');
     assert(report.next_step.includes('no source write'), 'patch next step should forbid source write');
     assert(report.promotion_effect.source_rewritten === false, 'source should not rewrite');
   });
@@ -88,6 +91,7 @@
       KernelPromotionPipelineV04.sampleProposal('hold'),
       KernelPromotionPipelineV04.sampleProposal('blocked')
     ]);
+    assert(batch.packet_version === '0.4.1', 'batch should use patched version');
     assert(batch.count === 4, 'batch count wrong');
     assert(batch.summary.promote_runtime_candidate === 1, 'runtime summary wrong');
     assert(batch.summary.patch_candidate_only === 1, 'patch summary wrong');
@@ -110,6 +114,13 @@
     assert(report.doctrine.promotion_requires_tests === true, 'test doctrine missing');
     assert(report.doctrine.governor_must_assess_before_promotion === true, 'governor doctrine missing');
     assert(report.doctrine.unresolved_pressure_must_remain_visible === true, 'unresolved doctrine missing');
+  });
+
+  add('v0.4.1 preserves governor cap as candidate-staging caution', () => {
+    const report = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
+    assert(report.packet_version === '0.4.1', 'report should use patched packet version');
+    assert(report.issues.some(i => i.code === 'governor_caps_maturity'), 'governor cap caution should remain visible');
+    assert(report.v041_patch.rule === 'governor_cap_allows_candidate_staging_not_final_promotion', 'wrong patch rule');
   });
 
   const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
