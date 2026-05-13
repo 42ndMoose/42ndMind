@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Invariant Learner v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Invariant Learner v0.4 Test</h1><div>Tests repeated semantic-pressure observations, stable invariant discovery, promotion candidates, and non-execution doctrine.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-lexical-uncertainty-v0-4-test.html">lexical uncertainty test</a> · <a href="kernel-epistemic-memory-v0-4-test.html">epistemic memory test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_semantic_invariants_v0_4_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function reset(){ KernelSemanticInvariantLearnerV04.clear(TEST_KEY); }
+  function recordClosure(i){ return KernelSemanticInvariantLearnerV04.record(KernelSemanticInvariantLearnerV04.sampleInput('closure'), { key:TEST_KEY, context:'claim_'+i, outcome:'reviewed_pressure', confirmed:true, min_observations:3 }); }
+
+  add('module loads', () => {
+    assert(window.KernelSemanticInvariantLearnerV04, 'KernelSemanticInvariantLearnerV04 missing');
+    assert(KernelSemanticInvariantLearnerV04.VERSION === '0.4.0', 'wrong semantic learner version');
+    assert(KernelSemanticInvariantLearnerV04.DEFAULT_KEY === '42ndMind_semantic_invariants_v0_4', 'wrong default key');
+  });
+
+  add('clear starts empty', () => {
+    reset();
+    const ledger = KernelSemanticInvariantLearnerV04.load(TEST_KEY);
+    assert(ledger.observations.length === 0, 'observations should start empty');
+    assert(ledger.invariants.length === 0, 'invariants should start empty');
+  });
+
+  add('observationFrom detects closure and dismissal pressure', () => {
+    const batch = KernelSemanticInvariantLearnerV04.observationFrom(KernelSemanticInvariantLearnerV04.sampleInput('closure'));
+    assert(batch.count > 0, 'no semantic observations produced');
+    assert(batch.term_observations.some(o => o.pressure === 'closure_pressure'), 'closure pressure missing');
+    assert(batch.term_observations.some(o => o.pressure === 'dismissal_pressure'), 'dismissal pressure missing');
+    assert(batch.belief_movement === 'none', 'observation moved belief');
+  });
+
+  add('clear sentence produces no semantic signal', () => {
+    const result = KernelSemanticInvariantLearnerV04.record(KernelSemanticInvariantLearnerV04.sampleInput('clear'), { key:TEST_KEY });
+    assert(result.ok === false, 'clear input should not record semantic signal');
+    assert(result.decision === 'NO_SEMANTIC_SIGNAL', 'wrong no-signal decision');
+  });
+
+  add('first repeated observation holds for more observations', () => {
+    reset();
+    const result = recordClosure(1);
+    assert(result.ok === true, 'record failed');
+    const inv = result.ledger.invariants.find(i => i.term_key === 'debunked' && i.pressure === 'closure_pressure');
+    assert(inv, 'debunked closure invariant missing');
+    assert(inv.decision === 'HOLD_MORE_OBSERVATIONS', 'single observation should hold');
+    assert(result.belief_movement === 'none', 'record moved belief');
+  });
+
+  add('three consistent observations produce stable invariant', () => {
+    reset();
+    recordClosure(1); recordClosure(2); const result = recordClosure(3);
+    const inv = result.ledger.invariants.find(i => i.term_key === 'debunked' && i.pressure === 'closure_pressure');
+    assert(inv, 'debunked closure invariant missing after three observations');
+    assert(inv.observation_count >= 3, 'observation count wrong');
+    assert(inv.decision === 'INVARIANT_STABLE', 'consistent repeated observations should become stable');
+    assert(inv.invariant_statement.includes('dispute-closure pressure'), 'invariant statement wrong');
+    assert(inv.active_belief_effect === 'none', 'invariant changed active belief');
+  });
+
+  add('motive language creates motive agency pressure', () => {
+    const batch = KernelSemanticInvariantLearnerV04.observationFrom(KernelSemanticInvariantLearnerV04.sampleInput('motive'));
+    assert(batch.term_observations.some(o => o.pressure === 'motive_agency_pressure'), 'motive/agency pressure missing');
+    assert(batch.term_observations.some(o => o.term_key === 'coordinated'), 'coordinated term missing');
+  });
+
+  add('technical acronyms create technical definition pressure', () => {
+    const batch = KernelSemanticInvariantLearnerV04.observationFrom(KernelSemanticInvariantLearnerV04.sampleInput('technical'));
+    assert(batch.term_observations.some(o => o.term_key === 'cda-eos' && o.pressure === 'technical_definition_pressure'), 'CDA-EOS technical pressure missing');
+    assert(batch.term_observations.some(o => o.term_key === 'iapws' && o.pressure === 'technical_definition_pressure'), 'IAPWS technical pressure missing');
+  });
+
+  add('contradicted observations lower maturity but remain reviewable', () => {
+    reset();
+    KernelSemanticInvariantLearnerV04.record(KernelSemanticInvariantLearnerV04.sampleInput('closure'), { key:TEST_KEY, contradicted:true, outcome:'BLOCK_BEHAVIOR_DRIFT', min_observations:3 });
+    KernelSemanticInvariantLearnerV04.record(KernelSemanticInvariantLearnerV04.sampleInput('closure'), { key:TEST_KEY, confirmed:true, outcome:'reviewed_pressure', min_observations:3 });
+    const result = KernelSemanticInvariantLearnerV04.record(KernelSemanticInvariantLearnerV04.sampleInput('closure'), { key:TEST_KEY, confirmed:true, outcome:'reviewed_pressure', min_observations:3 });
+    const inv = result.ledger.invariants.find(i => i.term_key === 'debunked' && i.pressure === 'closure_pressure');
+    assert(inv.contradiction_rate > 0, 'contradiction rate missing');
+    assert(inv.maturity_score < 1, 'contradiction should lower maturity');
+    assert(inv.doctrine.invariant_is_candidate_not_doctrine === true, 'candidate doctrine missing');
+  });
+
+  add('stable invariant produces promotion proposal only', () => {
+    reset();
+    recordClosure(1); recordClosure(2); recordClosure(3);
+    const proposals = KernelSemanticInvariantLearnerV04.proposeStable(TEST_KEY);
+    assert(proposals.count > 0, 'stable invariant proposal missing');
+    assert(proposals.proposals.some(p => p.target_layer === 'semantic_invariant_adapter'), 'proposal target wrong');
+    assert(proposals.proposals.every(p => p.promotion_state.implemented === false), 'proposal was marked implemented');
+    assert(proposals.belief_movement === 'none', 'proposal moved belief');
+  });
+
+  add('stableInvariants helper returns stable rows', () => {
+    const stable = KernelSemanticInvariantLearnerV04.stableInvariants(TEST_KEY);
+    assert(stable.length > 0, 'stable helper empty');
+    assert(stable.every(i => i.decision === 'INVARIANT_STABLE'), 'helper returned non-stable invariant');
+  });
+
+  add('ledger persists observations and invariants', () => {
+    const ledger = KernelSemanticInvariantLearnerV04.load(TEST_KEY);
+    assert(ledger.observations.length > 0, 'persisted observations missing');
+    assert(ledger.invariants.length > 0, 'persisted invariants missing');
+    assert(ledger.doctrine.learner_does_not_patch_source === true, 'ledger doctrine missing');
+  });
+
+  add('doctrine says invariant math is pressure pattern discovery', () => {
+    const d = KernelSemanticInvariantLearnerV04.doctrine();
+    assert(d.semantic_invariants_are_candidates_not_doctrine === true, 'candidate-not-doctrine missing');
+    assert(d.learner_does_not_decide_truth === true, 'truth doctrine missing');
+    assert(d.learner_does_not_patch_source === true, 'patch doctrine missing');
+    assert(d.objective_language_math_is_discovered_as_pressure_patterns === true, 'language math doctrine missing');
+  });
+
+  add('cleanup clears ledger', () => {
+    const cleared = KernelSemanticInvariantLearnerV04.clear(TEST_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelSemanticInvariantLearnerV04.load(TEST_KEY).observations.length === 0, 'observations not cleared');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_invariant_learner_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
