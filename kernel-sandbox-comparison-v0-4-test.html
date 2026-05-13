@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Sandbox Comparison v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Sandbox Comparison v0.4 Test</h1><div>Tests baseline vs candidate-shadow comparison without candidate execution or live behavior changes.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-runtime-activation-v0-4-test.html">activation test</a> · <a href="kernel-test-suite-v0-4-activation.html">activation add-on suite</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-sensemaking-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-sensemaking-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
+<script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
+<script src="src/kernel-consistency-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-probability-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.1"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
+<script src="src/kernel-patch-candidate-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-runtime-candidates-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-sandbox-comparison-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_sandbox_comparison_v0_4_test';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelSandboxComparisonV04, 'KernelSandboxComparisonV04 missing');
+    assert(KernelSandboxComparisonV04.VERSION === '0.4.0', 'wrong sandbox version');
+    assert(KernelSandboxComparisonV04.DECISIONS.PASS_NO_BEHAVIOR_DELTA === 'PASS_NO_BEHAVIOR_DELTA', 'decisions missing');
+  });
+
+  add('default probes are available', () => {
+    const probes = KernelSandboxComparisonV04.defaultProbes();
+    assert(probes.length >= 5, 'expected at least five default probes');
+    assert(probes.some(p => p.id === 'claim'), 'claim probe missing');
+    assert(probes.some(p => p.id === 'reviewed_command'), 'reviewed command probe missing');
+  });
+
+  add('safe staged candidate produces no behavior delta', () => {
+    const report = KernelSandboxComparisonV04.compare(KernelSandboxComparisonV04.sampleCandidate('staged'));
+    assert(report.decision === 'PASS_NO_BEHAVIOR_DELTA', 'safe staged candidate should pass');
+    assert(report.behavior_delta_detected === false, 'behavior delta should be false');
+    assert(report.candidate_behavior_executed === false, 'candidate behavior executed');
+    assert(report.comparisons.every(c => c.passed === true), 'all comparisons should pass');
+  });
+
+  add('safe metadata-enabled candidate still produces no behavior delta', () => {
+    const report = KernelSandboxComparisonV04.compare(KernelSandboxComparisonV04.sampleCandidate('enabled'));
+    assert(report.decision === 'PASS_NO_BEHAVIOR_DELTA', 'metadata-enabled candidate should still pass');
+    assert(report.candidate_status === 'ENABLED_METADATA_ONLY', 'status should be metadata enabled');
+    assert(report.source_rewritten === false, 'source rewritten');
+    assert(report.v0_3_touched === false, 'v0.3 touched');
+  });
+
+  add('unsafe candidate is blocked before comparison', () => {
+    const report = KernelSandboxComparisonV04.compare(KernelSandboxComparisonV04.sampleCandidate('unsafe'));
+    assert(report.decision === 'BLOCK_UNSAFE_CANDIDATE', 'unsafe candidate should block');
+    assert(report.safety_issues.some(i => i.code === 'behavior_already_executed'), 'unsafe behavior issue missing');
+    assert(report.comparisons.length === 0, 'unsafe candidate should not run comparisons');
+  });
+
+  add('missing candidate is blocked safely', () => {
+    const report = KernelSandboxComparisonV04.compare(null);
+    assert(report.decision === 'BLOCK_UNSAFE_CANDIDATE', 'missing candidate should block');
+    assert(report.safety_issues.some(i => i.code === 'candidate_missing'), 'missing candidate issue missing');
+  });
+
+  add('simulated final decision drift blocks candidate', () => {
+    const report = KernelSandboxComparisonV04.compare(KernelSandboxComparisonV04.sampleCandidate('staged'), { simulated_behavior_delta:{ final_decision:'SAFE_TO_IMPORT' } });
+    assert(report.decision === 'BLOCK_BEHAVIOR_DRIFT', 'final decision drift should block');
+    assert(report.behavior_delta_detected === true, 'delta flag missing');
+    assert(report.comparisons.some(c => c.diffs.some(d => d.field === 'final_decision')), 'final decision diff missing');
+  });
+
+  add('simulated probability drift blocks candidate', () => {
+    const baseline = KernelBrainV04.process(KernelBrainV04.sampleInput('claim'));
+    const shadow = KernelSandboxComparisonV04.applyShadow(baseline, KernelSandboxComparisonV04.sampleCandidate('staged'));
+    if (shadow.probability_report) shadow.probability_report.probability = 0.99;
+    const diffs = KernelSandboxComparisonV04.compareReports(baseline, shadow);
+    assert(diffs.some(d => d.field === 'probability_report.probability'), 'probability diff missing');
+  });
+
+  add('candidate can be loaded from runtime candidate queue by id', () => {
+    KernelRuntimeCandidatesV04.clear(TEST_KEY);
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('runtime'));
+    const staged = KernelRuntimeCandidatesV04.stage(plan, { key:TEST_KEY, explicit_stage:true });
+    const report = KernelSandboxComparisonV04.compare(staged.candidate.id, { key:TEST_KEY });
+    assert(report.decision === 'PASS_NO_BEHAVIOR_DELTA', 'queued candidate should pass sandbox');
+    assert(report.candidate_id === staged.candidate.id, 'candidate id mismatch');
+  });
+
+  add('sandbox summaries show candidate shadow without changing baseline', () => {
+    const report = KernelSandboxComparisonV04.compare(KernelSandboxComparisonV04.sampleCandidate('staged'));
+    const first = report.comparisons[0];
+    assert(first.baseline_summary.has_candidate_shadow === false, 'baseline should not have shadow');
+    assert(first.candidate_shadow_summary.has_candidate_shadow === true, 'candidate shadow missing');
+  });
+
+  add('doctrine forbids execution and source writes', () => {
+    const report = KernelSandboxComparisonV04.compare(KernelSandboxComparisonV04.sampleCandidate('staged'));
+    assert(report.doctrine.sandbox_comparison_is_not_runtime_execution === true, 'sandbox doctrine missing');
+    assert(report.doctrine.candidate_shadow_is_annotation_only === true, 'shadow doctrine missing');
+    assert(report.doctrine.source_write_forbidden === true, 'source write doctrine missing');
+    assert(report.doctrine.v0_3_untouched === true, 'v0.3 doctrine missing');
+  });
+
+  add('cleanup queue', () => {
+    KernelRuntimeCandidatesV04.clear(TEST_KEY);
+    assert(KernelRuntimeCandidatesV04.load(TEST_KEY).length === 0, 'test queue not cleared');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_sandbox_comparison_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
