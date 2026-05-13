@@ -24,6 +24,7 @@
 <script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
 <script src="src/kernel-patch-candidate-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-patch-candidate-v0-4-1-semantic-target-patch.js?v=0.4.1"></script>
 <script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-semantic-promotion-bridge-v0-4.js?v=0.4.0"></script>
 <script>
@@ -33,9 +34,10 @@
   function assert(cond, msg) { if (!cond) throw new Error(msg); }
   function samplePacket(){ return KernelSemanticPromotionBridgeV04.sampleProposalPacket(); }
 
-  add('module loads', () => {
+  add('module loads with semantic target patch', () => {
     assert(window.KernelSemanticPromotionBridgeV04, 'KernelSemanticPromotionBridgeV04 missing');
     assert(KernelSemanticPromotionBridgeV04.VERSION === '0.4.0', 'wrong bridge version');
+    assert(KernelPatchCandidateV04.VERSION === '0.4.1-semantic-target-patch', 'semantic target patch not loaded');
     assert(KernelSemanticPromotionBridgeV04.DECISIONS.PROMOTION_BRIDGE_READY === 'PROMOTION_BRIDGE_READY', 'decisions missing');
   });
 
@@ -69,6 +71,14 @@
     assert(report.patch_plan_count === 1, 'patch plan count wrong');
     assert(report.patch_plans_are_not_source_writes === true, 'patch plan write doctrine missing');
     assert(report.patch_plans[0].application_state.source_rewritten === false, 'patch plan rewrote source');
+  });
+
+  add('semantic patch plans include semantic source targets', () => {
+    const report = KernelSemanticPromotionBridgeV04.stableToPatchPlans(samplePacket());
+    const files = report.patch_plans[0].target_files || [];
+    assert(files.includes('src/kernel-semantic-invariant-learner-v0-4.js'), 'semantic learner target missing');
+    assert(files.includes('src/kernel-semantic-promotion-bridge-v0-4.js'), 'semantic promotion bridge target missing');
+    assert(report.patch_plans[0].v041_semantic_target_patch.applied === true, 'semantic target patch marker missing');
   });
 
   add('empty proposal packet holds safely', () => {
