@@ -32,13 +32,15 @@
 <body>
 <header>
   <h1>42ndMind Live Brain v0.4 Preview</h1>
-  <div class="muted small">One input path through <code>KernelBrainV04.process(input)</code>. Runtime binding is explicit, non-scoring, and does not run imports.</div>
+  <div class="muted small">One input path through <code>KernelBrainV04.process(input)</code>. Consistency and probability are belief-pressure reports, not truth claims. Runtime binding is explicit, non-scoring, and does not run imports.</div>
 </header>
 <main>
   <div>
     <section>
       <h2>Navigation</h2>
       <a href="kernel-brain-v0-4-test.html">v0.4 test</a> ·
+      <a href="kernel-consistency-v0-4-test.html">consistency test</a> ·
+      <a href="kernel-probability-v0-4-test.html">probability test</a> ·
       <a href="kernel-brain-v0-4-runtime-bindings-test.html">runtime bindings test</a> ·
       <a href="kernel-sensemaking-test.html">sensemaking test</a> ·
       <a href="kernel-command-preflight-test.html">preflight test</a> ·
@@ -90,6 +92,22 @@
       <div class="metric"><span>reason</span><b id="reason">-</b></div>
     </section>
     <section>
+      <h2>Consistency / probability</h2>
+      <div class="row">
+        <div class="metric"><span>consistency decision</span><b id="consistencyDecision">-</b></div>
+        <div class="metric"><span>consistency score</span><b id="consistencyScore">-</b></div>
+      </div>
+      <div class="row">
+        <div class="metric"><span>probability</span><b id="probabilityValue">-</b></div>
+        <div class="metric"><span>probability band</span><b id="probabilityBand">-</b></div>
+      </div>
+      <div class="row">
+        <div class="metric"><span>probability interval</span><b id="probabilityInterval">-</b></div>
+        <div class="metric"><span>epistemic items</span><b id="epistemicItemCount">0</b></div>
+      </div>
+      <div class="small muted">Probability is calibrated belief pressure. It is capped by contradiction, source weakness, unresolved questions, and duplicate provenance.</div>
+    </section>
+    <section>
       <h2>Adapter status</h2>
       <pre id="adapterStatus">Not loaded yet.</pre>
     </section>
@@ -99,7 +117,10 @@
     <section><h2>Runtime binding result / log export</h2><pre id="runtimeOut">No runtime binding yet.</pre></section>
     <section><h2>Sensemaking report</h2><pre id="sensemakingOut">No report yet.</pre></section>
     <section><h2>Governor report</h2><pre id="governorOut">No report yet.</pre></section>
+    <section><h2>Consistency report</h2><pre id="consistencyOut">No consistency report.</pre></section>
+    <section><h2>Probability report</h2><pre id="probabilityOut">No probability report.</pre></section>
     <section><h2>Preflight report</h2><pre id="preflightOut">No report yet.</pre></section>
+    <section><h2>Epistemic items</h2><pre id="epistemicItemsOut">No items.</pre></section>
     <section><h2>Sanitized command, if any</h2><textarea id="sanitizedOut" spellcheck="false"></textarea></section>
   </div>
 </main>
@@ -112,7 +133,9 @@
 <script src="src/kernel-command-preflight-v0-1-1-patch.js?v=0.1.1"></script>
 <script src="src/kernel-command-preflight-v0-1-2-governor-patch.js?v=0.1.2"></script>
 <script src="src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js?v=0.1.3"></script>
-<script src="src/kernel-brain-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-consistency-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-probability-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-brain-v0-4.js?v=0.4.1"></script>
 <script src="src/kernel-brain-v0-4-runtime-bindings.js?v=0.1.0"></script>
 <script>
   let currentReport = null;
@@ -141,6 +164,16 @@
       return `<div class="history-row"><b>${index + 1}. ${escapeHtml(entry.entry_type)} · ${escapeHtml(entry.final_decision)}</b><span>${escapeHtml(movement)} · ${escapeHtml(mutation)}${pending}</span></div>`;
     }).join('');
   }
+  function renderCalibrationSummary(report){
+    const consistency = report.consistency_report;
+    const probability = report.probability_report;
+    $('consistencyDecision').textContent = consistency ? consistency.decision : '-';
+    $('consistencyScore').textContent = consistency ? String(consistency.consistency_score) : '-';
+    $('probabilityValue').textContent = probability ? String(probability.probability) : '-';
+    $('probabilityBand').textContent = probability ? probability.probability_band : '-';
+    $('probabilityInterval').textContent = probability ? `${probability.interval.low}–${probability.interval.high}` : '-';
+    $('epistemicItemCount').textContent = String((report.epistemic_items || []).length);
+  }
   function render(report){
     currentReport = report;
     $('decision').textContent = report.final_decision;
@@ -154,8 +187,12 @@
     $('reportOut').textContent = JSON.stringify(report, null, 2);
     $('sensemakingOut').textContent = report.sensemaking_report ? JSON.stringify(report.sensemaking_report, null, 2) : 'No sensemaking report.';
     $('governorOut').textContent = report.governor_report ? JSON.stringify(report.governor_report, null, 2) : (report.sensemaking_report && report.sensemaking_report.governor_report ? JSON.stringify(report.sensemaking_report.governor_report, null, 2) : 'No governor report.');
+    $('consistencyOut').textContent = report.consistency_report ? JSON.stringify(report.consistency_report, null, 2) : 'No consistency report.';
+    $('probabilityOut').textContent = report.probability_report ? JSON.stringify(report.probability_report, null, 2) : 'No probability report.';
     $('preflightOut').textContent = report.preflight_report ? JSON.stringify(report.preflight_report, null, 2) : 'No preflight report.';
+    $('epistemicItemsOut').textContent = report.epistemic_items && report.epistemic_items.length ? JSON.stringify(report.epistemic_items, null, 2) : 'No items.';
     $('sanitizedOut').value = report.sanitized_command ? JSON.stringify(report.sanitized_command, null, 2) : '';
+    renderCalibrationSummary(report);
     renderRuntimeHistory();
     setStatus('Processed. No kernel state was mutated.');
   }
