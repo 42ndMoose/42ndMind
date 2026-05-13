@@ -32,7 +32,9 @@
       <a href="kernel-brain-v0-4-test.html">brain test</a> ·
       <a href="kernel-intention-recovery-v0-4-test.html">intention test</a> ·
       <a href="kernel-consistency-v0-4-test.html">consistency test</a> ·
-      <a href="kernel-probability-v0-4-test.html">probability test</a>
+      <a href="kernel-probability-v0-4-test.html">probability test</a> ·
+      <a href="kernel-motivation-v0-4-test.html">motivation test</a> ·
+      <a href="kernel-promotion-pipeline-v0-4-test.html">promotion test</a>
     </div>
   </section>
   <section>
@@ -41,6 +43,8 @@
       <div class="card"><span>brain</span><b id="brainVersion">-</b></div>
       <div class="card"><span>governor</span><b id="governorVersion">-</b></div>
       <div class="card"><span>preflight</span><b id="preflightVersion">-</b></div>
+      <div class="card"><span>motivation</span><b id="motivationVersion">-</b></div>
+      <div class="card"><span>promotion</span><b id="promotionVersion">-</b></div>
       <div class="card"><span>tests</span><b id="testCount">-</b></div>
     </div>
   </section>
@@ -62,6 +66,10 @@
 <script src="src/kernel-brain-v0-4-runtime-bindings.js?v=0.1.0"></script>
 <script src="src/kernel-state-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-motivation-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-motivation-v0-4-1-patch.js?v=0.4.1"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
 <script>
   const tests = [];
   const TEST_LOG_KEY = '42ndMind_v0_4_runtime_log_suite_test';
@@ -82,6 +90,8 @@
     assert(window.KernelBrainV04RuntimeBindings && KernelBrainV04RuntimeBindings.VERSION === '0.1.0', 'runtime bindings missing');
     assert(window.KernelStateV04 && KernelStateV04.VERSION === '0.4.0', 'state missing');
     assert(window.KernelSelfMaintenanceV04 && KernelSelfMaintenanceV04.VERSION === '0.4.0', 'self-maintenance missing');
+    assert(window.KernelMotivationV04 && KernelMotivationV04.VERSION === '0.4.1', 'motivation v0.4.1 missing');
+    assert(window.KernelPromotionPipelineV04 && KernelPromotionPipelineV04.VERSION === '0.4.1', 'promotion v0.4.1 missing');
   });
 
   add('one-brain adapter status is complete', () => {
@@ -169,6 +179,36 @@
     assert(unreviewed.independent_source_count === 0, 'unreviewed sample should have zero sources');
   });
 
+  add('motivation resolves contradiction pressure', () => {
+    const r = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('contradiction'));
+    assert(r.decision === 'RESOLVE_CONTRADICTION', 'motivation should resolve contradiction pressure');
+    assert(r.pressure_signals.some(s => s.type === 'contradiction_pressure' && s.value >= 0.75), 'contradiction pressure missing');
+    assert(r.belief_movement === 'none', 'motivation should not move belief directly');
+  });
+
+  add('motivation improves sloppy-intent clarity', () => {
+    const r = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('sloppy'));
+    assert(r.decision === 'IMPROVE_CLARITY', 'motivation should improve clarity for sloppy intent');
+    assert(r.packet_version === '0.4.1', 'motivation should use v0.4.1 patch');
+    assert(r.doctrine.motivation_does_not_bypass_governor === true, 'motivation governor doctrine missing');
+  });
+
+  add('promotion stages runtime and patch candidates without executing them', () => {
+    const runtime = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('runtime'));
+    const patch = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('patch'));
+    assert(runtime.decision === 'PROMOTE_RUNTIME_CANDIDATE', 'runtime candidate not staged');
+    assert(patch.decision === 'PATCH_CANDIDATE_ONLY', 'patch candidate not staged');
+    assert(runtime.promotion_effect.runtime_enabled === false, 'runtime enabled during evaluation');
+    assert(patch.promotion_effect.source_rewritten === false, 'source rewritten during evaluation');
+  });
+
+  add('promotion blocks protected core rewrites', () => {
+    const r = KernelPromotionPipelineV04.evaluate(KernelPromotionPipelineV04.sampleProposal('blocked'));
+    assert(r.decision === 'BLOCK_PROMOTION', 'protected core promotion should block');
+    assert(r.issues.some(i => i.code === 'protected_core_target'), 'protected core issue missing');
+    assert(r.promotion_effect.core_doctrine_changed === false, 'core doctrine changed during evaluation');
+  });
+
   add('runtime binding logs non-scoring near-null entries only', () => {
     KernelBrainV04RuntimeBindings.clearLog(TEST_LOG_KEY);
     const r = report('gibberish');
@@ -235,6 +275,8 @@
   document.getElementById('brainVersion').textContent = window.KernelBrainV04 ? KernelBrainV04.VERSION : '-';
   document.getElementById('governorVersion').textContent = window.KernelEpistemicGovernorV01 ? KernelEpistemicGovernorV01.VERSION : '-';
   document.getElementById('preflightVersion').textContent = window.KernelCommandPreflightV01 ? KernelCommandPreflightV01.VERSION : '-';
+  document.getElementById('motivationVersion').textContent = window.KernelMotivationV04 ? KernelMotivationV04.VERSION : '-';
+  document.getElementById('promotionVersion').textContent = window.KernelPromotionPipelineV04 ? KernelPromotionPipelineV04.VERSION : '-';
   document.getElementById('testCount').textContent = `${passed}/${results.length}`;
   document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
   document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
@@ -242,7 +284,7 @@
     packet_type:'42ndMind_kernel_v0_4_integrated_test_suite_report',
     packet_version:'0.4.1-suite',
     results,
-    doctrine:{ integrated_suite_is_not_runtime_state:true, v0_3_untouched:true }
+    doctrine:{ integrated_suite_is_not_runtime_state:true, v0_3_untouched:true, motivation_is_pressure_not_emotion:true, promotion_evaluation_is_not_execution:true }
   }, null, 2);
 </script>
 </body>
