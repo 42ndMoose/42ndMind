@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Source Patch Bridge v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Source Patch Bridge v0.4 Test</h1><div>Tests GitHub-safe source patch packets without source writes, SHA fetching, patch application, or test execution.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-patch-candidate-v0-4-test.html">patch candidate test</a> · <a href="kernel-sandbox-comparison-v0-4-test.html">sandbox test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-epistemic-governor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-epistemic-governor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-epistemic-governor-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-self-maintenance-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-promotion-pipeline-v0-4-1-patch.js?v=0.4.1"></script>
+<script src="src/kernel-patch-candidate-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-source-patch-bridge-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function readyPacket(options){ return KernelSourcePatchBridgeV04.createPacket(KernelSourcePatchBridgeV04.sampleInput('patch'), options || {}); }
+
+  add('module loads', () => {
+    assert(window.KernelSourcePatchBridgeV04, 'KernelSourcePatchBridgeV04 missing');
+    assert(KernelSourcePatchBridgeV04.VERSION === '0.4.0', 'wrong bridge version');
+    assert(KernelSourcePatchBridgeV04.DECISIONS.PATCH_PACKET_READY === 'PATCH_PACKET_READY', 'decisions missing');
+  });
+
+  add('patch-ready plan produces source patch packet', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed') });
+    assert(packet.decision === 'PATCH_PACKET_READY', 'patch packet should be ready');
+    assert(packet.file_operations.length > 0, 'file operations missing');
+    assert(packet.application_state.source_written === false, 'source should not be written');
+    assert(packet.doctrine.patch_packet_is_not_patch_application === true, 'packet doctrine missing');
+  });
+
+  add('file operation requires current SHA and fetch-back verification', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed') });
+    const op = packet.file_operations[0];
+    assert(op.current_sha_required_before_write === true, 'SHA requirement missing');
+    assert(op.fetch_back_verification.required === true, 'fetch-back required missing');
+    assert(op.fetch_back_verification.verify_exact_change === true, 'exact verification missing');
+    assert(op.write_constraints.some(s => /blob SHA/.test(s)), 'blob SHA constraint missing');
+  });
+
+  add('SHA-required mode holds when SHA map is missing', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed'), require_sha:true });
+    assert(packet.decision === 'HOLD_NOT_READY', 'missing SHA should hold');
+    assert(packet.issues.some(i => i.code === 'sha_missing'), 'sha_missing issue missing');
+    assert(packet.file_operations.length === 0, 'hold packet should not create file operations');
+  });
+
+  add('SHA-required mode becomes ready when SHA map is supplied', () => {
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('patch'));
+    const sha_map = {};
+    plan.target_files.forEach(path => { sha_map[path] = 'abc123sha'; });
+    const packet = KernelSourcePatchBridgeV04.createPacket(plan, { sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed'), require_sha:true, sha_map });
+    assert(packet.decision === 'PATCH_PACKET_READY', 'supplied SHA map should be ready');
+    assert(packet.file_operations.every(op => op.current_sha_available === true), 'SHA availability missing');
+  });
+
+  add('runtime-ready plan is blocked because bridge only accepts patch plans', () => {
+    const packet = KernelSourcePatchBridgeV04.createPacket(KernelPatchCandidateV04.sampleInput('runtime'));
+    assert(packet.decision === 'BLOCKED', 'runtime plan should block');
+    assert(packet.issues.some(i => i.code === 'plan_not_patch_ready'), 'plan_not_patch_ready issue missing');
+  });
+
+  add('sandbox failure blocks source patch packet', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('failed') });
+    assert(packet.decision === 'BLOCKED', 'sandbox failure should block');
+    assert(packet.issues.some(i => i.code === 'sandbox_comparison_failed'), 'sandbox failure issue missing');
+    assert(packet.sandbox_gate.accepted === false, 'sandbox gate should not be accepted');
+  });
+
+  add('missing tests block source patch packet', () => {
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('patch'));
+    plan.tests_required = [];
+    const packet = KernelSourcePatchBridgeV04.createPacket(plan);
+    assert(packet.decision === 'BLOCKED', 'missing tests should block');
+    assert(packet.issues.some(i => i.code === 'tests_missing'), 'tests missing issue missing');
+  });
+
+  add('missing target files block source patch packet', () => {
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('patch'));
+    plan.target_files = [];
+    const packet = KernelSourcePatchBridgeV04.createPacket(plan);
+    assert(packet.decision === 'BLOCKED', 'missing target files should block');
+    assert(packet.issues.some(i => i.code === 'target_files_missing'), 'target file issue missing');
+  });
+
+  add('protected core target is blocked', () => {
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('patch'));
+    plan.target_layer = 'core_doctrine';
+    plan.intent = 'rewrite objective_peak and null_origin';
+    const packet = KernelSourcePatchBridgeV04.createPacket(plan);
+    assert(packet.decision === 'BLOCKED', 'protected core should block');
+    assert(packet.issues.some(i => i.code === 'protected_core_target'), 'protected core issue missing');
+  });
+
+  add('handoff/status file target holds, not ready', () => {
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('patch'));
+    plan.target_files = ['HANDOFF_2026_05_12_V04_SELF_IMPROVEMENT.md'];
+    const packet = KernelSourcePatchBridgeV04.createPacket(plan);
+    assert(packet.decision === 'HOLD_NOT_READY', 'handoff target should hold');
+    assert(packet.issues.some(i => i.code === 'handoff_or_status_file_targeted'), 'handoff issue missing');
+  });
+
+  add('external write protocol lists SHA write trick', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed') });
+    const steps = packet.external_write_protocol.steps.join(' | ');
+    assert(/current blob SHA/.test(steps), 'current SHA step missing');
+    assert(/wait for commit SHA/.test(steps), 'commit SHA step missing');
+    assert(/fetch file back/.test(steps), 'fetch-back step missing');
+    assert(packet.external_write_protocol.browser_kernel_writes_source === false, 'browser kernel should not write source');
+  });
+
+  add('post-write requirements preserve rollback and tests', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed') });
+    assert(packet.post_write_requirements.fetch_back_verification_required === true, 'fetch-back post requirement missing');
+    assert(packet.post_write_requirements.tests_must_pass === true, 'tests post requirement missing');
+    assert(packet.post_write_requirements.rollback_required_on_failure === true, 'rollback post requirement missing');
+  });
+
+  add('application state is always non-applied', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed') });
+    assert(packet.application_state.source_written === false, 'source written');
+    assert(packet.application_state.commit_created === false, 'commit created');
+    assert(packet.application_state.fetch_back_verified === false, 'fetch-back verified by planner');
+    assert(packet.application_state.tests_run === false, 'tests run by planner');
+    assert(packet.application_state.core_doctrine_changed === false, 'core doctrine changed');
+  });
+
+  add('helper extraction returns target files and tests', () => {
+    const plan = KernelPatchCandidateV04.createPlan(KernelPatchCandidateV04.sampleInput('patch'));
+    assert(KernelSourcePatchBridgeV04.targetFilesFrom(plan).length > 0, 'target files helper empty');
+    assert(KernelSourcePatchBridgeV04.testsFrom(plan).length > 0, 'tests helper empty');
+    assert(KernelSourcePatchBridgeV04.isProtectedCoreTarget(plan) === false, 'sample patch should not be protected core');
+  });
+
+  add('doctrine says bridge plans writes only', () => {
+    const packet = readyPacket({ sandbox_report:KernelSourcePatchBridgeV04.sampleSandbox('passed') });
+    assert(packet.doctrine.bridge_plans_writes_only === true, 'bridge plan doctrine missing');
+    assert(packet.doctrine.external_github_tool_performs_writes === true, 'external tool doctrine missing');
+    assert(packet.doctrine.browser_kernel_never_writes_source_directly === true, 'browser source doctrine missing');
+    assert(packet.doctrine.fetch_back_verification_required === true, 'fetch-back doctrine missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_source_patch_bridge_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
