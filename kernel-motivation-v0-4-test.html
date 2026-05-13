@@ -32,6 +32,7 @@
 <script src="src/kernel-brain-v0-4.js?v=0.4.1"></script>
 <script src="src/kernel-state-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-motivation-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-motivation-v0-4-1-patch.js?v=0.4.1"></script>
 <script>
   const tests = [];
   function add(name, fn) { tests.push({ name, fn }); }
@@ -40,7 +41,7 @@
 
   add('module loads', () => {
     assert(window.KernelMotivationV04, 'KernelMotivationV04 missing');
-    assert(KernelMotivationV04.VERSION === '0.4.0', 'wrong motivation version');
+    assert(KernelMotivationV04.VERSION === '0.4.1', 'wrong motivation version');
     assert(KernelMotivationV04.PRESSURE_TYPES.CONTRADICTION === 'contradiction_pressure', 'pressure types missing');
   });
 
@@ -125,6 +126,13 @@
     assert(report.doctrine.motivation_does_not_decide_truth === true, 'truth doctrine missing');
     assert(report.doctrine.motivation_does_not_bypass_governor === true, 'governor doctrine missing');
     assert(report.doctrine.ambiguous_intent_prefers_clarification_over_false_certainty === true, 'ambiguity doctrine missing');
+  });
+
+  add('v0.4.1 patch records clarity threshold fix when applied', () => {
+    const report = KernelMotivationV04.analyze(KernelMotivationV04.sampleInput('sloppy'));
+    assert(report.packet_version === '0.4.1', 'packet version should be patched');
+    assert(report.v041_patch && report.v041_patch.applied === true, 'v0.4.1 patch should apply on sloppy intent sample');
+    assert(report.v041_patch.rule === 'intention_clarity_pressure_055_prefers_improve_clarity', 'wrong patch rule');
   });
 
   const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
