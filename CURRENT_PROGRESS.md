@@ -1,327 +1,194 @@
 # 42ndMind Current Progress
 
-Last updated: **2026-05-10**.
+Last updated: **2026-05-13**.
 
-This is the handoff record for continuing work toward the README goal: a transparent, meaning-based epistemic system governed by the Epistemic Octahedron.
+This is the short operational handoff for the current repo state. For the full paper-level technical context, read:
+
+```text
+HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md
+```
+
+That file is now the authoritative high-context bundle for writing a serious paper on the Epistemic Kernel v0.4 state.
 
 ## Current status
 
-42ndMind is an early browser-based kernel-brain: small, incomplete, but already governed by one coherent belief-movement logic.
+42ndMind is now a browser-based epistemic kernel stack with two related layers:
 
-It currently has:
+1. The older live console stack centered on `llm-brain-v0-3.html`.
+2. The newer v0.4 one-brain / self-improvement / source-trust / semantic-invariant stack built as separate deterministic modules and test pages.
 
-- live Epistemic Octahedron math
-- browser kernel state
-- scoped graph nodes
-- contradiction pressure
-- low-signal quarantine
-- audit pressure
-- benchmark packets
-- idempotent structured imports
-- duplicate-provenance audit events
-- claim-challenge workflow
-- dossier source-graph importer
-- imported source traces
-- persisted `sourceTraces`
-- source-trace explanation bridge
-- source-registry visibility in source-trace explanations
-- source-trace/source-registry bridge smoke test
-- ordinary LLM comparison harness and report index
-- non-scoring source registry module
-- source registry workflow page
-- trace-to-source-registry conversion
-- source registry visibility in live brain packets
-- limited M12-M15 milestone closer harness
+The project remains a prototype. It is not a full truth machine and does not independently verify external facts without structured evidence, source review, and user/tool-mediated verification. The kernel owns belief movement; LLMs should remain extractor/interface layers.
 
-It is not a full truth machine. It cannot independently verify external facts without a mature retrieval/source layer.
+## Main live console
 
-## Main live entry points
+- `llm-brain-v0-3.html` remains the main live console.
+- Live packet version: `0.3.4-patched`.
+- User manually wired maturity hard-fusion into the live brain.
+- Live hard-fusion was verified on contradiction examples.
+- Corrected live classification after v0.1.2 hard-fusion patch: `motive_overclaim_capped`.
 
-- `source-registry-readiness.html` — read-only retrieval/source-review readiness checklist. Created, fetch-back verified, and linked from `source-registry.html`.
-- `llm-brain-v0-3.html` — main patched live brain console.
-- `goal-runner.html` — benchmark, milestone, sandbox, and compression runner.
-- `ordinary-llm-comparison.html` — M12 comparison harness.
-- `ordinary-llm-comparison-test.html` — M12 harness smoke test.
-- `m12-comparison-report-index.html` — saves copied M12 comparison packets and exports aggregate evidence.
-- `claim-challenge.html` — external-claim challenge workflow.
-- `claim-challenge-test.html` — claim-challenge smoke test.
-- `dossier-source-graph.html` — dossier importer.
-- `dossier-source-graph-test.html` — dossier importer smoke/regression test.
-- `source-trace-bridge.html` — read-only source-trace/source-registry explanation bridge.
-- `source-trace-bridge-test.html` — source-trace/source-registry bridge smoke test.
-- `source-registry.html` — load/paste/save/export non-scoring source registry packets and convert live source traces.
-- `source-registry-test.html` — source registry smoke test.
-- `milestone-closer.html` — limited M12-M15 harness.
-- `belief-graph.html` — graph viewer.
-- `index.html` — older human-facing UI, no longer primary.
+## Current v0.4 doctrine
 
-## Main implementation files
+The v0.4 modules preserve these boundaries:
 
-- `src/epistemic-kernel-v0-2.js` — base browser kernel.
-- `src/epistemic-kernel-v0-2-patches.js` — low-signal quarantine and unresolved-contradiction audit patch layer.
-- `src/epistemic-benchmark-v0-1.js` — fixed benchmark cases, sandbox overlay runner, milestone status, and memory compression helpers.
-- `src/claim-challenge-v0-1.js` — claim-challenge workflow.
-- `src/dossier-source-graph-v0-1.js` — dossier source-graph importer and kernel-command exporter. Latest version: `0.1.3`.
-- `src/source-registry-v0-1.js` — non-scoring source registry placeholder schema and trace conversion. Latest version: `0.1.2`.
-
-## Confirmed stable pieces
-
-### Kernel and benchmark
-
-- patch status loaded: `v02_patches_applied = true`
-- `low_signal_guard = patched`
-- `contradiction_audit = patched`
-- `idempotent_import_packet_guard = patched`
-- `duplicate_provenance_audit = patched`
-- `source_registry_visibility = patched_metadata_only`
-- benchmark score: `10 / 10`
-- failed cases: `0`
-- active Octahedron states preserve `|x| + |y| + |z| = 1`
-- null origin stays separate from active surface states
-
-### Live brain packet
-
-`llm-brain-v0-3.html` now produces:
-
-```json
-{
-  "packet_type": "42ndMind_live_brain_packet",
-  "packet_version": "0.3.4-patched"
-}
+```text
+metadata does not move belief
+source trust is pressure, not truth
+lexical uncertainty blocks fake certainty but does not define truth
+memory archives pressure, not active belief
+semantic invariants are candidates, not doctrine
+self-improvement produces proposals/plans/packets, not automatic source edits
+browser kernel never writes GitHub source directly
 ```
 
-The packet includes:
+## Current full self-improvement path
 
-- `source_trace_summary`
-- `source_registry_summary`
-- `source_registry_metadata`
-- `duplicate_import_audit`
+The most advanced implemented path is now:
 
-`source_registry_summary` and `source_registry_metadata` are non-scoring metadata only. They do not alter claims, evidence, gates, contradictions, graph nodes, root worldview, confidence, or Octahedron coordinates.
+```text
+language example / lexical report / memory report
+→ semantic invariant learner
+→ stable invariant proposal
+→ semantic promotion bridge
+→ promotion pipeline
+→ patch candidate planner
+→ semantic target patch mapping
+→ semantic source bridge
+→ source patch bridge packet
+→ external GitHub SHA/write/fetch-back/test protocol
+```
 
-The live brain reads saved source registry metadata from:
+This means the kernel can discover repeated semantic-pressure patterns, turn stable invariants into proposals, evaluate those proposals, create patch plans, and produce GitHub-safe external write packets.
+
+It still cannot and should not write source automatically.
+
+## Current important modules and pages
+
+### Core / one-brain path
+
+- `src/kernel-sensemaking-v0-1.js`
+- `src/kernel-sensemaking-v0-1-1-patch.js`
+- `src/kernel-command-preflight-v0-1.js`
+- `src/kernel-command-preflight-v0-1-1-patch.js`
+- `src/kernel-command-preflight-v0-1-2-governor-patch.js`
+- `src/kernel-command-preflight-v0-1-3-governor-evidence-patch.js`
+- `src/kernel-intention-recovery-v0-4.js`
+- `src/kernel-consistency-v0-4.js`
+- `src/kernel-probability-v0-4.js`
+- `src/kernel-brain-v0-4.js`
+- `src/kernel-brain-v0-4-runtime-bindings.js`
+- `src/kernel-state-v0-4.js`
+
+### Self-improvement chain
+
+- `src/kernel-self-maintenance-v0-4.js`
+- `src/kernel-motivation-v0-4.js`
+- `src/kernel-motivation-v0-4-1-patch.js`
+- `src/kernel-promotion-pipeline-v0-4.js`
+- `src/kernel-promotion-pipeline-v0-4-1-patch.js`
+- `src/kernel-patch-candidate-v0-4.js`
+- `src/kernel-runtime-candidates-v0-4.js`
+- `src/kernel-runtime-activation-v0-4.js`
+- `src/kernel-sandbox-comparison-v0-4.js`
+- `src/kernel-source-patch-bridge-v0-4.js`
+
+### Source trust / EES
+
+- `src/kernel-source-trust-v0-4.js`
+- `src/kernel-source-trust-bridge-v0-4.js`
+- `src/entity-event-source-registry-v0-1.js`
+- `dossier-ees-compiler-v0-1-2.html`
+- `src/ees-to-kernel-command-v0-1.js`
+- `src/ees-to-kernel-command-v0-1-1-source-trust-patch.js`
+- `ees-to-kernel-command.html`
+- `ees-to-kernel-command-test.html`
+
+### Memory / lexical / semantic language-math path
+
+- `src/kernel-epistemic-memory-v0-4.js`
+- `kernel-epistemic-memory-v0-4-test.html`
+- `src/kernel-lexical-uncertainty-v0-4.js`
+- `src/kernel-lexical-uncertainty-v0-4-1-patch.js`
+- `kernel-lexical-uncertainty-v0-4-test.html`
+- `src/kernel-semantic-invariant-learner-v0-4.js`
+- `kernel-semantic-invariant-learner-v0-4-test.html`
+- `kernel-semantic-invariant-review.html`
+- `src/kernel-semantic-promotion-bridge-v0-4.js`
+- `kernel-semantic-promotion-bridge-v0-4-test.html`
+- `kernel-semantic-promotion-review.html`
+- `src/kernel-patch-candidate-v0-4-1-semantic-target-patch.js`
+- `src/kernel-semantic-source-bridge-v0-4.js`
+- `kernel-semantic-source-bridge-v0-4-test.html`
+
+### Review / bridge pages
+
+- `kernel-runtime-candidate-review.html`
+- `kernel-sandbox-comparison-review.html`
+- `kernel-source-patch-bridge-review.html`
+- `kernel-semantic-invariant-review.html`
+- `kernel-semantic-promotion-review.html`
+
+## User-reported verified tests
+
+The user reported these key results:
+
+- `maturity-hard-fusion-test-v0-1-2.html` — `11/11 passed`
+- `kernel-epistemic-governor-test.html` — `10/10 passed`
+- `kernel-sensemaking-test.html` — `11/11 passed`
+- `kernel-command-preflight-test.html` — `13/13 passed`
+- `kernel-brain-v0-4-test.html` — `11/11 passed`
+- `kernel-intention-recovery-v0-4-test.html` — `11/11 passed`
+- `kernel-runtime-candidates-v0-4-test.html` — `15/15 passed`
+- `kernel-runtime-activation-v0-4-test.html` — `15/15 passed`
+- `kernel-test-suite-v0-4-activation.html` — `7/7 passed`
+- `kernel-sandbox-comparison-v0-4-test.html` — `12/12 passed`
+- `kernel-source-patch-bridge-v0-4-test.html` — `16/16 passed`
+- `kernel-source-trust-v0-4-test.html` — `14/14 passed`
+- `kernel-source-trust-bridge-v0-4-test.html` — `10/10 passed`
+- `ees-to-kernel-command-test.html` — `14/14 passed`
+- `kernel-epistemic-memory-v0-4-test.html` — `15/15 passed`
+- `kernel-lexical-uncertainty-v0-4-test.html` — `13/13 passed`
+- `kernel-semantic-invariant-learner-v0-4-test.html` — `14/14 passed`
+- `kernel-semantic-promotion-bridge-v0-4-test.html` — `10/10 passed`
+- `kernel-semantic-source-bridge-v0-4-test.html` — `10/10 passed`
+
+If future pages disagree, trust the page’s actual listed tests and update this file after verification.
+
+## Important storage keys
 
 ```text
 42ndMind_source_registry_v0_1
+42ndMind_entity_event_source_registry_v0_1
+42ndMind_runtime_candidates_v0_4
+42ndMind_epistemic_memory_v0_4
+42ndMind_semantic_invariants_v0_4
 ```
 
-If no registry is saved, the brain packet reports `available: false` and `reason: "no_saved_source_registry"`.
+`localStorage` is acceptable for the prototype, but serious research will need durable JSONL/SQLite-style export/import for epistemic memory and semantic invariant ledgers.
 
-### Duplicate import behavior
+## README status
 
-`llm-brain-v0-3.html` prevents exact duplicate `import_packet` commands from being treated as fresh belief pressure.
-
-Duplicate imports are skipped and recorded in `kernel_state.eventLog` as:
-
-```json
-{
-  "type": "duplicate_import_skipped",
-  "detail": {
-    "epistemic_rule": "duplicate_provenance_is_not_independent_convergence",
-    "reason": "Repeated identical structured import was already processed. Repetition of the same packet does not add independent evidence or new belief pressure.",
-    "belief_movement": "none",
-    "scoring_effect": "none",
-    "non_scoring": true
-  }
-}
-```
-
-The governing principle is: repeated identical provenance is not independent convergence.
-
-### Dossier source graph
-
-`dossier-source-graph.html` and `dossier-source-graph-test.html` load:
-
-```html
-<script src="src/dossier-source-graph-v0-1.js?v=0.1.3"></script>
-```
-
-v0.1.3 behavior:
-
-- counter-considerations export as `evidence` with `relation: "attacks"`
-- kernel command exports `observations: []`
-- explicit open questions preserve unresolved pressure
-- no dossier-created `Clarify low-signal input...` questions from clean import
-
-Clean browser packet confirmed:
-
-```json
-{
-  "claims": 4,
-  "evidence": 7,
-  "attacking_evidence": 3,
-  "open_questions": 6,
-  "observations": 0
-}
-```
-
-### Source trace bridge
-
-`llm-brain-v0-3.html` persists imported source traces into `kernel_state.sourceTraces`.
-
-`source-trace-bridge.html` reads source traces and saved source registry metadata. It produces:
-
-- `42ndMind_source_trace_explanation_packet`
-- packet version `0.1.2`
-- `source_registry_summary`
-- `source_registry_metadata`
-- copyable LLM explanation prompt
-- deterministic local explanation preview
-
-It remains read-only and non-scoring. It must not mutate kernel state, source registry, gates, confidence, or graph movement.
-
-`source-trace-bridge-test.html` has been updated to expect packet version `0.1.2` and now checks source registry visibility/guardrails. It should report `38/38 passed` in browser.
-
-### M12 comparison
-
-`ordinary-llm-comparison.html` lets the user paste generic/prompt-only LLM outputs and compare them against kernel-guided benchmark behavior.
-
-`ordinary-llm-comparison-test.html` verifies packet shape, rubric criteria, scoring lanes, honesty note, and doctrine guardrails.
-
-`m12-comparison-report-index.html` stores copied comparison reports locally and exports an aggregate evidence packet. It does not claim M12 is passed without real generic/prompt-only LLM outputs.
-
-### Source registry
-
-`src/source-registry-v0-1.js` is at version `0.1.2`.
-
-It defines a non-scoring source registry layer that represents source objects separately from claims and evidence.
-
-Each source can include:
-
-- source id
-- title
-- source kind
-- URL/citation/document locator
-- retrieval status
-- retrieval method
-- retrieved timestamp
-- trust notes
-- reliability flags
-- attached claim ids
-- attached evidence ids
-- unresolved source questions
-- provenance fields
-
-Doctrine/guardrails:
-
-- source objects are separate from claims
-- source objects are separate from evidence
-- provenance is not proof
-- retrieval is not verification
-- trust notes are pressure, not truth
-- unresolved source questions remain visible
-- kernel owns belief movement
-- registry is non-scoring metadata only
-
-`source-registry-test.html` loads:
-
-```html
-<script src="src/source-registry-v0-1.js?v=0.1.2"></script>
-```
-
-It was verified in-browser as `36/36 passed`.
-
-`source-registry.html` loads:
-
-```html
-<script src="src/source-registry-v0-1.js?v=0.1.2"></script>
-```
-
-It can:
-
-- load the sample source registry packet
-- import pasted `42ndMind_source_registry_packet` JSON
-- load from live `kernel_state.sourceTraces`
-- convert live source traces into source registry objects
-- render a source table and normalized report
-- save `sourceRegistry` into localStorage under `42ndMind_source_registry_v0_1`
-- mark saved registry as metadata-only and non-scoring
-- load saved registry
-- copy the normalized report
-- clear saved registry metadata
-
-## Latest important changes
-
-### Updated source trace bridge test
-
-- commit `56cdbbf1ea1a2a811ad292467420edac2bd50e7b`: updated `source-trace-bridge-test.html`
-
-The smoke test now expects explanation packet version `0.1.2` and checks:
-
-- source registry summary exists
-- source registry metadata exists
-- source registry source count is visible
-- unresolved source questions are visible
-- source registry is non-scoring metadata only
-- provenance is not proof
-- retrieval is not verification
-- bridge guardrails include `do_not_mutate_source_registry`
-- prompt blocks source registry mutation
-
-### Source registry visibility in source trace bridge
-
-- commit `e18fa7ae62cb4e92641a6b2e22563ab16ff38430`: added source registry visibility to `source-trace-bridge.html`
-
-`source-trace-bridge.html` now produces explanation packets at version `0.1.2` and includes source-registry summary/metadata. It remains read-only and non-scoring.
-
-### Source registry visibility in live brain packet
-
-- commit `ff8db604f8b247b5e3ac32add2bbd29454880105`: added source registry visibility directly to `llm-brain-v0-3.html`
-- commit `231c67536a0f4b3f177a9f653ad26c1147ebd78d`: removed unused bridge file created during the first implementation attempt
-
-The live brain now reads saved source registry metadata from localStorage and includes it in copied brain packets as metadata-only.
-
-### Duplicate provenance audit
-
-- commit `0f0f1346425ada62ed41b32337ae48a995023049`: `llm-brain-v0-3.html`
-
-Exact duplicate structured imports are skipped and recorded as explicit non-scoring epistemic audit events.
-
-This strengthens the kernel rule:
+`README.md` is outdated relative to the v0.4 stack. It still contains useful older context and milestone framing, but the latest authoritative status is now this file plus:
 
 ```text
-Repeated identical provenance is not independent convergence.
+HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md
 ```
 
-### Source registry bug fix
+Recommended future documentation step:
 
-- commit `8295b9b3d176874e84a39a1e899d93c442ed027f`: fixed trace conversion typo and bumped source registry to `0.1.2`
-- commit `94e68130d603d71a8221de1b20fddec0116aa3d2`: cache-busted source registry test to `0.1.2`
-- commit `2bff811af962911924bdcf00b8f2fa685afddc3f`: cache-busted source registry page to `0.1.2`
-
-The browser test reports `36/36 passed`.
+- Replace or heavily revise `README.md` with a v0.4 overview.
+- Keep older milestone content as archival or move it into a separate roadmap document.
 
 ## Current next development target
 
-Next step should verify `source-trace-bridge-test.html` in browser.
+No urgent code build is required immediately after the semantic source bridge if `kernel-semantic-source-bridge-v0-4-test.html` reports `10/10 passed`.
 
-Recommended test:
+Recommended next work:
 
-1. Hard refresh `source-trace-bridge-test.html`.
-2. Confirm it reports `38/38 passed`.
-3. Open `source-trace-bridge.html`.
-4. Hard refresh.
-5. Confirm local preview includes source registry availability as non-scoring metadata.
-6. Copy explanation packet if needed and confirm packet version is `0.1.2`.
-
-If clean, the next implementation target should be a tiny source-registry explanation preview or retrieval-readiness checklist, still non-scoring.
-
-## Remaining major gaps
-
-- Mature retrieval/source layer is not implemented.
-- Source registry is non-scoring metadata only.
-- Formal ordinary-LLM comparison using real model outputs is scaffolded; real outputs still need to be pasted and preserved.
-- Persistent dossier integration as a source graph tied into kernel memory is still early.
-- Full natural-language approval/import interface is not implemented.
-- Live self-improvement remains candidate-level only; no rule self-promotes.
-
-## Roadmap movement
-
-- M1-M11: browser kernel, graph, gates, evidence pressure, benchmark, and patch layer are active.
-- M12: comparison harness, smoke test, and report index exist.
-- M13: dossier import, source traces, non-scoring source registry module, workflow page, trace conversion, duplicate-provenance rule, and live brain source-registry visibility exist.
-- M14: read-only source-trace/source-registry explanation bridge exists.
-- M15: only limited/sandboxed pieces exist; no autonomous self-promotion.
+1. Create or revise a v0.4 README overview.
+2. Prepare a serious paper outline or LaTeX/PDF in a separate chat using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md`.
+3. Add durable export/import for `42ndMind_epistemic_memory_v0_4` and `42ndMind_semantic_invariants_v0_4`.
+4. Eventually integrate selected v0.4 pages into the main navigation/index.
 
 ## SHA write trick
 
@@ -336,7 +203,7 @@ For existing files:
 6. Make only one small change at a time.
 ```
 
-Never trust a write until commit_sha returns and fetch-back verifies content.
+Never trust a write until commit SHA returns and fetch-back verifies exact content.
 
 ## Prompt for next session
 
@@ -345,38 +212,22 @@ Continue work on https://github.com/42ndMoose/42ndMind
 
 Do not read unrelated uploaded files.
 
-First read CURRENT_PROGRESS.md.
+First read CURRENT_PROGRESS.md and HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md.
 
-Important state:
-- Main live console: llm-brain-v0-3.html
-- Live brain packet version is 0.3.4-patched
-- Brain packet includes source_registry_summary and source_registry_metadata
-- source_registry_metadata is non-scoring metadata only
-- Duplicate import guard records duplicate_import_skipped events
-- Duplicate provenance rule: repeated identical provenance is not independent convergence
-- Dossier importer: dossier-source-graph.html
-- Dossier module latest version is 0.1.3
-- Source registry module: src/source-registry-v0-1.js
-- Source registry module latest version is 0.1.2
-- source-registry-test.html loads v=0.1.2 and has been verified as 36/36 passed
-- source-registry.html loads v=0.1.2 and saves sourceRegistry to localStorage as metadata only
-- source-registry.html can LOAD from live sourceTraces
-- source-trace-bridge.html emits packet version 0.1.2 and includes source_registry_summary/source_registry_metadata
-- source-trace-bridge-test.html expects 38/38 passed
-- Source registry is non-scoring metadata only; it must not move belief state.
-- Source objects are separate from claims/evidence.
-- Retrieval status is not verification.
-- Provenance is not proof.
+Important current state:
+- Main live console remains llm-brain-v0-3.html.
+- v0.4 modules implement one-brain sensemaking, intention recovery, consistency, probability, motivation, self-maintenance, promotion, patch planning, runtime staging, activation, sandbox comparison, source patch bridge, source trust, epistemic memory, lexical uncertainty, semantic invariant learning, semantic promotion, and semantic source bridge.
+- Semantic source bridge reaches source patch bridge packets but does not write source.
+- kernel-semantic-source-bridge-v0-4-test.html should report 10/10 passed.
+- Source-trust treats certification as metadata, not truth.
+- Lexical uncertainty treats LLM as extractor, not authority.
+- Epistemic memory archives contradicted beliefs instead of deleting them.
+- Semantic invariants are candidate pressure patterns, not live doctrine.
+- No browser module may write GitHub source directly.
+- No semantic invariant may promote itself into doctrine without the promotion/sandbox/source-bridge path.
 
-Use the SHA write trick:
-1. Fetch file first and use current blob SHA.
-2. update_file with full replacement content and that SHA.
-3. Wait for commit_sha.
-4. Fetch file back and verify exact change.
-5. Make only one small change at a time.
-
-Next task:
-1. Ask user to verify source-trace-bridge-test.html reports 38/38 passed.
-2. If clean, add a tiny source-registry explanation preview or retrieval-readiness checklist.
-3. Keep it read-only and non-scoring.
+Likely next work:
+1. Update or replace README.md with a v0.4 overview.
+2. Prepare a serious paper outline or LaTeX/PDF in a separate chat using the paper-context handoff.
+3. Consider durable export/import for epistemic memory and semantic invariant ledgers beyond localStorage.
 ```
