@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Lexical Uncertainty v0.4 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Lexical Uncertainty v0.4 Test</h1><div>Tests unknown terms, implication-heavy terms, ambiguous references, glossary definitions, extractor requests, and command attachment.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-epistemic-memory-v0-4-test.html">epistemic memory test</a> · <a href="kernel-source-trust-v0-4-test.html">source trust test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-lexical-uncertainty-v0-4.js?v=0.4.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function sampleCommand(){ return { command_type:'epistemic_kernel_command', commands:[{ op:'import_packet', packet:{ claims:[{ text:'The IFCN-certified article debunked the claim.' }], evidence:[], questions:[], meta:{} } }] }; }
+
+  add('module loads', () => {
+    assert(window.KernelLexicalUncertaintyV04, 'KernelLexicalUncertaintyV04 missing');
+    assert(KernelLexicalUncertaintyV04.VERSION === '0.4.0', 'wrong lexical version');
+    assert(KernelLexicalUncertaintyV04.DECISIONS.HOLD_FOR_DEFINITION === 'HOLD_FOR_DEFINITION', 'decisions missing');
+  });
+
+  add('unknown acronyms hold for definition', () => {
+    const report = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('technical'));
+    assert(report.decision === 'HOLD_FOR_DEFINITION', 'technical unknowns should hold for definition');
+    assert(report.unresolved_terms.some(t => t.term === 'CDA-EOS'), 'CDA-EOS unknown term missing');
+    assert(report.unresolved_terms.some(t => t.term === 'IAPWS'), 'IAPWS unknown term missing');
+    assert(report.claim_pressure_allowed === false, 'claim pressure should not be allowed');
+  });
+
+  add('implication-heavy terms clarify rather than decide truth', () => {
+    const report = KernelLexicalUncertaintyV04.analyze('The certified source debunked the propaganda claim.');
+    assert(report.decision === 'CLARIFY_TERMS', 'loaded terms should clarify');
+    assert(report.unresolved_terms.some(t => t.term === 'certified'), 'certified term missing');
+    assert(report.unresolved_terms.some(t => t.term === 'debunked'), 'debunked term missing');
+    assert(report.unresolved_terms.some(t => t.term === 'propaganda'), 'propaganda term missing');
+    assert(report.belief_movement === 'none', 'lexical layer moved belief');
+  });
+
+  add('request_extraction produces extractor request', () => {
+    const report = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('unknown'), { request_extraction:true });
+    assert(report.decision === 'REQUEST_EXTRACTION', 'request extraction decision wrong');
+    assert(report.extractor_request && report.extractor_request.packet_type === '42ndMind_lexical_definition_request_v0_4', 'extractor request missing');
+    assert(report.extractor_request.doctrine.extractor_output_is_candidate_only === true, 'extractor candidate doctrine missing');
+  });
+
+  add('ambiguous references ask clarification', () => {
+    const report = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('ambiguous'));
+    assert(report.decision === 'CLARIFY_TERMS', 'ambiguous references should clarify');
+    assert(report.unresolved_terms.some(t => t.type === 'ambiguous_reference' && t.term === 'they'), 'they reference missing');
+    assert(report.unresolved_terms.some(t => t.type === 'ambiguous_reference' && t.term === 'this'), 'this reference missing');
+  });
+
+  add('clear input passes lexical layer', () => {
+    const report = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('clear'));
+    assert(report.decision === 'LEXICAL_CLEAR', 'clear sample should be lexical clear');
+    assert(report.claim_pressure_allowed === true, 'clear sample should allow claim pressure');
+    assert(report.extractor_request === null, 'clear sample should not need extractor');
+  });
+
+  add('explicit unknown_terms force hold', () => {
+    const report = KernelLexicalUncertaintyV04.analyze('The source uses a special term.', { unknown_terms:['special term'] });
+    assert(report.decision === 'HOLD_FOR_DEFINITION', 'explicit unknown should hold');
+    assert(report.unresolved_terms.some(t => t.term === 'special term'), 'explicit unknown missing');
+  });
+
+  add('glossary definitions remove unknown acronym pressure but not claim evidence requirement', () => {
+    const report = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('technical'), { glossary:{ 'CDA-EOS':'Curvature-driven association equation of state', 'IAPWS':'International Association for the Properties of Water and Steam' } });
+    assert(report.counts.unknown_terms === 0, 'glossary should define acronyms');
+    assert(report.defined_terms.length >= 2, 'defined terms missing');
+    assert(report.defined_terms.every(t => t.epistemic_effect === 'definition_available_but_claim_still_requires_evidence'), 'defined term epistemic effect wrong');
+  });
+
+  add('applyDefinition rechecks original text with supplied definitions', () => {
+    const base = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('technical'));
+    const resolved = KernelLexicalUncertaintyV04.applyDefinition(base, { 'CDA-EOS':'Curvature-driven association equation of state', 'IAPWS':'International Association for the Properties of Water and Steam' });
+    assert(resolved.counts.unknown_terms === 0, 'definitions should clear unknown acronyms');
+    assert(resolved.defined_terms.length >= 2, 'applied definitions missing');
+  });
+
+  add('attachToCommand appends lexical questions', () => {
+    const attached = KernelLexicalUncertaintyV04.attachToCommand(sampleCommand(), 'The IFCN-certified article debunked the claim.', { unknown_terms:['IFCN'] });
+    const packet = attached.command.commands[0].packet;
+    assert(attached.import_executed === false, 'attach should not import');
+    assert(attached.belief_movement === 'none', 'attach moved belief');
+    assert(packet.questions.some(q => q.question_type === 'lexical_definition_needed'), 'lexical question missing');
+    assert(packet.meta.lexical_uncertainty_decision, 'lexical meta decision missing');
+  });
+
+  add('lexical pressure score is bounded', () => {
+    const report = KernelLexicalUncertaintyV04.analyze(KernelLexicalUncertaintyV04.sampleInput('unknown'), { unknown_terms:['IFCN'] });
+    assert(report.lexical_pressure_score >= 0 && report.lexical_pressure_score <= 1, 'pressure score out of bounds');
+    assert(report.counts.unresolved_terms === report.unresolved_terms.length, 'unresolved count mismatch');
+  });
+
+  add('tokenize finds acronyms and words', () => {
+    const tokens = KernelLexicalUncertaintyV04.tokenize('CDA-EOS changes IAPWS baseline.');
+    assert(tokens.includes('CDA-EOS'), 'CDA-EOS token missing');
+    assert(tokens.includes('IAPWS'), 'IAPWS token missing');
+    assert(tokens.includes('baseline'), 'baseline token missing');
+  });
+
+  add('doctrine says LLM is extractor not authority', () => {
+    const doctrine = KernelLexicalUncertaintyV04.doctrine();
+    assert(doctrine.lexical_layer_does_not_decide_truth === true, 'truth doctrine missing');
+    assert(doctrine.unknown_terms_block_fake_certainty === true, 'unknown term doctrine missing');
+    assert(doctrine.llm_is_extractor_not_authority === true, 'LLM extractor doctrine missing');
+    assert(doctrine.claim_level_evidence_still_required_after_definition === true, 'claim evidence doctrine missing');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_lexical_uncertainty_v0_4_test_report', results }, null, 2);
+</script>
+</body>
+</html>
