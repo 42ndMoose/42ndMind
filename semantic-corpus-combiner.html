@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Corpus Combiner</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,560px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    textarea,input,select { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:120px; resize:vertical; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.item span { color:#8b93a7; display:block; } .metric b,.item b { display:block; overflow-wrap:anywhere; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Semantic Corpus Combiner</h1>
+  <div class="muted small">Combine the main seed corpus with modular extension batches into one runtime working corpus. This avoids large JSON rewrites while preserving modular review history.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-semantic-corpus-combiner-v0-1-test.html">combiner test</a> ·
+      <a href="kernel-semantic-seed-extension-v0-1-test.html">extension test</a> ·
+      <a href="semantic-operator-workbench.html">operator workbench</a> ·
+      <a href="kernel-semantic-corpus-to-invariants-v0-1-test.html">corpus bridge test</a>
+    </section>
+    <section>
+      <h2>Inputs</h2>
+      <label class="small muted">Main corpus URL</label>
+      <input id="mainUrl" value="data/semantic_seed_corpus_v0_1.json" />
+      <label class="small muted">Extension URLs, one per line</label>
+      <textarea id="extensionUrls" spellcheck="false">data/semantic_seed_closure_contrast_v0_1.json</textarea>
+      <button onclick="combine()">LOAD + COMBINE</button>
+      <button onclick="showCombined()">SHOW combined corpus</button>
+      <button onclick="showSummary()">SHOW summary</button>
+      <button onclick="exportBatch()">EXPORT observation batch</button>
+      <button onclick="exportBridge()">EXPORT bridge package</button>
+      <button onclick="copyOutput()">COPY output</button>
+      <button onclick="downloadOutput()">DOWNLOAD output JSON</button>
+    </section>
+    <section>
+      <h2>Summary</h2>
+      <div class="row">
+        <div class="metric"><span>combined entries</span><b id="entryCount">0</b></div>
+        <div class="metric"><span>duplicates skipped</span><b id="duplicateCount">0</b></div>
+      </div>
+      <div class="row">
+        <div class="metric"><span>source packets</span><b id="sourceCount">0</b></div>
+        <div class="metric"><span>last status</span><b id="statusText">idle</b></div>
+      </div>
+    </section>
+    <section>
+      <h2>Sources</h2>
+      <div id="sourceList" class="small muted">No combined corpus loaded.</div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Output</h2><pre id="out">No output yet.</pre></section>
+    <section><h2>Doctrine</h2><pre id="doctrineOut"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script>
+  let lastPacket = null;
+  let lastOutput = null;
+  function $(id){ return document.getElementById(id); }
+  function extensionUrls(){ return $('extensionUrls').value.split(/\n+/).map(s => s.trim()).filter(Boolean); }
+  function show(value, status){ lastOutput = value; $('out').textContent = JSON.stringify(value, null, 2); if(status) $('statusText').textContent = status; updateSummary(value); }
+  function updateSummary(value){
+    const packet = value && value.packet_type === KernelSemanticCorpusCombinerV01.PACKET_TYPE ? value : lastPacket;
+    if(!packet) return;
+    const combined = packet.combined || value;
+    $('entryCount').textContent = String((combined && combined.entry_count) || 0);
+    $('duplicateCount').textContent = String(((combined && combined.duplicate_entries) || []).length);
+    $('sourceCount').textContent = String(((combined && combined.source_packets) || []).length);
+    $('sourceList').innerHTML = ((combined && combined.source_packets) || []).map(s => `<div class="item"><b>${s.source_label}</b><span>${s.packet_type} · ${s.entry_count} entries</span></div>`).join('') || 'No sources.';
+  }
+  async function combine(){
+    try {
+      lastPacket = await KernelSemanticCorpusCombinerV01.loadAndCombine({ main_url:$('mainUrl').value, extension_urls:extensionUrls() });
+      show(lastPacket, lastPacket.ok ? 'combined' : 'held');
+    } catch(e) { show({ ok:false, error:e.message }, 'error'); }
+  }
+  function showCombined(){ if(!lastPacket) return combine(); show(lastPacket.combined, 'combined corpus'); }
+  function showSummary(){ if(!lastPacket) return combine(); show(lastPacket.summary, 'summary'); }
+  function exportBatch(){ if(!lastPacket) return combine(); show(KernelSemanticCorpusCombinerV01.toObservationBatch(lastPacket.combined), 'observation batch'); }
+  function exportBridge(){ if(!lastPacket) return combine(); show(KernelSemanticCorpusCombinerV01.exportForBridge(lastPacket.combined), 'bridge package'); }
+  async function copyOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  function downloadOutput(){
+    const text = JSON.stringify(lastOutput || {}, null, 2);
+    const blob = new Blob([text], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (lastOutput && lastOutput.packet_type ? lastOutput.packet_type : 'semantic_corpus_combiner_output') + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  (function init(){ $('doctrineOut').textContent = JSON.stringify(KernelSemanticCorpusCombinerV01.doctrine(), null, 2); })();
+</script>
+</body>
+</html>
