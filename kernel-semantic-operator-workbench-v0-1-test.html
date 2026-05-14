@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Operator Workbench v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Operator Workbench v0.1 Test</h1><div>Tests sentence batch analysis, operator matches, draft corpus entry generation, and corpus validation.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-operator-workbench.html">semantic operator workbench</a> · <a href="kernel-semantic-operator-grammar-v0-1-test.html">operator grammar test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('modules load', () => {
+    assert(window.KernelSemanticOperatorGrammarV01, 'operator grammar missing');
+    assert(window.KernelSemanticCorpusV01, 'semantic corpus missing');
+    assert(window.KernelSemanticOperatorWorkbenchV01, 'operator workbench missing');
+    assert(KernelSemanticOperatorWorkbenchV01.VERSION === '0.1.0', 'wrong workbench version');
+  });
+
+  add('doctrine preserves no belief movement', () => {
+    const d = KernelSemanticOperatorWorkbenchV01.doctrine();
+    assert(d.workbench_outputs_are_drafts_not_doctrine === true, 'draft doctrine missing');
+    assert(d.matched_operators_are_candidate_readings === true, 'candidate reading doctrine missing');
+    assert(d.workbench_does_not_patch_source === true, 'no source patch doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('splitInput ignores blanks and comments', () => {
+    const rows = KernelSemanticOperatorWorkbenchV01.splitInput('A claim was debunked.\n\n# comment\nThe source is certified.');
+    assert(rows.length === 2, 'splitInput should return two rows');
+  });
+
+  add('analyzeSentence matches debunked sentence', () => {
+    const r = KernelSemanticOperatorWorkbenchV01.analyzeSentence('The certified fact-checker debunked the claim.');
+    assert(r.ok === true, 'sentence report not ok');
+    assert(r.match_count >= 3, 'expected certified/fact-checker/debunked matches');
+    assert(r.matches.some(m => m.name === 'debunked'), 'debunked match missing');
+    assert(r.pressures.includes('closure_pressure'), 'closure pressure missing');
+    assert(r.pressures.includes('authority_transfer_pressure'), 'authority pressure missing');
+    assert(r.belief_movement === 'none', 'sentence analysis moved belief');
+  });
+
+  add('unmatched sentence remains draftable only when requested later', () => {
+    const r = KernelSemanticOperatorWorkbenchV01.analyzeSentence('A plain sentence with no seeded operator.');
+    assert(r.ok === true, 'unmatched sentence should still analyze');
+    assert(r.match_count === 0, 'plain sentence should not match');
+  });
+
+  add('closure sample batch analyzes multiple sentences', () => {
+    const batch = KernelSemanticOperatorWorkbenchV01.analyzeBatch(KernelSemanticOperatorWorkbenchV01.sampleBatch('closure'));
+    assert(batch.sentence_count === 6, 'closure sample should have six sentences');
+    assert(batch.matched_sentence_count >= 3, 'expected at least three matched closure sentences');
+    assert(batch.reports.some(r => r.pressures.includes('closure_pressure')), 'closure pressure missing from batch');
+    assert(batch.belief_movement === 'none', 'batch moved belief');
+  });
+
+  add('authority sample batch catches certified expert consensus official', () => {
+    const batch = KernelSemanticOperatorWorkbenchV01.analyzeBatch(KernelSemanticOperatorWorkbenchV01.sampleBatch('authority'));
+    const names = batch.reports.flatMap(r => r.matches.map(m => m.name));
+    ['certified','expert','consensus','official_source'].forEach(name => assert(names.includes(name), 'missing ' + name));
+  });
+
+  add('motive sample batch catches coordination and agenda', () => {
+    const batch = KernelSemanticOperatorWorkbenchV01.analyzeBatch(KernelSemanticOperatorWorkbenchV01.sampleBatch('motive'));
+    const names = batch.reports.flatMap(r => r.matches.map(m => m.name));
+    assert(names.includes('coordinated'), 'coordinated missing');
+    assert(names.includes('agenda'), 'agenda missing');
+    assert(batch.reports.some(r => r.pressures.includes('motive_agency_pressure')), 'motive pressure missing');
+  });
+
+  add('draftEntries creates draft corpus entries for matched sentences', () => {
+    const draft = KernelSemanticOperatorWorkbenchV01.draftEntries(KernelSemanticOperatorWorkbenchV01.sampleBatch('closure'));
+    assert(draft.packet_type === '42ndMind_semantic_corpus_draft_v0_1', 'wrong draft type');
+    assert(draft.entry_count >= 3, 'expected at least three draft entries');
+    assert(draft.entries.every(e => e.review_status === 'draft_candidate'), 'draft status wrong');
+    assert(draft.entries.some(e => e.semantic_operators.some(op => op.operator === 'debunked(claim)')), 'debunked draft missing');
+    assert(draft.belief_movement === 'none', 'draft moved belief');
+  });
+
+  add('draft entry preserves operator pressure guard evidence action contrast', () => {
+    const report = KernelSemanticOperatorWorkbenchV01.analyzeSentence('The certified fact-checker debunked the claim.');
+    const entry = KernelSemanticOperatorWorkbenchV01.entryFromReport(report, 0);
+    assert(entry.semantic_operators.length >= 3, 'operator list too short');
+    assert(entry.semantic_operators.some(op => op.pressure.includes('closure_pressure')), 'operator pressure missing');
+    assert(entry.semantic_operators.some(op => op.legitimacy_condition), 'legitimacy guard missing');
+    assert(entry.evidence_burden.length >= 1, 'evidence burden missing');
+    assert(entry.expected_kernel_response.questions.length >= 1, 'questions missing');
+    assert(entry.workbench_metadata.contrast_classes.length >= 1, 'contrast class missing');
+  });
+
+  add('validateDraft passes generated corpus draft after seed conversion', () => {
+    const draft = KernelSemanticOperatorWorkbenchV01.draftEntries(KernelSemanticOperatorWorkbenchV01.sampleBatch('authority'));
+    const report = KernelSemanticOperatorWorkbenchV01.validateDraft(draft);
+    assert(report.ok === true, 'draft validation failed: ' + JSON.stringify(report.errors));
+    assert(report.reviewed_corpus_preview.entries.every(e => e.review_status === 'seed_candidate'), 'preview should convert to seed_candidate');
+    assert(report.belief_movement === 'none', 'validation moved belief');
+  });
+
+  add('promoteDraftToSeedCandidateCorpus outputs seed corpus packet', () => {
+    const draft = KernelSemanticOperatorWorkbenchV01.draftEntries(KernelSemanticOperatorWorkbenchV01.sampleBatch('closure'));
+    const corpus = KernelSemanticOperatorWorkbenchV01.promoteDraftToSeedCandidateCorpus(draft);
+    assert(corpus.packet_type === '42ndMind_semantic_seed_corpus_v0_1', 'wrong corpus packet type');
+    assert(corpus.entries.length === draft.entries.length, 'entry count mismatch');
+    assert(corpus.entries.every(e => e.review_status === 'seed_candidate'), 'not seed candidate');
+    assert(corpus.belief_movement === 'none', 'promotion moved belief');
+  });
+
+  add('promoted corpus validates with semantic corpus module', () => {
+    const draft = KernelSemanticOperatorWorkbenchV01.draftEntries(KernelSemanticOperatorWorkbenchV01.sampleBatch('motive'));
+    const corpus = KernelSemanticOperatorWorkbenchV01.promoteDraftToSeedCandidateCorpus(draft);
+    const report = KernelSemanticCorpusV01.validateCorpus(corpus);
+    assert(report.ok === true, 'promoted corpus did not validate: ' + JSON.stringify(report.errors));
+    assert(report.valid_entry_count === corpus.entries.length, 'valid entry count mismatch');
+  });
+
+  add('include_unmatched can draft manual-review rows', () => {
+    const draft = KernelSemanticOperatorWorkbenchV01.draftEntries('A plain sentence with no seeded operator.', { include_unmatched:true });
+    assert(draft.entry_count === 1, 'expected one unmatched draft');
+    assert(draft.entries[0].semantic_operators.length === 0, 'unmatched should have no operators');
+    assert(draft.entries[0].operator_group === 'manual_review_required', 'manual review group missing');
+  });
+
+  add('sample batches are available', () => {
+    ['closure','authority','motive'].forEach(kind => assert(KernelSemanticOperatorWorkbenchV01.sampleBatch(kind).split('\n').length >= 4, 'sample too small: ' + kind));
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_operator_workbench_v0_1_test_report', results }, null, 2);
+</script>
+</body>
+</html>
