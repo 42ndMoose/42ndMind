@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Corpus Combiner v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the main semantic corpus and modular extension batches.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-corpus-combiner.html">semantic corpus combiner</a> · <a href="kernel-semantic-seed-extension-v0-1-test.html">extension test</a> · <a href="kernel-semantic-corpus-to-invariants-v0-1-test.html">corpus bridge test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-semantic-corpus-to-invariants-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_semantic_corpus_combiner_v0_1_test';
+  let packet = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('modules load', () => {
+    assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
+    assert(window.KernelSemanticCorpusCombinerV01, 'KernelSemanticCorpusCombinerV01 missing');
+    assert(window.KernelSemanticCorpusToInvariantsV01, 'KernelSemanticCorpusToInvariantsV01 missing');
+    assert(window.KernelSemanticInvariantLearnerV04, 'KernelSemanticInvariantLearnerV04 missing');
+  });
+
+  add('doctrine preserves no belief movement', () => {
+    const d = KernelSemanticCorpusCombinerV01.doctrine();
+    assert(d.combiner_builds_runtime_working_corpus_not_truth === true, 'runtime corpus doctrine missing');
+    assert(d.duplicate_ids_are_skipped_not_overwritten === true, 'duplicate doctrine missing');
+    assert(d.combiner_does_not_patch_source === true, 'no patch doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('loadAndCombine succeeds', async () => {
+    packet = await KernelSemanticCorpusCombinerV01.loadAndCombine();
+    assert(packet.ok === true, 'combined packet not ok');
+    assert(packet.decision === 'COMBINED_CORPUS_READY', 'wrong decision');
+    assert(packet.combined.entry_count >= 38, 'combined entry count should include main 32 + extension 6');
+    assert(packet.combined.belief_movement === 'none', 'combined corpus moved belief');
+  });
+
+  add('combined corpus validates', () => {
+    const report = KernelSemanticCorpusCombinerV01.validateCombined(packet.combined);
+    assert(report.ok === true, 'validation failed: ' + JSON.stringify(report.validation.errors));
+    assert(report.combined_entry_count === packet.combined.entry_count, 'combined count mismatch');
+  });
+
+  add('source packet metadata is preserved', () => {
+    const sources = packet.combined.source_packets || [];
+    assert(sources.length === 2, 'expected main plus one extension source');
+    assert(sources.some(s => s.source_label === 'main' && s.entry_count >= 32), 'main source missing');
+    assert(sources.some(s => s.source_label === 'extension_1' && s.entry_count === 6), 'extension source missing');
+  });
+
+  add('extension entries are included with combiner metadata', () => {
+    const entry = packet.combined.entries.find(e => e.id === 'closure_contrast_challenged_034');
+    assert(entry, 'closure extension entry missing');
+    assert(entry.combiner_metadata && entry.combiner_metadata.source_label === 'extension_1', 'combiner metadata missing');
+    assert(entry.candidate_intended_meaning.includes('not refutation or falsity'), 'extension wording not preserved');
+  });
+
+  add('summary includes new contrast operators and existing groups', () => {
+    const summary = KernelSemanticCorpusCombinerV01.summarizeCombined(packet.combined);
+    ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing'].forEach(group => assert(summary.groups[group] >= 1, 'missing group ' + group));
+    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
+    assert(summary.belief_movement === 'none', 'summary moved belief');
+  });
+
+  add('observation batch exports combined corpus', () => {
+    const batch = KernelSemanticCorpusCombinerV01.toObservationBatch(packet.combined);
+    assert(batch.packet_type === '42ndMind_semantic_observation_batch_v0_4', 'wrong batch type');
+    assert(batch.count > packet.combined.entry_count, 'batch too small');
+    assert(batch.combined_by === KernelSemanticCorpusCombinerV01.PACKET_TYPE, 'combiner metadata missing from batch');
+    assert(batch.belief_movement === 'none', 'batch moved belief');
+  });
+
+  add('duplicate ids are skipped, not overwritten', () => {
+    const main = { packet_type:'42ndMind_semantic_seed_corpus_v0_1', entries:[{ id:'dup_001', text:'The claim was debunked.', language:'en', surface_terms:['debunked'], literal_meaning:'x', candidate_intended_meaning:'x', semantic_operators:[{ operator:'debunked(claim)', pressure:['closure_pressure'], legitimacy_condition:'x' }], evidence_burden:['x'], expected_kernel_response:{ lexical_action:'x', source_trust_action:'x', belief_movement:'none', questions:['x'] }, contrast_group:'x', review_status:'seed_candidate' }] };
+    const ext = { packet_type:'42ndMind_semantic_seed_corpus_v0_1_extension', entries:[JSON.parse(JSON.stringify(main.entries[0]))] };
+    const combined = KernelSemanticCorpusCombinerV01.combinePackets(main, [ext]);
+    assert(combined.entries.length === 1, 'duplicate should be skipped');
+    assert(combined.duplicate_entries.length === 1, 'duplicate should be recorded');
+  });
+
+  add('combined corpus records into invariant learner', () => {
+    KernelSemanticInvariantLearnerV04.clear(TEST_KEY);
+    const result = KernelSemanticCorpusToInvariantsV01.recordIntoLearner(packet.combined, { key: TEST_KEY, min_observations: 1 });
+    assert(result.ok === true, 'record failed');
+    assert(result.enriched_invariants.length > 0, 'no enriched invariants');
+    assert(result.belief_movement === 'none', 'record moved belief');
+  });
+
+  add('cleanup clears learner test ledger', () => {
+    const cleared = KernelSemanticInvariantLearnerV04.clear(TEST_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelSemanticInvariantLearnerV04.load(TEST_KEY).observations.length === 0, 'ledger not cleared');
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_corpus_combiner_v0_1_test_report', combined_entry_count: packet && packet.combined ? packet.combined.entry_count : 0, results }, null, 2);
+  })();
+</script>
+</body>
+</html>
