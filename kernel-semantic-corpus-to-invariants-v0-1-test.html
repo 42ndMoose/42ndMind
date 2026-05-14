@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Corpus → Invariants v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Corpus → Invariants v0.1 Test</h1><div>Tests the bridge from reviewed semantic corpus entries to invariant learner pressure while preserving legitimacy conditions and evidence burden.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="kernel-semantic-corpus-v0-1-test.html">semantic corpus test</a> · <a href="semantic-corpus-builder.html">semantic corpus builder</a> · <a href="kernel-semantic-invariant-review.html">semantic invariant review</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
+<script src="src/kernel-semantic-corpus-to-invariants-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  const TEST_KEY = '42ndMind_semantic_corpus_bridge_v0_1_test';
+  let seedCorpus = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function reviewedCorpus(entries){ const c = JSON.parse(JSON.stringify({ packet_type:'42ndMind_semantic_seed_corpus_v0_1', packet_version:'0.1.0', entries })); c.entries.forEach(e => e.review_status = 'reviewed_seed'); return c; }
+  async function loadSeedForTest(){
+    try { seedCorpus = await KernelSemanticCorpusV01.loadSeed(); }
+    catch(e) { seedCorpus = { packet_type:'42ndMind_semantic_seed_corpus_v0_1', packet_version:'0.1.0', seed_load_error:e.message, entries:[KernelSemanticCorpusV01.sampleEntry('closure'), KernelSemanticCorpusV01.sampleEntry('authority')] }; }
+  }
+
+  add('modules load', () => {
+    assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
+    assert(window.KernelSemanticInvariantLearnerV04, 'KernelSemanticInvariantLearnerV04 missing');
+    assert(window.KernelSemanticCorpusToInvariantsV01, 'KernelSemanticCorpusToInvariantsV01 missing');
+    assert(KernelSemanticCorpusToInvariantsV01.VERSION === '0.1.0', 'wrong bridge version');
+  });
+
+  add('doctrine preserves no belief movement', () => {
+    const d = KernelSemanticCorpusToInvariantsV01.doctrine();
+    assert(d.bridge_preserves_legitimacy_conditions === true, 'legitimacy doctrine missing');
+    assert(d.bridge_preserves_evidence_burden === true, 'evidence burden doctrine missing');
+    assert(d.semantic_invariants_remain_candidates_not_doctrine === true, 'candidate doctrine missing');
+    assert(d.bridge_does_not_patch_source === true, 'no patch doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('empty corpus is held', () => {
+    const r = KernelSemanticCorpusToInvariantsV01.readiness({ entries:[] });
+    assert(r.ok === false, 'empty corpus should not be ready');
+    assert(r.decision === 'HOLD_NO_CORPUS', 'wrong empty decision');
+  });
+
+  add('invalid corpus is held by validation', () => {
+    const r = KernelSemanticCorpusToInvariantsV01.readiness({ packet_type:'42ndMind_semantic_seed_corpus_v0_1', entries:[{ id:'bad id' }] });
+    assert(r.ok === false, 'invalid corpus should not be ready');
+    assert(r.decision === 'HOLD_VALIDATION_ERRORS', 'wrong validation decision');
+  });
+
+  add('review requirement can hold seed candidates', () => {
+    const r = KernelSemanticCorpusToInvariantsV01.readiness({ packet_type:'42ndMind_semantic_seed_corpus_v0_1', entries:[KernelSemanticCorpusV01.sampleEntry('closure')] }, { require_reviewed:true });
+    assert(r.ok === false, 'seed candidate should fail reviewed-only mode');
+    assert(r.decision === 'HOLD_REVIEW_REQUIRED', 'wrong review decision');
+  });
+
+  add('reviewed sample corpus is ready', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure'), KernelSemanticCorpusV01.sampleEntry('authority')]);
+    const r = KernelSemanticCorpusToInvariantsV01.readiness(corpus, { require_reviewed:true });
+    assert(r.ok === true, 'reviewed corpus should be ready');
+    assert(r.decision === 'READY_FOR_INVARIANT_LEARNER', 'wrong ready decision');
+    assert(r.belief_movement === 'none', 'readiness moved belief');
+  });
+
+  add('operatorRows extracts operator pressure rows', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure')]);
+    const rows = KernelSemanticCorpusToInvariantsV01.operatorRows(corpus);
+    assert(rows.length >= 4, 'expected multiple operator pressure rows');
+    assert(rows.some(r => r.operator === 'debunked(claim)' && r.pressure === 'closure_pressure'), 'debunked closure row missing');
+    assert(rows.some(r => r.legitimacy_condition), 'legitimacy condition missing');
+  });
+
+  add('metadata index preserves legitimacy and evidence burden', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure')]);
+    const index = KernelSemanticCorpusToInvariantsV01.metadataIndex(corpus);
+    const key = 'debunked::closure_pressure';
+    assert(index[key], 'metadata index missing debunked closure');
+    assert(index[key].legitimacy_conditions.length >= 1, 'legitimacy condition not preserved');
+    assert(index[key].evidence_burdens.length >= 1, 'evidence burden not preserved');
+    assert(index[key].expected_kernel_actions.some(x => x.includes('question:')), 'expected questions not preserved');
+  });
+
+  add('bridge observation batch contains metadata index', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure')]);
+    const batch = KernelSemanticCorpusToInvariantsV01.toObservationBatch(corpus);
+    assert(batch.packet_type === '42ndMind_semantic_observation_batch_v0_4', 'wrong batch type');
+    assert(batch.bridge_packet_type === KernelSemanticCorpusToInvariantsV01.PACKET_TYPE, 'bridge type missing');
+    assert(batch.metadata_index['debunked::closure_pressure'], 'metadata index missing from batch');
+    assert(batch.belief_movement === 'none', 'batch moved belief');
+  });
+
+  add('buildPacket produces ready bridge packet', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure'), KernelSemanticCorpusV01.sampleEntry('authority')]);
+    const packet = KernelSemanticCorpusToInvariantsV01.buildPacket(corpus, { require_reviewed:true });
+    assert(packet.ok === true, 'packet should be ok');
+    assert(packet.decision === 'READY_FOR_INVARIANT_LEARNER', 'wrong packet decision');
+    assert(packet.semantic_observation_batch.count > 0, 'observation batch missing');
+    assert(packet.operator_row_count === packet.semantic_observation_batch.count, 'operator row count mismatch');
+  });
+
+  add('recordIntoLearner records bridge batch', () => {
+    KernelSemanticInvariantLearnerV04.clear(TEST_KEY);
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure'), KernelSemanticCorpusV01.sampleEntry('authority')]);
+    const result = KernelSemanticCorpusToInvariantsV01.recordIntoLearner(corpus, { require_reviewed:true, key:TEST_KEY, min_observations:1 });
+    assert(result.ok === true, 'record result not ok');
+    assert(result.decision === 'RECORDED_INVARIANT_PRESSURE', 'wrong record decision');
+    assert(result.learner_result && result.learner_result.ok === true, 'learner result failed');
+    assert(result.enriched_invariants.length > 0, 'enriched invariants missing');
+    assert(result.belief_movement === 'none', 'record result moved belief');
+  });
+
+  add('enriched invariants preserve corpus bridge metadata', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure')]);
+    const result = KernelSemanticCorpusToInvariantsV01.recordIntoLearner(corpus, { require_reviewed:true, key:TEST_KEY, min_observations:1 });
+    const inv = result.enriched_invariants.find(i => i.term_key === 'debunked' && i.pressure === 'closure_pressure');
+    assert(inv, 'debunked closure invariant missing');
+    assert(inv.corpus_bridge && inv.corpus_bridge.preserved === true, 'corpus bridge metadata not preserved');
+    assert(inv.corpus_bridge.legitimacy_conditions.length >= 1, 'legitimacy conditions missing from invariant');
+    assert(inv.corpus_bridge.evidence_burdens.length >= 1, 'evidence burdens missing from invariant');
+    assert(inv.doctrine.corpus_metadata_is_review_pressure_not_truth === true, 'metadata doctrine missing');
+    assert(inv.active_belief_effect === 'none', 'enriched invariant moved belief');
+  });
+
+  add('proposal packet preserves corpus bridge metadata', () => {
+    const corpus = reviewedCorpus([KernelSemanticCorpusV01.sampleEntry('closure')]);
+    const result = KernelSemanticCorpusToInvariantsV01.recordIntoLearner(corpus, { require_reviewed:true, key:TEST_KEY, min_observations:1 });
+    const packet = KernelSemanticCorpusToInvariantsV01.proposalPacketFromResult(result);
+    assert(packet.count > 0, 'proposal packet empty');
+    assert(packet.proposals.every(p => p.promotion_state.implemented === false), 'proposal should not be implemented');
+    assert(packet.proposals.some(p => p.corpus_bridge && p.corpus_bridge.preserved === true), 'proposal missing corpus bridge metadata');
+    assert(packet.belief_movement === 'none', 'proposal packet moved belief');
+  });
+
+  add('seed corpus bridge works when loaded from GitHub Pages', () => {
+    if (seedCorpus.seed_load_error) return;
+    const reviewed = reviewedCorpus(seedCorpus.entries.slice(0, 8));
+    const result = KernelSemanticCorpusToInvariantsV01.recordIntoLearner(reviewed, { require_reviewed:true, key:TEST_KEY, min_observations:1 });
+    assert(result.ok === true, 'seed bridge failed');
+    assert(result.enriched_stable_invariants.length > 0, 'seed bridge produced no stable invariants');
+    assert(result.enriched_stable_invariants.some(i => i.corpus_bridge && i.corpus_bridge.legitimacy_conditions.length), 'seed bridge did not preserve legitimacy metadata');
+  });
+
+  add('cleanup clears learner test ledger', () => {
+    const cleared = KernelSemanticInvariantLearnerV04.clear(TEST_KEY);
+    assert(cleared.ok === true, 'clear failed');
+    assert(KernelSemanticInvariantLearnerV04.load(TEST_KEY).observations.length === 0, 'test ledger not cleared');
+  });
+
+  (async function run(){
+    await loadSeedForTest();
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_corpus_to_invariants_v0_1_test_report', seed_entry_count: seedCorpus && seedCorpus.entries ? seedCorpus.entries.length : 0, seed_load_error: seedCorpus && seedCorpus.seed_load_error || null, results }, null, 2);
+  })();
+</script>
+</body>
+</html>
