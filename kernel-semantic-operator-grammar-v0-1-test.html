@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Operator Grammar v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Operator Grammar v0.1 Test</h1><div>Tests the first algebraic grammar target: O(x) → P | G | E | A | C.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-corpus-builder.html">semantic corpus builder</a> · <a href="kernel-semantic-corpus-to-invariants-v0-1-test.html">corpus bridge test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('module loads', () => {
+    assert(window.KernelSemanticOperatorGrammarV01, 'KernelSemanticOperatorGrammarV01 missing');
+    assert(KernelSemanticOperatorGrammarV01.VERSION === '0.1.0', 'wrong version');
+    assert(KernelSemanticOperatorGrammarV01.PACKET_TYPE === '42ndMind_semantic_operator_grammar_v0_1', 'wrong packet type');
+  });
+
+  add('doctrine preserves no belief movement', () => {
+    const d = KernelSemanticOperatorGrammarV01.doctrine();
+    assert(d.grammar_defines_operator_form_not_truth === true, 'operator-form doctrine missing');
+    assert(d.pressure_requires_legitimacy_guard_before_being_earned === true, 'legitimacy guard doctrine missing');
+    assert(d.contrast_classes_prevent_semantic_collapse === true, 'contrast doctrine missing');
+    assert(d.grammar_does_not_patch_source === true, 'no patch doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('parseSignature extracts operator name and args', () => {
+    const parsed = KernelSemanticOperatorGrammarV01.parseSignature('debunked(claim)');
+    assert(parsed.ok === true, 'signature should parse');
+    assert(parsed.name === 'debunked', 'name wrong');
+    assert(parsed.args.length === 1 && parsed.args[0] === 'claim', 'args wrong');
+  });
+
+  add('invalid signature is rejected', () => {
+    const parsed = KernelSemanticOperatorGrammarV01.parseSignature('debunked claim');
+    assert(parsed.ok === false, 'invalid signature should fail');
+  });
+
+  add('default grammar exists', () => {
+    const grammar = KernelSemanticOperatorGrammarV01.defaultGrammar();
+    assert(grammar.algebraic_form === 'O(x) -> P | G | E | A | C', 'wrong algebraic form');
+    assert(grammar.operators.length >= 20, 'expected at least 20 canonical operators');
+    assert(grammar.belief_movement === 'none', 'grammar moved belief');
+  });
+
+  add('default grammar validates cleanly', () => {
+    const report = KernelSemanticOperatorGrammarV01.validateGrammar();
+    assert(report.ok === true, 'default grammar should validate: ' + JSON.stringify(report.errors));
+    assert(report.operator_count >= 20, 'operator count too low');
+    assert(report.valid_operator_count === report.operator_count, 'valid operator count mismatch');
+  });
+
+  add('invalid operator is rejected', () => {
+    const report = KernelSemanticOperatorGrammarV01.validateOperator({ id:'bad', operator:'bad operator', P:[] });
+    assert(report.ok === false, 'invalid operator should fail');
+    assert(report.errors.length > 0, 'invalid operator should produce errors');
+  });
+
+  add('debunked operator has closure and dismissal pressure', () => {
+    const op = KernelSemanticOperatorGrammarV01.findOperator('debunked');
+    assert(op, 'debunked operator missing');
+    assert(op.P.includes('closure_pressure'), 'closure pressure missing');
+    assert(op.P.includes('dismissal_pressure'), 'dismissal pressure missing');
+    assert(op.G.includes('evidence chain'), 'legitimacy guard should mention evidence chain');
+    assert(op.C.includes('challenged(claim)'), 'contrast class missing challenged');
+  });
+
+  add('certified operator treats status as metadata', () => {
+    const op = KernelSemanticOperatorGrammarV01.findOperator('certified(source)');
+    assert(op, 'certified operator missing');
+    assert(op.P.includes('authority_transfer_pressure'), 'authority pressure missing');
+    assert(op.P.includes('trust_inflation_pressure'), 'trust pressure missing');
+    assert(/metadata/i.test(op.G + op.A), 'metadata boundary missing');
+  });
+
+  add('reference operators create ambiguity pressure', () => {
+    const they = KernelSemanticOperatorGrammarV01.findOperator('they');
+    const thisRef = KernelSemanticOperatorGrammarV01.findOperator('this');
+    assert(they && thisRef, 'reference operators missing');
+    assert(they.P.includes('ambiguity_pressure'), 'they ambiguity pressure missing');
+    assert(thisRef.P.includes('ambiguity_pressure'), 'this ambiguity pressure missing');
+  });
+
+  add('coordination operator requires direct-link evidence burden', () => {
+    const op = KernelSemanticOperatorGrammarV01.findOperator('coordinated');
+    assert(op, 'coordinated operator missing');
+    assert(op.P.includes('motive_agency_pressure'), 'motive pressure missing');
+    assert(op.P.includes('direct_link_evidence_burden'), 'direct-link burden missing');
+    assert(/communication|timing|source|control/i.test(op.E.join(' ')), 'coordination evidence burden too weak');
+  });
+
+  add('evidence-contact operators are present', () => {
+    ['primary_document','transcript','raw_data','contradicts'].forEach(name => assert(KernelSemanticOperatorGrammarV01.findOperator(name), 'missing ' + name));
+    assert(KernelSemanticOperatorGrammarV01.findOperator('primary_document').P.includes('evidence_contact_pressure'), 'primary document evidence pressure missing');
+  });
+
+  add('uncertainty operators preserve calibration', () => {
+    const probably = KernelSemanticOperatorGrammarV01.findOperator('probably');
+    const allegedly = KernelSemanticOperatorGrammarV01.findOperator('allegedly');
+    const obviously = KernelSemanticOperatorGrammarV01.findOperator('obviously');
+    assert(probably && allegedly && obviously, 'uncertainty operators missing');
+    assert(probably.P.includes('uncertainty_calibration_pressure'), 'probably pressure missing');
+    assert(obviously.P.includes('confidence_inflation_pressure'), 'obviously pressure missing');
+  });
+
+  add('moral-risk operators require mechanism or criteria', () => {
+    const harmful = KernelSemanticOperatorGrammarV01.findOperator('harmful');
+    const extremist = KernelSemanticOperatorGrammarV01.findOperator('extremist');
+    assert(harmful && extremist, 'moral-risk operators missing');
+    assert(harmful.P.includes('moral_risk_framing_pressure'), 'harmful pressure missing');
+    assert(/mechanism|likelihood|severity/i.test(harmful.G + harmful.E.join(' ')), 'harmful guard too weak');
+    assert(/criteria|examples/i.test(extremist.G + extremist.E.join(' ')), 'extremist criteria missing');
+  });
+
+  add('operatorsByGroup returns closure rows', () => {
+    const rows = KernelSemanticOperatorGrammarV01.operatorsByGroup('closure_dismissal');
+    assert(rows.length >= 2, 'closure group too small');
+    assert(rows.every(r => r.group === 'closure_dismissal'), 'wrong group returned');
+  });
+
+  add('pressureVectorFor and contrastClassFor work', () => {
+    const p = KernelSemanticOperatorGrammarV01.pressureVectorFor('debunked');
+    const c = KernelSemanticOperatorGrammarV01.contrastClassFor('debunked');
+    assert(p.includes('closure_pressure'), 'pressure vector helper failed');
+    assert(c.includes('challenged(claim)'), 'contrast helper failed');
+  });
+
+  add('algebra lines include all grammar parts', () => {
+    const op = KernelSemanticOperatorGrammarV01.findOperator('debunked');
+    const line = KernelSemanticOperatorGrammarV01.algebraLine(op);
+    ['P:[', 'G:', 'E:[', 'A:', 'C:['].forEach(part => assert(line.includes(part), 'algebra line missing ' + part));
+  });
+
+  add('summary covers major groups', () => {
+    const s = KernelSemanticOperatorGrammarV01.summarize();
+    ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing'].forEach(group => assert(s.groups[group] >= 1, 'missing summary group ' + group));
+    assert(s.pressures.closure_pressure >= 1, 'closure pressure missing from summary');
+    assert(s.belief_movement === 'none', 'summary moved belief');
+  });
+
+  add('analyzeText matches surface terms without belief movement', () => {
+    const report = KernelSemanticOperatorGrammarV01.analyzeText('The certified fact-checker debunked the claim.');
+    assert(report.match_count >= 3, 'expected certified/fact-checker/debunked matches');
+    assert(report.matches.some(m => m.name === 'debunked'), 'debunked match missing');
+    assert(report.matches.some(m => m.name === 'certified'), 'certified match missing');
+    assert(report.belief_movement === 'none', 'match report moved belief');
+  });
+
+  add('corpus operator can become grammar candidate', () => {
+    const entry = KernelSemanticCorpusV01.sampleEntry('closure');
+    const candidate = KernelSemanticOperatorGrammarV01.corpusOperatorToGrammarCandidate(entry.semantic_operators[1], entry);
+    assert(candidate.operator === 'debunked(claim)', 'candidate operator wrong');
+    assert(candidate.P.includes('closure_pressure'), 'candidate pressure missing');
+    assert(candidate.G.includes('Closure'), 'candidate guard missing');
+    assert(candidate.E.length >= 1, 'candidate evidence burden missing');
+  });
+
+  add('corpus entries export grammar candidates', () => {
+    const entry = KernelSemanticCorpusV01.sampleEntry('closure');
+    const packet = KernelSemanticOperatorGrammarV01.corpusEntriesToGrammarCandidates([entry]);
+    assert(packet.count >= 2, 'expected multiple grammar candidates');
+    assert(packet.candidates.every(c => c.source === 'semantic_corpus_candidate'), 'candidate source missing');
+    assert(packet.belief_movement === 'none', 'candidate packet moved belief');
+  });
+
+  const results = tests.map(t => { try { t.fn(); return { name:t.name, passed:true }; } catch(e) { return { name:t.name, passed:false, error:e.message }; } });
+  const passed = results.filter(r => r.passed).length;
+  document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+  document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+  document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_operator_grammar_v0_1_test_report', results }, null, 2);
+</script>
+</body>
+</html>
