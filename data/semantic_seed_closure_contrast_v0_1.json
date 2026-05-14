@@ -1,0 +1,123 @@
+{
+  "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
+  "packet_version": "0.1.0",
+  "created_at": "2026-05-14T23:10:00.000Z",
+  "description": "Workbench-reviewed closure contrast seed batch. Human-reviewed as a clean contrast set before corpus inclusion.",
+  "source_workbench_patch": "42ndMind_semantic_operator_workbench_v0_1_1_patch",
+  "doctrine": {
+    "corpus_entries_are_training_pressure_not_truth": true,
+    "semantic_operators_are_candidate_language_math_units": true,
+    "legitimacy_conditions_define_when_pressure_is_earned": true,
+    "source_status_is_metadata_not_truth": true,
+    "belief_movement": "none"
+  },
+  "entries": [
+    {
+      "id": "closure_contrast_debunked_033",
+      "text": "The claim was debunked.",
+      "language": "en",
+      "operator_group": "closure_dismissal",
+      "surface_terms": ["debunked", "debunk"],
+      "literal_meaning": "The sentence states or implies: The claim was debunked.",
+      "candidate_intended_meaning": "The sentence presents the dispute as closed or refuted and requires an inspectable evidence chain.",
+      "semantic_operators": [
+        { "operator": "debunked(claim)", "pressure": ["closure_pressure", "dismissal_pressure"], "legitimacy_condition": "Legitimate only if an inspectable evidence chain directly contradicts the exact claim being closed." }
+      ],
+      "evidence_burden": ["Extract the exact claim.", "Inspect the cited evidence chain.", "Check whether unresolved counter-considerations remain."],
+      "expected_kernel_response": { "lexical_action": "clarify closure/dismissal terms and extract the exact claim", "source_trust_action": "not source-driven unless sources are later attached", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What exact claim is being closed, dismissed, or refuted?"] },
+      "contrast_group": "closure_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_1_patch", "match_count": 1, "contrast_classes": ["challenged(claim)", "disputed(claim)", "contradicted_by(record,claim)", "lacks_evidence(claim)", "false(claim)"], "requires_human_review": true }
+    },
+    {
+      "id": "closure_contrast_challenged_034",
+      "text": "The claim was challenged.",
+      "language": "en",
+      "operator_group": "closure_dismissal",
+      "surface_terms": ["challenged", "challenge"],
+      "literal_meaning": "The sentence states or implies: The claim was challenged.",
+      "candidate_intended_meaning": "The sentence says the claim is being questioned or contested; this creates challenge pressure, not refutation or falsity.",
+      "semantic_operators": [
+        { "operator": "challenged(claim)", "pressure": ["challenge_pressure", "uncertainty_calibration_pressure"], "legitimacy_condition": "A challenge is legitimate as pressure against certainty, but it is not the same as refutation or contradiction." }
+      ],
+      "evidence_burden": ["Identify what part of the claim is challenged.", "Identify the reason or evidence for the challenge.", "Check whether the challenge weakens, contradicts, or merely questions the claim."],
+      "expected_kernel_response": { "lexical_action": "treat challenge as challenge pressure only; do not convert it into refutation or falsity", "source_trust_action": "not source-driven unless sources are later attached", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What part of the claim is challenged, and does the challenge weaken, contradict, or merely question it?"] },
+      "contrast_group": "closure_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_1_patch", "match_count": 1, "contrast_classes": ["debunked(claim)", "contradicted_by(record,claim)", "lacks_evidence(claim)", "false(claim)"], "requires_human_review": true }
+    },
+    {
+      "id": "closure_contrast_transcript_contradiction_035",
+      "text": "The claim was contradicted by the transcript.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["transcript", "contradicted by", "was contradicted by", "contradicted_by"],
+      "literal_meaning": "The sentence states or implies: The claim was contradicted by the transcript.",
+      "candidate_intended_meaning": "The sentence claims an inspectable record conflicts with the claim; contradiction depends on matching definitions, date, and scope.",
+      "semantic_operators": [
+        { "operator": "transcript(evidence)", "pressure": ["evidence_contact_pressure", "direct_support_pressure"], "legitimacy_condition": "Transcript evidence is legitimate only when authentic, complete enough for the claim, and mapped to the exact statement." },
+        { "operator": "contradicted_by(record,claim)", "pressure": ["contradiction_pressure", "evidence_contact_pressure"], "legitimacy_condition": "A record legitimately contradicts a claim only when both cannot be true under the same definitions, date, and scope." }
+      ],
+      "evidence_burden": ["Identify transcript source.", "Check completeness.", "Map exact quote or absence claim.", "Identify the record.", "State the exact claim.", "Check definitions, timing, and possible reconciliation."],
+      "expected_kernel_response": { "lexical_action": "map the record-to-claim contradiction and check scope before resolution", "source_trust_action": "inspect the evidence object directly before support/contradiction movement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What record contradicts the claim, and do the record and claim share the same definitions, date, and scope?"] },
+      "contrast_group": "closure_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_1_patch", "match_count": 2, "redundant_matches_suppressed": true, "contrast_classes": ["clip(evidence)", "summary(source)", "hearsay(source)", "challenged(claim)", "lacks_evidence(claim)", "qualifies(record,claim)", "different_scope(record,claim)"], "requires_human_review": true }
+    },
+    {
+      "id": "closure_contrast_lacks_evidence_036",
+      "text": "The claim lacks evidence.",
+      "language": "en",
+      "operator_group": "closure_dismissal",
+      "surface_terms": ["lacks evidence", "lacks_evidence"],
+      "literal_meaning": "The sentence states or implies: The claim lacks evidence.",
+      "candidate_intended_meaning": "The sentence withholds support because of an evidence gap; this is not automatically a contradiction or proof of falsity.",
+      "semantic_operators": [
+        { "operator": "lacks_evidence(claim)", "pressure": ["evidence_gap_pressure", "uncertainty_calibration_pressure"], "legitimacy_condition": "Lack of evidence is legitimate as support-withholding pressure; it is not automatically evidence of falsity." }
+      ],
+      "evidence_burden": ["Identify the claim and expected evidence type.", "Check whether evidence was searched for in the right place.", "Separate absence of support from contradiction."],
+      "expected_kernel_response": { "lexical_action": "separate evidence gap from falsity or contradiction", "source_trust_action": "not source-driven unless sources are later attached", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence type is expected, and was the absence of evidence checked in the right place?", "Is this only lack of support, or is there positive contradiction?"] },
+      "contrast_group": "closure_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_1_patch", "match_count": 1, "contrast_classes": ["false(claim)", "contradicted_by(record,claim)", "unverified(claim)", "debunked(claim)"], "requires_human_review": true }
+    },
+    {
+      "id": "closure_contrast_false_037",
+      "text": "The claim is false.",
+      "language": "en",
+      "operator_group": "closure_dismissal",
+      "surface_terms": ["is false", "false"],
+      "literal_meaning": "The sentence states or implies: The claim is false.",
+      "candidate_intended_meaning": "The sentence asserts falsity and applies closure pressure that requires falsifying evidence.",
+      "semantic_operators": [
+        { "operator": "false(claim)", "pressure": ["falsity_claim_pressure", "closure_pressure"], "legitimacy_condition": "A falsity claim is legitimate only when the exact claim is contradicted by evidence or fails under agreed definitions and scope." }
+      ],
+      "evidence_burden": ["Extract the exact claim.", "Identify the falsifying evidence.", "Check definitions, scope, date, and possible weaker interpretation."],
+      "expected_kernel_response": { "lexical_action": "extract exact claim and require falsifying evidence before closure", "source_trust_action": "not source-driven unless sources are later attached", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What exact evidence falsifies the exact claim?"] },
+      "contrast_group": "closure_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_1_patch", "match_count": 1, "contrast_classes": ["lacks_evidence(claim)", "challenged(claim)", "misleading(claim)", "debunked(claim)"], "requires_human_review": true }
+    },
+    {
+      "id": "closure_contrast_certified_reviewer_rating_038",
+      "text": "The certified reviewer rated the claim false.",
+      "language": "en",
+      "operator_group": "mixed_authority_transfer_closure_dismissal_source_trust",
+      "surface_terms": ["certified", "certified reviewer", "claim false", "rated", "reviewer", "false"],
+      "literal_meaning": "The sentence states or implies: The certified reviewer rated the claim false.",
+      "candidate_intended_meaning": "The sentence combines source-status and rating pressure with a falsity claim; the rating must not substitute for the evidence chain.",
+      "semantic_operators": [
+        { "operator": "certified(source)", "pressure": ["authority_transfer_pressure", "trust_inflation_pressure"], "legitimacy_condition": "Certification is legitimate only as metadata about process or status; it does not prove the source conclusion." },
+        { "operator": "false(claim)", "pressure": ["falsity_claim_pressure", "closure_pressure"], "legitimacy_condition": "A falsity claim is legitimate only when the exact claim is contradicted by evidence or fails under agreed definitions and scope." },
+        { "operator": "rated(source,claim)", "pressure": ["rating_pressure", "certification_pressure", "source_trust_pressure"], "legitimacy_condition": "A rating is legitimate only as a review output; the rating must be backed by inspectable reasoning and evidence." },
+        { "operator": "reviewer(source)", "pressure": ["reviewer_status_pressure", "source_trust_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Reviewer status is legitimate as role metadata; it does not establish the reviewed claim without reasoning and evidence." }
+      ],
+      "evidence_burden": ["Identify the certifier.", "Define what certification covers.", "Inspect claim-level evidence separately.", "Extract the exact claim.", "Identify the falsifying evidence.", "Check definitions, scope, date, and possible weaker interpretation.", "Identify who rated it.", "Identify the exact rating category.", "Inspect the evidence and reasoning behind the rating.", "Identify the reviewer.", "Identify review role and scope.", "Inspect reasoning, criteria, and evidence."],
+      "expected_kernel_response": { "lexical_action": "extract exact claim and require falsifying evidence before closure", "source_trust_action": "treat source/status/rating labels as metadata or prior pressure, not truth", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What exact evidence falsifies the exact claim?", "Who rated the claim, what category was used, and what evidence supports the rating?", "Is reviewer/certification status being substituted for claim-level evidence?"] },
+      "contrast_group": "closure_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_1_patch", "match_count": 4, "contrast_classes": ["primary_document(evidence)", "raw_data(evidence)", "expert(source)", "official_source(source)", "lacks_evidence(claim)", "challenged(claim)", "misleading(claim)", "debunked(claim)", "false(claim)", "certified(source)", "fact-checker(source)"], "requires_human_review": true }
+    }
+  ],
+  "belief_movement": "none"
+}
