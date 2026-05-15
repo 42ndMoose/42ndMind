@@ -268,7 +268,7 @@
       `This wording triggers ${joined}, so the exact claim must be reviewed before belief movement.`,
       `The pressure signature ${joined} should be treated as a candidate template, not doctrine.`,
       `The claim may fit this template only after its evidence burden is made explicit.`,
-      `This semantic pattern needs contrast examples before it can be reused safely.`
+      `This semantic pressure pattern needs contrast examples before it can be reused safely.`
     ];
   }
 
