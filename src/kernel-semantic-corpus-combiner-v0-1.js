@@ -15,7 +15,8 @@
   const DEFAULT_EXTENSION_URLS = Object.freeze([
     'data/semantic_seed_closure_contrast_v0_1.json',
     'data/semantic_seed_authority_evidence_contrast_v0_1.json',
-    'data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json'
+    'data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json',
+    'data/semantic_seed_scope_qualification_contrast_v0_1.json'
   ]);
 
   function text(value) { return String(value ?? '').trim(); }
