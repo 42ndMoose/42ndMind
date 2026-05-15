@@ -15,17 +15,21 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Semantic Language Certificate v0.1 Test</h1><div>Tests the zero-gap semantic-language certificate baseline.</div></header>
-<main><section><h2 id="summary">Running...</h2><div><a href="semantic-language-certificate.html">semantic language certificate</a> · <a href="semantic-language-distiller.html">language distiller</a> · <a href="semantic-corpus-combiner.html">corpus combiner</a></div><pre id="out"></pre></section></main>
+<header><h1>42ndMind Semantic Language Certificate v0.1 Test</h1><div>Tests the 79-entry zero-gap semantic-language plus pressure-ontology baseline.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-language-certificate.html">semantic language certificate</a> · <a href="semantic-pressure-registry.html">pressure registry</a> · <a href="semantic-language-distiller.html">language distiller</a> · <a href="semantic-corpus-combiner.html">corpus combiner</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-language-distiller-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
 <script>
   const tests = [];
   let distillation = null;
   let report = null;
   let rules = null;
   let combinedPacket = null;
+  let ontology = null;
+  let certificate = null;
   function add(name, fn) { tests.push({ name, fn }); }
   function assert(cond, msg) { if (!cond) throw new Error(msg); }
   function asArray(value) { return Array.isArray(value) ? value : []; }
@@ -35,29 +39,36 @@
     'data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json',
     'data/semantic_seed_scope_qualification_contrast_v0_1.json',
     'data/semantic_seed_closure_source_gap_contrast_v0_1.json',
-    'data/semantic_seed_unverified_contrast_v0_1.json'
+    'data/semantic_seed_unverified_contrast_v0_1.json',
+    'data/semantic_seed_rhetoric_intent_pressure_v0_1.json'
   ];
   function makeCertificate() {
     const sources = asArray(combinedPacket.combined && combinedPacket.combined.source_packets);
     const checks = {
-      combined_entry_count_69: report.corpus_entry_count === 69,
-      source_packet_count_7: sources.length === 7,
+      combined_entry_count_79: report.corpus_entry_count === 79,
+      source_packet_count_8: sources.length === 8,
+      observed_pressure_count_55: report.unique_pressure_count === 55,
+      pressure_ontology_missing_zero: ontology.validation.missing_pressure_count === 0,
       contrast_gaps_zero: report.contrast_missing_count === 0,
       overmatch_risks_zero: report.overmatch_risk_count === 0,
-      stable_mappings_at_least_71: report.stable_mapping_count >= 71,
+      stable_mappings_at_least_89: report.stable_mapping_count >= 89,
       candidate_rules_match_stable_mappings: rules.rule_count === report.stable_mapping_count,
-      no_belief_movement: report.belief_movement === 'none' && rules.belief_movement === 'none' && combinedPacket.combined.belief_movement === 'none'
+      no_belief_movement: report.belief_movement === 'none' && rules.belief_movement === 'none' && combinedPacket.combined.belief_movement === 'none' && ontology.belief_movement === 'none'
     };
     const ok = Object.values(checks).every(Boolean);
     return {
       packet_type: '42ndMind_semantic_language_certificate_v0_1',
-      status: ok ? 'CLEAN_SEMANTIC_LANGUAGE_BASELINE' : 'REVIEW_REQUIRED',
+      packet_version: '0.1.1',
+      status: ok ? 'CLEAN_SEMANTIC_LANGUAGE_PRESSURE_ONTOLOGY_BASELINE' : 'REVIEW_REQUIRED',
       metrics: {
         entries: report.corpus_entry_count,
         source_packets: sources.length,
         operators: report.unique_operator_count,
         pressures: report.unique_pressure_count,
+        registered_pressures: ontology.validation.registered_pressure_count,
+        pressure_ontology_missing: ontology.validation.missing_pressure_count,
         families: report.operator_family_count,
+        pressure_families: ontology.family_count,
         stable_mappings: report.stable_mapping_count,
         weak_mappings: report.weak_mapping_count,
         candidate_rules: rules.rule_count,
@@ -69,12 +80,12 @@
       belief_movement: 'none'
     };
   }
-  let certificate = null;
 
   add('modules load', () => {
     assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
     assert(window.KernelSemanticCorpusCombinerV01, 'KernelSemanticCorpusCombinerV01 missing');
     assert(window.KernelSemanticLanguageDistillerV01, 'KernelSemanticLanguageDistillerV01 missing');
+    assert(window.KernelSemanticPressureRegistryV01, 'KernelSemanticPressureRegistryV01 missing');
   });
 
   add('load combined and distill succeeds', async () => {
@@ -86,18 +97,27 @@
     assert(combinedPacket.ok === true, 'combined packet not ok');
   });
 
-  add('certificate builds clean baseline', () => {
-    certificate = makeCertificate();
-    assert(certificate.packet_type === '42ndMind_semantic_language_certificate_v0_1', 'wrong certificate type');
-    assert(certificate.status === 'CLEAN_SEMANTIC_LANGUAGE_BASELINE', 'certificate should be clean');
+  add('pressure ontology covers corpus', () => {
+    ontology = KernelSemanticPressureRegistryV01.buildOntologyFromCorpus(combinedPacket.combined, KernelSemanticPressureRegistryV01.defaultRegistry());
+    assert(ontology.validation.ok === true, 'pressure ontology coverage gap: ' + JSON.stringify(ontology.validation.missing_pressures));
+    assert(ontology.pressure_count === 55, 'expected 55 observed pressure ontology rows');
+    assert(ontology.validation.missing_pressure_count === 0, 'expected zero missing pressures');
   });
 
-  add('baseline metrics match zero-gap state', () => {
-    assert(certificate.metrics.entries === 69, 'expected 69 entries');
-    assert(certificate.metrics.source_packets === 7, 'expected 7 source packets');
+  add('certificate builds clean pressure-ontology baseline', () => {
+    certificate = makeCertificate();
+    assert(certificate.packet_type === '42ndMind_semantic_language_certificate_v0_1', 'wrong certificate type');
+    assert(certificate.status === 'CLEAN_SEMANTIC_LANGUAGE_PRESSURE_ONTOLOGY_BASELINE', 'certificate should be clean');
+  });
+
+  add('baseline metrics match 79-entry zero-gap state', () => {
+    assert(certificate.metrics.entries === 79, 'expected 79 entries');
+    assert(certificate.metrics.source_packets === 8, 'expected 8 source packets');
+    assert(certificate.metrics.pressures === 55, 'expected 55 pressures');
+    assert(certificate.metrics.pressure_ontology_missing === 0, 'expected zero pressure ontology gaps');
     assert(certificate.metrics.contrast_gaps === 0, 'expected zero contrast gaps');
     assert(certificate.metrics.overmatch_risks === 0, 'expected zero overmatch risks');
-    assert(certificate.metrics.stable_mappings >= 71, 'expected at least 71 stable mappings');
+    assert(certificate.metrics.stable_mappings >= 89, 'expected at least 89 stable mappings');
   });
 
   add('candidate rules mirror stable mappings', () => {
@@ -110,6 +130,7 @@
     assert(report.belief_movement === 'none', 'report moved belief');
     assert(rules.belief_movement === 'none', 'rules moved belief');
     assert(combinedPacket.combined.belief_movement === 'none', 'combined corpus moved belief');
+    assert(ontology.belief_movement === 'none', 'ontology moved belief');
     assert(certificate.belief_movement === 'none', 'certificate moved belief');
   });
 
@@ -122,6 +143,7 @@
     assert(sources.some(s => s.source_label === 'extension_4' && s.entry_count === 4), 'extension_4 missing');
     assert(sources.some(s => s.source_label === 'extension_5' && s.entry_count === 10), 'extension_5 missing');
     assert(sources.some(s => s.source_label === 'extension_6' && s.entry_count === 2), 'extension_6 missing');
+    assert(sources.some(s => s.source_label === 'extension_7' && s.entry_count === 10), 'extension_7 missing');
   });
 
   (async function run(){
@@ -133,7 +155,7 @@
     const passed = results.filter(r => r.passed).length;
     document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
     document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
-    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_language_certificate_v0_1_test_report', certificate, results }, null, 2);
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_language_certificate_v0_1_test_report', certificate, ontology_pressure_count: ontology && ontology.pressure_count, missing_pressure_count: ontology && ontology.validation && ontology.validation.missing_pressure_count, results }, null, 2);
   })();
 </script>
 </body>
