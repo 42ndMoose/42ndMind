@@ -15,8 +15,8 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Science Claim Sheet Test</h1><div>Smoke test for public-facing science claim sheet content.</div></header>
-<main><section><h2 id="summary">Running...</h2><div><a href="science-claim-sheet.html">science claim sheet</a> · <a href="semantic-language-certificate.html">semantic language certificate</a></div><pre id="out"></pre></section></main>
+<header><h1>42ndMind Science Claim Sheet Test</h1><div>Smoke test for public-facing pressure-ontology science claim sheet content.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="science-claim-sheet.html">science claim sheet</a> · <a href="semantic-language-certificate.html">semantic language certificate</a> · <a href="semantic-pressure-registry.html">pressure registry</a></div><pre id="out"></pre></section></main>
 <script>
   const tests = [];
   let html = '';
@@ -25,26 +25,35 @@
   function includes(text) { return html.includes(text); }
 
   add('page fetches', async () => {
-    const response = await fetch('science-claim-sheet.html?v=test');
+    const response = await fetch('science-claim-sheet.html?v=test-pressure-ontology');
     assert(response.ok, 'fetch failed ' + response.status);
     html = await response.text();
-    assert(html.length > 5000, 'page unexpectedly short');
+    assert(html.length > 7000, 'page unexpectedly short');
   });
 
-  add('core claim is present', () => {
-    assert(includes('42ndMind now has a runnable semantic-language baseline'), 'core claim missing');
+  add('core pressure-ontology claim is present', () => {
+    assert(includes('complete pressure-ontology coverage'), 'pressure ontology claim missing');
     assert(includes('zero surfaced contrast gaps'), 'zero gap wording missing');
     assert(includes('zero detected overmatch risks'), 'zero overmatch wording missing');
+    assert(includes('blocks, requires, and allows'), 'blocks/requires/allows wording missing');
   });
 
-  add('certificate metrics are present', () => {
-    ['69','92','47','17','71','80','7/7 passed'].forEach(value => assert(includes(value), 'missing metric ' + value));
+  add('updated metrics are present', () => {
+    ['79','8','97','55','56','89','78','9/9 passed'].forEach(value => assert(includes(value), 'missing metric ' + value));
+    assert(includes('pressure gaps'), 'pressure gaps metric missing');
     assert(includes('contrast gaps'), 'contrast gaps metric missing');
     assert(includes('overmatch risks'), 'overmatch risks metric missing');
   });
 
+  add('pressure ontology architecture is present', () => {
+    assert(includes('surface phrase → semantic operator → pressure labels → pressure ontology → evidence burden → blocked/allowed belief movement'), 'architecture chain missing');
+    assert(includes('absence_to_truth_pressure'), 'absence pressure example missing');
+    assert(includes('intent_attribution_pressure'), 'intent pressure example missing');
+    assert(includes('reputational_risk_pressure'), 'reputation pressure example missing');
+  });
+
   add('key distinctions are present', () => {
-    ['misleading ≠ false','disputed ≠ debunked','clip ≠ full record','hearsay ≠ primary evidence','summary ≠ underlying record','not disproven ≠ supported','unverified ≠ false'].forEach(value => assert(includes(value), 'missing distinction ' + value));
+    ['misleading ≠ false','disputed ≠ debunked','clip ≠ full record','hearsay ≠ primary evidence','summary ≠ underlying record','not disproven ≠ supported','unverified ≠ false','obfuscation ≠ falsity','emotionally loaded ≠ disproof','reckless accusation ≠ proven accusation','ulterior motive ≠ demonstrated motive','absence of disproof ≠ proof'].forEach(value => assert(includes(value), 'missing distinction ' + value));
   });
 
   add('limitations are present', () => {
@@ -55,7 +64,7 @@
   });
 
   add('audit links are present', () => {
-    ['semantic-language-certificate.html','kernel-semantic-language-certificate-v0-1-test.html','semantic-language-distiller.html','semantic-corpus-combiner.html','semantic-operator-workbench.html','CURRENT_PROGRESS.md'].forEach(value => assert(includes(value), 'missing link ' + value));
+    ['semantic-language-certificate.html','kernel-semantic-language-certificate-v0-1-test.html','semantic-pressure-registry.html','kernel-semantic-pressure-registry-v0-1-test.html','semantic-language-distiller.html','semantic-corpus-combiner.html','semantic-operator-workbench.html','CURRENT_PROGRESS.md'].forEach(value => assert(includes(value), 'missing link ' + value));
   });
 
   (async function run(){
@@ -67,7 +76,7 @@
     const passed = results.filter(r => r.passed).length;
     document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
     document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
-    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_science_claim_sheet_test_report', results }, null, 2);
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_science_claim_sheet_test_report', pressure_ontology_baseline:true, results }, null, 2);
   })();
 </script>
 </body>
