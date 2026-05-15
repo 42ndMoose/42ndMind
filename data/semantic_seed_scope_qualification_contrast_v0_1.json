@@ -1,0 +1,90 @@
+{
+  "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
+  "packet_version": "0.1.0",
+  "created_at": "2026-05-15T06:00:00.000Z",
+  "description": "Workbench-reviewed scope/qualification contrast seed batch. Targets apparent contradiction versus different scope, qualification, narrowing, dataset evidence, and footnote evidence.",
+  "source_workbench_patch": "42ndMind_semantic_operator_workbench_v0_1_4_patch",
+  "doctrine": {
+    "corpus_entries_are_training_pressure_not_truth": true,
+    "semantic_operators_are_candidate_language_math_units": true,
+    "legitimacy_conditions_define_when_pressure_is_earned": true,
+    "scope_mismatch_is_not_automatic_contradiction": true,
+    "qualification_is_not_automatic_falsity": true,
+    "belief_movement": "none"
+  },
+  "entries": [
+    {
+      "id": "scope_qualification_transcript_different_month_054",
+      "text": "The transcript refers to a different month than the claim.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["transcript", "the transcript", "different month", "refers to a different", "different_scope"],
+      "literal_meaning": "The sentence states or implies: The transcript refers to a different month than the claim.",
+      "candidate_intended_meaning": "The sentence points to a scope mismatch that may explain apparent contradiction without making either side false.",
+      "semantic_operators": [
+        { "operator": "transcript(evidence)", "pressure": ["evidence_contact_pressure", "direct_support_pressure"], "legitimacy_condition": "Transcript evidence is legitimate only when authentic, complete enough for the claim, and mapped to the exact statement." },
+        { "operator": "different_scope(record,claim)", "pressure": ["scope_mismatch_pressure", "uncertainty_calibration_pressure"], "legitimacy_condition": "Different-scope pressure is legitimate when the record and claim use different dates, populations, geography, definitions, or aggregation levels; it explains apparent contradiction without erasing either side." }
+      ],
+      "evidence_burden": ["Identify transcript source.", "Check completeness.", "Map exact quote or absence claim.", "Identify the record scope.", "Identify the claim scope.", "Compare date, geography, population, definition, and aggregation level.", "Check whether the apparent contradiction disappears under scoped readings."],
+      "expected_kernel_response": { "lexical_action": "compare record scope and claim scope before treating the mismatch as contradiction", "source_trust_action": "inspect the evidence object and scope relation before support/contradiction movement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Do the record and claim differ by date, geography, population, definition, or aggregation level?"] },
+      "contrast_group": "scope_qualification_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_4_patch", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "scope_qualification_dataset_national_province_055",
+      "text": "The dataset covers national totals, while the claim refers to one province.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["national totals", "one province", "claim refers to", "covers national totals", "dataset", "different_scope"],
+      "literal_meaning": "The sentence states or implies: The dataset covers national totals, while the claim refers to one province.",
+      "candidate_intended_meaning": "The sentence points to a scope mismatch that may explain apparent contradiction without making either side false.",
+      "semantic_operators": [
+        { "operator": "different_scope(record,claim)", "pressure": ["scope_mismatch_pressure", "uncertainty_calibration_pressure"], "legitimacy_condition": "Different-scope pressure is legitimate when the record and claim use different dates, populations, geography, definitions, or aggregation levels; it explains apparent contradiction without erasing either side." },
+        { "operator": "dataset(evidence)", "pressure": ["evidence_contact_pressure"], "legitimacy_condition": "Dataset evidence is legitimate only after definitions, scope, exclusions, cleaning, and aggregation level are understood." }
+      ],
+      "evidence_burden": ["Identify the record scope.", "Identify the claim scope.", "Compare date, geography, population, definition, and aggregation level.", "Check whether the apparent contradiction disappears under scoped readings.", "Identify the dataset.", "Check definitions, exclusions, cleaning, and aggregation level.", "Map the relevant fields to the claim."],
+      "expected_kernel_response": { "lexical_action": "compare record scope and claim scope before treating the mismatch as contradiction", "source_trust_action": "inspect the evidence object and scope relation before support/contradiction movement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Do the record and claim differ by date, geography, population, definition, or aggregation level?", "What are the dataset scope, definitions, exclusions, and aggregation level?"] },
+      "contrast_group": "scope_qualification_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_4_patch", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "scope_qualification_transcript_qualifies_056",
+      "text": "The transcript qualifies the claim but does not contradict it.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["transcript", "the transcript", "qualifies the claim", "qualifies", "does not contradict", "but does not contradict"],
+      "literal_meaning": "The sentence states or implies: The transcript qualifies the claim but does not contradict it.",
+      "candidate_intended_meaning": "The sentence qualifies or limits a claim without turning that qualification into direct contradiction.",
+      "semantic_operators": [
+        { "operator": "transcript(evidence)", "pressure": ["evidence_contact_pressure", "direct_support_pressure"], "legitimacy_condition": "Transcript evidence is legitimate only when authentic, complete enough for the claim, and mapped to the exact statement." },
+        { "operator": "qualifies(record,claim)", "pressure": ["qualification_pressure", "uncertainty_calibration_pressure"], "legitimacy_condition": "Qualifying evidence is legitimate when it narrows, limits, or conditions a claim without making the claim and record mutually exclusive." }
+      ],
+      "evidence_burden": ["Identify transcript source.", "Check completeness.", "Map exact quote or absence claim.", "Identify the original claim.", "Identify the qualifying record.", "State what part is narrowed, limited, or conditioned.", "Check whether contradiction remains after qualification."],
+      "expected_kernel_response": { "lexical_action": "preserve qualification pressure and avoid false contradiction closure", "source_trust_action": "inspect the evidence object and scope relation before support/contradiction movement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What exactly is narrowed, limited, or conditioned by the qualifying evidence?"] },
+      "contrast_group": "scope_qualification_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_4_patch", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "scope_qualification_footnote_narrows_057",
+      "text": "The footnote narrows the claim to March only.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["narrows the claim", "to march only", "march only", "footnote", "narrows"],
+      "literal_meaning": "The sentence states or implies: The footnote narrows the claim to March only.",
+      "candidate_intended_meaning": "The sentence narrows a broader claim into a bounded claim with a smaller scope.",
+      "semantic_operators": [
+        { "operator": "narrows(record,claim)", "pressure": ["narrowing_pressure", "qualification_pressure"], "legitimacy_condition": "Narrowing is legitimate when a record restricts the claim by time, place, actor, population, or condition." },
+        { "operator": "footnote(evidence)", "pressure": ["evidence_contact_pressure", "qualification_pressure"], "legitimacy_condition": "Footnote evidence is legitimate as qualifying context only when it directly limits, defines, or conditions the relevant claim." }
+      ],
+      "evidence_burden": ["Identify the broader claim.", "Identify the narrowed scope.", "Check whether the narrowed version remains supported.", "Identify the footnote.", "Map it to the claim.", "Check whether it narrows, defines, or merely comments on the claim."],
+      "expected_kernel_response": { "lexical_action": "convert broad claim pressure into bounded/narrowed claim pressure", "source_trust_action": "inspect the evidence object and scope relation before support/contradiction movement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What broader claim is being narrowed, and what bounded version remains supported?", "Does the footnote directly limit the claim, define a term, or merely add commentary?"] },
+      "contrast_group": "scope_qualification_contrast_batch_v0_1",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_4_patch", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    }
+  ],
+  "belief_movement": "none"
+}
