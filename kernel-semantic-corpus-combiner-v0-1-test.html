@@ -47,7 +47,7 @@
     packet = await KernelSemanticCorpusCombinerV01.loadAndCombine();
     assert(packet.ok === true, 'combined packet not ok');
     assert(packet.decision === 'COMBINED_CORPUS_READY', 'wrong decision');
-    assert(packet.combined.entry_count >= 57, 'combined entry count should include main 32 + extensions 6 + 6 + 9 + 4');
+    assert(packet.combined.entry_count >= 67, 'combined entry count should include main 32 + extensions 6 + 6 + 9 + 4 + 10');
     assert(packet.combined.belief_movement === 'none', 'combined corpus moved belief');
   });
 
@@ -59,12 +59,13 @@
 
   add('source packet metadata is preserved', () => {
     const sources = packet.combined.source_packets || [];
-    assert(sources.length === 5, 'expected main plus four extension sources');
+    assert(sources.length === 6, 'expected main plus five extension sources');
     assert(sources.some(s => s.source_label === 'main' && s.entry_count >= 32), 'main source missing');
     assert(sources.some(s => s.source_label === 'extension_1' && s.entry_count === 6), 'closure extension source missing');
     assert(sources.some(s => s.source_label === 'extension_2' && s.entry_count === 6), 'authority/evidence extension source missing');
     assert(sources.some(s => s.source_label === 'extension_3' && s.entry_count === 9), 'motive/agency weakmap extension source missing');
     assert(sources.some(s => s.source_label === 'extension_4' && s.entry_count === 4), 'scope/qualification extension source missing');
+    assert(sources.some(s => s.source_label === 'extension_5' && s.entry_count === 10), 'closure/source gap extension source missing');
   });
 
   add('extension entries are included with combiner metadata', () => {
@@ -72,6 +73,7 @@
     const authorityEntry = packet.combined.entries.find(e => e.id === 'authority_evidence_certified_proved_false_039');
     const motiveEntry = packet.combined.entries.find(e => e.id === 'motive_weakmap_collusion_companies_047');
     const scopeEntry = packet.combined.entries.find(e => e.id === 'scope_qualification_dataset_national_province_055');
+    const sourceGapEntry = packet.combined.entries.find(e => e.id === 'closure_source_gap_misleading_omission_058');
     assert(closureEntry, 'closure extension entry missing');
     assert(closureEntry.combiner_metadata && closureEntry.combiner_metadata.source_label === 'extension_1', 'closure combiner metadata missing');
     assert(closureEntry.candidate_intended_meaning.includes('not refutation or falsity'), 'closure extension wording not preserved');
@@ -84,12 +86,15 @@
     assert(scopeEntry, 'scope/qualification extension entry missing');
     assert(scopeEntry.combiner_metadata && scopeEntry.combiner_metadata.source_label === 'extension_4', 'scope combiner metadata missing');
     assert(scopeEntry.candidate_intended_meaning.includes('scope mismatch'), 'scope extension wording not preserved');
+    assert(sourceGapEntry, 'closure/source gap extension entry missing');
+    assert(sourceGapEntry.combiner_metadata && sourceGapEntry.combiner_metadata.source_label === 'extension_5', 'closure/source gap combiner metadata missing');
+    assert(sourceGapEntry.candidate_intended_meaning.includes('misleading framing'), 'closure/source gap wording not preserved');
   });
 
   add('summary includes new contrast operators and existing groups', () => {
     const summary = KernelSemanticCorpusCombinerV01.summarizeCombined(packet.combined);
     ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing'].forEach(group => assert(summary.groups[group] >= 1, 'missing group ' + group));
-    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by','proved_false','works','reliable','posted','states','deadline_extended','published_summary','collusion','court_filing','alleges','clearly','someone','pressured','conspiracy','different_scope','qualifies','narrows','dataset','footnote'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
+    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by','proved_false','works','reliable','posted','states','deadline_extended','published_summary','collusion','court_filing','alleges','clearly','someone','pressured','conspiracy','different_scope','qualifies','narrows','dataset','footnote','misleading','omission','clip','disputed','hearsay','summary','not_disproven'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
     assert(summary.belief_movement === 'none', 'summary moved belief');
   });
 
