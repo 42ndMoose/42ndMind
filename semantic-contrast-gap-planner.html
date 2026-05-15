@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Contrast Gap Planner</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,600px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:120px; resize:vertical; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.item span { color:#8b93a7; display:block; } .metric b,.item b { display:block; overflow-wrap:anywhere; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Semantic Contrast Gap Planner</h1>
+  <div class="muted small">Reads distiller gaps and proposes the next small contrast batch for human review. It suggests examples only; it does not patch source or move belief.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-semantic-contrast-gap-planner-v0-1-test.html">planner test</a> ·
+      <a href="semantic-language-distiller.html">language distiller</a> ·
+      <a href="semantic-operator-workbench.html">operator workbench</a> ·
+      <a href="semantic-corpus-combiner.html">corpus combiner</a>
+    </section>
+    <section>
+      <h2>Inputs</h2>
+      <label class="small muted">Minimum observations for stable candidate rules</label>
+      <input id="minObs" value="2" />
+      <label class="small muted">Max operator targets</label>
+      <input id="maxTargets" value="5" />
+      <label class="small muted">Max suggested sentences</label>
+      <input id="maxSentences" value="10" />
+      <label class="small muted">Extension URLs, one per line</label>
+      <textarea id="extensionUrls" spellcheck="false">data/semantic_seed_closure_contrast_v0_1.json
+data/semantic_seed_authority_evidence_contrast_v0_1.json
+data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json</textarea>
+      <button onclick="plan()">LOAD DISTILLER + PLAN</button>
+      <button onclick="showBatchOnly()">SHOW batch text</button>
+      <button onclick="showRankedGaps()">SHOW ranked gaps</button>
+      <button onclick="showSuggestedBatch()">SHOW suggested batch JSON</button>
+      <button onclick="copyOutput()">COPY output</button>
+      <button onclick="copyBatchText()">COPY batch text</button>
+      <button onclick="downloadOutput()">DOWNLOAD output JSON</button>
+    </section>
+    <section>
+      <h2>Metrics</h2>
+      <div class="row"><div class="metric"><span>entries</span><b id="entryCount">0</b></div><div class="metric"><span>contrast gaps</span><b id="gapCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>selected targets</span><b id="targetCount">0</b></div><div class="metric"><span>suggested sentences</span><b id="sentenceCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>stable mappings</span><b id="stableCount">0</b></div><div class="metric"><span>weak mappings</span><b id="weakCount">0</b></div></div>
+    </section>
+    <section>
+      <h2>Selected targets</h2>
+      <div id="targetList" class="small muted">No plan yet.</div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Output</h2><pre id="out">No output yet.</pre></section>
+    <section><h2>Doctrine</h2><pre id="doctrineOut"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-language-distiller-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-contrast-gap-planner-v0-1.js?v=0.1.0"></script>
+<script>
+  let lastPlan = null;
+  let lastOutput = null;
+  function $(id){ return document.getElementById(id); }
+  function extensionUrls(){ return $('extensionUrls').value.split(/\n+/).map(s => s.trim()).filter(Boolean); }
+  function options(){ return { extension_urls: extensionUrls(), min_observations: Number($('minObs').value || 2), max_operator_targets: Number($('maxTargets').value || 5), max_sentences: Number($('maxSentences').value || 10) }; }
+  function show(value){ lastOutput = value; $('out').textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2); updateMetrics(); }
+  async function plan(){ try { lastPlan = await KernelSemanticContrastGapPlannerV01.loadDistillAndPlan(options()); show(lastPlan); } catch(e) { show({ ok:false, error:e.message }); } }
+  function showBatchOnly(){ if(!lastPlan) return plan(); show(KernelSemanticContrastGapPlannerV01.batchText(lastPlan)); }
+  function showRankedGaps(){ if(!lastPlan) return plan(); show({ packet_type:'42ndMind_semantic_contrast_gap_ranked_gaps_v0_1', ranked_missing_contrasts:lastPlan.ranked_missing_contrasts, doctrine:KernelSemanticContrastGapPlannerV01.doctrine(), belief_movement:'none' }); }
+  function showSuggestedBatch(){ if(!lastPlan) return plan(); show(lastPlan.suggested_batch); }
+  function updateMetrics(){
+    if(!lastPlan) return;
+    $('entryCount').textContent = String((lastPlan.distillation_metrics && lastPlan.distillation_metrics.entries) || 0);
+    $('gapCount').textContent = String(lastPlan.contrast_gap_count || 0);
+    $('targetCount').textContent = String((lastPlan.selected_operator_targets || []).length);
+    $('sentenceCount').textContent = String((lastPlan.suggested_batch && lastPlan.suggested_batch.sentence_count) || 0);
+    $('stableCount').textContent = String((lastPlan.distillation_metrics && lastPlan.distillation_metrics.stable_mappings) || 0);
+    $('weakCount').textContent = String((lastPlan.distillation_metrics && lastPlan.distillation_metrics.weak_mappings) || 0);
+    $('targetList').innerHTML = (lastPlan.selected_operator_targets || []).map(t => `<div class="item"><b>${t.operator_name}</b><span>score ${t.score} · ${t.group}</span><span>${t.rationale}</span></div>`).join('') || 'No targets.';
+  }
+  async function copyOutput(){ const text = typeof lastOutput === 'string' ? lastOutput : JSON.stringify(lastOutput || {}, null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  async function copyBatchText(){ if(!lastPlan) await plan(); const text = KernelSemanticContrastGapPlannerV01.batchText(lastPlan); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied batch (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  function downloadOutput(){
+    const text = typeof lastOutput === 'string' ? lastOutput : JSON.stringify(lastOutput || {}, null, 2);
+    const blob = new Blob([text], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (lastOutput && lastOutput.packet_type ? lastOutput.packet_type : 'semantic_contrast_gap_planner_output') + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  (function init(){ $('doctrineOut').textContent = JSON.stringify(KernelSemanticContrastGapPlannerV01.doctrine(), null, 2); })();
+</script>
+</body>
+</html>
