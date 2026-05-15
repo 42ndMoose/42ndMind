@@ -12,7 +12,6 @@
     section { background:#171a21; border:1px solid #2a3040; border-radius:14px; padding:18px; margin:14px 0; }
     h1 { font-size:30px; line-height:1.1; margin:0 0 8px; }
     h2 { font-size:20px; margin:0 0 12px; }
-    h3 { font-size:16px; margin:18px 0 8px; }
     p { margin:8px 0; }
     a { color:#9db6ff; }
     code, pre { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
@@ -36,53 +35,59 @@
 <body>
 <header>
   <h1>42ndMind Science Claim Sheet</h1>
-  <p class="muted">A compact public-facing summary of the current semantic-language milestone in the 42ndMind epistemic kernel repo.</p>
-  <p class="small muted">Baseline name: <code>semantic_language_math_zero_gap_baseline_2026_05_15</code></p>
+  <p class="muted">A compact public-facing summary of the current semantic-language and pressure-ontology milestone in the 42ndMind epistemic kernel repo.</p>
+  <p class="small muted">Baseline name: <code>semantic_language_pressure_ontology_zero_gap_baseline_2026_05_15</code></p>
 </header>
 <main>
   <section>
     <h2>Core claim</h2>
     <div class="status">
-      <b>42ndMind now has a runnable semantic-language baseline with zero surfaced contrast gaps and zero detected overmatch risks.</b>
-      <p>The system converts reviewed language examples into explicit semantic operators, pressure vectors, legitimacy conditions, evidence burdens, and expected kernel responses. It then distills those entries into compact diagnostics that can be tested in-browser.</p>
+      <b>42ndMind now has a runnable semantic-language baseline with complete pressure-ontology coverage, zero surfaced contrast gaps, and zero detected overmatch risks.</b>
+      <p>The system converts reviewed language examples into semantic operators, pressure vectors, legitimacy conditions, evidence burdens, expected kernel responses, and now pressure-ontology entries that define what each pressure label blocks, requires, and allows.</p>
     </div>
-    <p>This is a working technical claim about a browser-executable corpus/distiller/certificate system. It does not depend on LLM authority. The LLM or human can supply language examples, but the corpus, combiner, distiller, certificate, and tests are deterministic browser artifacts.</p>
+    <p>This is a working technical claim about a browser-executable corpus, combiner, distiller, pressure registry, certificate, and test suite. It does not depend on LLM authority. A human or LLM can supply examples, but the runtime combination, distillation, pressure coverage checks, and certificate are deterministic browser artifacts.</p>
   </section>
 
   <section>
     <h2>Current certificate metrics</h2>
     <div class="grid">
-      <div class="metric"><span>semantic entries</span><b>69</b></div>
-      <div class="metric"><span>source packets</span><b>7</b></div>
-      <div class="metric"><span>operators</span><b>92</b></div>
-      <div class="metric"><span>pressures</span><b>47</b></div>
-      <div class="metric"><span>operator families</span><b>17</b></div>
-      <div class="metric"><span>stable mappings</span><b>71</b></div>
-      <div class="metric"><span>weak mappings</span><b>80</b></div>
+      <div class="metric"><span>semantic entries</span><b>79</b></div>
+      <div class="metric"><span>source packets</span><b>8</b></div>
+      <div class="metric"><span>operators</span><b>97</b></div>
+      <div class="metric"><span>observed pressures</span><b>55</b></div>
+      <div class="metric"><span>registered pressures</span><b>56</b></div>
+      <div class="metric"><span>pressure gaps</span><b>0</b></div>
+      <div class="metric"><span>operator families</span><b>24</b></div>
+      <div class="metric"><span>stable mappings</span><b>89</b></div>
+      <div class="metric"><span>weak mappings</span><b>78</b></div>
       <div class="metric"><span>contrast gaps</span><b>0</b></div>
       <div class="metric"><span>overmatch risks</span><b>0</b></div>
-      <div class="metric"><span>certificate test</span><b>7/7 passed</b></div>
+      <div class="metric"><span>pressure registry test</span><b>9/9 passed</b></div>
     </div>
-    <p class="small muted">These numbers come from the current semantic-language certificate and distiller baseline. If future examples are added, this page should be updated after the certificate is rebuilt and tests pass again.</p>
+    <p class="small muted">These numbers come from the current combined corpus, semantic-language distiller, pressure registry, and certificate baseline. Future examples should only replace this baseline after the combiner, distiller, registry, and certificate tests pass again.</p>
   </section>
 
   <section>
     <h2>What the milestone demonstrates</h2>
     <div class="claim">
       <b>1. Natural-language claims can be decomposed into auditable semantic operations.</b>
-      <p>Example: words like <code>debunked</code>, <code>certified</code>, <code>misleading</code>, <code>unverified</code>, <code>hearsay</code>, and <code>summary</code> become operators with pressure vectors and evidence burdens instead of vague rhetorical labels.</p>
+      <p>Example: words like <code>debunked</code>, <code>certified</code>, <code>misleading</code>, <code>unverified</code>, <code>hearsay</code>, <code>obfuscated</code>, <code>recklessly accused</code>, and <code>ulterior motive</code> become operators with pressure vectors and evidence burdens instead of vague rhetorical labels.</p>
     </div>
     <div class="claim">
-      <b>2. The system separates source status from claim truth.</b>
-      <p><code>certified(source)</code>, <code>expert(source)</code>, <code>reviewer(source)</code>, and <code>official_source(source)</code> create metadata or prior pressure. They cannot settle a claim without evidence contact.</p>
+      <b>2. Pressure labels now have ontology definitions.</b>
+      <p>The system no longer leaves labels like <code>absence_to_truth_pressure</code>, <code>intent_attribution_pressure</code>, or <code>reputational_risk_pressure</code> as loose strings. The pressure registry defines their family, effect, blocked movements, required checks, allowed bounded movements, contrasts, and severity.</p>
     </div>
     <div class="claim">
-      <b>3. The system preserves weaker semantic states instead of collapsing them into closure.</b>
-      <p>The corpus explicitly distinguishes dispute, uncertainty, missing support, misleading framing, scope mismatch, qualification, and contradiction.</p>
+      <b>3. The system separates source status, rhetoric, and intent attribution from claim truth.</b>
+      <p><code>certified(source)</code>, <code>expert(source)</code>, <code>emotionally_loaded(frame,claim)</code>, <code>obfuscates(actor,claim)</code>, and <code>ulterior_motive_attribution(actor,target,motive)</code> create pressure and review burdens. They do not settle the claim by themselves.</p>
     </div>
     <div class="claim">
-      <b>4. The system produces a testable bridge toward mathematical language/intention analysis.</b>
-      <p>The current form is not final intention algebra. It is a working seed: <code>utterance → semantic operators → pressure effects → reviewable kernel response</code>.</p>
+      <b>4. The system preserves weaker semantic states instead of collapsing them into closure.</b>
+      <p>The corpus explicitly distinguishes dispute, uncertainty, missing support, misleading framing, scope mismatch, qualification, contradiction, obfuscation, emotional rhetoric, reckless accusation, argument from ignorance, and motive attribution.</p>
+    </div>
+    <div class="claim">
+      <b>5. The system now has a clearer bridge toward mathematical language/intention analysis.</b>
+      <p>The current architecture is: <code>surface phrase → semantic operator → pressure labels → pressure ontology → evidence burden → blocked/allowed belief movement</code>.</p>
     </div>
   </section>
 
@@ -99,13 +104,18 @@
       <span class="pill">omission ≠ contradiction</span>
       <span class="pill">scope mismatch ≠ contradiction</span>
       <span class="pill">qualification ≠ falsity</span>
+      <span class="pill">obfuscation ≠ falsity</span>
+      <span class="pill">emotionally loaded ≠ disproof</span>
+      <span class="pill">reckless accusation ≠ proven accusation</span>
+      <span class="pill">ulterior motive ≠ demonstrated motive</span>
+      <span class="pill">absence of disproof ≠ proof</span>
     </div>
   </section>
 
   <section>
     <h2>Why this matters</h2>
-    <p>Modern language systems often flatten epistemic states. They may treat status words, institutional labels, confident wording, or social stigma as if they carry proof. 42ndMind attacks that failure mode directly by forcing each operation to expose its pressure type and legitimacy condition.</p>
-    <p>The result is a small but important science-engineering step: language can be made inspectable as a pressure system before belief movement occurs. That creates a path toward a more objective algebra of claims, evidence, source status, uncertainty, and intent.</p>
+    <p>Modern language systems often flatten epistemic states. They may treat status words, institutional labels, confident wording, emotional pressure, social stigma, or motive attribution as if they carry proof. 42ndMind attacks that failure mode directly by forcing each operation to expose its semantic pressure, legitimacy condition, and ontology-defined movement rules.</p>
+    <p>The result is a concrete science-engineering step: language can be made inspectable as a pressure system before belief movement occurs. That creates a path toward a more objective algebra of claims, evidence, source status, rhetoric, uncertainty, and intent.</p>
   </section>
 
   <section>
@@ -113,7 +123,7 @@
     <div class="split">
       <div class="claim warn">
         <b>No independent external fact verification.</b>
-        <p>The current certificate validates the internal semantic-language baseline. It does not verify outside-world claims without evidence packets and review.</p>
+        <p>The current certificate validates the internal semantic-language and pressure-ontology baseline. It does not verify outside-world claims without evidence packets and review.</p>
       </div>
       <div class="claim warn">
         <b>No final mathematical intention algebra.</b>
@@ -121,7 +131,7 @@
       </div>
       <div class="claim warn">
         <b>No automatic doctrine promotion.</b>
-        <p>Stable mappings remain candidate rules. They must pass promotion, sandbox comparison, and source-bridge review before any source-level change.</p>
+        <p>Stable mappings and pressure definitions remain diagnostic structures. They must pass review before any source-level change.</p>
       </div>
       <div class="claim warn">
         <b>No autonomous source writing.</b>
@@ -136,6 +146,8 @@
     <ul>
       <li><a href="semantic-language-certificate.html">semantic-language-certificate.html</a></li>
       <li><a href="kernel-semantic-language-certificate-v0-1-test.html">kernel-semantic-language-certificate-v0-1-test.html</a></li>
+      <li><a href="semantic-pressure-registry.html">semantic-pressure-registry.html</a></li>
+      <li><a href="kernel-semantic-pressure-registry-v0-1-test.html">kernel-semantic-pressure-registry-v0-1-test.html</a></li>
       <li><a href="semantic-language-distiller.html">semantic-language-distiller.html</a></li>
       <li><a href="semantic-corpus-combiner.html">semantic-corpus-combiner.html</a></li>
       <li><a href="semantic-operator-workbench.html">semantic-operator-workbench.html</a></li>
