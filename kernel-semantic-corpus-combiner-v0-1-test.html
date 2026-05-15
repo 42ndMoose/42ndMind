@@ -47,7 +47,7 @@
     packet = await KernelSemanticCorpusCombinerV01.loadAndCombine();
     assert(packet.ok === true, 'combined packet not ok');
     assert(packet.decision === 'COMBINED_CORPUS_READY', 'wrong decision');
-    assert(packet.combined.entry_count >= 38, 'combined entry count should include main 32 + extension 6');
+    assert(packet.combined.entry_count >= 44, 'combined entry count should include main 32 + two 6-entry extensions');
     assert(packet.combined.belief_movement === 'none', 'combined corpus moved belief');
   });
 
@@ -59,22 +59,27 @@
 
   add('source packet metadata is preserved', () => {
     const sources = packet.combined.source_packets || [];
-    assert(sources.length === 2, 'expected main plus one extension source');
+    assert(sources.length === 3, 'expected main plus two extension sources');
     assert(sources.some(s => s.source_label === 'main' && s.entry_count >= 32), 'main source missing');
-    assert(sources.some(s => s.source_label === 'extension_1' && s.entry_count === 6), 'extension source missing');
+    assert(sources.some(s => s.source_label === 'extension_1' && s.entry_count === 6), 'closure extension source missing');
+    assert(sources.some(s => s.source_label === 'extension_2' && s.entry_count === 6), 'authority/evidence extension source missing');
   });
 
   add('extension entries are included with combiner metadata', () => {
-    const entry = packet.combined.entries.find(e => e.id === 'closure_contrast_challenged_034');
-    assert(entry, 'closure extension entry missing');
-    assert(entry.combiner_metadata && entry.combiner_metadata.source_label === 'extension_1', 'combiner metadata missing');
-    assert(entry.candidate_intended_meaning.includes('not refutation or falsity'), 'extension wording not preserved');
+    const closureEntry = packet.combined.entries.find(e => e.id === 'closure_contrast_challenged_034');
+    const authorityEntry = packet.combined.entries.find(e => e.id === 'authority_evidence_certified_proved_false_039');
+    assert(closureEntry, 'closure extension entry missing');
+    assert(closureEntry.combiner_metadata && closureEntry.combiner_metadata.source_label === 'extension_1', 'closure combiner metadata missing');
+    assert(closureEntry.candidate_intended_meaning.includes('not refutation or falsity'), 'closure extension wording not preserved');
+    assert(authorityEntry, 'authority/evidence extension entry missing');
+    assert(authorityEntry.combiner_metadata && authorityEntry.combiner_metadata.source_label === 'extension_2', 'authority combiner metadata missing');
+    assert(authorityEntry.candidate_intended_meaning.includes('certification must not substitute'), 'authority extension wording not preserved');
   });
 
   add('summary includes new contrast operators and existing groups', () => {
     const summary = KernelSemanticCorpusCombinerV01.summarizeCombined(packet.combined);
     ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing'].forEach(group => assert(summary.groups[group] >= 1, 'missing group ' + group));
-    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
+    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by','proved_false','works','reliable','posted','states','deadline_extended','published_summary'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
     assert(summary.belief_movement === 'none', 'summary moved belief');
   });
 
