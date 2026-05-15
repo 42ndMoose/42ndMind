@@ -98,7 +98,7 @@
   function $(id){ return document.getElementById(id); }
   function show(value, status){ lastOutput = value; $('out').textContent = JSON.stringify(value, null, 2); if(status) $('statusText').textContent = status; updateSummary(value); }
   function loadSample(kind){ $('inputText').value = KernelSemanticOperatorWorkbenchV01.sampleBatch(kind); analyzeBatch(); }
-  function analyzeBatch(){ lastBatch = KernelSemanticOperatorWorkbenchV01.analyzeBatch($('inputText').value); show(lastBatch, 'analyzed'); renderReports(lastBatch); }
+  function analyzeBatch(){ lastDraft = null; $('entryCount').textContent = '0'; lastBatch = KernelSemanticOperatorWorkbenchV01.analyzeBatch($('inputText').value); show(lastBatch, 'analyzed'); renderReports(lastBatch); }
   function draftEntries(){ if(!lastBatch) lastBatch = KernelSemanticOperatorWorkbenchV01.analyzeBatch($('inputText').value); lastDraft = KernelSemanticOperatorWorkbenchV01.draftEntries(lastBatch); show(lastDraft, 'drafted'); }
   function validateDraft(){ if(!lastDraft) draftEntries(); const report = KernelSemanticOperatorWorkbenchV01.validateDraft(lastDraft); show(report, report.ok ? 'valid draft' : 'draft issue'); }
   function promoteDraft(){ if(!lastDraft) draftEntries(); const corpus = KernelSemanticOperatorWorkbenchV01.promoteDraftToSeedCandidateCorpus(lastDraft); show(corpus, 'seed-candidate export'); }
