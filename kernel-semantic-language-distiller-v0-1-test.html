@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Language Distiller v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Language Distiller v0.1 Test</h1><div>Tests compact language-math diagnostics over the runtime combined semantic corpus.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-language-distiller.html">semantic language distiller</a> · <a href="semantic-corpus-combiner.html">semantic corpus combiner</a> · <a href="semantic-operator-workbench.html">operator workbench</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-language-distiller-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  let distillation = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  add('modules load', () => {
+    assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
+    assert(window.KernelSemanticCorpusCombinerV01, 'KernelSemanticCorpusCombinerV01 missing');
+    assert(window.KernelSemanticLanguageDistillerV01, 'KernelSemanticLanguageDistillerV01 missing');
+    assert(KernelSemanticLanguageDistillerV01.VERSION === '0.1.0', 'wrong distiller version');
+  });
+
+  add('doctrine preserves no belief movement', () => {
+    const d = KernelSemanticLanguageDistillerV01.doctrine();
+    assert(d.distiller_reports_language_math_diagnostics_not_truth === true, 'diagnostics doctrine missing');
+    assert(d.stable_mappings_are_candidate_rules_not_doctrine === true, 'candidate rule doctrine missing');
+    assert(d.distiller_does_not_patch_source === true, 'no patch doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('load combined and distill succeeds', async () => {
+    distillation = await KernelSemanticLanguageDistillerV01.loadCombinedAndDistill({ min_observations: 2 });
+    assert(distillation.ok === true, 'distillation not ok');
+    assert(distillation.combined_packet && distillation.combined_packet.combined.entry_count >= 44, 'combined corpus too small');
+    assert(distillation.belief_movement === 'none', 'distillation moved belief');
+  });
+
+  add('operator rows and pressure rows are extracted', () => {
+    const corpus = distillation.combined_packet.combined;
+    const ops = KernelSemanticLanguageDistillerV01.operatorRows(corpus);
+    const pressures = KernelSemanticLanguageDistillerV01.pressureRows(corpus);
+    assert(ops.length > corpus.entry_count, 'operator rows should exceed entries');
+    assert(pressures.length >= ops.length, 'pressure rows should be at least operator rows');
+    assert(ops.some(r => r.operator_name === 'proved_false'), 'proved_false row missing');
+    assert(ops.some(r => r.operator_name === 'published_summary'), 'published_summary row missing');
+  });
+
+  add('compact report has language math metrics', () => {
+    const r = distillation.compact_report;
+    assert(r.corpus_entry_count >= 44, 'entry count too low');
+    assert(r.unique_operator_count >= 20, 'operator count too low');
+    assert(r.unique_pressure_count >= 15, 'pressure count too low');
+    assert(r.operator_family_count >= 8, 'family count too low');
+    assert(r.stable_mapping_count >= 1, 'expected at least one stable mapping');
+    assert(r.belief_movement === 'none', 'compact report moved belief');
+  });
+
+  add('operator families include core groups', () => {
+    const groups = distillation.compact_report.families.map(f => f.group);
+    ['closure_dismissal','authority_transfer','source_trust','evidence_contact','motive_agency','reference_ambiguity','uncertainty_calibration','moral_risk_framing'].forEach(group => assert(groups.includes(group), 'missing family ' + group));
+  });
+
+  add('stable mappings include recurring pressure candidates', () => {
+    const stable = distillation.compact_report.stable_mappings;
+    assert(stable.some(m => m.operator_name === 'certified' && m.pressure === 'authority_transfer_pressure'), 'certified authority mapping missing');
+    assert(stable.some(m => m.operator_name === 'debunked' && m.pressure === 'closure_pressure'), 'debunked closure mapping missing');
+    assert(stable.every(m => m.count >= 2), 'stable mapping below min observations');
+  });
+
+  add('weak mappings include newer low-count operators', () => {
+    const weak = distillation.compact_report.weak_mappings;
+    assert(weak.some(m => m.operator_name === 'proved_false'), 'proved_false should be weak at first');
+    assert(weak.some(m => m.operator_name === 'published_summary'), 'published_summary should be weak at first');
+    assert(weak.every(m => m.count < 2), 'weak mapping above threshold');
+  });
+
+  add('contrast coverage reports missing and covered classes', () => {
+    const coverage = distillation.compact_report.contrast_coverage;
+    assert(coverage.mentioned_contrast_count >= 1, 'no contrast mentions found');
+    assert(coverage.covered_count >= 1, 'no covered contrast classes');
+    assert(coverage.missing_count >= 1, 'expected missing contrast targets for future work');
+  });
+
+  add('overmatch risks are review flags only', () => {
+    const risks = distillation.compact_report.overmatch_risks;
+    assert(Array.isArray(risks), 'risks should be array');
+    assert(distillation.compact_report.doctrine.overmatch_risks_are_review_flags_not_rejections === true, 'risk doctrine missing');
+  });
+
+  add('candidate rules packet is generated without implementation', () => {
+    const rules = distillation.candidate_rules;
+    assert(rules.packet_type === '42ndMind_semantic_language_candidate_rules_v0_1', 'wrong rule packet');
+    assert(rules.rule_count === distillation.compact_report.stable_mapping_count, 'rule count mismatch');
+    assert(rules.rules.every(r => r.promotion_state.implemented === false && r.active_belief_effect === 'none'), 'rules should not be implemented or active belief');
+    assert(rules.belief_movement === 'none', 'rules moved belief');
+  });
+
+  add('distiller can run directly on combined corpus', () => {
+    const direct = KernelSemanticLanguageDistillerV01.distill(distillation.combined_packet.combined, { min_observations: 2 });
+    assert(direct.ok === true, 'direct distill failed');
+    assert(direct.compact_report.corpus_entry_count === distillation.compact_report.corpus_entry_count, 'direct count mismatch');
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_language_distiller_v0_1_test_report', combined_entry_count: distillation && distillation.combined_packet ? distillation.combined_packet.combined.entry_count : 0, compact_metrics: distillation ? { entries: distillation.compact_report.corpus_entry_count, unique_operators: distillation.compact_report.unique_operator_count, unique_pressures: distillation.compact_report.unique_pressure_count, stable_mappings: distillation.compact_report.stable_mapping_count, weak_mappings: distillation.compact_report.weak_mapping_count, contrast_gaps: distillation.compact_report.contrast_missing_count, overmatch_risks: distillation.compact_report.overmatch_risk_count } : null, results }, null, 2);
+  })();
+</script>
+</body>
+</html>
