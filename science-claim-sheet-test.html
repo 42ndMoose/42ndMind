@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Science Claim Sheet Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Science Claim Sheet Test</h1><div>Smoke test for public-facing science claim sheet content.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="science-claim-sheet.html">science claim sheet</a> · <a href="semantic-language-certificate.html">semantic language certificate</a></div><pre id="out"></pre></section></main>
+<script>
+  const tests = [];
+  let html = '';
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function includes(text) { return html.includes(text); }
+
+  add('page fetches', async () => {
+    const response = await fetch('science-claim-sheet.html?v=test');
+    assert(response.ok, 'fetch failed ' + response.status);
+    html = await response.text();
+    assert(html.length > 5000, 'page unexpectedly short');
+  });
+
+  add('core claim is present', () => {
+    assert(includes('42ndMind now has a runnable semantic-language baseline'), 'core claim missing');
+    assert(includes('zero surfaced contrast gaps'), 'zero gap wording missing');
+    assert(includes('zero detected overmatch risks'), 'zero overmatch wording missing');
+  });
+
+  add('certificate metrics are present', () => {
+    ['69','92','47','17','71','80','7/7 passed'].forEach(value => assert(includes(value), 'missing metric ' + value));
+    assert(includes('contrast gaps'), 'contrast gaps metric missing');
+    assert(includes('overmatch risks'), 'overmatch risks metric missing');
+  });
+
+  add('key distinctions are present', () => {
+    ['misleading ≠ false','disputed ≠ debunked','clip ≠ full record','hearsay ≠ primary evidence','summary ≠ underlying record','not disproven ≠ supported','unverified ≠ false'].forEach(value => assert(includes(value), 'missing distinction ' + value));
+  });
+
+  add('limitations are present', () => {
+    assert(includes('No independent external fact verification'), 'external fact limitation missing');
+    assert(includes('No final mathematical intention algebra'), 'intention algebra limitation missing');
+    assert(includes('No automatic doctrine promotion'), 'doctrine limitation missing');
+    assert(includes('No autonomous source writing'), 'source writing limitation missing');
+  });
+
+  add('audit links are present', () => {
+    ['semantic-language-certificate.html','kernel-semantic-language-certificate-v0-1-test.html','semantic-language-distiller.html','semantic-corpus-combiner.html','semantic-operator-workbench.html','CURRENT_PROGRESS.md'].forEach(value => assert(includes(value), 'missing link ' + value));
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_science_claim_sheet_test_report', results }, null, 2);
+  })();
+</script>
+</body>
+</html>
