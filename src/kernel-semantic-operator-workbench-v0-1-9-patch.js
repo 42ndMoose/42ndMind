@@ -3,8 +3,7 @@
  * - proved(evidence,claim) caused by provenance/provenance wording
  * - this(reference) caused by relative-clause "that" in "language that made..."
  *
- * This patch applies to draft entries and exported seed-candidate corpora, not only
- * the visible analysis report.
+ * Also cleans associated stale metadata after the operator is removed.
  *
  * No truth decision, belief movement, doctrine promotion, source patching,
  * or intent proof occurs here.
@@ -38,6 +37,7 @@
     d.patch_version = VERSION;
     d.patch_scrubs_stale_draft_provenance_proved_overmatch = true;
     d.patch_scrubs_stale_draft_relative_that_reference_overmatch = true;
+    d.patch_cleans_metadata_after_stale_overmatch_scrub = true;
     d.belief_movement = 'none';
     return d;
   }
@@ -66,7 +66,7 @@
     if (!removeOps.size) return e;
 
     e.semantic_operators = asArray(e.semantic_operators).filter(op => !removeOps.has(text(op && op.operator)));
-
+    const remainingOps = new Set(e.semantic_operators.map(op => text(op && op.operator)));
     const remainingPressureSet = new Set();
     e.semantic_operators.forEach(op => asArray(op.pressure).forEach(p => remainingPressureSet.add(text(p))));
 
@@ -78,9 +78,21 @@
     });
 
     if (e.workbench_metadata) {
-      e.workbench_metadata.match_count = asArray(e.semantic_operators).length;
+      e.workbench_metadata.match_count = e.semantic_operators.length;
       e.workbench_metadata.pressures = unique(Array.from(remainingPressureSet));
-      e.workbench_metadata.legitimacy_guards = unique(asArray(e.semantic_operators).map(op => op.legitimacy_condition));
+      e.workbench_metadata.legitimacy_guards = unique(e.semantic_operators.map(op => op.legitimacy_condition));
+
+      if (!remainingOps.has('proved(evidence,claim)')) {
+        e.workbench_metadata.kernel_actions = asArray(e.workbench_metadata.kernel_actions).filter(action => !/proof language|support-inflation|direct entailment/i.test(text(action)));
+        e.workbench_metadata.contrast_classes = asArray(e.workbench_metadata.contrast_classes).filter(c => !['supports(evidence,claim)', 'suggests(evidence,claim)', 'false(claim)'].includes(text(c)));
+      }
+      if (!remainingOps.has('this(reference)')) {
+        e.workbench_metadata.kernel_actions = asArray(e.workbench_metadata.kernel_actions).filter(action => !/reference resolution/i.test(text(action)));
+        e.workbench_metadata.contrast_classes = asArray(e.workbench_metadata.contrast_classes).filter(c => !['named_evidence(evidence)', 'named_claim(claim)', 'context_marker(reference)'].includes(text(c)));
+      }
+
+      e.workbench_metadata.kernel_actions = unique(e.workbench_metadata.kernel_actions);
+      e.workbench_metadata.contrast_classes = unique(e.workbench_metadata.contrast_classes);
       e.workbench_metadata.patch_packet_type = PATCH_PACKET;
       e.workbench_metadata.patch_version = VERSION;
       e.workbench_metadata.stale_overmatches_suppressed = unique(Array.from(removeOps));
@@ -89,8 +101,8 @@
     const burdenKeep = [];
     asArray(e.evidence_burden).forEach(item => {
       const b = lower(item);
-      if (removeOps.has('proved(evidence,claim)') && (b.includes('evidence being used as proof') || b.includes('entails the claim'))) return;
-      if (removeOps.has('this(reference)') && (b.includes('referenced object') || b.includes('conclusion exceeds the reference'))) return;
+      if (removeOps.has('proved(evidence,claim)') && (b.includes('evidence being used as proof') || b.includes('entails the claim') || b.includes('proof'))) return;
+      if (removeOps.has('this(reference)') && (b.includes('referenced object') || b.includes('conclusion exceeds the reference') || b.includes('determine whether it is evidence, claim, or context'))) return;
       burdenKeep.push(item);
     });
     e.evidence_burden = unique(burdenKeep);
