@@ -43,10 +43,15 @@ Current live console:
 
 - `llm-brain-v0-3.html` — main patched live brain console. Current live packet version: `0.3.4-patched`.
 
-Current semantic-language milestone pages:
+Current public-facing milestone pages:
 
+- `science-claim-sheet.html` — compact public-facing science claim sheet for the semantic-language baseline.
+- `science-claim-sheet-test.html` — smoke test for the science claim sheet content.
 - `semantic-language-certificate.html` — one-page auditable semantic-language baseline certificate.
 - `kernel-semantic-language-certificate-v0-1-test.html` — certificate test. Latest user-reported result: `7/7 passed`.
+
+Current semantic-language working pages:
+
 - `semantic-language-distiller.html` — distills the combined semantic corpus into compact metrics, candidate mappings, weak mappings, contrast gaps, and overmatch risks.
 - `semantic-corpus-combiner.html` — combines the main semantic seed corpus with modular extension packets.
 - `semantic-operator-workbench.html` — converts sentence batches into reviewed semantic seed candidates.
@@ -117,6 +122,12 @@ kernel-semantic-corpus-combiner-v0-1-test.html — 11/11 passed, combined_entry_
 ```
 
 Interpretation: the current surfaced semantic operator space has full contrast coverage and zero detected overmatch risks. Stable mappings are candidate rules, not doctrine. The certificate is an auditable diagnostic snapshot and does not move belief.
+
+The public-facing summary is:
+
+```text
+science-claim-sheet.html
+```
 
 The combined semantic seed corpus currently contains:
 
@@ -204,6 +215,7 @@ The current stack can:
 - distill semantic examples into operator-pressure metrics
 - identify weak mappings, contrast gaps, and overmatch risks
 - produce a certificate-style zero-gap semantic-language snapshot
+- present the semantic-language milestone as a public-facing science claim sheet
 
 ## Current full self-improvement path
 
@@ -292,7 +304,7 @@ The long-term research idea is that natural-language wording may converge to lan
 utterance → semantic operators → intention vector → belief-pressure effect
 ```
 
-The current kernel now seeds that path with a 69-entry reviewed corpus, a distiller, a contrast-gap planner, and a zero-gap certificate baseline. It does not claim final intention algebra.
+The current kernel now seeds that path with a 69-entry reviewed corpus, a distiller, a contrast-gap planner, a zero-gap certificate baseline, and a public science claim sheet. It does not claim final intention algebra.
 
 ## Semantic corpus modules
 
@@ -318,6 +330,8 @@ semantic-corpus-combiner.html
 semantic-language-distiller.html
 semantic-contrast-gap-planner-inline.html
 semantic-language-certificate.html
+science-claim-sheet.html
+science-claim-sheet-test.html
 kernel-semantic-language-certificate-v0-1-test.html
 ```
 
@@ -363,6 +377,7 @@ The latest important user-reported checks include:
 - `kernel-semantic-source-bridge-v0-4-test.html` — `10/10 passed`
 - `kernel-semantic-corpus-combiner-v0-1-test.html` — `11/11 passed`, `combined_entry_count: 69`
 - `kernel-semantic-language-certificate-v0-1-test.html` — `7/7 passed`
+- `science-claim-sheet-test.html` — expected `6/6 passed`
 
 For the complete verified list, read `CURRENT_PROGRESS.md`.
 
@@ -400,15 +415,15 @@ Never trust a write until commit SHA returns and fetch-back verifies exact conte
 
 ## Recommended next work
 
-No urgent code build is required if `kernel-semantic-language-certificate-v0-1-test.html` passes `7/7` and `kernel-semantic-corpus-combiner-v0-1-test.html` passes `11/11` with `combined_entry_count: 69`.
+No urgent code build is required if `kernel-semantic-language-certificate-v0-1-test.html` passes `7/7`, `kernel-semantic-corpus-combiner-v0-1-test.html` passes `11/11` with `combined_entry_count: 69`, and `science-claim-sheet-test.html` passes `6/6`.
 
 Recommended next tasks:
 
-1. Create a compact public-facing Science Claim Sheet page from the certificate.
-2. Write a serious technical paper from scratch using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md` plus the newer semantic-language certificate milestone.
-3. Add durable export/import for epistemic memory and semantic invariant ledgers.
-4. Integrate selected v0.4 and semantic-language pages into the main navigation/index.
-5. Continue validating semantic-language mappings with real examples and reviewed outcomes.
+1. Write a serious technical paper from scratch using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md` plus the newer semantic-language certificate milestone.
+2. Add durable export/import for epistemic memory and semantic invariant ledgers.
+3. Integrate selected v0.4 and semantic-language pages into the main navigation/index.
+4. Continue validating semantic-language mappings with real examples and reviewed outcomes.
+5. Expand the semantic-language corpus from 69 reviewed entries toward larger adversarial batches only after the current zero-gap baseline remains stable.
 
 ## One-line summary
 
