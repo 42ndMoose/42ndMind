@@ -2,14 +2,14 @@
 
 42ndMind is a browser-executable epistemic kernel: a transparent belief-state engine governed by the Epistemic Octahedron.
 
-It is not an LLM. It does not try to be the language model. The intended architecture is:
+The intended architecture is:
 
 ```text
 human language / documents / dossiers
 → LLM or human extractor
 → structured claim/evidence/source packet
 → epistemic kernel
-→ belief-state pressure, gates, memory, source trust, and review packets
+→ belief-state pressure, gates, memory, source trust, semantic operators, and review packets
 → optional LLM explanation layer
 ```
 
@@ -17,10 +17,11 @@ The kernel owns belief movement. LLMs are extractor/interface layers.
 
 ## Current status
 
-The repo now has two related layers:
+The repo now has three related layers:
 
 1. The older live console stack centered on `llm-brain-v0-3.html`.
 2. The newer v0.4 module stack for one-brain processing, source trust, epistemic memory, lexical uncertainty, semantic invariant learning, and controlled self-improvement.
+3. The v0.1 semantic-language corpus/distiller/certificate layer, which turns reviewed language examples into compact operator-pressure diagnostics.
 
 The latest operational status is tracked in:
 
@@ -41,6 +42,15 @@ Read those two files first before continuing development or writing a paper.
 Current live console:
 
 - `llm-brain-v0-3.html` — main patched live brain console. Current live packet version: `0.3.4-patched`.
+
+Current semantic-language milestone pages:
+
+- `semantic-language-certificate.html` — one-page auditable semantic-language baseline certificate.
+- `kernel-semantic-language-certificate-v0-1-test.html` — certificate test. Latest user-reported result: `7/7 passed`.
+- `semantic-language-distiller.html` — distills the combined semantic corpus into compact metrics, candidate mappings, weak mappings, contrast gaps, and overmatch risks.
+- `semantic-corpus-combiner.html` — combines the main semantic seed corpus with modular extension packets.
+- `semantic-operator-workbench.html` — converts sentence batches into reviewed semantic seed candidates.
+- `semantic-contrast-gap-planner-inline.html` — proposes targeted contrast batches from distiller gaps.
 
 Current v0.4 / self-improvement / semantic stack:
 
@@ -80,6 +90,63 @@ Older but still useful pages:
 - `ordinary-llm-comparison.html`
 - `ordinary-llm-comparison-test.html`
 - `belief-graph.html`
+
+## Current semantic-language certificate baseline
+
+The repo now has a clean semantic-language baseline certificate.
+
+Latest certificate/distiller metrics:
+
+```text
+entries: 69
+source packets: 7
+operators: 92
+pressures: 47
+families: 17
+stable mappings: 71
+weak mappings: 80
+contrast gaps: 0
+overmatch risks: 0
+```
+
+The user reported:
+
+```text
+kernel-semantic-language-certificate-v0-1-test.html — 7/7 passed
+kernel-semantic-corpus-combiner-v0-1-test.html — 11/11 passed, combined_entry_count: 69
+```
+
+Interpretation: the current surfaced semantic operator space has full contrast coverage and zero detected overmatch risks. Stable mappings are candidate rules, not doctrine. The certificate is an auditable diagnostic snapshot and does not move belief.
+
+The combined semantic seed corpus currently contains:
+
+```text
+32 main entries
++ 6 closure contrast entries
++ 6 authority/evidence contrast entries
++ 9 motive/agency weak-map contrast entries
++ 4 scope/qualification contrast entries
++ 10 closure/source gap contrast entries
++ 2 unverified contrast entries
+= 69 entries
+```
+
+Key semantic distinctions now covered:
+
+```text
+misleading ≠ false
+disputed ≠ debunked
+clip ≠ full record
+hearsay ≠ primary evidence
+summary ≠ underlying record
+not disproven ≠ supported
+unverified ≠ false / debunked / contradicted
+omission ≠ contradiction
+scope mismatch ≠ contradiction
+qualification ≠ falsity
+```
+
+This is the current strongest public-facing technical milestone in the semantic-language path: reviewed examples now compile into a compact, auditable operator-pressure map with no surfaced contrast gaps.
 
 ## Core design thesis
 
@@ -133,6 +200,10 @@ The current stack can:
 - evaluate semantic invariant proposals through the promotion pipeline
 - generate patch plans for semantic adapters
 - convert semantic patch plans into GitHub-safe source patch bridge packets
+- combine reviewed semantic seed packets into one runtime corpus
+- distill semantic examples into operator-pressure metrics
+- identify weak mappings, contrast gaps, and overmatch risks
+- produce a certificate-style zero-gap semantic-language snapshot
 
 ## Current full self-improvement path
 
@@ -151,9 +222,7 @@ language example / lexical report / memory report
 → external GitHub SHA/write/fetch-back/test protocol
 ```
 
-This is not autonomous source rewriting.
-
-It is controlled self-maintenance up to reviewable patch packets.
+This is controlled self-maintenance up to reviewable patch packets. The browser runtime does not rewrite source by itself.
 
 ## Safety and review doctrine
 
@@ -170,11 +239,11 @@ The kernel must not:
 - let a proposed patch promote itself
 - write GitHub source directly from browser runtime
 
-The current implementation preserves those boundaries through metadata-only ledgers, sandbox comparison, promotion evaluation, patch planning, and source patch bridge packets.
+The current implementation preserves those boundaries through metadata-only ledgers, sandbox comparison, promotion evaluation, patch planning, source patch bridge packets, semantic corpus review status, and certificate doctrine checks.
 
 ## Source trust doctrine
 
-Source trust is bounded prior pressure, not truth.
+Source trust is bounded prior pressure.
 
 A source can be classified as:
 
@@ -200,27 +269,57 @@ Fact-check certification can affect verification burden, but it cannot replace c
 
 ## Lexical and semantic language-math path
 
-The v0.4 stack introduces a research path toward mathematical language/intention analysis.
+The v0.4 stack and v0.1 semantic-corpus layer create a research path toward mathematical language/intention analysis.
 
-The current learner tracks repeated semantic-pressure patterns such as:
+The current learner and corpus track repeated semantic-pressure patterns such as:
 
 - `debunked` → closure pressure / dismissal pressure
 - `certified` → authority-transfer / trust-inflation pressure
-- `IFCN`, `fact-check` → source-trust / authority pressure
-- `they`, `this`, `that` → ambiguity pressure
-- `coordinated`, `agenda`, `motive` → motive/agency pressure
-- `misinformation`, `propaganda`, `conspiracy` → dismissal / closure pressure
-- `CDA-EOS`, `IAPWS`, `LLM`, `EES`, `SHA` → technical-definition pressure
+- `fact-checker` → source-trust / authority pressure
+- `they`, `this`, `that`, `someone` → ambiguity pressure
+- `coordinated`, `agenda`, `collusion`, `pressured` → motive/agency and direct-link evidence burden
+- `conspiracy` → stigma / dismissal / closure pressure
+- `transcript`, `raw data`, `primary document`, `dataset`, `footnote` → evidence-contact pressure
+- `different_scope`, `qualifies`, `narrows` → scope/qualification pressure
+- `misleading`, `omission`, `unverified`, `not_disproven` → uncertainty, framing, and support-withholding pressure
+- `clip`, `summary`, `hearsay` → evidence-distance and interpretation-layer pressure
 
 These are not final laws. They are candidate pressure patterns.
 
-The long-term research idea is that natural-language wording may converge to language-independent semantic operators beneath the surface words:
+The long-term research idea is that natural-language wording may converge to language-independent semantic operators beneath surface words:
 
 ```text
 utterance → semantic operators → intention vector → belief-pressure effect
 ```
 
-The current kernel only seeds that path. It does not claim final intention algebra.
+The current kernel now seeds that path with a 69-entry reviewed corpus, a distiller, a contrast-gap planner, and a zero-gap certificate baseline. It does not claim final intention algebra.
+
+## Semantic corpus modules
+
+Current semantic corpus / language-math files include:
+
+```text
+data/semantic_seed_corpus_v0_1.json
+data/semantic_seed_closure_contrast_v0_1.json
+data/semantic_seed_authority_evidence_contrast_v0_1.json
+data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json
+data/semantic_seed_scope_qualification_contrast_v0_1.json
+data/semantic_seed_closure_source_gap_contrast_v0_1.json
+data/semantic_seed_unverified_contrast_v0_1.json
+src/kernel-semantic-corpus-v0-1.js
+src/kernel-semantic-corpus-combiner-v0-1.js
+src/kernel-semantic-language-distiller-v0-1.js
+src/kernel-semantic-operator-grammar-v0-1.js
+src/kernel-semantic-operator-workbench-v0-1.js
+src/kernel-semantic-corpus-to-invariants-v0-1.js
+src/kernel-semantic-contrast-gap-planner-v0-1.js
+semantic-operator-workbench.html
+semantic-corpus-combiner.html
+semantic-language-distiller.html
+semantic-contrast-gap-planner-inline.html
+semantic-language-certificate.html
+kernel-semantic-language-certificate-v0-1-test.html
+```
 
 ## Local storage keys
 
@@ -262,6 +361,8 @@ The latest important user-reported checks include:
 - `kernel-semantic-invariant-learner-v0-4-test.html` — `14/14 passed`
 - `kernel-semantic-promotion-bridge-v0-4-test.html` — `10/10 passed`
 - `kernel-semantic-source-bridge-v0-4-test.html` — `10/10 passed`
+- `kernel-semantic-corpus-combiner-v0-1-test.html` — `11/11 passed`, `combined_entry_count: 69`
+- `kernel-semantic-language-certificate-v0-1-test.html` — `7/7 passed`
 
 For the complete verified list, read `CURRENT_PROGRESS.md`.
 
@@ -299,14 +400,15 @@ Never trust a write until commit SHA returns and fetch-back verifies exact conte
 
 ## Recommended next work
 
-No urgent code build is required if `kernel-semantic-source-bridge-v0-4-test.html` passes `10/10`.
+No urgent code build is required if `kernel-semantic-language-certificate-v0-1-test.html` passes `7/7` and `kernel-semantic-corpus-combiner-v0-1-test.html` passes `11/11` with `combined_entry_count: 69`.
 
 Recommended next tasks:
 
-1. Write a serious technical paper from scratch using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md`.
-2. Add durable export/import for epistemic memory and semantic invariant ledgers.
-3. Integrate selected v0.4 pages into the main navigation/index.
-4. Continue validating semantic invariant learning with real examples and reviewed outcomes.
+1. Create a compact public-facing Science Claim Sheet page from the certificate.
+2. Write a serious technical paper from scratch using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md` plus the newer semantic-language certificate milestone.
+3. Add durable export/import for epistemic memory and semantic invariant ledgers.
+4. Integrate selected v0.4 and semantic-language pages into the main navigation/index.
+5. Continue validating semantic-language mappings with real examples and reviewed outcomes.
 
 ## One-line summary
 
