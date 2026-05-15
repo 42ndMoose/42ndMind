@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Pressure Registry v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Pressure Registry v0.1 Test</h1><div>Tests pressure-label ontology coverage over the current combined semantic corpus.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-pressure-registry.html">semantic pressure registry</a> · <a href="semantic-language-distiller.html">language distiller</a> · <a href="semantic-corpus-combiner.html">corpus combiner</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  let registry = null;
+  let packet = null;
+  let validation = null;
+  let ontology = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function asArray(value) { return Array.isArray(value) ? value : []; }
+
+  add('modules load', () => {
+    assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
+    assert(window.KernelSemanticCorpusCombinerV01, 'KernelSemanticCorpusCombinerV01 missing');
+    assert(window.KernelSemanticPressureRegistryV01, 'KernelSemanticPressureRegistryV01 missing');
+  });
+
+  add('doctrine preserves no belief movement', () => {
+    const d = KernelSemanticPressureRegistryV01.doctrine();
+    assert(d.pressure_registry_defines_labels_not_truth === true, 'label doctrine missing');
+    assert(d.pressure_labels_are_not_belief_movement === true, 'pressure/belief doctrine missing');
+    assert(d.pressure_registry_does_not_promote_doctrine === true, 'promotion doctrine missing');
+    assert(d.pressure_registry_does_not_patch_source === true, 'patch doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('registry validates internally', () => {
+    registry = KernelSemanticPressureRegistryV01.defaultRegistry();
+    const report = KernelSemanticPressureRegistryV01.validateRegistry(registry);
+    assert(report.ok === true, 'registry validation failed: ' + JSON.stringify(report.errors));
+    assert(registry.pressure_count >= 55, 'registry should cover at least current 55 observed pressures');
+    assert(registry.belief_movement === 'none', 'registry moved belief');
+  });
+
+  add('combined corpus loads current 79-entry state', async () => {
+    packet = await KernelSemanticCorpusCombinerV01.loadAndCombine();
+    assert(packet.ok === true, 'combined packet not ok');
+    assert(packet.combined.entry_count === 79, 'expected combined entry_count 79');
+    assert((packet.combined.source_packets || []).length === 8, 'expected 8 source packets');
+    assert(packet.combined.belief_movement === 'none', 'combined corpus moved belief');
+  });
+
+  add('registry covers every observed pressure', () => {
+    validation = KernelSemanticPressureRegistryV01.validateAgainstCorpus(packet.combined, registry);
+    assert(validation.ok === true, 'missing pressures: ' + JSON.stringify(validation.missing_pressures));
+    assert(validation.observed_pressure_count === 55, 'expected 55 observed pressures');
+    assert(validation.covered_pressure_count === 55, 'expected all 55 pressures covered');
+    assert(validation.missing_pressure_count === 0, 'expected zero missing pressure definitions');
+    assert(validation.belief_movement === 'none', 'validation moved belief');
+  });
+
+  add('ontology builds from corpus', () => {
+    ontology = KernelSemanticPressureRegistryV01.buildOntologyFromCorpus(packet.combined, registry);
+    assert(ontology.packet_type === '42ndMind_semantic_pressure_ontology_from_corpus_v0_1', 'wrong ontology packet type');
+    assert(ontology.pressure_count === 55, 'ontology should have 55 observed pressures');
+    assert(ontology.family_count >= 10, 'expected multiple pressure families');
+    assert(ontology.validation.ok === true, 'ontology validation should be ok');
+    assert(ontology.belief_movement === 'none', 'ontology moved belief');
+  });
+
+  add('key pressure definitions exist', () => {
+    [
+      'absence_to_truth_pressure',
+      'clarity_reduction_pressure',
+      'evidence_access_burden',
+      'affective_pressure',
+      'salience_distortion_pressure',
+      'accusation_pressure',
+      'reputational_risk_pressure',
+      'intent_attribution_pressure',
+      'source_trust_pressure',
+      'contradiction_pressure',
+      'closure_pressure',
+      'uncertainty_calibration_pressure'
+    ].forEach(name => {
+      const row = KernelSemanticPressureRegistryV01.lookup(name, registry);
+      assert(row, 'missing lookup ' + name);
+      assert(row.definition && row.definition.length > 10, 'weak definition ' + name);
+      assert(asArray(row.requires).length >= 1, 'requires missing ' + name);
+      assert(asArray(row.allows).length >= 1, 'allows missing ' + name);
+    });
+  });
+
+  add('allowed movement packets expose blocks and requirements', () => {
+    const ignorance = KernelSemanticPressureRegistryV01.allowedMovementFor('absence_to_truth_pressure', registry);
+    assert(ignorance.registered === true, 'absence_to_truth not registered');
+    assert(ignorance.blocks.includes('not_disproven_to_true'), 'absence-to-truth block missing');
+    assert(ignorance.allows.includes('unresolved_status'), 'unresolved allow missing');
+    const intent = KernelSemanticPressureRegistryV01.allowedMovementFor('intent_attribution_pressure', registry);
+    assert(intent.blocks.includes('outcome_to_motive'), 'intent outcome block missing');
+    assert(intent.requires.includes('direct_link_evidence'), 'intent direct-link requirement missing');
+    assert(intent.belief_movement === 'none_by_itself', 'pressure should not move belief by itself');
+  });
+
+  add('rhetoric and intent pressure observations are present', () => {
+    const pressures = ontology.pressures || [];
+    const byName = Object.fromEntries(pressures.map(p => [p.pressure, p]));
+    assert(byName.clarity_reduction_pressure.observation_count >= 2, 'clarity observations missing');
+    assert(byName.affective_pressure.observation_count >= 2, 'affective observations missing');
+    assert(byName.accusation_pressure.observation_count >= 2, 'accusation observations missing');
+    assert(byName.absence_to_truth_pressure.observation_count >= 2, 'ignorance-fallacy observations missing');
+    assert(byName.intent_attribution_pressure.observation_count >= 2, 'intent observations missing');
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({
+      packet_type:'42ndMind_semantic_pressure_registry_v0_1_test_report',
+      observed_pressure_count: validation && validation.observed_pressure_count,
+      registered_pressure_count: validation && validation.registered_pressure_count,
+      missing_pressure_count: validation && validation.missing_pressure_count,
+      ontology_pressure_count: ontology && ontology.pressure_count,
+      results
+    }, null, 2);
+  })();
+</script>
+</body>
+</html>
