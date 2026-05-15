@@ -1,6 +1,6 @@
 # 42ndMind Current Progress
 
-Last updated: **2026-05-13**.
+Last updated: **2026-05-15**.
 
 This is the short operational handoff for the current repo state. For the full paper-level technical context, read:
 
@@ -8,14 +8,15 @@ This is the short operational handoff for the current repo state. For the full p
 HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md
 ```
 
-That file is now the authoritative high-context bundle for writing a serious paper on the Epistemic Kernel v0.4 state.
+That file remains the authoritative high-context bundle for writing a serious paper on the Epistemic Kernel v0.4 state. This file now also records the later semantic-language corpus/certificate milestone.
 
 ## Current status
 
-42ndMind is now a browser-based epistemic kernel stack with two related layers:
+42ndMind is now a browser-based epistemic kernel stack with three related layers:
 
 1. The older live console stack centered on `llm-brain-v0-3.html`.
 2. The newer v0.4 one-brain / self-improvement / source-trust / semantic-invariant stack built as separate deterministic modules and test pages.
+3. The v0.1 semantic-language corpus/distiller/certificate layer, which turns reviewed language examples into compact operator-pressure diagnostics.
 
 The project remains a prototype. It is not a full truth machine and does not independently verify external facts without structured evidence, source review, and user/tool-mediated verification. The kernel owns belief movement; LLMs should remain extractor/interface layers.
 
@@ -39,6 +40,71 @@ memory archives pressure, not active belief
 semantic invariants are candidates, not doctrine
 self-improvement produces proposals/plans/packets, not automatic source edits
 browser kernel never writes GitHub source directly
+```
+
+## Current semantic-language certificate milestone
+
+The repo now has a clean semantic-language baseline certificate.
+
+Pages:
+
+```text
+semantic-language-certificate.html
+kernel-semantic-language-certificate-v0-1-test.html
+semantic-language-distiller.html
+semantic-corpus-combiner.html
+semantic-operator-workbench.html
+semantic-contrast-gap-planner-inline.html
+```
+
+The user reported:
+
+```text
+kernel-semantic-language-certificate-v0-1-test.html — 7/7 passed
+```
+
+Current certificate/distiller metrics:
+
+```text
+entries: 69
+operators: 92
+pressures: 47
+families: 17
+stable mappings: 71
+weak mappings: 80
+contrast gaps: 0
+overmatch risks: 0
+source packets: 7
+```
+
+Interpretation: the current surfaced semantic operator space has full contrast coverage and zero detected overmatch risks. Stable mappings are still candidate rules, not doctrine. The certificate is an auditable diagnostic snapshot, not a truth decision and not belief movement.
+
+The semantic seed corpus currently combines:
+
+```text
+32 main entries
++ 6 closure contrast entries
++ 6 authority/evidence contrast entries
++ 9 motive/agency weak-map contrast entries
++ 4 scope/qualification contrast entries
++ 10 closure/source gap contrast entries
++ 2 unverified contrast entries
+= 69 entries
+```
+
+Key semantic distinctions now covered include:
+
+```text
+misleading ≠ false
+disputed ≠ debunked
+clip ≠ full record
+hearsay ≠ primary evidence
+summary ≠ underlying record
+not disproven ≠ supported
+unverified ≠ false / debunked / contradicted
+omission ≠ contradiction
+scope mismatch ≠ contradiction
+qualification ≠ falsity
 ```
 
 ## Current full self-improvement path
@@ -120,6 +186,45 @@ It still cannot and should not write source automatically.
 - `src/kernel-semantic-source-bridge-v0-4.js`
 - `kernel-semantic-source-bridge-v0-4-test.html`
 
+### Semantic corpus / language-math certificate path
+
+- `data/semantic_seed_corpus_v0_1.json`
+- `data/semantic_seed_closure_contrast_v0_1.json`
+- `data/semantic_seed_authority_evidence_contrast_v0_1.json`
+- `data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json`
+- `data/semantic_seed_scope_qualification_contrast_v0_1.json`
+- `data/semantic_seed_closure_source_gap_contrast_v0_1.json`
+- `data/semantic_seed_unverified_contrast_v0_1.json`
+- `src/kernel-semantic-corpus-v0-1.js`
+- `src/kernel-semantic-corpus-combiner-v0-1.js`
+- `src/kernel-semantic-language-distiller-v0-1.js`
+- `src/kernel-semantic-operator-grammar-v0-1.js`
+- `src/kernel-semantic-operator-grammar-v0-1-1-patch.js`
+- `src/kernel-semantic-operator-grammar-v0-1-2-patch.js`
+- `src/kernel-semantic-operator-grammar-v0-1-3-patch.js`
+- `src/kernel-semantic-operator-grammar-v0-1-4-patch.js`
+- `src/kernel-semantic-operator-grammar-v0-1-5-patch.js`
+- `src/kernel-semantic-operator-grammar-v0-1-6-patch.js`
+- `src/kernel-semantic-operator-grammar-v0-1-7-patch.js`
+- `src/kernel-semantic-operator-workbench-v0-1.js`
+- `src/kernel-semantic-operator-workbench-v0-1-1-patch.js`
+- `src/kernel-semantic-operator-workbench-v0-1-2-patch.js`
+- `src/kernel-semantic-operator-workbench-v0-1-3-patch.js`
+- `src/kernel-semantic-operator-workbench-v0-1-4-patch.js`
+- `src/kernel-semantic-operator-workbench-v0-1-5-patch.js`
+- `src/kernel-semantic-corpus-to-invariants-v0-1.js`
+- `src/kernel-semantic-contrast-gap-planner-v0-1.js`
+- `src/kernel-semantic-contrast-gap-planner-v0-1-1-patch.js`
+- `src/kernel-semantic-contrast-gap-planner-v0-1-2-patch.js`
+- `semantic-corpus-builder.html`
+- `semantic-operator-workbench.html`
+- `semantic-corpus-combiner.html`
+- `semantic-language-distiller.html`
+- `semantic-contrast-gap-planner.html`
+- `semantic-contrast-gap-planner-inline.html`
+- `semantic-language-certificate.html`
+- `kernel-semantic-language-certificate-v0-1-test.html`
+
 ### Review / bridge pages
 
 - `kernel-runtime-candidate-review.html`
@@ -151,6 +256,8 @@ The user reported these key results:
 - `kernel-semantic-invariant-learner-v0-4-test.html` — `14/14 passed`
 - `kernel-semantic-promotion-bridge-v0-4-test.html` — `10/10 passed`
 - `kernel-semantic-source-bridge-v0-4-test.html` — `10/10 passed`
+- `kernel-semantic-corpus-combiner-v0-1-test.html` — `11/11 passed`, `combined_entry_count: 69`
+- `kernel-semantic-language-certificate-v0-1-test.html` — `7/7 passed`
 
 If future pages disagree, trust the page’s actual listed tests and update this file after verification.
 
@@ -168,27 +275,24 @@ If future pages disagree, trust the page’s actual listed tests and update this
 
 ## README status
 
-`README.md` is outdated relative to the v0.4 stack. It still contains useful older context and milestone framing, but the latest authoritative status is now this file plus:
-
-```text
-HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md
-```
+`README.md` has been revised to describe the v0.4 architecture, but it may still need another update to include the 69-entry semantic-language certificate milestone.
 
 Recommended future documentation step:
 
-- Replace or heavily revise `README.md` with a v0.4 overview.
+- Add a short section to `README.md` linking `semantic-language-certificate.html` and summarizing the zero-gap semantic-language baseline.
 - Keep older milestone content as archival or move it into a separate roadmap document.
 
 ## Current next development target
 
-No urgent code build is required immediately after the semantic source bridge if `kernel-semantic-source-bridge-v0-4-test.html` reports `10/10 passed`.
+No urgent code build is required immediately after the semantic-language certificate if `kernel-semantic-language-certificate-v0-1-test.html` reports `7/7 passed`.
 
 Recommended next work:
 
-1. Create or revise a v0.4 README overview.
-2. Prepare a serious paper outline or LaTeX/PDF in a separate chat using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md`.
-3. Add durable export/import for `42ndMind_epistemic_memory_v0_4` and `42ndMind_semantic_invariants_v0_4`.
-4. Eventually integrate selected v0.4 pages into the main navigation/index.
+1. Add the semantic-language certificate milestone to `README.md`.
+2. Consider creating a compact public-facing “Science Claim Sheet” page from the certificate.
+3. Prepare a serious paper outline or LaTeX/PDF using `HANDOFF_2026_05_13_KERNEL_V04_PAPER_CONTEXT.md` plus the newer semantic-language certificate milestone.
+4. Add durable export/import for `42ndMind_epistemic_memory_v0_4` and `42ndMind_semantic_invariants_v0_4`.
+5. Eventually integrate selected v0.4 and semantic-language pages into the main navigation/index.
 
 ## SHA write trick
 
@@ -219,15 +323,21 @@ Important current state:
 - v0.4 modules implement one-brain sensemaking, intention recovery, consistency, probability, motivation, self-maintenance, promotion, patch planning, runtime staging, activation, sandbox comparison, source patch bridge, source trust, epistemic memory, lexical uncertainty, semantic invariant learning, semantic promotion, and semantic source bridge.
 - Semantic source bridge reaches source patch bridge packets but does not write source.
 - kernel-semantic-source-bridge-v0-4-test.html should report 10/10 passed.
+- Semantic-language corpus now combines 69 entries across 7 source packets.
+- semantic-language-certificate.html produces a zero-gap certificate baseline.
+- kernel-semantic-language-certificate-v0-1-test.html should report 7/7 passed.
+- Latest semantic-language certificate metrics: 69 entries, 92 operators, 47 pressures, 17 families, 71 stable mappings, 80 weak mappings, 0 contrast gaps, 0 overmatch risks.
+- Key semantic distinctions now covered: misleading ≠ false, disputed ≠ debunked, clip ≠ full record, hearsay ≠ primary evidence, summary ≠ underlying record, not disproven ≠ supported, unverified ≠ false/debunked/contradicted, omission ≠ contradiction, scope mismatch ≠ contradiction, qualification ≠ falsity.
 - Source-trust treats certification as metadata, not truth.
 - Lexical uncertainty treats LLM as extractor, not authority.
 - Epistemic memory archives contradicted beliefs instead of deleting them.
-- Semantic invariants are candidate pressure patterns, not live doctrine.
+- Semantic invariants and semantic-language stable mappings are candidate pressure patterns, not live doctrine.
 - No browser module may write GitHub source directly.
 - No semantic invariant may promote itself into doctrine without the promotion/sandbox/source-bridge path.
 
 Likely next work:
-1. Update or replace README.md with a v0.4 overview.
-2. Prepare a serious paper outline or LaTeX/PDF in a separate chat using the paper-context handoff.
-3. Consider durable export/import for epistemic memory and semantic invariant ledgers beyond localStorage.
+1. Add the semantic-language certificate milestone to README.md.
+2. Consider a public-facing Science Claim Sheet page.
+3. Prepare a serious paper outline or LaTeX/PDF using the paper-context handoff plus the newer certificate milestone.
+4. Consider durable export/import for epistemic memory and semantic invariant ledgers beyond localStorage.
 ```
