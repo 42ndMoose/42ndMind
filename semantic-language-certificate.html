@@ -12,44 +12,36 @@
     section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
     h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
     h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
-    h3 { font:700 13px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:12px 0 6px; }
     button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
     textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-    textarea { min-height:135px; resize:vertical; }
+    textarea { min-height:150px; resize:vertical; }
     pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
-    a { color:#9db6ff; }
-    .muted { color:#8b93a7; }
-    .small { font-size:12px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
     .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .metric,.item,.badge { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
-    .metric span,.item span { color:#8b93a7; display:block; }
-    .metric b,.item b { display:block; overflow-wrap:anywhere; }
+    .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.item span { color:#8b93a7; display:block; } .metric b,.item b { display:block; overflow-wrap:anywhere; }
     .status { border-radius:12px; padding:14px; margin:8px 0 12px; border:1px solid #2a3040; background:#10131a; }
-    .status.clean { border-color:#396b45; background:#122117; }
-    .status.warn { border-color:#79622d; background:#211b10; }
-    .status.bad { border-color:#7a3a3a; background:#241515; }
+    .status.clean { border-color:#396b45; background:#122117; } .status.warn { border-color:#79622d; background:#211b10; } .status.bad { border-color:#7a3a3a; background:#241515; }
     .status b { font:700 18px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; display:block; }
     .status span { color:#c7d0ea; display:block; margin-top:4px; }
     .pill { display:inline-block; border:1px solid #2a3040; border-radius:999px; padding:3px 8px; margin:2px 4px 2px 0; background:#10131a; color:#cbd5ff; }
-    .ok { color:#9dffb4; }
-    .warnText { color:#ffd28b; }
-    .badText { color:#ff8b8b; }
+    .ok { color:#9dffb4; } .badText { color:#ff8b8b; }
     @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
 <header>
   <h1>42ndMind Semantic Language Certificate</h1>
-  <div class="muted small">Auditable milestone card for the runtime semantic-language corpus. It summarizes corpus size, source packets, stable mappings, weak mappings, contrast gaps, overmatch risks, and doctrine boundaries.</div>
+  <div class="muted small">Auditable milestone card for the runtime semantic-language corpus and pressure ontology. It summarizes corpus size, source packets, stable mappings, pressure coverage, contrast gaps, overmatch risks, and doctrine boundaries.</div>
 </header>
 <main>
   <div>
     <section>
       <h2>Navigation</h2>
       <a href="semantic-language-distiller.html">language distiller</a> ·
+      <a href="semantic-pressure-registry.html">pressure registry</a> ·
       <a href="semantic-corpus-combiner.html">corpus combiner</a> ·
-      <a href="kernel-semantic-language-certificate-v0-1-test.html">certificate test</a> ·
-      <a href="semantic-operator-workbench.html">operator workbench</a>
+      <a href="kernel-semantic-language-certificate-v0-1-test.html">certificate test</a>
     </section>
     <section>
       <h2>Certificate input</h2>
@@ -61,112 +53,81 @@ data/semantic_seed_authority_evidence_contrast_v0_1.json
 data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json
 data/semantic_seed_scope_qualification_contrast_v0_1.json
 data/semantic_seed_closure_source_gap_contrast_v0_1.json
-data/semantic_seed_unverified_contrast_v0_1.json</textarea>
+data/semantic_seed_unverified_contrast_v0_1.json
+data/semantic_seed_rhetoric_intent_pressure_v0_1.json</textarea>
       <button onclick="buildCertificate()">BUILD CERTIFICATE</button>
       <button onclick="showCertificateJson()">SHOW certificate JSON</button>
       <button onclick="showCompactReport()">SHOW compact report</button>
+      <button onclick="showPressureOntology()">SHOW pressure ontology</button>
       <button onclick="copyOutput()">COPY output</button>
-      <button onclick="downloadOutput()">DOWNLOAD output JSON</button>
     </section>
     <section>
       <h2>Semantic state</h2>
       <div id="stateBox" class="status warn"><b>Not built</b><span>Click BUILD CERTIFICATE.</span></div>
-      <div class="row">
-        <div class="metric"><span>entries</span><b id="entryCount">0</b></div>
-        <div class="metric"><span>source packets</span><b id="sourceCount">0</b></div>
-      </div>
-      <div class="row">
-        <div class="metric"><span>operators</span><b id="operatorCount">0</b></div>
-        <div class="metric"><span>pressures</span><b id="pressureCount">0</b></div>
-      </div>
-      <div class="row">
-        <div class="metric"><span>families</span><b id="familyCount">0</b></div>
-        <div class="metric"><span>stable mappings</span><b id="stableCount">0</b></div>
-      </div>
-      <div class="row">
-        <div class="metric"><span>weak mappings</span><b id="weakCount">0</b></div>
-        <div class="metric"><span>candidate rules</span><b id="ruleCount">0</b></div>
-      </div>
-      <div class="row">
-        <div class="metric"><span>contrast gaps</span><b id="gapCount">0</b></div>
-        <div class="metric"><span>overmatch risks</span><b id="riskCount">0</b></div>
-      </div>
+      <div class="row"><div class="metric"><span>entries</span><b id="entryCount">0</b></div><div class="metric"><span>source packets</span><b id="sourceCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>operators</span><b id="operatorCount">0</b></div><div class="metric"><span>pressures</span><b id="pressureCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>registered pressures</span><b id="registeredPressureCount">0</b></div><div class="metric"><span>missing pressures</span><b id="missingPressureCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>families</span><b id="familyCount">0</b></div><div class="metric"><span>stable mappings</span><b id="stableCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>weak mappings</span><b id="weakCount">0</b></div><div class="metric"><span>candidate rules</span><b id="ruleCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>contrast gaps</span><b id="gapCount">0</b></div><div class="metric"><span>overmatch risks</span><b id="riskCount">0</b></div></div>
     </section>
-    <section>
-      <h2>Source packets</h2>
-      <div id="sourceList" class="small muted">No certificate built.</div>
-    </section>
-    <section>
-      <h2>Doctrine checks</h2>
-      <div id="doctrineChecks" class="small muted">No certificate built.</div>
-    </section>
+    <section><h2>Source packets</h2><div id="sourceList" class="small muted">No certificate built.</div></section>
+    <section><h2>Doctrine checks</h2><div id="doctrineChecks" class="small muted">No certificate built.</div></section>
   </div>
   <div>
-    <section>
-      <h2>Top operators</h2>
-      <div id="topOperators" class="small muted">No certificate built.</div>
-    </section>
-    <section>
-      <h2>Top pressures</h2>
-      <div id="topPressures" class="small muted">No certificate built.</div>
-    </section>
-    <section>
-      <h2>Output</h2>
-      <pre id="out">No output yet.</pre>
-    </section>
+    <section><h2>Pressure ontology families</h2><div id="pressureFamilies" class="small muted">No certificate built.</div></section>
+    <section><h2>Top operators</h2><div id="topOperators" class="small muted">No certificate built.</div></section>
+    <section><h2>Top pressures</h2><div id="topPressures" class="small muted">No certificate built.</div></section>
+    <section><h2>Output</h2><pre id="out">No output yet.</pre></section>
   </div>
 </main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-language-distiller-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
 <script>
-  let lastDistillation = null;
-  let lastCertificate = null;
-  let lastOutput = null;
-  function $(id){ return document.getElementById(id); }
-  function asArray(value){ return Array.isArray(value) ? value : []; }
-  function now(){ return new Date().toISOString(); }
-  function extensionUrls(){ return $('extensionUrls').value.split(/\n+/).map(s => s.trim()).filter(Boolean); }
-  function options(){ return { extension_urls: extensionUrls(), min_observations: Number($('minObs').value || 2) }; }
-  function pass(value){ return value === true; }
-  function metricPasses(report, combinedPacket, rules){
-    return {
-      combined_entry_count_69: report.corpus_entry_count === 69,
-      source_packet_count_7: asArray(combinedPacket.combined && combinedPacket.combined.source_packets).length === 7,
+  let lastDistillation = null, lastCertificate = null, lastOntology = null, lastOutput = null;
+  const $ = id => document.getElementById(id);
+  const asArray = value => Array.isArray(value) ? value : [];
+  const now = () => new Date().toISOString();
+  const extensionUrls = () => $('extensionUrls').value.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  const options = () => ({ extension_urls: extensionUrls(), min_observations: Number($('minObs').value || 2) });
+  function makeCertificate(distillation) {
+    const report = distillation.compact_report, rules = distillation.candidate_rules, combinedPacket = distillation.combined_packet;
+    const sources = asArray(combinedPacket.combined && combinedPacket.combined.source_packets);
+    const registry = KernelSemanticPressureRegistryV01.defaultRegistry();
+    const ontology = KernelSemanticPressureRegistryV01.buildOntologyFromCorpus(combinedPacket.combined, registry);
+    lastOntology = ontology;
+    const checks = {
+      combined_entry_count_79: report.corpus_entry_count === 79,
+      source_packet_count_8: sources.length === 8,
+      observed_pressure_count_55: report.unique_pressure_count === 55,
+      pressure_ontology_missing_zero: ontology.validation.missing_pressure_count === 0,
       contrast_gaps_zero: report.contrast_missing_count === 0,
       overmatch_risks_zero: report.overmatch_risk_count === 0,
-      stable_mappings_at_least_71: report.stable_mapping_count >= 71,
+      stable_mappings_at_least_89: report.stable_mapping_count >= 89,
       candidate_rules_match_stable_mappings: rules.rule_count === report.stable_mapping_count,
-      no_belief_movement: report.belief_movement === 'none' && rules.belief_movement === 'none' && combinedPacket.combined.belief_movement === 'none'
+      no_belief_movement: report.belief_movement === 'none' && rules.belief_movement === 'none' && combinedPacket.combined.belief_movement === 'none' && ontology.belief_movement === 'none'
     };
-  }
-  function certificateStatus(checks){
-    const values = Object.values(checks);
-    if (values.every(pass)) return { code:'CLEAN_SEMANTIC_LANGUAGE_BASELINE', label:'Clean semantic-language baseline', className:'clean', text:'The current runtime corpus has full surfaced contrast coverage and zero detected overmatch risks.' };
-    if (checks.contrast_gaps_zero && checks.overmatch_risks_zero) return { code:'CLEAN_BUT_UNEXPECTED_COUNTS', label:'Clean, but counts differ from locked baseline', className:'warn', text:'The corpus has no contrast gaps or overmatch risks, but one or more expected baseline counts changed.' };
-    return { code:'REVIEW_REQUIRED', label:'Review required', className:'bad', text:'The certificate found contrast gaps, overmatch risks, or failed doctrine/count checks.' };
-  }
-  function makeCertificate(distillation){
-    const report = distillation.compact_report;
-    const rules = distillation.candidate_rules;
-    const combinedPacket = distillation.combined_packet;
-    const sources = asArray(combinedPacket.combined && combinedPacket.combined.source_packets);
-    const checks = metricPasses(report, combinedPacket, rules);
-    const status = certificateStatus(checks);
+    const clean = Object.values(checks).every(Boolean);
     return {
       packet_type: '42ndMind_semantic_language_certificate_v0_1',
-      packet_version: '0.1.0',
+      packet_version: '0.1.1',
       created_at: now(),
-      status: status.code,
-      status_label: status.label,
-      summary: status.text,
-      baseline_name: 'semantic_language_math_zero_gap_baseline_2026_05_15',
+      status: clean ? 'CLEAN_SEMANTIC_LANGUAGE_PRESSURE_ONTOLOGY_BASELINE' : 'REVIEW_REQUIRED',
+      status_label: clean ? 'Clean semantic-language + pressure-ontology baseline' : 'Review required',
+      summary: clean ? 'The current runtime corpus has zero contrast gaps, zero overmatch risks, and complete pressure-ontology coverage.' : 'One or more certificate checks failed.',
+      baseline_name: 'semantic_language_pressure_ontology_zero_gap_baseline_2026_05_15',
       metrics: {
         entries: report.corpus_entry_count,
         source_packets: sources.length,
         operators: report.unique_operator_count,
         pressures: report.unique_pressure_count,
+        registered_pressures: ontology.validation.registered_pressure_count,
+        pressure_ontology_missing: ontology.validation.missing_pressure_count,
         families: report.operator_family_count,
+        pressure_families: ontology.family_count,
         stable_mappings: report.stable_mapping_count,
         weak_mappings: report.weak_mapping_count,
         candidate_rules: rules.rule_count,
@@ -177,66 +138,40 @@ data/semantic_seed_unverified_contrast_v0_1.json</textarea>
       source_packets: sources,
       top_operators: report.top_operators,
       top_pressures: report.top_pressures,
+      pressure_ontology_summary: { pressure_count: ontology.pressure_count, family_count: ontology.family_count, families: ontology.families, missing_pressures: ontology.validation.missing_pressures },
       doctrine: {
         certificate_is_a_diagnostic_snapshot_not_truth: true,
         corpus_entries_are_training_pressure_not_belief: true,
         stable_mappings_are_candidate_rules_not_doctrine: true,
-        contrast_gaps_are_research_targets_not_failures: true,
-        overmatch_risks_are_review_flags_not_rejections: true,
+        pressure_ontology_defines_labels_not_truth: true,
+        pressure_labels_are_not_belief_movement: true,
         certificate_does_not_move_belief: true,
         certificate_does_not_promote_doctrine: true,
         belief_movement: 'none'
-      },
-      underlying_packets: {
-        distiller_packet_type: distillation.packet_type,
-        candidate_rules_packet_type: rules.packet_type,
-        combined_packet_type: combinedPacket.packet_type
       },
       belief_movement: 'none'
     };
   }
   function updateUi(){
-    if(!lastCertificate || !lastDistillation) return;
-    const c = lastCertificate;
-    const m = c.metrics;
-    const statusClass = c.status === 'CLEAN_SEMANTIC_LANGUAGE_BASELINE' ? 'clean' : (c.status === 'REVIEW_REQUIRED' ? 'bad' : 'warn');
-    $('stateBox').className = 'status ' + statusClass;
+    if(!lastCertificate) return;
+    const c = lastCertificate, m = c.metrics;
+    $('stateBox').className = 'status ' + (c.status === 'REVIEW_REQUIRED' ? 'bad' : 'clean');
     $('stateBox').innerHTML = `<b>${c.status_label}</b><span>${c.summary}</span><span class="small muted">${c.baseline_name}</span>`;
-    $('entryCount').textContent = String(m.entries);
-    $('sourceCount').textContent = String(m.source_packets);
-    $('operatorCount').textContent = String(m.operators);
-    $('pressureCount').textContent = String(m.pressures);
-    $('familyCount').textContent = String(m.families);
-    $('stableCount').textContent = String(m.stable_mappings);
-    $('weakCount').textContent = String(m.weak_mappings);
-    $('ruleCount').textContent = String(m.candidate_rules);
-    $('gapCount').textContent = String(m.contrast_gaps);
-    $('riskCount').textContent = String(m.overmatch_risks);
-    $('sourceList').innerHTML = c.source_packets.map(s => `<div class="item"><b>${s.source_label}</b><span>${s.packet_type} · ${s.entry_count} entries</span><span>${s.description || ''}</span></div>`).join('') || 'No sources.';
+    $('entryCount').textContent = m.entries; $('sourceCount').textContent = m.source_packets; $('operatorCount').textContent = m.operators; $('pressureCount').textContent = m.pressures;
+    $('registeredPressureCount').textContent = m.registered_pressures; $('missingPressureCount').textContent = m.pressure_ontology_missing;
+    $('familyCount').textContent = m.families; $('stableCount').textContent = m.stable_mappings; $('weakCount').textContent = m.weak_mappings; $('ruleCount').textContent = m.candidate_rules; $('gapCount').textContent = m.contrast_gaps; $('riskCount').textContent = m.overmatch_risks;
+    $('sourceList').innerHTML = c.source_packets.map(s => `<div class="item"><b>${s.source_label}</b><span>${s.packet_type} · ${s.entry_count} entries</span><span>${s.description || ''}</span></div>`).join('');
     $('doctrineChecks').innerHTML = Object.entries(c.checks).map(([k,v]) => `<span class="pill ${v ? 'ok' : 'badText'}">${v ? 'PASS' : 'FAIL'} ${k}</span>`).join('');
-    $('topOperators').innerHTML = asArray(c.top_operators).slice(0, 12).map(x => `<div class="item"><b>${x.operator}</b><span>${x.count} observations</span></div>`).join('') || 'No operators.';
-    $('topPressures').innerHTML = asArray(c.top_pressures).slice(0, 12).map(x => `<div class="item"><b>${x.pressure}</b><span>${x.count} observations</span></div>`).join('') || 'No pressures.';
+    $('pressureFamilies').innerHTML = asArray(c.pressure_ontology_summary.families).map(f => `<span class="pill">${f.family}: ${f.count}</span>`).join('');
+    $('topOperators').innerHTML = asArray(c.top_operators).slice(0, 12).map(x => `<div class="item"><b>${x.operator}</b><span>${x.count} observations</span></div>`).join('');
+    $('topPressures').innerHTML = asArray(c.top_pressures).slice(0, 12).map(x => `<div class="item"><b>${x.pressure}</b><span>${x.count} observations</span></div>`).join('');
   }
   function show(value){ lastOutput = value; $('out').textContent = JSON.stringify(value, null, 2); updateUi(); }
-  async function buildCertificate(){
-    try {
-      lastDistillation = await KernelSemanticLanguageDistillerV01.loadCombinedAndDistill(options());
-      lastCertificate = makeCertificate(lastDistillation);
-      show(lastCertificate);
-    } catch(e) { show({ ok:false, error:e.message, packet_type:'42ndMind_semantic_language_certificate_error_v0_1' }); }
-  }
+  async function buildCertificate(){ try { lastDistillation = await KernelSemanticLanguageDistillerV01.loadCombinedAndDistill(options()); lastCertificate = makeCertificate(lastDistillation); show(lastCertificate); } catch(e) { show({ ok:false, error:e.message, packet_type:'42ndMind_semantic_language_certificate_error_v0_1' }); } }
   function showCertificateJson(){ if(!lastCertificate) return buildCertificate(); show(lastCertificate); }
   function showCompactReport(){ if(!lastDistillation) return buildCertificate(); show(lastDistillation.compact_report); }
+  function showPressureOntology(){ if(!lastOntology) return buildCertificate(); show(lastOntology); }
   async function copyOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
-  function downloadOutput(){
-    const text = JSON.stringify(lastOutput || {}, null, 2);
-    const blob = new Blob([text], { type:'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = (lastOutput && lastOutput.packet_type ? lastOutput.packet_type : 'semantic_language_certificate') + '.json';
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  }
 </script>
 </body>
 </html>
