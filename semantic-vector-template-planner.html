@@ -13,14 +13,13 @@
     h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
     button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
     textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-    textarea { min-height:130px; resize:vertical; }
+    textarea { min-height:140px; resize:vertical; }
     pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
     a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
     .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
     .metric span,.item span { color:#8b93a7; display:block; }
     .metric b,.item b { display:block; overflow-wrap:anywhere; }
-    .pill { display:inline-block; border:1px solid #334160; border-radius:999px; padding:3px 8px; margin:2px; background:#10131a; color:#cbd5ff; }
     @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -54,7 +53,8 @@ data/semantic_seed_scope_qualification_contrast_v0_1.json
 data/semantic_seed_closure_source_gap_contrast_v0_1.json
 data/semantic_seed_unverified_contrast_v0_1.json
 data/semantic_seed_rhetoric_intent_pressure_v0_1.json
-data/semantic_seed_vector_template_contrast_v0_1.json</textarea>
+data/semantic_seed_vector_template_contrast_v0_1.json
+data/semantic_seed_vector_template_contrast_v0_2.json</textarea>
       <button onclick="plan()">LOAD COMBINED + PLAN</button>
       <button onclick="showPlan()">SHOW full plan</button>
       <button onclick="showSuggestedSentences()">SHOW suggested sentences</button>
@@ -69,10 +69,7 @@ data/semantic_seed_vector_template_contrast_v0_1.json</textarea>
       <div class="row"><div class="metric"><span>suggested sentences</span><b id="sentenceCount">0</b></div><div class="metric"><span>last status</span><b id="statusText">idle</b></div></div>
       <div class="row"><div class="metric"><span>ontology missing</span><b id="ontologyMissingCount">0</b></div><div class="metric"><span>belief movement</span><b>none</b></div></div>
     </section>
-    <section>
-      <h2>Suggested sentences</h2>
-      <div id="sentenceList" class="small muted">No plan yet.</div>
-    </section>
+    <section><h2>Suggested sentences</h2><div id="sentenceList" class="small muted">No plan yet.</div></section>
   </div>
   <div>
     <section><h2>Selected templates</h2><div id="templateList" class="small muted">No plan yet.</div></section>
@@ -86,6 +83,7 @@ data/semantic_seed_vector_template_contrast_v0_1.json</textarea>
 <script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
 <script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
 <script>
   let lastPacket = null;
   let lastOutput = null;
@@ -100,7 +98,7 @@ data/semantic_seed_vector_template_contrast_v0_1.json</textarea>
     } catch(e) { show({ ok:false, error:e.message, packet_type:'42ndMind_semantic_vector_template_planner_error_v0_1' }, 'error'); }
   }
   function showPlan(){ if(!lastPacket) return plan(); show(lastPacket.plan, 'plan'); }
-  function showSuggestedSentences(){ if(!lastPacket) return plan(); show({ packet_type:'42ndMind_semantic_vector_template_suggested_sentences_v0_1', count:lastPacket.plan.suggested_sentence_count, suggested_sentences:lastPacket.plan.suggested_sentences, doctrine:KernelSemanticVectorTemplatePlannerV01.doctrine(), belief_movement:'none' }, 'suggested sentences'); }
+  function showSuggestedSentences(){ if(!lastPacket) return plan(); show({ packet_type:'42ndMind_semantic_vector_template_suggested_sentences_v0_1_1', count:lastPacket.plan.suggested_sentence_count, suggested_sentences:lastPacket.plan.suggested_sentences, doctrine:KernelSemanticVectorTemplatePlannerV01.doctrine(), belief_movement:'none' }, 'suggested sentences'); }
   async function copySuggestedSentences(){ if(!lastPacket) await plan(); const text = (lastPacket && lastPacket.plan && lastPacket.plan.suggested_sentences || []).join('\n'); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied suggested sentences (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
   function updateUi(){
     if(!lastPacket) return;
