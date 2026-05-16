@@ -4,107 +4,102 @@ Last updated: **2026-05-16**.
 
 Read this file first. This is the current compact operational handoff for the semantic / objective-language pipeline.
 
-## Current verified baseline
+## Current baseline
 
-Core semantic corpus pipeline is verified:
+The semantic corpus has moved from the prior 123-entry baseline to a new **135-entry basis-refinement baseline**.
+
+Current intended baseline after latest commits:
 
 ```text
-combine: 123 entries, 0 duplicates, 12 source packets
-distill: 123 entries, 102 operators, 55 pressures, 31 families, 106 stable mappings, 75 weak mappings, 0 contrast gaps, 0 overmatch risks
-compress: 123 vectors, 102 operator dimensions, 55 pressure dimensions, 22 candidate templates, ontology missing 0
-plan: 123 vectors, 22 templates, 10 selected templates, 8 high-risk templates, 31 natural suggested sentences, ontology missing 0
+combine: 135 entries, 0 duplicates, 13 source packets
+source packets: main + 12 extension packets
+latest extension: data/semantic_seed_basis_refinement_v0_1.json · 12 entries
 belief movement: none
 ```
 
-Verified tests:
+The previous 123-entry baseline was verified before adding basis-refinement seeds. The new 135-entry baseline still needs browser confirmation by running the updated tests listed below.
+
+Updated tests to run next:
 
 ```text
-kernel-semantic-corpus-combiner-v0-1-test.html — 13/13 passed
-kernel-semantic-vector-compressor-v0-1-test.html — 11/11 passed
-kernel-semantic-vector-template-planner-v0-1-test.html — 14/14 passed
-kernel-objective-language-goal-v0-1-test.html — 9/9 passed
+kernel-semantic-corpus-combiner-v0-1-test.html?v=basis-refine-1
+kernel-semantic-vector-compressor-v0-1-test.html?v=basis-refine-1
+kernel-semantic-vector-template-planner-v0-1-test.html?v=basis-refine-1
 ```
 
-User verified law/invariance/browser outputs:
+Expected high-level result:
 
 ```text
-law candidates: 8
-objective fragments: 3
-strong: 3
-proto: 1
-weak: 4
-insufficient: 0
-objective claim: candidate_fragments_detected_not_final_math
+combiner: 135 entries, 13 source packets, 0 duplicates
+compressor: 135 vectors, ontology missing 0
+planner: 135 vectors, 10 selected templates, no stale symbolic fallback language
 belief movement: none
 ```
 
-User verified canonical vector basis output:
+## New basis-refinement seed packet
+
+Added:
 
 ```text
-basis dimensions: 14
-canonical vectors: 8
-equivalence classes: 6
-nontrivial classes: 2
-relations: 28
-contrast pairs: 3
-subset relations: 2
-orthogonal pairs: 21
-objective claim: canonical_structure_candidates_not_final_math
-belief movement: none
+data/semantic_seed_basis_refinement_v0_1.json
 ```
 
-User verified canonical relation proposer output:
+Purpose:
 
 ```text
-relation candidates: 30
-pair candidates: 28
-equivalence class candidates: 2
-basis dimensions: 14
-canonical vectors: 8
-objective claim: relation_candidates_under_anonymous_basis_not_final_math
-belief movement: none
-labels: metadata only
+Split expert/source-status from settled/claim-closure.
+Split neutral/public coordination from covert/illicit collusion.
+Probe motive attribution versus accusation-risk.
+Probe coordination versus motive attribution.
 ```
 
-User verified canonical relation triage output:
+The packet contains 12 reviewed seed candidates from the draft reviewer. It is still seed-candidate pressure, not doctrine.
+
+New basis-refinement operator groups:
 
 ```text
-triage rows: 30
-vocabulary collapse: 4
-high severity: 4
-medium severity: 5
-low severity: 21
-top target: orthogonality_bridge_probe_optional (13)
-objective claim: relation_triage_guides_basis_refinement_not_final_math
-belief movement: none
+basis_refinement_authority_closure
+basis_refinement_coordination_collusion
+basis_refinement_accusation_motive
+basis_refinement_motive_coordination_subset
 ```
 
-User verified basis refinement seed planner output:
+Important added contrast direction:
 
 ```text
-refinement targets: 4
-high-priority targets: 2
-suggested sentences: 16
-expected new dimensions: 11
-workbench matched: 13
-workbench unmatched: 3
-top target: authority_closure_basis_refinement
-belief movement: none
-active shape rule: Σ |dimension_i| = 1
-force: separate scalar
+expert(source) should not collapse into settled(claim).
+coordinated(actor,event) should not collapse into collusion(actors).
+coordination can exist without motive attribution.
+motive attribution can exist without misconduct accusation.
 ```
 
-User verified patched workbench triage behavior after commit `6e77f2915292394924c5542bd538719a9c34ada0`:
+New pressure ontology addition:
 
 ```text
-Row 6 should be green / draftable as a one-sided collusion gap probe.
-Row 11 should be yellow / not draftable because it matched only harmful(content), the wrong family.
-User confirmed: "yeah seems good!"
+covert_agreement_pressure
+```
+
+Definition intent:
+
+```text
+Language requires or alleges a hidden, secret, covert, or illicit agreement behind actor coordination.
+```
+
+This pressure was registered in:
+
+```text
+src/kernel-semantic-pressure-registry-v0-1-1-patch.js
+```
+
+Reason:
+
+```text
+Without this pressure, the compressor would likely report ontology missing after the basis-refinement seed packet introduced collusion/covert-agreement distinctions.
 ```
 
 ## Unit-total rule to preserve
 
-This is a core objective-language target and should be carried into future sessions:
+Core objective-language target:
 
 ```text
 active structure = Σ |dimension_i| = 1
@@ -190,9 +185,7 @@ Behavioral force is separate: F = M · i.
 Declared intention, inferred intention, and validated intention must remain separate.
 ```
 
-## Current objective-language goal module
-
-Added:
+## Existing objective-language goal module
 
 ```text
 src/kernel-objective-language-goal-v0-1.js
@@ -200,7 +193,7 @@ objective-language-goal.html
 kernel-objective-language-goal-v0-1-test.html
 ```
 
-Browser test has been verified:
+Verified earlier:
 
 ```text
 kernel-objective-language-goal-v0-1-test.html — 9/9 passed
@@ -217,87 +210,58 @@ goalAlignmentCheck()
 
 It is a goal/constraint module, not a doctrine promoter. It does not move belief, patch source, or promote final math.
 
-Recent objective-language goal commits:
-
-```text
-76a9b8d68ed70271c9eb3aad14f01d80579310bd Add objective language goal doctrine module
-f3e243eb9bbd1ab87f349ef81da8fad81f674766 Add objective language goal page
-e9133edb6c5bd1c55dab8e696127246094cae687 Add objective language goal test
-e8eb4731c966e99a549575c8178ad3e6b7eef29d Fix objective language goal module parse error
-```
-
 ## Current semantic/law/objective-language stack
 
-Template-to-workbench validation:
+Validation and law layers:
 
 ```text
 src/kernel-semantic-template-validation-runner-v0-1.js
 semantic-template-validation-runner.html
 kernel-semantic-template-validation-runner-v0-1-test.html
-```
 
-Validation triage:
-
-```text
 src/kernel-semantic-validation-triage-planner-v0-1.js
 semantic-validation-triage-planner.html
 kernel-semantic-validation-triage-planner-v0-1-test.html
-```
 
-Law candidate extraction:
-
-```text
 src/kernel-semantic-law-candidate-extractor-v0-1.js
 semantic-law-candidate-extractor.html
 kernel-semantic-law-candidate-extractor-v0-1-test.html
-```
 
-Law invariance testing:
-
-```text
 src/kernel-semantic-law-invariance-tester-v0-1.js
 semantic-law-invariance-tester.html
 kernel-semantic-law-invariance-tester-v0-1-test.html
 ```
 
-Canonical vector basis:
+Canonical objective-language layers:
 
 ```text
 src/kernel-semantic-canonical-vector-basis-v0-1.js
 semantic-canonical-vector-basis.html
 kernel-semantic-canonical-vector-basis-v0-1-test.html
-```
 
-Canonical relation proposer:
-
-```text
 src/kernel-semantic-canonical-relation-proposer-v0-1.js
 semantic-canonical-relation-proposer.html
 kernel-semantic-canonical-relation-proposer-v0-1-test.html
-```
 
-Canonical relation triage:
-
-```text
 src/kernel-semantic-canonical-relation-triage-v0-1.js
 semantic-canonical-relation-triage.html
 kernel-semantic-canonical-relation-triage-v0-1-test.html
 ```
 
-Basis refinement seed planner:
+Basis-refinement layers:
 
 ```text
 src/kernel-semantic-basis-refinement-seed-planner-v0-1.js
 semantic-basis-refinement-seed-planner.html
 kernel-semantic-basis-refinement-seed-planner-v0-1-test.html
-```
 
-Basis refinement workbench triage:
-
-```text
 src/kernel-semantic-basis-refinement-workbench-triage-v0-1.js
 semantic-basis-refinement-workbench-triage.html
 kernel-semantic-basis-refinement-workbench-triage-v0-1-test.html
+
+src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js
+semantic-basis-refinement-draft-reviewer.html
+kernel-semantic-basis-refinement-draft-reviewer-v0-1-test.html
 ```
 
 Purpose of the current stack:
@@ -314,7 +278,9 @@ planner suggested sentence
 → triage relation candidates for basis refinement
 → plan basis-refinement seed candidates
 → triage workbench preview into draft / rewrite / weak alignment
-→ align all of this with the objective-language goal
+→ review draft candidates
+→ add a cautious basis-refinement seed packet
+→ rerun combiner/distiller/compressor/planner/canonical basis
 ```
 
 ## Current corpus files
@@ -332,9 +298,10 @@ data/semantic_seed_vector_template_contrast_v0_1.json
 data/semantic_seed_vector_template_contrast_v0_2.json
 data/semantic_seed_accusation_risk_direct_evidence_v0_1.json
 data/semantic_seed_accusation_truth_status_contrast_v0_1.json
+data/semantic_seed_basis_refinement_v0_1.json
 ```
 
-Important latest mappings:
+Important existing mappings:
 
 ```text
 reckless_accusation(actor,target,claim)
@@ -347,32 +314,23 @@ false_accusation(claim)
 → accusation_pressure + contradiction_pressure + evidence_contact_pressure + reputational_risk_pressure
 ```
 
-Current canonical equivalence pressure points:
+Important new basis-refinement mappings:
 
 ```text
-expert ≡ settled
-canonical signature: d3|d4
-triage expectation: likely vocabulary collapse; needs source-status vs claim-closure split
+collusion(actors)
+→ motive_agency_pressure + direct_link_evidence_burden + covert_agreement_pressure
 
-collusion ≡ coordinated
-canonical signature: d1|d2
-triage expectation: likely vocabulary collapse; needs covert/illicit/agreement dimension
-```
+coordinated(actor,event)
+→ motive_agency_pressure / pattern_similarity_pressure / uncertainty_calibration_pressure depending on context
 
-Current useful subset/enrichment pressure point:
+expert(source)
+→ authority_transfer_pressure
 
-```text
-collusion ⊂ ulterior_motive_attribution
-coordinated ⊂ ulterior_motive_attribution
-added dimension: intent_attribution / d11
-triage expectation: valid subset or missing intent dimension review
-```
+settled(claim)
+→ closure_pressure + direct_support_pressure + evidence_contact_pressure when direct record support is present
 
-Current useful contrast pressure points:
-
-```text
-reckless_accusation shares direct evidence burden with motive/coordination laws but diverges into accusation-risk dimensions.
-triage expectation: accusation/motive boundary probe
+ulterior_motive_attribution(actor,target,motive)
+→ motive_agency_pressure + intent_attribution_pressure + direct_link_evidence_burden
 ```
 
 ## Current doctrine invariants
@@ -395,7 +353,8 @@ active structure shape should be L1-normalized: Σ |dimension_i| = 1
 force/intensity remains separate from shape
 matched preview is not automatic seed acceptance
 unmatched preview is rewrite or grammar-gap signal
-basis-refinement draft packets require human review before corpus merge
+basis-refinement draft packets require review before corpus merge
+seed packets are training pressure, not doctrine
 ```
 
 Current architecture:
@@ -416,77 +375,60 @@ surface phrase
 → seed plan
 → workbench preview triage
 → draft seed packet
+→ reviewed seed packet
 → objective-language alignment check
 ```
 
-## Latest commits after objective-language checkpoint
+## Latest commits for 135-entry basis-refinement checkpoint
 
 ```text
-aa056844e8a83c5c04f68f8038c744ae2d2ee57e Add semantic canonical vector basis module
-057bb1b804bbd07845cc57985da28aafe373a8d3 Add semantic canonical vector basis page
-f6a5577d31b13c11d579645b4f32aeadc6ea1e87 Add semantic canonical vector basis test
-69142a7af48f84201d89ec8a83f713e13a2b5781 Add semantic canonical relation proposer module
-4424143a3d01772328781f53e82077cdafba6d8c Add semantic canonical relation proposer page
-423deef9540cf2c3d493e13e3916144de8ec2f9c Add semantic canonical relation proposer test
-a8109e2bf4bf676b758735ac85df6f493a36f711 Clarify canonical containment relation wording
-e9b456b82445f5327a4b820f62d8ac4260e641d5 Add semantic canonical relation triage module
-2b68b61ea28274c71b74f16ef20144c7ccf4e65f Add semantic canonical relation triage page
-216ad75931dc14a1611bb251730d11e32bdccfe3 Add semantic canonical relation triage test
-95f705f139c361c1267987ffc8605459bf8f2ac2 Add semantic basis refinement seed planner module
-70e777be95b3e1b2f77e3340abd3c3e50de66004 Add semantic basis refinement seed planner page
-561b79294a6cdda2a4d95c95958ba7bcc073fa06 Add semantic basis refinement seed planner test
 33de24c3a03708dcce66911ff180a5b24b0e2a8a Add semantic basis refinement workbench triage module
 77255878ffeb1d6ab47b124a50380d0241039d63 Add semantic basis refinement workbench triage page
 75a063c152ed81c2d070d3fa7604abe6ec390e2f Add semantic basis refinement workbench triage test
 6e77f2915292394924c5542bd538719a9c34ada0 Tighten basis refinement workbench target alignment
+63f79cd253f2593df979d5435fc66e8174b47ddc Add semantic basis refinement draft reviewer page
+fcf457b2842602d44e40759383897f69ccf435cd Add semantic basis refinement draft reviewer test
+1227406e4884b2603995c50c61fd305cf610bd81 Add semantic basis refinement seed packet
+647d3c10d3d01a44d9179a1986bc1bf88ea22b32 Register covert agreement pressure
+cee1c2e6a8e6de1b596a0b182dd517e407ab1c20 Add basis refinement packet to combiner defaults
+ae63749cc60f4f29564b6341292c23999310454b Update combiner test for basis refinement packet
+fb66f0f01b4c444ede67334f18db0a63fd6215c7 Update vector compressor test for basis refinement corpus
+01e80eedd1686da3e96d5b31c39561ce33d5e75b Update vector template planner test for basis refinement corpus
 ```
 
-## Recommended next build
+Note: `src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js` exists and was fetch-verified after a GitHub API response anomaly, but the create call did not return a clean commit SHA in the chat log.
 
-Next high-value build is likely:
+## Recommended next action
+
+Run the updated tests in this order:
 
 ```text
-Basis Refinement Draft Packet Reviewer
+1. kernel-semantic-corpus-combiner-v0-1-test.html?v=basis-refine-1
+2. kernel-semantic-vector-compressor-v0-1-test.html?v=basis-refine-1
+3. kernel-semantic-vector-template-planner-v0-1-test.html?v=basis-refine-1
 ```
 
-Goal:
+Then run the live pages:
 
 ```text
-workbench triage draft packet
-→ show draft seed entries grouped by target
-→ mark keep / rewrite / reject manually in UI
-→ export a clean seed-packet JSON candidate
-→ do not merge automatically
-→ rerun combiner/distiller/compressor/planner/canonical basis after manual seed file add
+semantic-corpus-combiner.html?v=basis-refine-1
+semantic-language-distiller.html?v=basis-refine-1
+semantic-vector-compressor.html?v=basis-refine-1
+semantic-vector-template-planner.html?v=basis-refine-1
+semantic-law-invariance-tester.html?v=basis-refine-1
+semantic-canonical-vector-basis.html?v=basis-refine-1
+semantic-canonical-relation-proposer.html?v=basis-refine-1
+semantic-canonical-relation-triage.html?v=basis-refine-1
 ```
 
-Primary review rules:
+Main thing to watch:
 
 ```text
-1. Keep green high-value split candidates that match relevant target operators/pressures.
-2. Keep partial gap candidates only if they test one side of a known vocabulary collapse.
-3. Reject yellow weak-alignment rows unless rewritten.
-4. Rewrite unmatched rows before use.
-5. Never add draft packet directly as doctrine.
-```
-
-Proposed files:
-
-```text
-src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js
-semantic-basis-refinement-draft-reviewer.html
-kernel-semantic-basis-refinement-draft-reviewer-v0-1-test.html
-```
-
-Expected output shape:
-
-```text
-draft entries: X
-kept entries: X
-rewrite entries: X
-rejected entries: X
-exportable clean packet: yes/no
-belief movement: none
+Did expert ≡ settled split?
+Did collusion ≡ coordinated split?
+Did ontology missing stay 0?
+Did belief movement remain none?
+Did stale symbolic fallback remain absent?
 ```
 
 ## SHA write trick
@@ -517,23 +459,24 @@ Current task area:
 Objective-language discovery pipeline.
 
 Important current state:
-- Semantic corpus baseline is verified: 123 entries, 0 duplicates, 12 source packets.
-- Distiller/compressor/planner baseline is clean.
-- Validation runner, triage planner, law candidate extractor, law invariance tester, canonical vector basis, canonical relation proposer, canonical relation triage, basis refinement seed planner, and basis refinement workbench triage exist.
-- User verified law invariance output: 8 law candidates, 3 objective fragments, 3 strong, 1 proto, 4 weak, 0 insufficient, belief movement none.
-- User verified canonical vector basis output: 14 basis dimensions, 8 canonical vectors, 6 equivalence classes, 2 nontrivial classes, 28 relations, 3 contrast pairs, 2 subset relations, 21 orthogonal pairs, belief movement none.
-- User verified canonical relation proposer output: 30 relation candidates, 28 pair candidates, 2 equivalence class candidates, labels metadata only, belief movement none.
-- User verified basis refinement seed planner output: 4 refinement targets, 2 high-priority targets, 16 suggested sentences, 11 expected new dimensions, 13 matched, 3 unmatched, active shape rule Σ |dimension_i| = 1.
-- Workbench triage was patched so Row 6 is draftable/green as a one-sided collusion probe, while Row 11 is weak-alignment/yellow because it matched only harmful(content). User confirmed the patched behavior looked good.
-- Objective language goal module exists and test passed 9/9.
+- Corpus has been advanced to intended 135-entry baseline.
+- Latest seed file: data/semantic_seed_basis_refinement_v0_1.json with 12 entries.
+- Combiner default extension list now includes 12 extension packets.
+- New expected combine state: 135 entries, 0 duplicates, 13 source packets.
+- New pressure registered: covert_agreement_pressure in src/kernel-semantic-pressure-registry-v0-1-1-patch.js.
+- Updated regression tests: combiner, vector compressor, vector template planner.
+- Need browser verification of the 135-entry baseline.
 - Unit-total rule must be preserved: active structure = Σ |dimension_i| = 1. Force/intensity remains separate as F = M · vector.
 - Correct discoverers should converge on isomorphic law graphs up to translation, symbol renaming, and basis permutation.
 
-Next recommended build:
-Basis Refinement Draft Packet Reviewer:
-- src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js
-- semantic-basis-refinement-draft-reviewer.html
-- kernel-semantic-basis-refinement-draft-reviewer-v0-1-test.html
+Run first:
+1. kernel-semantic-corpus-combiner-v0-1-test.html?v=basis-refine-1
+2. kernel-semantic-vector-compressor-v0-1-test.html?v=basis-refine-1
+3. kernel-semantic-vector-template-planner-v0-1-test.html?v=basis-refine-1
+
+Then inspect live pipeline outputs and check whether the intended false equivalences split:
+- expert ≡ settled
+- collusion ≡ coordinated
 
 Use the SHA write trick. Make small commits only.
 ```
