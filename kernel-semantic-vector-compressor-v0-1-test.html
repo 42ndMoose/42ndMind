@@ -15,10 +15,10 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Semantic Vector Compressor v0.1 Test</h1><div>Tests compression of the current semantic corpus into operator/pressure/ontology vectors and reusable candidate templates.</div></header>
+<header><h1>42ndMind Semantic Vector Compressor v0.1 Test</h1><div>Tests compression of the 119-entry semantic corpus into operator/pressure/ontology vectors and reusable candidate templates.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="semantic-vector-compressor.html">semantic vector compressor</a> · <a href="semantic-pressure-registry.html">pressure registry</a> · <a href="semantic-language-certificate.html">certificate</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.1"></script>
 <script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
 <script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
@@ -30,15 +30,6 @@
   function add(name, fn) { tests.push({ name, fn }); }
   function assert(cond, msg) { if (!cond) throw new Error(msg); }
   function asArray(value) { return Array.isArray(value) ? value : []; }
-  const EXTENSIONS = [
-    'data/semantic_seed_closure_contrast_v0_1.json',
-    'data/semantic_seed_authority_evidence_contrast_v0_1.json',
-    'data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json',
-    'data/semantic_seed_scope_qualification_contrast_v0_1.json',
-    'data/semantic_seed_closure_source_gap_contrast_v0_1.json',
-    'data/semantic_seed_unverified_contrast_v0_1.json',
-    'data/semantic_seed_rhetoric_intent_pressure_v0_1.json'
-  ];
 
   add('modules load', () => {
     assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
@@ -56,21 +47,30 @@
     assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
   });
 
+  add('combiner defaults include all current extension packets', () => {
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.length === 10, 'expected ten default extension packets');
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.includes('data/semantic_seed_accusation_risk_direct_evidence_v0_1.json'), 'accusation-risk packet missing');
+  });
+
   add('load combined and compress succeeds', async () => {
-    packet = await KernelSemanticVectorCompressorV01.loadCombinedAndCompress({ extension_urls: EXTENSIONS, min_observations: 2 });
+    packet = await KernelSemanticVectorCompressorV01.loadCombinedAndCompress({ min_observations: 2 });
     space = packet.vector_space;
     summary = packet.summary;
     assert(packet.ok === true, 'compression packet not ok');
     assert(packet.combined_packet.ok === true, 'combined packet not ok');
+    assert(packet.combined_packet.combined.entry_count === 119, 'expected 119 combined entries');
+    assert(packet.combined_packet.combined.source_packets.length === 11, 'expected main plus ten extension sources');
+    assert(packet.combined_packet.combined.duplicate_entries.length === 0, 'expected zero duplicate skips');
     assert(packet.pressure_ontology.validation.ok === true, 'pressure ontology not ok');
+    assert(packet.pressure_ontology.validation.missing_pressure_count === 0, 'expected zero ontology gaps');
     assert(packet.belief_movement === 'none', 'packet moved belief');
   });
 
   add('vector space covers current corpus', () => {
-    assert(space.corpus_entry_count === 79, 'expected 79 corpus entries');
-    assert(space.vector_count === 79, 'expected 79 vectors');
+    assert(space.corpus_entry_count === 119, 'expected 119 corpus entries');
+    assert(space.vector_count === 119, 'expected 119 vectors');
     assert(space.pressure_dimension_count === 55, 'expected 55 pressure dimensions');
-    assert(space.operator_dimension_count >= 90, 'expected at least 90 operator dimensions');
+    assert(space.operator_dimension_count >= 100, 'expected at least 100 operator dimensions');
     assert(space.pressure_family_dimension_count >= 10, 'expected multiple pressure families');
     assert(space.ontology_summary.missing_pressure_count === 0, 'expected zero pressure ontology gaps');
   });
@@ -87,7 +87,7 @@
   });
 
   add('candidate templates are generated from stable pressure signatures', () => {
-    assert(space.template_count > 0, 'expected at least one candidate template');
+    assert(space.template_count >= 20, 'expected at least 20 candidate templates');
     const template = space.templates[0];
     assert(template.observation_count >= 2, 'template observation count too low');
     assert(template.centroid_vector && Object.keys(template.centroid_vector).length > 0, 'template centroid missing');
@@ -99,8 +99,10 @@
 
   add('summary exposes compressed semantic dimensions', () => {
     assert(summary.packet_type === '42ndMind_semantic_vector_space_summary_v0_1', 'wrong summary packet');
-    assert(summary.corpus_entry_count === 79, 'summary entry count wrong');
+    assert(summary.corpus_entry_count === 119, 'summary entry count wrong');
+    assert(summary.vector_count === 119, 'summary vector count wrong');
     assert(summary.pressure_dimension_count === 55, 'summary pressure dimension count wrong');
+    assert(summary.template_count >= 20, 'summary template count too low');
     assert(asArray(summary.top_pressure_families).length > 0, 'top pressure families missing');
     assert(asArray(summary.top_blocked_movements).length > 0, 'top blocked movements missing');
     assert(asArray(summary.top_required_checks).length > 0, 'top required checks missing');
