@@ -16,15 +16,41 @@ semantic-corpus-combiner.html
 semantic-language-distiller.html
 semantic-vector-compressor.html
 semantic-vector-template-planner.html
+kernel-semantic-corpus-combiner-v0-1-test.html
+kernel-semantic-vector-compressor-v0-1-test.html
 kernel-semantic-vector-template-planner-v0-1-test.html
+```
+
+## Verified browser baseline
+
+The current verified browser baseline is:
+
+```text
+combine: 123 entries, 0 duplicates, 12 source packets
+
+distill: 123 entries, 102 operators, 55 pressures, 31 families, 106 stable mappings, 75 weak mappings, 0 contrast gaps, 0 overmatch risks
+
+compress: 123 vectors, 102 operator dimensions, 55 pressure dimensions, 22 candidate templates, ontology missing 0
+
+plan: 123 vectors, 22 templates, 10 selected templates, 8 high-risk templates, 31 natural suggested sentences, ontology missing 0
+
+belief movement: none
+```
+
+Updated browser tests are all clear:
+
+```text
+kernel-semantic-corpus-combiner-v0-1-test.html — 13/13 passed
+kernel-semantic-vector-compressor-v0-1-test.html — 11/11 passed
+kernel-semantic-vector-template-planner-v0-1-test.html — 14/14 passed
 ```
 
 ## Current corpus target
 
 ```text
-combined entries: 119
+combined entries: 123
 duplicates skipped: 0
-source packets: 11
+source packets: 12
 last status: combined
 belief movement: none
 ```
@@ -43,6 +69,7 @@ extension_7: 10 entries
 extension_8: 16 entries
 extension_9: 20 entries
 extension_10: 4 entries
+extension_11: 4 entries
 ```
 
 Current extension list:
@@ -58,11 +85,12 @@ data/semantic_seed_rhetoric_intent_pressure_v0_1.json
 data/semantic_seed_vector_template_contrast_v0_1.json
 data/semantic_seed_vector_template_contrast_v0_2.json
 data/semantic_seed_accusation_risk_direct_evidence_v0_1.json
+data/semantic_seed_accusation_truth_status_contrast_v0_1.json
 ```
 
-## Latest seed packet
+## Latest seed packets
 
-Latest added packet:
+### Accusation risk / direct evidence packet
 
 ```text
 data/semantic_seed_accusation_risk_direct_evidence_v0_1.json
@@ -97,12 +125,33 @@ The claim could damage the person’s reputation, so the actor, action, and evid
 The report alleges misconduct, but the cited record only shows an unresolved evidence gap.
 ```
 
+### Accusation truth-status contrast packet
+
+```text
+data/semantic_seed_accusation_truth_status_contrast_v0_1.json
+```
+
+This packet closes the two contrast gaps produced by the accusation-risk packet. It adds observed contrast anchors for:
+
+```text
+supported_accusation(claim)
+false_accusation(claim)
+```
+
+The added contrast examples preserve the distinction between:
+
+```text
+unsupported / reckless accusation
+supported accusation with direct evidence
+false accusation contradicted by direct record
+```
+
 ## Planner state
 
 Latest planner patch:
 
 ```text
-src/kernel-semantic-vector-template-planner-v0-1-2-patch.js
+src/kernel-semantic-vector-template-planner-v0-1-3-patch.js
 ```
 
 Planner page should load:
@@ -111,110 +160,45 @@ Planner page should load:
 src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0
 src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1
 src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2
+src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3
 ```
 
-`semantic-vector-template-planner.html` loads that patch stack and should emit natural accusation-risk sentences, not symbolic fallback lines such as `This wording triggers ...`.
-
-## Changes made in the latest pass
-
-The semantic combiner default extension list now includes the accusation-risk packet. The combiner also merges stale explicit extension lists with current defaults before loading, so older pages/tests should not silently omit the newest packet.
-
-These pages now visibly include all 10 extension URLs and load the combiner with `?v=0.1.1`:
+The v0.1.3 patch adds the natural false-accusation / direct-contradiction template rule for this pressure signature:
 
 ```text
-semantic-corpus-combiner.html
-semantic-language-distiller.html
-semantic-vector-compressor.html
-semantic-vector-template-planner.html
+accusation_pressure
+contradiction_pressure
+evidence_contact_pressure
+reputational_risk_pressure
 ```
 
-These tests have been updated toward the 119-entry state:
+Expected natural replacement sentences:
 
 ```text
-kernel-semantic-corpus-combiner-v0-1-test.html
-kernel-semantic-vector-compressor-v0-1-test.html
-kernel-semantic-vector-template-planner-v0-1-test.html
+The accusation is false only if the full record directly contradicts the target, action, or date.
+The full video contradicts the accusation, but the exact claim still has to match the record.
+The payroll record disproves the accusation only if it covers the same time and location.
+The claim calls the accusation false, so the contradictory evidence must be identified directly.
 ```
 
-Recent commits:
+The planner should not emit symbolic selected suggestions such as:
 
 ```text
-19245e01139e4ad7ce07005182dd81e7f10c30ae Include accusation-risk packet in semantic combiner defaults
-a22e189c95ce2ac9ebaf3f901a0d041be86577f7 Guard semantic combiner against stale extension lists
-e050dc072ebb5a0803b0724f18958b69db9479d6 Update vector template planner test for 119-entry corpus
-1a352e679f88406e2358c6bd8edf3d73cc70199d Show current semantic extension list in combiner page
-9ea08c9e8a841e969bf91937136ed9fe20c7baf6 Show current semantic extension list in vector compressor
-0ed725e03cf6164d8e75061b80f04458ae684256 Show current semantic extension list in vector template planner
-80ca3d5ae4f0482b1786d2f85e366d99397f6909 Update semantic combiner test for 119-entry corpus
-dfcdf0b00e0c4636600236451fb02b142b786ebc Update vector compressor test for 119-entry corpus
-3ef338751b307a5c0ce7de6b26b4ae3e49d12b57 Show current semantic extension list in language distiller
+This wording triggers ...
+The pressure signature ...
+This semantic pressure pattern ...
 ```
 
-## Required browser verification
-
-Run with a cache buster if needed, for example `?v=2026-05-16-119`.
-
-1. `semantic-corpus-combiner.html`
-
-Expected:
+## Recent commits in this final 123-entry pass
 
 ```text
-combined entries: 119
-duplicates skipped: 0
-source packets: 11
-last status: combined
-```
-
-2. `semantic-language-distiller.html`
-
-Expected likely state:
-
-```text
-entries: 119
-operators: around 100+
-pressures: 55
-contrast gaps: 0
-overmatch risks: 0
-belief movement: none
-```
-
-3. `semantic-vector-compressor.html`
-
-Expected likely state:
-
-```text
-vectors: 119
-candidate templates: at least 20 or around there
-ontology missing: 0
-belief movement: none
-```
-
-4. `semantic-vector-template-planner.html`
-
-Expected:
-
-```text
-vectors: 119
-no selected symbolic fallback suggestions like "This wording triggers ..."
-no selected pressure-signature fallback lines
-accusation-risk suggestions stay natural and match the accepted four-sentence batch
-belief movement: none
-```
-
-5. Run these updated tests and record exact pass counts:
-
-```text
-kernel-semantic-corpus-combiner-v0-1-test.html
-kernel-semantic-vector-compressor-v0-1-test.html
-kernel-semantic-vector-template-planner-v0-1-test.html
-```
-
-Known stale tests/docs still needing update after browser verification:
-
-```text
-kernel-semantic-language-distiller-v0-1-test.html
-kernel-semantic-language-certificate-v0-1-test.html
-semantic-language-certificate.html
+398ba522c8c1787911dfcc65edc934d24c7ab0b6 Add accusation truth-status contrast seed packet
+761d54ba944757e893552fd31eb64210debd58c0 Include accusation truth-status contrast packet in combiner defaults
+93d1d3f5665baa870900dd19de7ad5ef197157f7 Add false accusation planner template rule
+7b44f7cae71f77b570274aec5722c8920f555e37 Load planner v0.1.3 patch and current extension list
+9a7838f722e47b9727f8a35654e72221c523a853 Update combiner test for 123-entry semantic corpus
+e68c8884dc0fb6bd9c5a45b972bd6c461d0a80f6 Update vector compressor test for 123-entry semantic corpus
+c568f7f11b000164180b1138811f7d559415d563 Update vector template planner test for 123-entry corpus
 ```
 
 ## Doctrine invariants
@@ -239,6 +223,74 @@ surface phrase
 → evidence burden
 → blocked/allowed belief movement
 ```
+
+## What has been achieved
+
+The semantic language loop is now achieved as a deterministic review loop:
+
+```text
+seed corpus
+→ combine
+→ distill
+→ identify contrast gaps / overmatch risks
+→ add reviewed contrast examples
+→ compress to pressure vectors
+→ plan reusable natural templates
+→ test the pipeline
+→ repeat with new reviewed examples
+```
+
+This is a working recursive semantic-improvement loop at the corpus/template layer.
+
+It is not yet a fully autonomous self-modifying loop. It still requires human review and GitHub SHA writes. That is correct for safety and doctrine. The browser kernel should not write source directly.
+
+## Recommended next build
+
+The next build should not be another random seed expansion. The next high-value build is a **Template-to-Workbench Validation Runner**.
+
+Goal:
+
+```text
+Take planner suggested sentences
+→ run them through the semantic operator workbench automatically or semi-automatically
+→ compare expected operators/pressures against actual matched operators/pressures
+→ report pass/fail/overmatch/undermatch
+→ only then recommend a seed packet
+```
+
+Why this matters:
+
+The current loop can produce natural template sentences. The missing machine-check step is proving that those planned sentences map cleanly in the workbench before they become seed corpus candidates.
+
+Proposed page/module names:
+
+```text
+semantic-template-validation-runner.html
+src/kernel-semantic-template-validation-runner-v0-1.js
+kernel-semantic-template-validation-runner-v0-1-test.html
+```
+
+Expected output:
+
+```text
+suggested sentence
+expected template group
+expected pressure signature
+actual matched operators
+actual pressures
+overmatch flags
+undermatch flags
+recommendation: accept / revise / reject
+belief movement: none
+```
+
+This would officially connect the loop from:
+
+```text
+planner output → workbench validation → reviewed seed packet proposal
+```
+
+After that, the system has a much stronger recurring improvement pipeline.
 
 ## SHA write trick
 
@@ -268,13 +320,15 @@ Current task area:
 Semantic operator / pressure / vector-template pipeline.
 
 Important current state:
-- 119-entry semantic corpus target is current: 32 main + 10 extension packets = 119 entries.
-- Expected combiner state: 119 entries, 0 duplicates skipped, 11 source packets, status combined.
-- Newest packet: data/semantic_seed_accusation_risk_direct_evidence_v0_1.json.
-- Newest packet contains the accepted four accusation-risk entries only.
-- Latest planner patch: src/kernel-semantic-vector-template-planner-v0-1-2-patch.js.
-- Updated tests needing browser confirmation: kernel-semantic-corpus-combiner-v0-1-test.html, kernel-semantic-vector-compressor-v0-1-test.html, kernel-semantic-vector-template-planner-v0-1-test.html.
-- Known stale tests/docs still needing update after browser verification: kernel-semantic-language-distiller-v0-1-test.html, kernel-semantic-language-certificate-v0-1-test.html, semantic-language-certificate.html.
+- Verified baseline is 123 entries, 0 duplicates, 12 source packets.
+- Distiller is clean: 123 entries, 102 operators, 55 pressures, 31 families, 0 contrast gaps, 0 overmatch risks.
+- Compressor is clean: 123 vectors, 102 operator dimensions, 55 pressure dimensions, 22 candidate templates, ontology missing 0.
+- Planner is clean: 123 vectors, 22 templates, 10 selected templates, 8 high-risk templates, 31 natural suggested sentences, ontology missing 0.
+- Updated tests are clear: combiner 13/13, compressor 11/11, planner 14/14.
+- Latest seed packets are data/semantic_seed_accusation_risk_direct_evidence_v0_1.json and data/semantic_seed_accusation_truth_status_contrast_v0_1.json.
+- Latest planner patch is src/kernel-semantic-vector-template-planner-v0-1-3-patch.js.
+- The deterministic semantic-improvement loop is achieved at the corpus/template layer.
+- The next recommended build is semantic-template-validation-runner.html plus src/kernel-semantic-template-validation-runner-v0-1.js and its test page.
 
 Use the SHA write trick. Make small commits only.
 ```
