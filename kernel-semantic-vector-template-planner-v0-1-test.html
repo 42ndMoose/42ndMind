@@ -15,26 +15,42 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Semantic Vector Template Planner v0.1 Test</h1><div>Tests vector-template planning from the 95-entry combined corpus.</div></header>
+<header><h1>42ndMind Semantic Vector Template Planner v0.1 Test</h1><div>Tests vector-template planning from the 119-entry combined corpus.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="semantic-vector-template-planner.html">semantic vector template planner</a> · <a href="semantic-vector-compressor.html">vector compressor</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.1"></script>
 <script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
 <script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
 <script>
   const tests = [];
   let packet = null;
   function add(name, fn) { tests.push({ name, fn }); }
   function assert(cond, msg) { if (!cond) throw new Error(msg); }
 
-  add('modules load', () => {
+  const ACCEPTED_ACCUSATION_SENTENCES = [
+    'The post makes a serious accusation without showing a direct evidence link.',
+    'The article recklessly accused the official of misconduct without direct evidence.',
+    'The report recklessly accused the named target of misconduct without direct evidence.',
+    'The claim accuses the person of wrongdoing, but the direct evidence link is still missing.'
+  ];
+  const REJECTED_ACCUSATION_SENTENCES = [
+    'The post makes a serious accusation, but the direct evidence link has not been shown.',
+    'The allegation names a target before separating suspicion from proof.',
+    'The claim could damage the person’s reputation, so the actor, action, and evidence must be made explicit.',
+    'The report alleges misconduct, but the cited record only shows an unresolved evidence gap.'
+  ];
+
+  add('modules load with latest planner patch', () => {
     assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
     assert(window.KernelSemanticCorpusCombinerV01, 'KernelSemanticCorpusCombinerV01 missing');
     assert(window.KernelSemanticPressureRegistryV01, 'KernelSemanticPressureRegistryV01 missing');
     assert(window.KernelSemanticVectorCompressorV01, 'KernelSemanticVectorCompressorV01 missing');
     assert(window.KernelSemanticVectorTemplatePlannerV01, 'KernelSemanticVectorTemplatePlannerV01 missing');
+    assert(KernelSemanticVectorTemplatePlannerV01.VERSION === '0.1.2', 'planner v0.1.2 patch not loaded');
   });
 
   add('doctrine preserves no belief movement', () => {
@@ -42,7 +58,13 @@
     assert(d.planner_generates_review_sentences_not_truth === true, 'review sentence doctrine missing');
     assert(d.suggested_sentences_require_workbench_analysis_before_source_commit === true, 'workbench analysis doctrine missing');
     assert(d.planner_does_not_patch_source === true, 'no patch doctrine missing');
+    assert(d.patch_refines_accusation_risk_sentences_after_workbench_review === true, 'accusation-risk patch doctrine missing');
     assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
+  });
+
+  add('combiner defaults include accusation-risk packet', () => {
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.includes('data/semantic_seed_accusation_risk_direct_evidence_v0_1.json'), 'accusation-risk default extension missing');
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.length === 10, 'expected ten extension packets');
   });
 
   add('risk scoring detects high-risk pressures', () => {
@@ -66,14 +88,25 @@
     assert(motive.sentences.some(s => s.includes('record only shows an outcome')), 'motive sentence missing');
   });
 
+  add('accusation-risk rule uses accepted workbench batch only', () => {
+    const rule = KernelSemanticVectorTemplatePlannerV01.ruleForSignature('accusation_pressure|direct_link_evidence_burden|evidence_gap_pressure|reputational_risk_pressure');
+    assert(rule.group === 'accusation_risk_direct_evidence_gap', 'accusation rule group wrong');
+    ACCEPTED_ACCUSATION_SENTENCES.forEach(sentence => assert(rule.sentences.includes(sentence), 'accepted sentence missing: ' + sentence));
+    REJECTED_ACCUSATION_SENTENCES.forEach(sentence => assert(!rule.sentences.includes(sentence), 'rejected sentence leaked: ' + sentence));
+  });
+
   add('load combined compress and plan succeeds', async () => {
     packet = await KernelSemanticVectorTemplatePlannerV01.loadCombinedCompressAndPlan({ min_template_observations: 2, min_observations: 2, limit: 10, sentences_per_template: 4 });
     assert(packet.ok === true, 'planner packet not ok');
-    assert(packet.compressed_packet.vector_space.vector_count === 95, 'expected 95 vectors');
-    assert(packet.plan.vector_count === 95, 'plan vector count wrong');
-    assert(packet.plan.template_count >= 15, 'expected at least 15 templates');
+    assert(packet.compressed_packet.combined_packet.combined.entry_count === 119, 'expected 119 combined entries');
+    assert(packet.compressed_packet.combined_packet.combined.source_packets.length === 11, 'expected main plus ten extension sources');
+    assert(packet.compressed_packet.combined_packet.combined.duplicate_entries.length === 0, 'expected zero duplicate skips');
+    assert(packet.compressed_packet.vector_space.vector_count === 119, 'expected 119 vectors');
+    assert(packet.plan.vector_count === 119, 'plan vector count wrong');
+    assert(packet.plan.template_count >= 20, 'expected at least 20 templates');
     assert(packet.plan.selected_template_count === 10, 'expected 10 selected templates');
     assert(packet.plan.suggested_sentence_count >= 16, 'expected at least 16 suggested sentences');
+    assert(packet.compressed_packet.pressure_ontology.validation.missing_pressure_count === 0, 'expected zero missing ontology pressures');
     assert(packet.plan.belief_movement === 'none', 'plan moved belief');
   });
 
@@ -93,6 +126,13 @@
     assert(sentences.some(s => s === 'The critic attributed a motive, but the record only shows an outcome.'), 'motive outcome sentence missing');
   });
 
+  add('planner does not emit stale generic fallback language', () => {
+    const sentences = packet.plan.suggested_sentences || [];
+    assert(sentences.every(s => !s.startsWith('This wording triggers ')), 'generic symbolic fallback leaked');
+    assert(sentences.every(s => !s.includes('pressure signature')), 'pressure-signature fallback leaked');
+    assert(sentences.every(s => !s.includes('This semantic pressure pattern')), 'semantic-pressure fallback leaked');
+  });
+
   add('high-risk templates expose safety guards', () => {
     const risky = packet.plan.high_risk_templates || [];
     assert(risky.length >= 3, 'expected high risk templates');
@@ -104,14 +144,14 @@
 
   add('summary is compact and no belief movement', () => {
     const summary = packet.summary;
-    assert(summary.vectors === 95, 'summary vector count wrong');
-    assert(summary.templates >= 15, 'summary template count wrong');
+    assert(summary.vectors === 119, 'summary vector count wrong');
+    assert(summary.templates >= 20, 'summary template count wrong');
     assert(summary.selected_templates === 10, 'summary selected count wrong');
     assert(summary.suggested_sentences === packet.plan.suggested_sentence_count, 'summary sentence count mismatch');
     assert(summary.belief_movement === 'none', 'summary moved belief');
   });
 
-  add('generic fallback remains safe', () => {
+  add('generic fallback remains safe when explicitly requested', () => {
     const rule = KernelSemanticVectorTemplatePlannerV01.ruleForSignature('new_pressure_a|new_pressure_b');
     assert(rule.group === 'generic_pressure_signature_review', 'generic group wrong');
     assert(rule.safety_rule === 'safe_template_reuse_review', 'generic safety rule wrong');
