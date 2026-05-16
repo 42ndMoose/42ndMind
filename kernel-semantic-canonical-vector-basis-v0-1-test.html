@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Canonical Vector Basis v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Canonical Vector Basis v0.1 Test</h1><div>Tests anonymous canonical basis extraction from semantic law candidates.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-canonical-vector-basis.html">canonical vector basis</a> · <a href="semantic-law-invariance-tester.html">law invariance tester</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-10-patch.js?v=0.1.10"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-template-validation-runner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-validation-triage-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-candidate-extractor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-invariance-tester-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-vector-basis-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  let fullPacket = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  const fixtureLawReport = {
+    packet_type: '42ndMind_semantic_law_candidate_report_v0_1_fixture',
+    summary: { accepted_rows: 4, contested_rows: 1 },
+    law_candidates: [
+      {
+        id: 'law_a',
+        primary_operator: 'operator_a',
+        equation: 'operator_a := { p1, p2 }',
+        pressures: ['p1', 'p2'],
+        observation_count: 2,
+        law_status: 'validated_candidate',
+        belief_movement: 'none'
+      },
+      {
+        id: 'law_b',
+        primary_operator: 'operator_b',
+        equation: 'operator_b := { p1, p2, p3 }',
+        pressures: ['p1', 'p2', 'p3'],
+        observation_count: 2,
+        law_status: 'validated_candidate',
+        belief_movement: 'none'
+      },
+      {
+        id: 'law_c',
+        primary_operator: 'operator_c',
+        equation: 'operator_c := { p4 }',
+        pressures: ['p4'],
+        observation_count: 1,
+        law_status: 'review_candidate',
+        belief_movement: 'none'
+      },
+      {
+        id: 'law_d',
+        primary_operator: 'operator_d',
+        equation: 'operator_d := { p1, p2 }',
+        pressures: ['p2', 'p1'],
+        observation_count: 3,
+        law_status: 'validated_candidate',
+        belief_movement: 'none'
+      }
+    ],
+    contrast_boundaries: []
+  };
+
+  add('modules load', () => {
+    assert(window.KernelSemanticCanonicalVectorBasisV01, 'canonical vector basis missing');
+    assert(window.KernelSemanticLawInvarianceTesterV01, 'law invariance tester missing');
+    assert(KernelSemanticCanonicalVectorBasisV01.VERSION === '0.1.0', 'version wrong');
+  });
+
+  add('doctrine preserves no belief movement and label stripping', () => {
+    const d = KernelSemanticCanonicalVectorBasisV01.doctrine();
+    assert(d.canonical_basis_strips_labels_from_formal_comparison === true, 'label stripping doctrine missing');
+    assert(d.local_pressure_names_are_metadata_not_final_math === true, 'label metadata doctrine missing');
+    assert(d.canonical_vectors_compare_structure_under_basis_renaming === true, 'basis renaming doctrine missing');
+    assert(d.basis_extractor_does_not_move_belief === true, 'movement doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement wrong');
+  });
+
+  add('collectPressureDimensions returns stable local dimensions', () => {
+    const dims = KernelSemanticCanonicalVectorBasisV01.collectPressureDimensions(fixtureLawReport.law_candidates);
+    assert(dims.length === 4, 'expected four pressure dimensions');
+    assert(dims.includes('p1') && dims.includes('p4'), 'dimension missing');
+  });
+
+  add('anonymous basis maps local labels to d-dimensions', () => {
+    const basis = KernelSemanticCanonicalVectorBasisV01.buildAnonymousBasis(fixtureLawReport.law_candidates);
+    assert(basis.length === 4, 'basis dimension count wrong');
+    assert(basis[0].canonical_id === 'd1', 'first canonical id wrong');
+    assert(basis.every(d => d.local_label_is_metadata_only === true), 'label metadata warning missing');
+    assert(basis.every(d => d.role_fingerprint), 'role fingerprint missing');
+  });
+
+  add('canonical vectors strip labels into signatures', () => {
+    const report = KernelSemanticCanonicalVectorBasisV01.canonicalizeLawReport(fixtureLawReport);
+    assert(report.canonical_vectors.length === 4, 'vector count wrong');
+    assert(report.canonical_vectors.every(v => v.canonical_signature.includes('d')), 'canonical signature missing d ids');
+    assert(report.canonical_vectors.every(v => v.local_pressure_metadata.length >= 1), 'local metadata missing');
+    assert(report.canonical_vectors.every(v => v.belief_movement === 'none'), 'vector moved belief');
+  });
+
+  add('relations detect equivalence, subset, overlap, and orthogonality', () => {
+    const report = KernelSemanticCanonicalVectorBasisV01.canonicalizeLawReport(fixtureLawReport);
+    const types = new Set(report.relations.map(r => r.relation_type));
+    assert(types.has('equivalent'), 'equivalent relation missing');
+    assert(types.has('strict_subset') || types.has('strict_superset'), 'subset relation missing');
+    assert(types.has('orthogonal'), 'orthogonal relation missing');
+    assert(report.relations.every(r => r.belief_movement === 'none'), 'relation moved belief');
+  });
+
+  add('equivalence classes identify nontrivial classes', () => {
+    const report = KernelSemanticCanonicalVectorBasisV01.canonicalizeLawReport(fixtureLawReport);
+    assert(report.equivalence_classes.some(c => c.member_count === 2), 'nontrivial equivalence class missing');
+    assert(report.summary.nontrivial_equivalence_class_count >= 1, 'summary nontrivial class count wrong');
+  });
+
+  add('summary exposes canonical relation counts', () => {
+    const report = KernelSemanticCanonicalVectorBasisV01.canonicalizeLawReport(fixtureLawReport);
+    assert(report.summary.basis_dimension_count === 4, 'basis summary wrong');
+    assert(report.summary.canonical_vector_count === 4, 'vector summary wrong');
+    assert(report.summary.relation_count === 6, 'relation count wrong');
+    assert(report.summary.objective_language_claim === 'canonical_structure_candidates_not_final_math', 'objective claim wrong');
+    assert(report.belief_movement === 'none', 'report moved belief');
+  });
+
+  add('module availability reports full path', () => {
+    const a = KernelSemanticCanonicalVectorBasisV01.modulesAvailable();
+    assert(a.law_invariance_tester === true, 'law invariance tester unavailable');
+  });
+
+  add('loadExtractAndCanonicalize runs current full path', async () => {
+    fullPacket = await KernelSemanticCanonicalVectorBasisV01.loadExtractAndCanonicalize({ min_template_observations:2, min_observations:2, limit:10, sentences_per_template:4, allowed_extra_pressures:0, min_strong_observations:4 });
+    assert(fullPacket.ok === true, 'full canonical basis packet not ok');
+    assert(fullPacket.basis_report.summary.law_candidate_count >= 1, 'expected law candidates');
+    assert(fullPacket.basis_report.summary.canonical_vector_count === fullPacket.basis_report.summary.law_candidate_count, 'vector/law count mismatch');
+    assert(fullPacket.basis_report.summary.basis_dimension_count >= 1, 'expected basis dimensions');
+    assert(fullPacket.basis_report.belief_movement === 'none', 'basis report moved belief');
+    assert(fullPacket.belief_movement === 'none', 'full packet moved belief');
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({
+      packet_type:'42ndMind_semantic_canonical_vector_basis_v0_1_test_report',
+      full_basis_summary: fullPacket && fullPacket.summary,
+      results
+    }, null, 2);
+  })();
+</script>
+</body>
+</html>
