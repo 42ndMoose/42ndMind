@@ -109,14 +109,14 @@
 
     if (rel.relation_type === 'strict_subset') {
       relation_kind = 'canonical_subset';
-      formal_statement = `${leftName} ⊂ ${rightName}; added dimensions in right: {${rightOnly}}`;
-      interpretation_hint = 'The left law is structurally contained inside the right law under the current anonymous basis.';
-      review_requirement = 'Check whether the superset relation reflects real semantic enrichment or missing dimensions in the smaller law.';
+      formal_statement = `${leftName} ⊂ ${rightName}; added dimensions in superset: {${rightOnly}}`;
+      interpretation_hint = 'The displayed subset law is structurally contained inside the displayed superset law under the current anonymous basis.';
+      review_requirement = 'Check whether the containment relation reflects real semantic enrichment or missing dimensions in the smaller law.';
     } else if (rel.relation_type === 'strict_superset') {
-      relation_kind = 'canonical_superset';
-      formal_statement = `${rightName} ⊂ ${leftName}; added dimensions in left: {${leftOnly}}`;
-      interpretation_hint = 'The right law is structurally contained inside the left law under the current anonymous basis.';
-      review_requirement = 'Check whether the superset relation reflects real semantic enrichment or missing dimensions in the smaller law.';
+      relation_kind = 'canonical_subset';
+      formal_statement = `${rightName} ⊂ ${leftName}; added dimensions in superset: {${leftOnly}}`;
+      interpretation_hint = 'The displayed subset law is structurally contained inside the displayed superset law under the current anonymous basis.';
+      review_requirement = 'Check whether the containment relation reflects real semantic enrichment or missing dimensions in the smaller law.';
     } else if (rel.relation_type === 'orthogonal') {
       relation_kind = 'canonical_orthogonality';
       formal_statement = `${leftName} ⟂ ${rightName}; shared dimensions: ∅`;
