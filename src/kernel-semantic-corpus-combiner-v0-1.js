@@ -196,7 +196,8 @@
 
   async function loadAndCombine(options = {}) {
     const mainUrl = text(options.main_url || DEFAULT_MAIN_URL);
-    const extensionUrls = asArray(options.extension_urls || DEFAULT_EXTENSION_URLS);
+    const suppliedExtensions = options.extension_urls ? asArray(options.extension_urls) : DEFAULT_EXTENSION_URLS;
+    const extensionUrls = unique(suppliedExtensions.concat(DEFAULT_EXTENSION_URLS));
     const main = await fetchJson(mainUrl);
     const extensions = [];
     const load_errors = [];
