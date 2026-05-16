@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Basis Refinement Workbench Triage v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Basis Refinement Workbench Triage v0.1 Test</h1><div>Tests workbench-preview triage and draft seed candidate generation.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-basis-refinement-workbench-triage.html">workbench triage</a> · <a href="semantic-basis-refinement-seed-planner.html">seed planner</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-10-patch.js?v=0.1.10"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-template-validation-runner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-validation-triage-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-candidate-extractor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-invariance-tester-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-vector-basis-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-proposer-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-triage-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-seed-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-workbench-triage-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  let fullPacket = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  const fixtureSeedPlan = {
+    packet_type:'42ndMind_semantic_basis_refinement_seed_plan_v0_1_fixture',
+    summary:{ suggested_sentence_count:4 },
+    refinement_targets:[
+      {
+        target_id:'authority_closure_basis_refinement',
+        expected_new_dimensions:['source_status_dimension','claim_closure_dimension'],
+        review_goal:'Split expert from settled.',
+        suggested_sentences:['The expert status raises inspection priority, but it does not close the question.']
+      },
+      {
+        target_id:'coordination_collusion_basis_refinement',
+        expected_new_dimensions:['covert_agreement_dimension'],
+        review_goal:'Split coordination from collusion.',
+        suggested_sentences:['Similar timing suggests coordination, while collusion requires evidence of a covert agreement.']
+      },
+      {
+        target_id:'accusation_motive_boundary_probe',
+        expected_new_dimensions:['accusation_target_harm_dimension'],
+        review_goal:'Split motive from accusation.',
+        suggested_sentences:['The critic attributed a motive without accusing the person of misconduct.']
+      },
+      {
+        target_id:'motive_coordination_subset_probe',
+        expected_new_dimensions:['intent_attribution_superset_dimension'],
+        review_goal:'Test motive over coordination.',
+        suggested_sentences:['Unmatched fixture sentence with no semantic cues.']
+      }
+    ],
+    belief_movement:'none'
+  };
+
+  const fixturePlannerPacket = {
+    packet_type:'42ndMind_semantic_basis_refinement_seed_planner_v0_1_fixture',
+    seed_plan: fixtureSeedPlan,
+    workbench_preview: {
+      sentence_count:4,
+      matched_count:3,
+      unmatched_count:1,
+      results:[
+        { sentence:'The expert status raises inspection priority, but it does not close the question.', match_count:1, operators:['expert(source)','settled(claim)'], pressures:['authority_transfer_pressure','closure_pressure'], belief_movement:'none' },
+        { sentence:'Similar timing suggests coordination, while collusion requires evidence of a covert agreement.', match_count:1, operators:['coordinated(actor,event)','collusion(actors)'], pressures:['direct_link_evidence_burden','motive_agency_pressure'], belief_movement:'none' },
+        { sentence:'The critic attributed a motive without accusing the person of misconduct.', match_count:1, operators:['ulterior_motive_attribution(actor,target,motive)'], pressures:['intent_attribution_pressure','motive_agency_pressure'], belief_movement:'none' },
+        { sentence:'Unmatched fixture sentence with no semantic cues.', match_count:0, operators:[], pressures:[], belief_movement:'none' }
+      ]
+    },
+    belief_movement:'none'
+  };
+
+  add('modules load', () => {
+    assert(window.KernelSemanticBasisRefinementWorkbenchTriageV01, 'workbench triage missing');
+    assert(window.KernelSemanticBasisRefinementSeedPlannerV01, 'seed planner missing');
+    assert(KernelSemanticBasisRefinementWorkbenchTriageV01.VERSION === '0.1.0', 'version wrong');
+  });
+
+  add('doctrine preserves candidate status and unit-total rule', () => {
+    const d = KernelSemanticBasisRefinementWorkbenchTriageV01.doctrine();
+    assert(d.workbench_triage_drafts_seed_candidates_only === true, 'draft-only doctrine missing');
+    assert(d.matched_preview_is_not_automatic_seed_acceptance === true, 'matched-warning doctrine missing');
+    assert(d.active_shape_l1_total === 'sum_abs_dimensions_equals_1', 'unit-total rule missing');
+    assert(d.triage_does_not_add_corpus_entries === true, 'no-corpus doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement wrong');
+  });
+
+  add('targetBySentence maps suggested sentences to targets', () => {
+    const map = KernelSemanticBasisRefinementWorkbenchTriageV01.targetBySentence(fixtureSeedPlan);
+    assert(map['The expert status raises inspection priority, but it does not close the question.'].target_id === 'authority_closure_basis_refinement', 'authority target missing');
+    assert(map['Similar timing suggests coordination, while collusion requires evidence of a covert agreement.'].target_id === 'coordination_collusion_basis_refinement', 'collusion target missing');
+  });
+
+  add('targetAlignment detects authority split cues', () => {
+    const a = KernelSemanticBasisRefinementWorkbenchTriageV01.targetAlignment('The expert status raises inspection priority, but it does not close the question.', 'authority_closure_basis_refinement', ['expert(source)'], ['authority_transfer_pressure','closure_pressure']);
+    assert(a.aligned === true, 'authority should align');
+    assert(a.cues.sourceCue === true, 'source cue missing');
+    assert(a.cues.closureCue === true, 'closure cue missing');
+  });
+
+  add('targetAlignment detects coordination/collusion split cues', () => {
+    const a = KernelSemanticBasisRefinementWorkbenchTriageV01.targetAlignment('Similar timing suggests coordination, while collusion requires evidence of a covert agreement.', 'coordination_collusion_basis_refinement', ['coordinated(actor,event)'], ['direct_link_evidence_burden']);
+    assert(a.aligned === true, 'coordination/collusion should align');
+    assert(a.cues.coordinationCue === true, 'coordination cue missing');
+    assert(a.cues.collusionCue === true, 'collusion cue missing');
+  });
+
+  add('triagePreviewRow drafts high-value matched candidate', () => {
+    const row = fixturePlannerPacket.workbench_preview.results[0];
+    const target = fixtureSeedPlan.refinement_targets[0];
+    const triage = KernelSemanticBasisRefinementWorkbenchTriageV01.triagePreviewRow(row, target);
+    assert(triage.triage_type === 'high_value_basis_split_candidate', 'wrong triage type');
+    assert(triage.draft_candidate === true, 'should draft candidate');
+    assert(triage.belief_movement === 'none', 'triage moved belief');
+  });
+
+  add('triagePreviewRow rejects unmatched sentence', () => {
+    const row = fixturePlannerPacket.workbench_preview.results[3];
+    const target = fixtureSeedPlan.refinement_targets[3];
+    const triage = KernelSemanticBasisRefinementWorkbenchTriageV01.triagePreviewRow(row, target);
+    assert(triage.triage_type === 'unmatched_rewrite_or_grammar_gap', 'wrong unmatched triage type');
+    assert(triage.draft_candidate === false, 'unmatched should not draft');
+    assert(triage.severity === 'high', 'unmatched severity wrong');
+  });
+
+  add('triagePlannerPacket summarizes draft candidates', () => {
+    const report = KernelSemanticBasisRefinementWorkbenchTriageV01.triagePlannerPacket(fixturePlannerPacket);
+    assert(report.packet_type === '42ndMind_semantic_basis_refinement_workbench_triage_report_v0_1', 'wrong packet type');
+    assert(report.summary.sentence_count === 4, 'sentence count wrong');
+    assert(report.summary.draft_candidate_count === 3, 'draft count wrong');
+    assert(report.summary.rewrite_or_grammar_gap_count === 1, 'gap count wrong');
+    assert(report.belief_movement === 'none', 'report moved belief');
+  });
+
+  add('draftSeedPacket emits only reviewable candidates', () => {
+    const report = KernelSemanticBasisRefinementWorkbenchTriageV01.triagePlannerPacket(fixturePlannerPacket);
+    const draft = KernelSemanticBasisRefinementWorkbenchTriageV01.draftSeedPacket(report);
+    assert(draft.packet_type === '42ndMind_semantic_basis_refinement_seed_draft_v0_1', 'wrong draft packet type');
+    assert(draft.entry_count === 3, 'draft entry count wrong');
+    assert(draft.entries.every(e => e.review_status === 'draft_candidate_requires_human_review'), 'review status missing');
+    assert(draft.entries.every(e => e.belief_movement === 'none'), 'draft entry moved belief');
+  });
+
+  add('module availability reports full path', () => {
+    const a = KernelSemanticBasisRefinementWorkbenchTriageV01.modulesAvailable();
+    assert(a.seed_planner === true, 'seed planner unavailable');
+  });
+
+  add('loadPlanAndTriage runs current full path', async () => {
+    fullPacket = await KernelSemanticBasisRefinementWorkbenchTriageV01.loadPlanAndTriage({ min_template_observations:2, min_observations:2, limit:10, sentences_per_template:4, allowed_extra_pressures:0, min_strong_observations:4, min_priority:50 });
+    assert(fullPacket.ok === true, 'full packet not ok');
+    assert(fullPacket.triage_report.summary.sentence_count >= 1, 'expected sentence triage rows');
+    assert(fullPacket.draft_seed_packet.entry_count >= 1, 'expected draft candidates');
+    assert(fullPacket.triage_report.belief_movement === 'none', 'triage report moved belief');
+    assert(fullPacket.draft_seed_packet.belief_movement === 'none', 'draft packet moved belief');
+    assert(fullPacket.belief_movement === 'none', 'full packet moved belief');
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === tests.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({
+      packet_type:'42ndMind_semantic_basis_refinement_workbench_triage_v0_1_test_report',
+      full_triage_summary: fullPacket && fullPacket.summary,
+      full_draft_summary: fullPacket && fullPacket.draft_seed_packet && { entry_count: fullPacket.draft_seed_packet.entry_count },
+      results
+    }, null, 2);
+  })();
+</script>
+</body>
+</html>
