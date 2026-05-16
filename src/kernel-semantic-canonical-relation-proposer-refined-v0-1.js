@@ -100,7 +100,10 @@
   function splitChecks(report) {
     return [
       splitCheck(report, 'expert', 'settled'),
-      splitCheck(report, 'collusion', 'coordinated')
+      splitCheck(report, 'collusion', 'coordinated'),
+      splitCheck(report, 'unresolved', 'not_settled'),
+      splitCheck(report, 'unresolved', 'not_collusion'),
+      splitCheck(report, 'not_settled', 'not_collusion')
     ];
   }
 
