@@ -22,7 +22,8 @@
     'data/semantic_seed_rhetoric_intent_pressure_v0_1.json',
     'data/semantic_seed_vector_template_contrast_v0_1.json',
     'data/semantic_seed_vector_template_contrast_v0_2.json',
-    'data/semantic_seed_accusation_risk_direct_evidence_v0_1.json'
+    'data/semantic_seed_accusation_risk_direct_evidence_v0_1.json',
+    'data/semantic_seed_accusation_truth_status_contrast_v0_1.json'
   ]);
 
   function text(value) { return String(value ?? '').trim(); }
