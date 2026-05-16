@@ -1,0 +1,375 @@
+{
+  "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
+  "packet_version": "0.1.0",
+  "created_at": "2026-05-15T23:56:00.000Z",
+  "description": "Workbench-reviewed second vector-template contrast seed batch. Adds authority closure, common-source, accusation-intent, rhetoric-affect, provenance, obfuscation, actor-resolution, and quote/full-record examples while preserving belief movement at none.",
+  "source_workbench_patch": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10",
+  "doctrine": {
+    "corpus_entries_are_training_pressure_not_truth": true,
+    "semantic_operators_are_candidate_language_math_units": true,
+    "template_sentences_are_review_targets_not_doctrine": true,
+    "legitimacy_conditions_define_when_pressure_is_earned": true,
+    "source_status_is_metadata_not_truth": true,
+    "rhetoric_pressure_is_not_truth": true,
+    "intent_attribution_requires_extra_evidence": true,
+    "belief_movement": "none"
+  },
+  "entries": [
+    {
+      "id": "vector_template_settled_expert_evidence_096",
+      "text": "The expert calls the claim settled, but the supporting evidence still has to be shown.",
+      "language": "en",
+      "operator_group": "mixed_authority_transfer_evidence_contact_closure_dismissal",
+      "surface_terms": ["expert", "expert calls", "claim settled", "supporting evidence still has to be shown", "primary_document", "settled"],
+      "literal_meaning": "The sentence states or implies: The expert calls the claim settled, but the supporting evidence still has to be shown.",
+      "candidate_intended_meaning": "The sentence treats expert authority and settled language as inspection pressure, not as a substitute for evidence.",
+      "semantic_operators": [
+        { "operator": "expert(source)", "pressure": ["authority_transfer_pressure"], "legitimacy_condition": "Expertise is legitimate prior pressure only when the domain fits the claim and the expert gives inspectable reasons." },
+        { "operator": "primary_document(evidence)", "pressure": ["evidence_contact_pressure"], "legitimacy_condition": "Primary document contact is legitimate only when the cited passage directly maps to the claim and scope." },
+        { "operator": "settled(claim)", "pressure": ["closure_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Settled or closure language is legitimate only when the exact question, record support, and unresolved-boundary are defined." }
+      ],
+      "evidence_burden": ["Identify the expert.", "Check domain fit.", "Inspect the expert’s evidence or reasoning.", "Identify the supporting evidence.", "Check whether unresolved alternatives or scope limits remain."],
+      "expected_kernel_response": { "lexical_action": "separate authority and closure language from evidence", "source_trust_action": "use authority as inspection priority, not truth", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence makes the claim settled under the same scope?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 3, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_rating_not_evidence_097",
+      "text": "The certified reviewer rated the claim false, but the rating is not the evidence itself.",
+      "language": "en",
+      "operator_group": "mixed_authority_transfer_closure_dismissal_source_trust",
+      "surface_terms": ["certified", "reviewer", "rated the claim false", "claim false", "rating", "false"],
+      "literal_meaning": "The sentence states or implies: The certified reviewer rated the claim false, but the rating is not the evidence itself.",
+      "candidate_intended_meaning": "The sentence separates certification, reviewer status, rating output, and falsifying evidence.",
+      "semantic_operators": [
+        { "operator": "certified(source)", "pressure": ["authority_transfer_pressure", "trust_inflation_pressure"], "legitimacy_condition": "Certification is legitimate only as metadata about process or status; it does not prove the source conclusion." },
+        { "operator": "false(claim)", "pressure": ["falsity_claim_pressure", "closure_pressure"], "legitimacy_condition": "A falsity claim is legitimate only when the exact claim is contradicted by evidence or fails under agreed definitions and scope." },
+        { "operator": "rated(source,claim)", "pressure": ["rating_pressure", "certification_pressure", "source_trust_pressure"], "legitimacy_condition": "A rating is legitimate only as a review output; the rating must be backed by inspectable reasoning and evidence." },
+        { "operator": "reviewer(source)", "pressure": ["reviewer_status_pressure", "source_trust_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Reviewer status is legitimate as role metadata; it does not establish the reviewed claim without reasoning and evidence." }
+      ],
+      "evidence_burden": ["Identify the certifier.", "Inspect the rating criteria.", "Inspect the evidence and reasoning behind the rating.", "Identify the falsifying evidence."],
+      "expected_kernel_response": { "lexical_action": "separate review status, rating, and evidence chain", "source_trust_action": "treat rating as review metadata until evidence is inspected", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence supports the rating, and does it falsify the exact claim?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 4, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_official_conclusion_scope_098",
+      "text": "The official conclusion closes the question only if the record supports the exact claim.",
+      "language": "en",
+      "operator_group": "mixed_source_trust_evidence_contact_closure_dismissal",
+      "surface_terms": ["official conclusion", "record supports the exact claim", "closes the question", "official_source", "states", "settled"],
+      "literal_meaning": "The sentence states or implies: The official conclusion closes the question only if the record supports the exact claim.",
+      "candidate_intended_meaning": "The sentence allows official provenance but blocks closure unless the record maps to the exact claim.",
+      "semantic_operators": [
+        { "operator": "official_source(source)", "pressure": ["source_trust_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Official status improves provenance but does not make interpretation or conclusion true." },
+        { "operator": "states(document,claim)", "pressure": ["direct_support_pressure", "evidence_contact_pressure"], "legitimacy_condition": "A document statement supports a claim only when the exact passage maps to the claim and scope." },
+        { "operator": "settled(claim)", "pressure": ["closure_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Settled or closure language is legitimate only when the exact question, record support, and unresolved-boundary are defined." }
+      ],
+      "evidence_burden": ["Identify source authority.", "Inspect the official record.", "Locate the supporting passage.", "Check whether the passage supports the exact claim and scope."],
+      "expected_kernel_response": { "lexical_action": "map the official record to the exact claim before closure", "source_trust_action": "treat official status as provenance and inspection priority", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Does the official record support the exact claim under the same scope?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 3, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_authority_label_inspection_099",
+      "text": "The authority label should raise inspection priority, not end the analysis.",
+      "language": "en",
+      "operator_group": "mixed_authority_transfer_closure_dismissal",
+      "surface_terms": ["authority", "end the analysis", "expert", "settled"],
+      "literal_meaning": "The sentence states or implies: The authority label should raise inspection priority, not end the analysis.",
+      "candidate_intended_meaning": "The sentence limits authority labels to review priority and blocks premature closure.",
+      "semantic_operators": [
+        { "operator": "expert(source)", "pressure": ["authority_transfer_pressure"], "legitimacy_condition": "Expertise is legitimate prior pressure only when the domain fits the claim and the expert gives inspectable reasons." },
+        { "operator": "settled(claim)", "pressure": ["closure_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Settled or closure language is legitimate only when the exact question, record support, and unresolved-boundary are defined." }
+      ],
+      "evidence_burden": ["Identify the authority basis.", "Check domain fit.", "Inspect evidence or reasoning.", "Check whether closure is earned."],
+      "expected_kernel_response": { "lexical_action": "treat authority labels as inspection priority", "source_trust_action": "do not let authority end analysis without evidence", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence does the authority label point to?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_benefit_not_motive_100",
+      "text": "The official benefited from the result, but benefit alone does not prove motive.",
+      "language": "en",
+      "operator_group": "motive_agency",
+      "surface_terms": ["benefited from the result", "benefit alone does not prove motive", "benefit alone", "ulterior_motive_attribution"],
+      "literal_meaning": "The sentence states or implies: The official benefited from the result, but benefit alone does not prove motive.",
+      "candidate_intended_meaning": "The sentence blocks the move from benefit or outcome to hidden motive without direct-link evidence.",
+      "semantic_operators": [
+        { "operator": "ulterior_motive_attribution(actor,target,motive)", "pressure": ["motive_agency_pressure", "intent_attribution_pressure", "direct_link_evidence_burden"], "legitimacy_condition": "Ulterior-motive attribution is legitimate only when actor, alleged hidden motive, action, and evidence link are specified." }
+      ],
+      "evidence_burden": ["Identify who benefited.", "Identify the alleged motive and action.", "Inspect evidence linking motive to action rather than inferring motive from benefit."],
+      "expected_kernel_response": { "lexical_action": "treat benefit as possible incentive, not motive proof", "source_trust_action": "require direct-link evidence for motive", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence links the benefit to motive and action?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_accusation_intent_link_101",
+      "text": "The accusation assigns intent before identifying a direct evidence link.",
+      "language": "en",
+      "operator_group": "accusation_risk",
+      "surface_terms": ["accusation assigns intent", "assigns intent before identifying", "direct evidence link", "reckless_accusation"],
+      "literal_meaning": "The sentence states or implies: The accusation assigns intent before identifying a direct evidence link.",
+      "candidate_intended_meaning": "The sentence flags accusation pressure where intent is assigned before evidence is identified.",
+      "semantic_operators": [
+        { "operator": "reckless_accusation(actor,target,claim)", "pressure": ["accusation_pressure", "evidence_gap_pressure", "reputational_risk_pressure", "direct_link_evidence_burden"], "legitimacy_condition": "Reckless-accusation pressure is legitimate when a serious accusation is made with inadequate direct evidence, care, or scope discipline." }
+      ],
+      "evidence_burden": ["Identify the accusation.", "Identify the accused target.", "Identify direct evidence for intent.", "Check whether the accusation exceeds the evidence."],
+      "expected_kernel_response": { "lexical_action": "identify accusation, target, and direct evidence before allowing accusation pressure", "source_trust_action": "raise evidence burden for intent accusations", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Who is accused, of what exactly, and what direct evidence supports intent?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_common_source_overlap_102",
+      "text": "The outlets used similar wording, but a common source could explain the overlap.",
+      "language": "en",
+      "operator_group": "motive_agency",
+      "surface_terms": ["outlets used similar wording", "common source", "could explain the overlap", "same_source"],
+      "literal_meaning": "The sentence states or implies: The outlets used similar wording, but a common source could explain the overlap.",
+      "candidate_intended_meaning": "The sentence preserves common-source explanation before inferring coordination from similar wording.",
+      "semantic_operators": [
+        { "operator": "same_source(actor,event)", "pressure": ["motive_agency_pressure", "uncertainty_calibration_pressure"], "legitimacy_condition": "Common-source pressure is legitimate when similar wording or timing may be explained by shared upstream material rather than direct coordination." }
+      ],
+      "evidence_burden": ["Identify the similar wording.", "Look for a shared upstream source.", "Compare common-source, coordination, and independent-convergence explanations."],
+      "expected_kernel_response": { "lexical_action": "preserve common-source alternative before coordination inference", "source_trust_action": "do not infer agency from overlap alone", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Could a shared upstream source explain the overlap?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_collusion_timing_103",
+      "text": "The companies acted at the same time, but timing alone does not establish collusion.",
+      "language": "en",
+      "operator_group": "motive_agency",
+      "surface_terms": ["collusion", "timing alone does not establish collusion"],
+      "literal_meaning": "The sentence states or implies: The companies acted at the same time, but timing alone does not establish collusion.",
+      "candidate_intended_meaning": "The sentence blocks the move from timing similarity to collusion without direct-link evidence.",
+      "semantic_operators": [
+        { "operator": "collusion(actors)", "pressure": ["motive_agency_pressure", "direct_link_evidence_burden"], "legitimacy_condition": "Collusion is legitimate only with direct-link evidence such as agreement, communication, shared control, or coordinated action that defeats independent convergence." }
+      ],
+      "evidence_burden": ["Identify the actors.", "Identify the alleged shared action.", "Look for agreement, communication records, common control, or shared planning evidence."],
+      "expected_kernel_response": { "lexical_action": "treat collusion as a direct-link agency hypothesis", "source_trust_action": "timing alone does not satisfy the evidence burden", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What direct-link evidence supports collusion beyond timing?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_coordination_control_channel_104",
+      "text": "The shared message suggests coordination only if the control channel is identified.",
+      "language": "en",
+      "operator_group": "motive_agency",
+      "surface_terms": ["shared message", "coordination", "control channel", "coordinated"],
+      "literal_meaning": "The sentence states or implies: The shared message suggests coordination only if the control channel is identified.",
+      "candidate_intended_meaning": "The sentence requires a control channel or equivalent link before shared messaging becomes coordination.",
+      "semantic_operators": [
+        { "operator": "coordinated(actor,event)", "pressure": ["motive_agency_pressure", "direct_link_evidence_burden"], "legitimacy_condition": "Coordination is legitimate only with direct link evidence or a strong structured pattern that defeats independent-convergence explanations." }
+      ],
+      "evidence_burden": ["Identify actors.", "Identify the shared message.", "Look for a control channel, common source, or communication record."],
+      "expected_kernel_response": { "lexical_action": "require direct-link or strong structured-pattern evidence for coordination", "source_trust_action": "do not infer coordination from shared wording alone", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What control channel or common source explains the shared message?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_moral_shock_record_105",
+      "text": "The headline uses moral shock, but the record still has to be inspected.",
+      "language": "en",
+      "operator_group": "rhetoric_affect",
+      "surface_terms": ["moral shock", "uses moral shock", "emotionally_loaded"],
+      "literal_meaning": "The sentence states or implies: The headline uses moral shock, but the record still has to be inspected.",
+      "candidate_intended_meaning": "The sentence separates affective moral framing from evidence inspection.",
+      "semantic_operators": [
+        { "operator": "emotionally_loaded(frame,claim)", "pressure": ["affective_pressure", "salience_distortion_pressure", "confidence_inflation_pressure"], "legitimacy_condition": "Emotionally loaded framing is legitimate as a rhetoric-pressure flag, not as evidence for or against the underlying claim." }
+      ],
+      "evidence_burden": ["Identify the morally loaded words.", "Restate the claim without affective framing.", "Inspect the record separately."],
+      "expected_kernel_response": { "lexical_action": "remove moral shock framing and evaluate the underlying proposition", "source_trust_action": "rhetoric does not substitute for evidence", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What remains after moral shock wording is removed?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_urgency_without_truth_106",
+      "text": "The wording makes the issue feel urgent without showing whether the claim is true.",
+      "language": "en",
+      "operator_group": "rhetoric_affect",
+      "surface_terms": ["feel urgent", "issue feel urgent", "without showing whether the claim is true", "emotionally_loaded"],
+      "literal_meaning": "The sentence states or implies: The wording makes the issue feel urgent without showing whether the claim is true.",
+      "candidate_intended_meaning": "The sentence separates urgency framing from evidence for truth.",
+      "semantic_operators": [
+        { "operator": "emotionally_loaded(frame,claim)", "pressure": ["affective_pressure", "salience_distortion_pressure", "confidence_inflation_pressure"], "legitimacy_condition": "Emotionally loaded framing is legitimate as a rhetoric-pressure flag, not as evidence for or against the underlying claim." }
+      ],
+      "evidence_burden": ["Identify urgency language.", "Restate the underlying claim.", "Check whether evidence remains after urgency framing is removed."],
+      "expected_kernel_response": { "lexical_action": "separate urgency framing from evidence", "source_trust_action": "do not let urgency inflate confidence", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence supports the claim once urgency framing is removed?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_reviewer_rating_criteria_107",
+      "text": "The certified reviewer endorsed the rating, but the review criteria still matter.",
+      "language": "en",
+      "operator_group": "mixed_authority_transfer_source_trust",
+      "surface_terms": ["certified", "certified reviewer", "endorsed the rating", "review criteria", "rating", "reviewer"],
+      "literal_meaning": "The sentence states or implies: The certified reviewer endorsed the rating, but the review criteria still matter.",
+      "candidate_intended_meaning": "The sentence treats certification, reviewer status, and rating as metadata that still require criteria review.",
+      "semantic_operators": [
+        { "operator": "certified(source)", "pressure": ["authority_transfer_pressure", "trust_inflation_pressure"], "legitimacy_condition": "Certification is legitimate only as metadata about process or status; it does not prove the source conclusion." },
+        { "operator": "rated(source,claim)", "pressure": ["rating_pressure", "certification_pressure", "source_trust_pressure"], "legitimacy_condition": "A rating is legitimate only as a review output; the rating must be backed by inspectable reasoning and evidence." },
+        { "operator": "reviewer(source)", "pressure": ["reviewer_status_pressure", "source_trust_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Reviewer status is legitimate as role metadata; it does not establish the reviewed claim without reasoning and evidence." }
+      ],
+      "evidence_burden": ["Identify the reviewer.", "Identify review role and scope.", "Inspect rating criteria.", "Inspect reasoning and evidence behind the rating."],
+      "expected_kernel_response": { "lexical_action": "separate review status, rating, and evidence chain", "source_trust_action": "review criteria still matter after endorsement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What criteria and evidence support the rating?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 3, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_publication_not_interpretation_108",
+      "text": "The institution published the claim, but publication does not settle the interpretation.",
+      "language": "en",
+      "operator_group": "source_trust",
+      "surface_terms": ["institution published", "published the claim", "publication does not settle", "official_source", "posted"],
+      "literal_meaning": "The sentence states or implies: The institution published the claim, but publication does not settle the interpretation.",
+      "candidate_intended_meaning": "The sentence separates publication provenance from truth or interpretation closure.",
+      "semantic_operators": [
+        { "operator": "official_source(source)", "pressure": ["source_trust_pressure", "authority_transfer_pressure"], "legitimacy_condition": "Official status improves provenance but does not make interpretation or conclusion true." },
+        { "operator": "posted(source,claim)", "pressure": ["provenance_pressure", "source_trust_pressure"], "legitimacy_condition": "Posting or publication establishes provenance of a statement, not truth of the statement." }
+      ],
+      "evidence_burden": ["Identify who published it.", "Separate the published content from content truth.", "Inspect the supporting record before settling interpretation."],
+      "expected_kernel_response": { "lexical_action": "separate publication provenance from interpretation closure", "source_trust_action": "treat publication as provenance pressure only", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What evidence supports the interpretation beyond publication?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_obscures_actor_action_109",
+      "text": "The answer obscures the claim by avoiding the specific actor and action.",
+      "language": "en",
+      "operator_group": "rhetoric_clarity",
+      "surface_terms": ["answer obscures", "obscures the claim", "avoiding the specific actor and action", "obfuscates"],
+      "literal_meaning": "The sentence states or implies: The answer obscures the claim by avoiding the specific actor and action.",
+      "candidate_intended_meaning": "The sentence marks clarity reduction caused by missing actor and action.",
+      "semantic_operators": [
+        { "operator": "obfuscates(actor,claim)", "pressure": ["clarity_reduction_pressure", "ambiguity_pressure", "evidence_access_burden"], "legitimacy_condition": "Obfuscation pressure is legitimate when wording, structure, or vagueness makes the exact claim harder to define, inspect, or test." }
+      ],
+      "evidence_burden": ["Identify the missing actor.", "Identify the missing action.", "Restate the simplest inspectable claim."],
+      "expected_kernel_response": { "lexical_action": "strip vague language and recover actor-action structure", "source_trust_action": "request a clearer inspectable claim", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Who acted, what action occurred, and what claim is being obscured?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_compressed_claims_110",
+      "text": "The wording compresses several claims together, so each one must be separated first.",
+      "language": "en",
+      "operator_group": "rhetoric_clarity",
+      "surface_terms": ["compresses several claims together", "several claims together", "must be separated first", "obfuscates"],
+      "literal_meaning": "The sentence states or implies: The wording compresses several claims together, so each one must be separated first.",
+      "candidate_intended_meaning": "The sentence marks claim compression as clarity-reduction pressure that requires separation before evaluation.",
+      "semantic_operators": [
+        { "operator": "obfuscates(actor,claim)", "pressure": ["clarity_reduction_pressure", "ambiguity_pressure", "evidence_access_burden"], "legitimacy_condition": "Obfuscation pressure is legitimate when wording, structure, or vagueness makes the exact claim harder to define, inspect, or test." }
+      ],
+      "evidence_burden": ["Separate each claim.", "Identify the evidence burden for each claim.", "Check whether compression changes support, scope, or interpretation."],
+      "expected_kernel_response": { "lexical_action": "split compressed claims before evaluation", "source_trust_action": "request separate evidence for each claim", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Which separate claims are being compressed together?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_they_coordination_defined_group_111",
+      "text": "They coordinated the message only if they refers to a defined actor group.",
+      "language": "en",
+      "operator_group": "mixed_reference_ambiguity_motive_agency",
+      "surface_terms": ["they", "coordinated", "defined actor group"],
+      "literal_meaning": "The sentence states or implies: They coordinated the message only if they refers to a defined actor group.",
+      "candidate_intended_meaning": "The sentence blocks coordination pressure until the actor reference is resolved.",
+      "semantic_operators": [
+        { "operator": "they(reference)", "pressure": ["ambiguity_pressure"], "legitimacy_condition": "A reference operator is legitimate only after the actor or target has been resolved." },
+        { "operator": "coordinated(actor,event)", "pressure": ["motive_agency_pressure", "direct_link_evidence_burden"], "legitimacy_condition": "Coordination is legitimate only with direct link evidence or a strong structured pattern that defeats independent-convergence explanations." }
+      ],
+      "evidence_burden": ["Resolve who they refers to.", "Identify the shared message.", "Look for communication records, timing, common source, or control channel."],
+      "expected_kernel_response": { "lexical_action": "resolve the actor group before coordination pressure", "source_trust_action": "do not infer coordination from unresolved actors", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Who is they, and what evidence links them to coordination?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_someone_pressure_unresolved_112",
+      "text": "Someone pressured the witness, but the actor and mechanism are still unresolved.",
+      "language": "en",
+      "operator_group": "mixed_reference_ambiguity_motive_agency",
+      "surface_terms": ["someone", "pressured", "pressured the witness", "actor and mechanism unresolved"],
+      "literal_meaning": "The sentence states or implies: Someone pressured the witness, but the actor and mechanism are still unresolved.",
+      "candidate_intended_meaning": "The sentence treats pressure as an agency claim that requires actor, target, mechanism, and evidence.",
+      "semantic_operators": [
+        { "operator": "someone(reference)", "pressure": ["ambiguity_pressure"], "legitimacy_condition": "Someone is legitimate only as an unresolved actor placeholder until the actor is identified." },
+        { "operator": "pressured(actor,event)", "pressure": ["motive_agency_pressure", "direct_link_evidence_burden"], "legitimacy_condition": "Pressure/coercion language is legitimate only when the actor, target, mechanism, and evidence of pressure are identified." }
+      ],
+      "evidence_burden": ["Identify who applied pressure.", "Identify the target.", "Identify the pressure mechanism.", "Inspect direct evidence such as messages, threats, incentives, or testimony."],
+      "expected_kernel_response": { "lexical_action": "resolve actor, target, mechanism, and evidence", "source_trust_action": "block strong agency pressure until actor and mechanism are resolved", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Who applied pressure, by what mechanism, and what evidence shows it?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_this_agency_actor_class_113",
+      "text": "This assigns agency before the actor class is clear.",
+      "language": "en",
+      "operator_group": "reference_ambiguity",
+      "surface_terms": ["this", "assigns agency", "actor class is clear"],
+      "literal_meaning": "The sentence states or implies: This assigns agency before the actor class is clear.",
+      "candidate_intended_meaning": "The sentence blocks agency assignment until the referent and actor class are resolved.",
+      "semantic_operators": [
+        { "operator": "this(reference)", "pressure": ["ambiguity_pressure"], "legitimacy_condition": "A deictic reference is legitimate only when the referenced evidence, event, or claim is identified." }
+      ],
+      "evidence_burden": ["Identify what this refers to.", "Determine whether it is evidence, claim, or context.", "Resolve actor class before agency assignment."],
+      "expected_kernel_response": { "lexical_action": "resolve ambiguous reference before agency pressure", "source_trust_action": "do not assign agency from unclear reference", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What does this refer to, and what actor class is being assigned agency?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 1, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_document_support_same_scope_114",
+      "text": "The document supports the claim only if the cited passage maps to the same scope.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["document supports the claim", "cited passage", "same scope", "primary_document", "states"],
+      "literal_meaning": "The sentence states or implies: The document supports the claim only if the cited passage maps to the same scope.",
+      "candidate_intended_meaning": "The sentence requires passage-level evidence contact and same-scope mapping before support is earned.",
+      "semantic_operators": [
+        { "operator": "primary_document(evidence)", "pressure": ["evidence_contact_pressure"], "legitimacy_condition": "Primary document contact is legitimate only when the cited passage directly maps to the claim and scope." },
+        { "operator": "states(document,claim)", "pressure": ["direct_support_pressure", "evidence_contact_pressure"], "legitimacy_condition": "A document statement supports a claim only when the exact passage maps to the claim and scope." }
+      ],
+      "evidence_burden": ["Identify the document.", "Locate the cited passage.", "Map the cited passage to the claim.", "Check date, authority, scope, and applicability."],
+      "expected_kernel_response": { "lexical_action": "map the document passage to the claim and scope", "source_trust_action": "allow bounded support only after passage-level inspection", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["Does the cited passage map to the same claim and scope?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    },
+    {
+      "id": "vector_template_quote_full_record_115",
+      "text": "The quote creates evidence contact, but the full record must still be checked.",
+      "language": "en",
+      "operator_group": "evidence_contact",
+      "surface_terms": ["the quote", "quote creates evidence contact", "full record", "full record must still be checked", "primary_document", "quote"],
+      "literal_meaning": "The sentence states or implies: The quote creates evidence contact, but the full record must still be checked.",
+      "candidate_intended_meaning": "The sentence treats quotation as bounded evidence contact that still requires full-record inspection.",
+      "semantic_operators": [
+        { "operator": "primary_document(evidence)", "pressure": ["evidence_contact_pressure"], "legitimacy_condition": "Primary document contact is legitimate only when the cited passage directly maps to the claim and scope." },
+        { "operator": "quote(source,claim)", "pressure": ["evidence_contact_pressure", "direct_support_pressure"], "legitimacy_condition": "A quote creates evidence contact only when it is authentic, complete enough, and mapped to the same claim and scope." }
+      ],
+      "evidence_burden": ["Identify the quote source.", "Check surrounding context and completeness.", "Map the quoted passage to the exact claim and scope.", "Inspect the full record."],
+      "expected_kernel_response": { "lexical_action": "treat quote evidence as bounded evidence contact until the fuller record is checked", "source_trust_action": "inspect the full record before strong support or contradiction movement", "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied", "questions": ["What does the full record show around the quote?"] },
+      "contrast_group": "vector_template_contrast_batch_v0_2",
+      "review_status": "seed_candidate",
+      "workbench_metadata": { "generated_by": "42ndMind_semantic_operator_workbench_v0_1_9_patch_plus_grammar_v0_1_10", "match_count": 2, "redundant_matches_suppressed": true, "requires_human_review": true }
+    }
+  ],
+  "belief_movement": "none"
+}
