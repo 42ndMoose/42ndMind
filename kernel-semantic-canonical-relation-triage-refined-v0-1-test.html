@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Refined Canonical Relation Triage Test</title>
+  <style>
+    body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}
+    header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}
+    main{padding:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px}
+    h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}
+    pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Refined Canonical Relation Triage Test</h1><div>Tests triage of remaining refined relation candidates.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-canonical-relation-triage-refined.html">refined relation triage page</a> · <a href="semantic-canonical-relation-proposer-refined.html">refined relation proposer</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-10-patch.js?v=0.1.10"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-template-validation-runner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-validation-triage-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-candidate-extractor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-candidate-extractor-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-law-invariance-tester-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-vector-basis-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-proposer-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-proposer-refined-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-triage-refined-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests=[]; let packet=null;
+  function add(name,fn){tests.push({name,fn});} function assert(cond,msg){if(!cond)throw new Error(msg);} function asArray(v){return Array.isArray(v)?v:[];}
+  add('modules load',()=>{assert(window.KernelSemanticCanonicalRelationTriageRefinedV01,'refined triage missing');assert(window.KernelSemanticCanonicalRelationProposerRefinedV01,'refined proposer missing');assert(KernelSemanticCanonicalRelationTriageRefinedV01.VERSION==='0.1.0','version wrong');});
+  add('doctrine preserves unit-total growth principle',()=>{const d=KernelSemanticCanonicalRelationTriageRefinedV01.doctrine();assert(d.unit_total_principle_allows_small_complete_shapes_to_refine_without_exceeding_one===true,'unit-total growth doctrine missing');assert(d.early_scope_can_be_complete_one_with_few_dimensions===true,'early scope doctrine missing');assert(d.mature_scope_remains_one_with_more_dimensions===true,'mature scope doctrine missing');assert(d.active_shape_l1_total==='sum_abs_dimensions_equals_1','active shape rule missing');assert(d.belief_movement==='none','belief movement wrong');});
+  add('remaining equivalence classifier distinguishes self-equivalence',()=>{const row=KernelSemanticCanonicalRelationTriageRefinedV01.triageRemainingTarget({formal_statement:'ulterior_motive_attribution ≡ ulterior_motive_attribution',canonical_signature:'d1|d2|d4',member_operators:['ulterior_motive_attribution'],local_label_metadata:['direct_link_evidence_burden','intent_attribution_pressure','motive_agency_pressure']});assert(row.triage_type==='self_equivalence_duplicate_consolidation_candidate','wrong self-equivalence triage');assert(row.severity==='low','self-equivalence severity wrong');});
+  add('remaining equivalence classifier flags unresolved/not_settled/not_collusion collapse',()=>{const row=KernelSemanticCanonicalRelationTriageRefinedV01.triageRemainingTarget({formal_statement:'unresolved ≡ not_settled ≡ not_collusion',canonical_signature:'d3',member_operators:['unresolved','not_settled','not_collusion'],local_label_metadata:['uncertainty_calibration_pressure']});assert(row.triage_type==='status_negation_vocabulary_collapse_needs_role_split','wrong status collapse triage');assert(row.severity==='high','status collapse should be high');assert(row.next_build_target==='uncertainty_status_negation_basis_refinement','wrong next target');});
+  add('load refined propose and triage succeeds',async()=>{packet=await KernelSemanticCanonicalRelationTriageRefinedV01.loadRefinedProposeAndTriage({min_template_observations:2,min_observations:2,limit:10,sentences_per_template:4,allowed_extra_pressures:0,min_strong_observations:4});assert(packet.ok===true,'refined triage packet not ok');assert(packet.summary.split_checks_passed===true,'split checks failed');assert(packet.summary.critical_regression_count===0,'critical regression detected');assert(packet.belief_movement==='none','packet moved belief');});
+  add('remaining equivalence triage exposes next build target',()=>{const rows=packet.triage_report.remaining_equivalence_triage;assert(rows.length>=2,'expected remaining equivalence rows');assert(rows.some(r=>r.triage_type==='self_equivalence_duplicate_consolidation_candidate'),'self-equivalence row missing');assert(rows.some(r=>r.triage_type==='status_negation_vocabulary_collapse_needs_role_split'),'status collapse row missing');assert(packet.triage_report.recommended_next_targets.includes('uncertainty_status_negation_basis_refinement'),'recommended target missing');});
+  add('no belief movement anywhere',()=>{assert(packet.triage_report.belief_movement==='none','triage report moved belief');assert(asArray(packet.triage_report.remaining_equivalence_triage).every(r=>r.belief_movement==='none'),'remaining row moved belief');assert(asArray(packet.triage_report.relation_triage).every(r=>r.belief_movement==='none'),'relation row moved belief');});
+  add('summary exposes refined triage counts',()=>{assert(packet.summary.relation_triage_count>=1,'relation triage missing');assert(packet.summary.remaining_equivalence_triage_count>=2,'remaining equivalence triage missing');assert(packet.summary.high_severity_count>=1,'expected high severity status collapse');assert(packet.summary.objective_language_claim==='refined_relation_triage_guides_next_basis_refinement_not_final_math','objective claim wrong');});
+  (async function run(){const results=[];for(const t of tests){try{await t.fn();results.push({name:t.name,passed:true});}catch(e){results.push({name:t.name,passed:false,error:e.message});}}const passed=results.filter(r=>r.passed).length;document.getElementById('summary').className=passed===results.length?'ok':'bad';document.getElementById('summary').textContent=`${passed}/${results.length} passed`;document.getElementById('out').textContent=JSON.stringify({packet_type:'42ndMind_refined_canonical_relation_triage_v0_1_test_report',summary:packet&&packet.summary,remaining_equivalence_triage:packet&&packet.triage_report&&packet.triage_report.remaining_equivalence_triage,recommended_next_targets:packet&&packet.triage_report&&packet.triage_report.recommended_next_targets,results},null,2);})();
+</script>
+</body>
+</html>
