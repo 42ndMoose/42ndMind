@@ -1,0 +1,420 @@
+{
+  "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
+  "packet_version": "0.1.0",
+  "created_at": "2026-05-16T00:00:00.000Z",
+  "description": "Adds basis-refinement seed candidates to split source-status from claim-closure, neutral coordination from collusion, accusation-risk from motive attribution, and coordination from motive attribution. Human review required before doctrine promotion.",
+  "doctrine": {
+    "workbench_outputs_are_drafts_not_doctrine": true,
+    "matched_operators_are_candidate_readings": true,
+    "pressure_labels_do_not_move_belief": true,
+    "basis_refinement_entries_are_training_pressure_not_truth": true,
+    "active_shape_l1_total": "sum_abs_dimensions_equals_1",
+    "force_intensity_remains_separate_from_shape": true,
+    "belief_movement": "none"
+  },
+  "entries": [
+    {
+      "id": "basis_refinement_authority_source_status_001",
+      "text": "The expert identified the claim, but the record has not settled whether it is true.",
+      "language": "en",
+      "operator_group": "basis_refinement_authority_closure",
+      "surface_terms": ["expert", "identified the claim", "record", "not settled"],
+      "literal_meaning": "An expert identifies a claim while the record has not settled the truth of that claim.",
+      "candidate_intended_meaning": "Expert/source status should raise inspection priority without collapsing into claim closure.",
+      "semantic_operators": [
+        {
+          "operator": "expert(source)",
+          "pressure": ["authority_transfer_pressure"],
+          "legitimacy_condition": "Expert status is legitimate as source-status metadata only when domain fit and claim-level evidence remain inspectable."
+        },
+        {
+          "operator": "unresolved(claim)",
+          "pressure": ["uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Unresolved status remains legitimate until the relevant record directly supports or contradicts the exact claim."
+        }
+      ],
+      "evidence_burden": ["Identify the exact claim.", "Identify the expert's domain fit.", "Inspect the record before treating the claim as settled."],
+      "expected_kernel_response": {
+        "lexical_action": "separate expert identification from claim closure",
+        "source_trust_action": "treat expert status as inspection priority rather than final evidence",
+        "belief_movement": "none_until_record_supports_or_contradicts_the_exact_claim",
+        "questions": ["What record would settle the claim?"]
+      },
+      "contrast_group": "basis_refinement_authority_closure",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "authority_closure_basis_refinement",
+        "expected_new_dimensions": ["source_status_dimension", "claim_closure_dimension", "evidence_support_requirement_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_authority_closure_support_002",
+      "text": "The claim is settled only when the record supports it, not merely because an expert said it.",
+      "language": "en",
+      "operator_group": "basis_refinement_authority_closure",
+      "surface_terms": ["claim is settled", "record supports it", "expert said it"],
+      "literal_meaning": "The sentence says claim closure requires record support rather than expert assertion alone.",
+      "candidate_intended_meaning": "Claim closure should be tied to direct support, while expert assertion remains separate source-status metadata.",
+      "semantic_operators": [
+        {
+          "operator": "settled(claim)",
+          "pressure": ["closure_pressure", "direct_support_pressure", "evidence_contact_pressure"],
+          "legitimacy_condition": "Settlement pressure is legitimate only when the record directly supports the same claim, scope, and definition."
+        },
+        {
+          "operator": "expert(source)",
+          "pressure": ["authority_transfer_pressure"],
+          "legitimacy_condition": "Expert assertion cannot close the claim without inspectable record support."
+        }
+      ],
+      "evidence_burden": ["Identify the exact claim.", "Map the record to the claim.", "Separate expert assertion from record support."],
+      "expected_kernel_response": {
+        "lexical_action": "separate closure language from authority language",
+        "source_trust_action": "require record support before treating the claim as settled",
+        "belief_movement": "none_until_support_mapping_is_verified",
+        "questions": ["What record supports the settled claim?"]
+      },
+      "contrast_group": "basis_refinement_authority_closure",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "authority_closure_basis_refinement",
+        "expected_new_dimensions": ["source_status_dimension", "claim_closure_dimension", "evidence_support_requirement_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_authority_status_no_closure_003",
+      "text": "The expert status raises inspection priority, but it does not close the question.",
+      "language": "en",
+      "operator_group": "basis_refinement_authority_closure",
+      "surface_terms": ["expert status", "inspection priority", "does not close the question"],
+      "literal_meaning": "Expert status affects inspection priority but does not settle the issue.",
+      "candidate_intended_meaning": "Authority/source status and claim closure are separate dimensions.",
+      "semantic_operators": [
+        {
+          "operator": "expert(source)",
+          "pressure": ["authority_transfer_pressure"],
+          "legitimacy_condition": "Expert status is only a bounded source-status prior until the evidence chain is inspected."
+        },
+        {
+          "operator": "not_settled(claim)",
+          "pressure": ["uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Non-closure remains legitimate when source status has not supplied claim-level evidence."
+        }
+      ],
+      "evidence_burden": ["Identify the source status.", "Identify the claim-level evidence.", "Do not convert source status into closure."],
+      "expected_kernel_response": {
+        "lexical_action": "keep status and closure separate",
+        "source_trust_action": "use expert status only as bounded inspection priority",
+        "belief_movement": "none_from_expert_status_alone",
+        "questions": ["What evidence chain would close the question?"]
+      },
+      "contrast_group": "basis_refinement_authority_closure",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "authority_closure_basis_refinement",
+        "expected_new_dimensions": ["source_status_dimension", "claim_closure_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_public_coordination_not_collusion_004",
+      "text": "The teams coordinated their schedules openly, but that does not show collusion.",
+      "language": "en",
+      "operator_group": "basis_refinement_coordination_collusion",
+      "surface_terms": ["coordinated", "openly", "does not show collusion"],
+      "literal_meaning": "The teams openly coordinated schedules, but that fact does not prove collusion.",
+      "candidate_intended_meaning": "Neutral or public coordination should not collapse into covert or illicit collusion.",
+      "semantic_operators": [
+        {
+          "operator": "coordinated(actor,event)",
+          "pressure": ["motive_agency_pressure", "uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Coordination pressure is bounded when the coordination is open and no covert agreement is identified."
+        }
+      ],
+      "evidence_burden": ["Identify the coordinated action.", "Check whether the coordination was public or hidden.", "Do not infer collusion without evidence of covert agreement."],
+      "expected_kernel_response": {
+        "lexical_action": "separate neutral coordination from collusion",
+        "source_trust_action": "treat open coordination as agency structure, not illicit agreement",
+        "belief_movement": "none_toward_collusion_without_covert_agreement_evidence",
+        "questions": ["What evidence would show a covert agreement rather than open coordination?"]
+      },
+      "contrast_group": "basis_refinement_coordination_collusion",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "coordination_collusion_basis_refinement",
+        "expected_new_dimensions": ["neutral_coordination_dimension", "covert_agreement_dimension", "illicit_coordination_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_collusion_hidden_agreement_005",
+      "text": "The companies colluded only if a hidden agreement controlled their actions.",
+      "language": "en",
+      "operator_group": "basis_refinement_coordination_collusion",
+      "surface_terms": ["colluded", "hidden agreement", "controlled their actions"],
+      "literal_meaning": "The sentence says collusion requires a hidden agreement controlling the actors' actions.",
+      "candidate_intended_meaning": "Collusion requires a covert agreement or control mechanism beyond coordination or similar timing.",
+      "semantic_operators": [
+        {
+          "operator": "collusion(actors)",
+          "pressure": ["motive_agency_pressure", "direct_link_evidence_burden", "covert_agreement_pressure"],
+          "legitimacy_condition": "Collusion pressure is legitimate only when evidence identifies a hidden agreement, shared control, or illicit coordination mechanism."
+        }
+      ],
+      "evidence_burden": ["Identify the actors.", "Identify the hidden agreement or control channel.", "Separate collusion from timing similarity or public coordination."],
+      "expected_kernel_response": {
+        "lexical_action": "treat collusion as requiring covert agreement evidence",
+        "source_trust_action": "do not infer collusion from coordination alone",
+        "belief_movement": "none_toward_collusion_without_direct_link_evidence",
+        "questions": ["What hidden agreement controlled the actors' actions?"]
+      },
+      "contrast_group": "basis_refinement_coordination_collusion",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "coordination_collusion_basis_refinement",
+        "expected_new_dimensions": ["covert_agreement_dimension", "illicit_coordination_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_timing_coordination_not_collusion_006",
+      "text": "Similar timing suggests coordination, while collusion requires evidence of a covert agreement.",
+      "language": "en",
+      "operator_group": "basis_refinement_coordination_collusion",
+      "surface_terms": ["similar timing", "coordination", "collusion", "covert agreement"],
+      "literal_meaning": "Similar timing may suggest coordination, but collusion requires evidence of a covert agreement.",
+      "candidate_intended_meaning": "The basis should split similarity/coordination from collusion by requiring covert agreement evidence.",
+      "semantic_operators": [
+        {
+          "operator": "coordinated(actor,event)",
+          "pressure": ["pattern_similarity_pressure", "uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Timing similarity can suggest coordination only as a bounded hypothesis."
+        },
+        {
+          "operator": "collusion(actors)",
+          "pressure": ["direct_link_evidence_burden", "covert_agreement_pressure"],
+          "legitimacy_condition": "Collusion requires evidence of covert agreement or shared control beyond similar timing."
+        }
+      ],
+      "evidence_burden": ["Identify the timing pattern.", "Check common-source or independent-convergence alternatives.", "Identify any covert agreement before using collusion language."],
+      "expected_kernel_response": {
+        "lexical_action": "split coordination evidence from collusion evidence",
+        "source_trust_action": "treat timing as a hypothesis trigger, not proof of collusion",
+        "belief_movement": "none_until_covert_agreement_evidence_is_identified",
+        "questions": ["Does the evidence show only similar timing, or a covert agreement?"]
+      },
+      "contrast_group": "basis_refinement_coordination_collusion",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "coordination_collusion_basis_refinement",
+        "expected_new_dimensions": ["neutral_coordination_dimension", "covert_agreement_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_public_plan_not_secret_collusion_007",
+      "text": "The shared plan was public coordination, not secret collusion.",
+      "language": "en",
+      "operator_group": "basis_refinement_coordination_collusion",
+      "surface_terms": ["shared plan", "public coordination", "not secret collusion"],
+      "literal_meaning": "The shared plan was public coordination rather than secret collusion.",
+      "candidate_intended_meaning": "Public coordination and secret collusion should occupy different basis roles.",
+      "semantic_operators": [
+        {
+          "operator": "coordinated(actor,event)",
+          "pressure": ["motive_agency_pressure", "uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Public coordination does not establish secret collusion unless hidden agreement evidence is identified."
+        },
+        {
+          "operator": "not_collusion(actors)",
+          "pressure": ["uncertainty_calibration_pressure"],
+          "legitimacy_condition": "A not-collusion contrast is legitimate only as a semantic boundary, not as a final factual finding."
+        }
+      ],
+      "evidence_burden": ["Identify whether the plan was public.", "Identify any claim of secrecy.", "Do not collapse public coordination into secret collusion."],
+      "expected_kernel_response": {
+        "lexical_action": "preserve public coordination versus secret collusion contrast",
+        "source_trust_action": "require secret agreement evidence before collusion pressure",
+        "belief_movement": "none_from_public_coordination_toward_secret_collusion",
+        "questions": ["Was the coordination public or secret?"]
+      },
+      "contrast_group": "basis_refinement_coordination_collusion",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "coordination_collusion_basis_refinement",
+        "expected_new_dimensions": ["neutral_coordination_dimension", "covert_agreement_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_motive_without_accusation_008",
+      "text": "The critic attributed a motive without accusing the person of misconduct.",
+      "language": "en",
+      "operator_group": "basis_refinement_accusation_motive",
+      "surface_terms": ["attributed a motive", "without accusing", "misconduct"],
+      "literal_meaning": "The critic assigned a motive but did not accuse the person of misconduct.",
+      "candidate_intended_meaning": "Motive attribution and accusation-risk should remain separable even when both can raise evidence burdens.",
+      "semantic_operators": [
+        {
+          "operator": "ulterior_motive_attribution(actor,target,motive)",
+          "pressure": ["motive_agency_pressure", "intent_attribution_pressure", "direct_link_evidence_burden"],
+          "legitimacy_condition": "Motive attribution requires direct evidence of motive and should not automatically become an accusation of misconduct."
+        }
+      ],
+      "evidence_burden": ["Identify the attributed motive.", "Check whether misconduct is actually alleged.", "Separate intent attribution from accusation-risk."],
+      "expected_kernel_response": {
+        "lexical_action": "separate motive attribution from misconduct accusation",
+        "source_trust_action": "require direct evidence for motive without importing accusation pressure",
+        "belief_movement": "none_until_motive_evidence_is_identified",
+        "questions": ["Is the speaker assigning motive, accusing misconduct, or both?"]
+      },
+      "contrast_group": "basis_refinement_accusation_motive",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "accusation_motive_boundary_probe",
+        "expected_new_dimensions": ["motive_attribution_dimension", "accusation_target_harm_dimension", "direct_burden_shared_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_coordination_motive_unknown_009",
+      "text": "The actors coordinated their actions, but the motive behind the coordination is still unknown.",
+      "language": "en",
+      "operator_group": "basis_refinement_motive_coordination_subset",
+      "surface_terms": ["coordinated their actions", "motive", "unknown"],
+      "literal_meaning": "The actors coordinated, but their motive remains unknown.",
+      "candidate_intended_meaning": "Coordination can be present without validated motive attribution.",
+      "semantic_operators": [
+        {
+          "operator": "coordinated(actor,event)",
+          "pressure": ["motive_agency_pressure", "uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Coordination does not establish motive unless the motive is separately supported."
+        }
+      ],
+      "evidence_burden": ["Identify the coordinated action.", "Identify whether motive evidence exists.", "Do not infer motive from coordination alone."],
+      "expected_kernel_response": {
+        "lexical_action": "separate coordination from motive attribution",
+        "source_trust_action": "preserve unknown motive status unless direct motive evidence appears",
+        "belief_movement": "none_toward_motive_from_coordination_alone",
+        "questions": ["What evidence identifies the motive behind the coordination?"]
+      },
+      "contrast_group": "basis_refinement_motive_coordination_subset",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "motive_coordination_subset_probe",
+        "expected_new_dimensions": ["coordination_base_dimension", "intent_attribution_superset_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_coordination_with_intent_010",
+      "text": "The actors coordinated because they wanted the outcome, so the claim adds intent attribution.",
+      "language": "en",
+      "operator_group": "basis_refinement_motive_coordination_subset",
+      "surface_terms": ["coordinated", "wanted the outcome", "intent attribution"],
+      "literal_meaning": "The sentence states that coordination plus a claimed desired outcome adds intent attribution.",
+      "candidate_intended_meaning": "Intent attribution should be modeled as an added dimension beyond basic coordination.",
+      "semantic_operators": [
+        {
+          "operator": "coordinated(actor,event)",
+          "pressure": ["motive_agency_pressure"],
+          "legitimacy_condition": "Coordination pressure identifies shared action but not motive by itself."
+        },
+        {
+          "operator": "intent_attribution(actor,motive)",
+          "pressure": ["intent_attribution_pressure", "direct_link_evidence_burden"],
+          "legitimacy_condition": "Intent attribution requires evidence that the actors wanted the outcome, not merely that coordination occurred."
+        }
+      ],
+      "evidence_burden": ["Identify the coordinated action.", "Identify the asserted intent.", "Identify evidence linking the actors to the asserted desired outcome."],
+      "expected_kernel_response": {
+        "lexical_action": "treat intent attribution as an added claim beyond coordination",
+        "source_trust_action": "require direct link evidence for the asserted intent",
+        "belief_movement": "none_toward_intent_without_evidence_link",
+        "questions": ["What evidence shows the actors wanted that outcome?"]
+      },
+      "contrast_group": "basis_refinement_motive_coordination_subset",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "motive_coordination_subset_probe",
+        "expected_new_dimensions": ["intent_attribution_superset_dimension", "coordination_base_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_coordination_without_why_011",
+      "text": "The shared action shows coordination without proving why the actors did it.",
+      "language": "en",
+      "operator_group": "basis_refinement_motive_coordination_subset",
+      "surface_terms": ["shared action", "coordination", "without proving why"],
+      "literal_meaning": "A shared action may show coordination while leaving motive unproven.",
+      "candidate_intended_meaning": "Coordination evidence and motive evidence should not collapse.",
+      "semantic_operators": [
+        {
+          "operator": "coordinated(actor,event)",
+          "pressure": ["motive_agency_pressure", "uncertainty_calibration_pressure"],
+          "legitimacy_condition": "Coordination can be treated as shared action while motive remains unproven."
+        }
+      ],
+      "evidence_burden": ["Identify the shared action.", "Check whether the evidence proves motive or only coordination.", "Keep motive unresolved if the why is not shown."],
+      "expected_kernel_response": {
+        "lexical_action": "split coordination from motive explanation",
+        "source_trust_action": "do not treat shared action as proof of motive",
+        "belief_movement": "none_toward_motive_from_shared_action_alone",
+        "questions": ["Does the record show why the actors acted, or only that they acted together?"]
+      },
+      "contrast_group": "basis_refinement_motive_coordination_subset",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "motive_coordination_subset_probe",
+        "expected_new_dimensions": ["coordination_base_dimension", "intent_attribution_superset_dimension"],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "basis_refinement_motive_beyond_coordination_012",
+      "text": "The motive claim goes beyond coordination by assigning an internal reason.",
+      "language": "en",
+      "operator_group": "basis_refinement_motive_coordination_subset",
+      "surface_terms": ["motive claim", "beyond coordination", "internal reason"],
+      "literal_meaning": "A motive claim adds an internal reason beyond coordination.",
+      "candidate_intended_meaning": "Motive attribution is a superset pressure that should not be automatically inferred from coordination.",
+      "semantic_operators": [
+        {
+          "operator": "ulterior_motive_attribution(actor,target,motive)",
+          "pressure": ["intent_attribution_pressure", "motive_agency_pressure", "direct_link_evidence_burden"],
+          "legitimacy_condition": "Assigning an internal reason requires direct link evidence beyond coordination."
+        }
+      ],
+      "evidence_burden": ["Identify the coordination claim.", "Identify the internal reason being assigned.", "Check evidence for the internal reason separately."],
+      "expected_kernel_response": {
+        "lexical_action": "separate motive attribution from coordination",
+        "source_trust_action": "require evidence for the internal reason",
+        "belief_movement": "none_toward_motive_without_direct_link_evidence",
+        "questions": ["What evidence supports the assigned internal reason?"]
+      },
+      "contrast_group": "basis_refinement_motive_coordination_subset",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "basis_refinement_draft_reviewer_v0_1",
+        "refinement_target": "motive_coordination_subset_probe",
+        "expected_new_dimensions": ["intent_attribution_superset_dimension", "coordination_base_dimension"],
+        "requires_human_review": true
+      }
+    }
+  ],
+  "belief_movement": "none"
+}
