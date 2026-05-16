@@ -2,42 +2,21 @@
 
 Last updated: **2026-05-16**.
 
-Read this file first for the current operational state. Older handoffs may still be useful for background, but this file is newer for the semantic operator / pressure / vector-template pipeline.
+Read this file first. This is the current compact operational handoff for the semantic / objective-language pipeline.
 
-## Current focus
+## Current verified baseline
 
-Semantic operator / pressure / vector-template pipeline for 42ndMind.
-
-Live pages involved:
-
-```text
-semantic-operator-workbench.html
-semantic-corpus-combiner.html
-semantic-language-distiller.html
-semantic-vector-compressor.html
-semantic-vector-template-planner.html
-kernel-semantic-corpus-combiner-v0-1-test.html
-kernel-semantic-vector-compressor-v0-1-test.html
-kernel-semantic-vector-template-planner-v0-1-test.html
-```
-
-## Verified browser baseline
-
-The current verified browser baseline is:
+Core semantic corpus pipeline is verified:
 
 ```text
 combine: 123 entries, 0 duplicates, 12 source packets
-
 distill: 123 entries, 102 operators, 55 pressures, 31 families, 106 stable mappings, 75 weak mappings, 0 contrast gaps, 0 overmatch risks
-
 compress: 123 vectors, 102 operator dimensions, 55 pressure dimensions, 22 candidate templates, ontology missing 0
-
 plan: 123 vectors, 22 templates, 10 selected templates, 8 high-risk templates, 31 natural suggested sentences, ontology missing 0
-
 belief movement: none
 ```
 
-Updated browser tests are all clear:
+Verified tests:
 
 ```text
 kernel-semantic-corpus-combiner-v0-1-test.html — 13/13 passed
@@ -45,36 +24,152 @@ kernel-semantic-vector-compressor-v0-1-test.html — 11/11 passed
 kernel-semantic-vector-template-planner-v0-1-test.html — 14/14 passed
 ```
 
-## Current corpus target
+User also verified the law-candidate/invariance direction in browser:
 
 ```text
-combined entries: 123
-duplicates skipped: 0
-source packets: 12
-last status: combined
+law candidates: 8
+objective fragments: 3
+strong: 3
+proto: 1
+weak: 4
+insufficient: 0
+objective claim: candidate_fragments_detected_not_final_math
 belief movement: none
 ```
 
-Source breakdown:
+## Current objective goal
+
+The kernel goal is now explicitly broader than claim checking:
 
 ```text
-main: 32 entries
-extension_1: 6 entries
-extension_2: 6 entries
-extension_3: 9 entries
-extension_4: 4 entries
-extension_5: 10 entries
-extension_6: 2 entries
-extension_7: 10 entries
-extension_8: 16 entries
-extension_9: 20 entries
-extension_10: 4 entries
-extension_11: 4 entries
+truth-seeking under objective philosophical maturity
++
+recursive discovery of the canonical formal language beneath language, intention, evidence, and belief movement
 ```
 
-Current extension list:
+Important distinction:
 
 ```text
+The objective language is not English labels, Latin letters, Greek symbols, or programmer IDs.
+The objective language is the invariant relation structure that survives translation, symbol renaming, and basis permutation.
+Correct independent discoverers should converge on isomorphic law graphs, even if their notation differs.
+```
+
+Current formal candidate shape:
+
+```text
+L := (O, v, B, C, tau)
+```
+
+Meaning:
+
+```text
+O = operator class or state-transition move
+v = canonical pressure vector, eventually stripped of local labels
+B = evidence burden or validation burden
+C = contrast boundary preventing semantic collapse
+tau = blocked or allowed transition rule
+```
+
+Current intention hypothesis:
+
+```text
+Every active intention can be modeled as a normalized directed pressure network.
+For active intention vector i: ||i||_1 = 1.
+Behavioral force is separate: F = M · i.
+Declared intention, inferred intention, and validated intention must remain separate.
+```
+
+This preserves the Epistemic Octahedron-style normalization idea while avoiding the mistake of making weak and intense intentions behaviorally equal.
+
+## New objective-language goal module
+
+Added:
+
+```text
+src/kernel-objective-language-goal-v0-1.js
+objective-language-goal.html
+kernel-objective-language-goal-v0-1-test.html
+```
+
+Run:
+
+```text
+objective-language-goal.html
+kernel-objective-language-goal-v0-1-test.html
+```
+
+Expected test count is not yet browser-confirmed in this file. Run and record exact result next.
+
+This module provides:
+
+```text
+objectiveLanguageGoal()
+normalizeIntentionVector()
+isomorphicGoalCriteria()
+goalAlignmentCheck()
+```
+
+It is a goal/constraint module, not a doctrine promoter. It does not move belief, patch source, or promote final math.
+
+Recent commits:
+
+```text
+76a9b8d68ed70271c9eb3aad14f01d80579310bd Add objective language goal doctrine module
+f3e243eb9bbd1ab87f349ef81da8fad81f674766 Add objective language goal page
+e9133edb6c5bd1c55dab8e696127246094cae687 Add objective language goal test
+```
+
+## Current semantic/law modules added after the 123-entry baseline
+
+Template-to-workbench validation:
+
+```text
+src/kernel-semantic-template-validation-runner-v0-1.js
+semantic-template-validation-runner.html
+kernel-semantic-template-validation-runner-v0-1-test.html
+```
+
+Validation triage:
+
+```text
+src/kernel-semantic-validation-triage-planner-v0-1.js
+semantic-validation-triage-planner.html
+kernel-semantic-validation-triage-planner-v0-1-test.html
+```
+
+Law candidate extraction:
+
+```text
+src/kernel-semantic-law-candidate-extractor-v0-1.js
+semantic-law-candidate-extractor.html
+kernel-semantic-law-candidate-extractor-v0-1-test.html
+```
+
+Law invariance testing:
+
+```text
+src/kernel-semantic-law-invariance-tester-v0-1.js
+semantic-law-invariance-tester.html
+kernel-semantic-law-invariance-tester-v0-1-test.html
+```
+
+Purpose of the current stack:
+
+```text
+planner suggested sentence
+→ workbench validation
+→ accept/revise/reject
+→ triage failure reason
+→ extract law candidates from clean accepted mappings
+→ test law candidates for invariant readiness
+→ align all of this with the objective-language goal
+```
+
+## Current corpus files
+
+```text
+data/semantic_seed_corpus_v0_1.json
 data/semantic_seed_closure_contrast_v0_1.json
 data/semantic_seed_authority_evidence_contrast_v0_1.json
 data/semantic_seed_motive_agency_weakmap_contrast_v0_1.json
@@ -88,120 +183,20 @@ data/semantic_seed_accusation_risk_direct_evidence_v0_1.json
 data/semantic_seed_accusation_truth_status_contrast_v0_1.json
 ```
 
-## Latest seed packets
-
-### Accusation risk / direct evidence packet
+Important latest mappings:
 
 ```text
-data/semantic_seed_accusation_risk_direct_evidence_v0_1.json
-```
+reckless_accusation(actor,target,claim)
+→ accusation_pressure + evidence_gap_pressure + reputational_risk_pressure + direct_link_evidence_burden
 
-It contains exactly these four accepted workbench sentences:
-
-```text
-The post makes a serious accusation without showing a direct evidence link.
-The article recklessly accused the official of misconduct without direct evidence.
-The report recklessly accused the named target of misconduct without direct evidence.
-The claim accuses the person of wrongdoing, but the direct evidence link is still missing.
-```
-
-Expected mapping:
-
-```text
-operator: reckless_accusation(actor,target,claim)
-pressures:
-- accusation_pressure
-- evidence_gap_pressure
-- reputational_risk_pressure
-- direct_link_evidence_burden
-```
-
-Do not reuse this rejected earlier batch:
-
-```text
-The post makes a serious accusation, but the direct evidence link has not been shown.
-The allegation names a target before separating suspicion from proof.
-The claim could damage the person’s reputation, so the actor, action, and evidence must be made explicit.
-The report alleges misconduct, but the cited record only shows an unresolved evidence gap.
-```
-
-### Accusation truth-status contrast packet
-
-```text
-data/semantic_seed_accusation_truth_status_contrast_v0_1.json
-```
-
-This packet closes the two contrast gaps produced by the accusation-risk packet. It adds observed contrast anchors for:
-
-```text
 supported_accusation(claim)
+→ accusation_pressure + direct_support_pressure + evidence_contact_pressure + direct_link_evidence_burden
+
 false_accusation(claim)
+→ accusation_pressure + contradiction_pressure + evidence_contact_pressure + reputational_risk_pressure
 ```
 
-The added contrast examples preserve the distinction between:
-
-```text
-unsupported / reckless accusation
-supported accusation with direct evidence
-false accusation contradicted by direct record
-```
-
-## Planner state
-
-Latest planner patch:
-
-```text
-src/kernel-semantic-vector-template-planner-v0-1-3-patch.js
-```
-
-Planner page should load:
-
-```text
-src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0
-src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1
-src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2
-src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3
-```
-
-The v0.1.3 patch adds the natural false-accusation / direct-contradiction template rule for this pressure signature:
-
-```text
-accusation_pressure
-contradiction_pressure
-evidence_contact_pressure
-reputational_risk_pressure
-```
-
-Expected natural replacement sentences:
-
-```text
-The accusation is false only if the full record directly contradicts the target, action, or date.
-The full video contradicts the accusation, but the exact claim still has to match the record.
-The payroll record disproves the accusation only if it covers the same time and location.
-The claim calls the accusation false, so the contradictory evidence must be identified directly.
-```
-
-The planner should not emit symbolic selected suggestions such as:
-
-```text
-This wording triggers ...
-The pressure signature ...
-This semantic pressure pattern ...
-```
-
-## Recent commits in this final 123-entry pass
-
-```text
-398ba522c8c1787911dfcc65edc934d24c7ab0b6 Add accusation truth-status contrast seed packet
-761d54ba944757e893552fd31eb64210debd58c0 Include accusation truth-status contrast packet in combiner defaults
-93d1d3f5665baa870900dd19de7ad5ef197157f7 Add false accusation planner template rule
-7b44f7cae71f77b570274aec5722c8920f555e37 Load planner v0.1.3 patch and current extension list
-9a7838f722e47b9727f8a35654e72221c523a853 Update combiner test for 123-entry semantic corpus
-e68c8884dc0fb6bd9c5a45b972bd6c461d0a80f6 Update vector compressor test for 123-entry semantic corpus
-c568f7f11b000164180b1138811f7d559415d563 Update vector template planner test for 123-entry corpus
-```
-
-## Doctrine invariants
+## Current doctrine invariants
 
 ```text
 workbench outputs are drafts, not doctrine
@@ -209,6 +204,9 @@ matched operators are candidate readings
 pressure labels do not move belief
 vector compression is diagnostic, not truth
 templates are candidate reuse units, not doctrine
+law candidates are reviewable equations, not doctrine
+invariance tests grade formal readiness, not truth
+objective language candidates are not final math
 no automatic doctrine promotion
 belief movement remains none unless explicit legitimacy conditions are satisfied
 ```
@@ -222,75 +220,54 @@ surface phrase
 → pressure ontology
 → evidence burden
 → blocked/allowed belief movement
+→ law candidate
+→ invariance test
+→ objective-language alignment check
 ```
-
-## What has been achieved
-
-The semantic language loop is now achieved as a deterministic review loop:
-
-```text
-seed corpus
-→ combine
-→ distill
-→ identify contrast gaps / overmatch risks
-→ add reviewed contrast examples
-→ compress to pressure vectors
-→ plan reusable natural templates
-→ test the pipeline
-→ repeat with new reviewed examples
-```
-
-This is a working recursive semantic-improvement loop at the corpus/template layer.
-
-It is not yet a fully autonomous self-modifying loop. It still requires human review and GitHub SHA writes. That is correct for safety and doctrine. The browser kernel should not write source directly.
 
 ## Recommended next build
 
-The next build should not be another random seed expansion. The next high-value build is a **Template-to-Workbench Validation Runner**.
+Next high-value build:
+
+```text
+Canonical Vector Basis Extractor
+```
 
 Goal:
 
 ```text
-Take planner suggested sentences
-→ run them through the semantic operator workbench automatically or semi-automatically
-→ compare expected operators/pressures against actual matched operators/pressures
-→ report pass/fail/overmatch/undermatch
-→ only then recommend a seed packet
+law candidates
+→ strip local language labels
+→ assign anonymous basis dimensions by functional role
+→ compare law candidates up to renaming
+→ detect isomorphic law structures
+→ detect equivalence, subset, opposition, contrast, and orthogonality relations
+→ report canonical forms
 ```
 
-Why this matters:
-
-The current loop can produce natural template sentences. The missing machine-check step is proving that those planned sentences map cleanly in the workbench before they become seed corpus candidates.
-
-Proposed page/module names:
+Proposed files:
 
 ```text
-semantic-template-validation-runner.html
-src/kernel-semantic-template-validation-runner-v0-1.js
-kernel-semantic-template-validation-runner-v0-1-test.html
+src/kernel-semantic-canonical-vector-basis-v0-1.js
+semantic-canonical-vector-basis.html
+kernel-semantic-canonical-vector-basis-v0-1-test.html
 ```
 
-Expected output:
+Expected output shape:
 
 ```text
-suggested sentence
-expected template group
-expected pressure signature
-actual matched operators
-actual pressures
-overmatch flags
-undermatch flags
-recommendation: accept / revise / reject
+basis dimensions: N
+law candidates: 8
+canonical vectors: 8
+equivalence classes: X
+contrast pairs: X
+subset relations: X
+orthogonal pairs: X
+candidate invariant relations: X
 belief movement: none
 ```
 
-This would officially connect the loop from:
-
-```text
-planner output → workbench validation → reviewed seed packet proposal
-```
-
-After that, the system has a much stronger recurring improvement pipeline.
+This is the next direct step toward the objective language of math, because it stops treating English labels as final and starts checking structure under renaming.
 
 ## SHA write trick
 
@@ -302,7 +279,7 @@ For existing files:
 3. update_file with full replacement content and that SHA.
 4. Wait for commit_sha.
 5. Fetch file back and verify exact change.
-6. Make only one small change at a time.
+6. Make one small change at a time.
 ```
 
 Never trust a write until commit SHA returns and fetch-back verifies exact content.
@@ -317,18 +294,23 @@ Do not read unrelated uploaded files.
 First read CURRENT_PROGRESS.md.
 
 Current task area:
-Semantic operator / pressure / vector-template pipeline.
+Objective-language discovery pipeline.
 
 Important current state:
-- Verified baseline is 123 entries, 0 duplicates, 12 source packets.
-- Distiller is clean: 123 entries, 102 operators, 55 pressures, 31 families, 0 contrast gaps, 0 overmatch risks.
-- Compressor is clean: 123 vectors, 102 operator dimensions, 55 pressure dimensions, 22 candidate templates, ontology missing 0.
-- Planner is clean: 123 vectors, 22 templates, 10 selected templates, 8 high-risk templates, 31 natural suggested sentences, ontology missing 0.
-- Updated tests are clear: combiner 13/13, compressor 11/11, planner 14/14.
-- Latest seed packets are data/semantic_seed_accusation_risk_direct_evidence_v0_1.json and data/semantic_seed_accusation_truth_status_contrast_v0_1.json.
-- Latest planner patch is src/kernel-semantic-vector-template-planner-v0-1-3-patch.js.
-- The deterministic semantic-improvement loop is achieved at the corpus/template layer.
-- The next recommended build is semantic-template-validation-runner.html plus src/kernel-semantic-template-validation-runner-v0-1.js and its test page.
+- Semantic corpus baseline is verified: 123 entries, 0 duplicates, 12 source packets.
+- Distiller/compressor/planner baseline is clean.
+- Validation runner, triage planner, law candidate extractor, and law invariance tester exist.
+- User verified law invariance output: 8 law candidates, 3 objective fragments, 3 strong, 1 proto, 4 weak, 0 insufficient, belief movement none.
+- Objective language goal module exists: src/kernel-objective-language-goal-v0-1.js, objective-language-goal.html, kernel-objective-language-goal-v0-1-test.html.
+- Objective goal: truth-seeking under objective philosophical maturity plus recursive discovery of canonical formal structure under language, intention, evidence, and belief movement.
+- Intention hypothesis: every active intention has normalized L1 shape ||i||_1 = 1; behavioral force is separate as F = M · i.
+- Correct discoverers should converge on isomorphic law graphs up to translation, symbol renaming, and basis permutation.
+
+Next recommended build:
+Canonical Vector Basis Extractor:
+- src/kernel-semantic-canonical-vector-basis-v0-1.js
+- semantic-canonical-vector-basis.html
+- kernel-semantic-canonical-vector-basis-v0-1-test.html
 
 Use the SHA write trick. Make small commits only.
 ```
