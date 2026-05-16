@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Objective Language Goal</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,620px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:120px; resize:vertical; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.item span { color:#8b93a7; display:block; }
+    .metric b,.item b { display:block; overflow-wrap:anywhere; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Objective Language Goal</h1>
+  <div class="muted small">Defines the kernel's long-range goal: truth-seeking plus discovery of canonical formal structure under language, intention, evidence, and belief movement.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-objective-language-goal-v0-1-test.html">objective language goal test</a> ·
+      <a href="semantic-law-invariance-tester.html">law invariance tester</a> ·
+      <a href="semantic-law-candidate-extractor.html">law candidate extractor</a>
+    </section>
+    <section>
+      <h2>Goal outputs</h2>
+      <button onclick="showGoal()">SHOW objective language goal</button>
+      <button onclick="showIsomorphism()">SHOW isomorphism criteria</button>
+      <button onclick="normalizeExample()">NORMALIZE intention example</button>
+      <button onclick="copyOutput()">COPY output</button>
+      <button onclick="downloadOutput()">DOWNLOAD output JSON</button>
+    </section>
+    <section>
+      <h2>Intention example</h2>
+      <label class="small muted">Component JSON array</label>
+      <textarea id="components" spellcheck="false">[
+  { "id": "attachment", "value": 0.25, "role": "bonding_pressure" },
+  { "id": "attraction", "value": 0.20, "role": "mating_or_approach_pressure" },
+  { "id": "care", "value": 0.20, "role": "protective_pressure" },
+  { "id": "future", "value": 0.20, "role": "future_state_projection" },
+  { "id": "identity", "value": 0.15, "role": "self_model_binding" }
+]</textarea>
+      <label class="small muted">Intensity scalar</label>
+      <input id="intensity" value="1" />
+    </section>
+    <section>
+      <h2>Metrics</h2>
+      <div class="row"><div class="metric"><span>goal</span><b>truth + objective language discovery</b></div><div class="metric"><span>belief movement</span><b>none</b></div></div>
+      <div class="row"><div class="metric"><span>active intention shape</span><b>||i||₁ = 1</b></div><div class="metric"><span>force</span><b>F = M · i</b></div></div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Output</h2><pre id="out">No output yet.</pre></section>
+    <section><h2>Doctrine</h2><pre id="doctrineOut"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-objective-language-goal-v0-1.js?v=0.1.0"></script>
+<script>
+  let lastOutput = null;
+  function $(id){ return document.getElementById(id); }
+  function show(value){ lastOutput = value; $('out').textContent = JSON.stringify(value, null, 2); }
+  function showGoal(){ show(KernelObjectiveLanguageGoalV01.objectiveLanguageGoal()); }
+  function showIsomorphism(){ show(KernelObjectiveLanguageGoalV01.isomorphicGoalCriteria()); }
+  function normalizeExample(){
+    try {
+      const components = JSON.parse($('components').value || '[]');
+      show(KernelObjectiveLanguageGoalV01.normalizeIntentionVector(components, { intensity_scalar:Number($('intensity').value || 1) }));
+    } catch(e) { show({ ok:false, error:e.message }); }
+  }
+  async function copyOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  function downloadOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); const blob = new Blob([text], { type:'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = (lastOutput && lastOutput.packet_type ? lastOutput.packet_type : 'objective_language_goal_output') + '.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+  (function init(){ $('doctrineOut').textContent = JSON.stringify(KernelObjectiveLanguageGoalV01.doctrine(), null, 2); showGoal(); })();
+</script>
+</body>
+</html>
