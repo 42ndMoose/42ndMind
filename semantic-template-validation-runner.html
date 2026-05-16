@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Template Validation Runner</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,620px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    textarea,input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    textarea { min-height:120px; resize:vertical; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.item span { color:#8b93a7; display:block; }
+    .metric b,.item b { display:block; overflow-wrap:anywhere; }
+    .accept { border-color:#477a55; }
+    .accept_with_review { border-color:#806f34; }
+    .revise { border-color:#8a6a2a; }
+    .reject { border-color:#8a3f3f; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Semantic Template Validation Runner</h1>
+  <div class="muted small">Runs planner suggested sentences through the semantic operator workbench and reports accept/revise/reject diagnostics. Validation is not doctrine and does not move belief.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-semantic-template-validation-runner-v0-1-test.html">validation runner test</a> ·
+      <a href="semantic-vector-template-planner.html">template planner</a> ·
+      <a href="semantic-operator-workbench.html">operator workbench</a> ·
+      <a href="semantic-vector-compressor.html">vector compressor</a>
+    </section>
+    <section>
+      <h2>Inputs</h2>
+      <label class="small muted">Minimum template observations</label>
+      <input id="minObs" value="2" />
+      <label class="small muted">Template limit</label>
+      <input id="limit" value="10" />
+      <label class="small muted">Sentences per template</label>
+      <input id="sentencesPerTemplate" value="4" />
+      <label class="small muted">Allowed extra pressures before revise</label>
+      <input id="allowedExtraPressures" value="0" />
+      <button onclick="runValidation()">LOAD PLAN + VALIDATE</button>
+      <button onclick="showValidation()">SHOW validation</button>
+      <button onclick="showPlannerPacket()">SHOW planner packet</button>
+      <button onclick="draftAccepted()">DRAFT accepted sentences</button>
+      <button onclick="copyOutput()">COPY output</button>
+      <button onclick="downloadOutput()">DOWNLOAD output JSON</button>
+    </section>
+    <section>
+      <h2>Metrics</h2>
+      <div class="row"><div class="metric"><span>sentences validated</span><b id="sentenceCount">0</b></div><div class="metric"><span>accepted / reviewable</span><b id="acceptedCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>accept</span><b id="acceptCount">0</b></div><div class="metric"><span>accept with review</span><b id="acceptReviewCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>revise</span><b id="reviseCount">0</b></div><div class="metric"><span>reject</span><b id="rejectCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>overmatch</span><b id="overmatchCount">0</b></div><div class="metric"><span>undermatch</span><b id="undermatchCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>last status</span><b id="statusText">idle</b></div><div class="metric"><span>belief movement</span><b>none</b></div></div>
+    </section>
+    <section>
+      <h2>Validation results</h2>
+      <div id="resultList" class="small muted">No validation yet.</div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Output</h2><pre id="out">No output yet.</pre></section>
+    <section><h2>Doctrine</h2><pre id="doctrineOut"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-10-patch.js?v=0.1.10"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-template-validation-runner-v0-1.js?v=0.1.0"></script>
+<script>
+  let lastPacket = null;
+  let lastOutput = null;
+  function $(id){ return document.getElementById(id); }
+  function options(){ return { min_template_observations:Number($('minObs').value||2), min_observations:Number($('minObs').value||2), limit:Number($('limit').value||10), sentences_per_template:Number($('sentencesPerTemplate').value||4), allowed_extra_pressures:Number($('allowedExtraPressures').value||0) }; }
+  function show(value, status){ lastOutput = value; $('out').textContent = JSON.stringify(value, null, 2); if(status) $('statusText').textContent = status; updateUi(); }
+  async function runValidation(){ try { lastPacket = await KernelSemanticTemplateValidationRunnerV01.loadPlanAndValidate(options()); show(lastPacket.validation, 'validated'); } catch(e) { show({ ok:false, error:e.message, packet_type:'42ndMind_semantic_template_validation_runner_error_v0_1' }, 'error'); } }
+  function showValidation(){ if(!lastPacket) return runValidation(); show(lastPacket.validation, 'validation'); }
+  function showPlannerPacket(){ if(!lastPacket) return runValidation(); show(lastPacket.planner_packet, 'planner packet'); }
+  function draftAccepted(){ if(!lastPacket) return runValidation(); const draft = KernelSemanticTemplateValidationRunnerV01.draftAccepted(lastPacket.validation, { include_accept_with_review:true }); show(draft, 'drafted accepted'); }
+  function updateUi(){
+    if(!lastPacket || !lastPacket.validation) return;
+    const s = lastPacket.validation.summary || {};
+    $('sentenceCount').textContent = String(s.sentence_count || 0);
+    $('acceptedCount').textContent = String(s.accepted_or_reviewable_count || 0);
+    $('acceptCount').textContent = String(s.accept_count || 0);
+    $('acceptReviewCount').textContent = String(s.accept_with_review_count || 0);
+    $('reviseCount').textContent = String(s.revise_count || 0);
+    $('rejectCount').textContent = String(s.reject_count || 0);
+    $('overmatchCount').textContent = String(s.overmatch_count || 0);
+    $('undermatchCount').textContent = String(s.undermatch_count || 0);
+    renderResults(lastPacket.validation.results || []);
+  }
+  function renderResults(results){
+    $('resultList').innerHTML = results.map((r, i) => {
+      const cls = r.recommendation || 'unknown';
+      const missing = (r.comparison && r.comparison.missing_pressures || []).join(', ') || 'none';
+      const extra = (r.comparison && r.comparison.extra_pressures || []).join(', ') || 'none';
+      const ops = (r.actual_operators || []).join(', ') || 'none';
+      return `<div class="item ${cls}"><b>${i+1}. ${r.recommendation}: ${r.sentence}</b><span>expected: ${r.expected_pressure_signature}</span><span>actual operators: ${ops}</span><span>actual pressures: ${(r.actual_pressures || []).join(', ') || 'none'}</span><span>missing: ${missing}</span><span>extra: ${extra}</span></div>`;
+    }).join('') || 'No results.';
+  }
+  async function copyOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  function downloadOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); const blob = new Blob([text], { type:'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = (lastOutput && lastOutput.packet_type ? lastOutput.packet_type : 'semantic_template_validation_output') + '.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+  (function init(){ $('doctrineOut').textContent = JSON.stringify(KernelSemanticTemplateValidationRunnerV01.doctrine(), null, 2); })();
+</script>
+</body>
+</html>
