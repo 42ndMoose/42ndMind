@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>42ndMind Objective Language Shape Bridge</title>
+<style>
+body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}main{padding:12px;display:grid;grid-template-columns:390px 1fr;gap:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px;margin-bottom:12px}h1{font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}select,input{width:100%;box-sizing:border-box;background:#0f1218;color:#eef2ff;border:1px solid #2a3040;border-radius:8px;padding:8px;font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}button{background:#25345c;color:#eef2ff;border:1px solid #3f5592;padding:8px 10px;border-radius:8px;cursor:pointer;margin:3px 3px 8px 0}pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.muted{color:#8b93a7}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}.item{background:#10131a;border:1px solid #2a3040;border-radius:8px;padding:8px;margin:8px 0}.item span{color:#8b93a7;display:block}@media(max-width:900px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>42ndMind Objective Language Shape Bridge</h1><div class="muted">Projects semantic compressed vectors into unit-total active shapes. Labels remain metadata. Shape uses Σ|dᵢ| = 1. Force remains separate.</div></header>
+<main>
+<section>
+<h2>Controls</h2>
+<a href="index.html">main kernel</a> · <a href="kernel-objective-language-shape-bridge-v0-1-test.html?v=0.1.0">test page</a> · <a href="unit-total-nested-shape.html">unit-total page</a>
+<p class="muted">This page does not patch the semantic corpus. It produces candidate observations that can later be reviewed and used as training pressure.</p>
+<label>Projection basis</label>
+<select id="basis">
+<option value="pressure">pressure</option>
+<option value="operator">operator</option>
+<option value="pressure_family">pressure family</option>
+<option value="blocked_movement">blocked movement</option>
+<option value="required_check">required check</option>
+<option value="allowed_movement">allowed movement</option>
+</select>
+<label>Limit, 0 = all vectors</label>
+<input id="limit" type="number" value="0" min="0" step="1" />
+<button onclick="runBridge()">Run bridge</button>
+<button onclick="showSummary()">Show summary</button>
+<button onclick="showObservations()">Show observations</button>
+<button onclick="showFirstProjection()">Show first projection</button>
+<button onclick="copyOutput()">Copy output</button>
+<h2>Status</h2>
+<div>ok: <b id="okMetric">unknown</b></div>
+<div>vectors: <b id="vectorMetric">0</b></div>
+<div>projected: <b id="projectedMetric">0</b></div>
+<div>ok projections: <b id="okCountMetric">0</b></div>
+<div>anonymous signatures: <b id="sigMetric">0</b></div>
+</section>
+<section>
+<h2>Repeated anonymous signatures</h2>
+<div id="sigList" class="muted">No bridge run yet.</div>
+<h2>Output</h2>
+<pre id="out">No output yet.</pre>
+</section>
+</main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-unit-total-nested-shape-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-objective-language-shape-bridge-v0-1.js?v=0.1.0"></script>
+<script>
+let packet=null,lastOutput=null;
+function $(id){return document.getElementById(id)}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+function show(value){lastOutput=value;out.textContent=JSON.stringify(value,null,2);updateUi()}
+function opts(){return{basis:basis.value,limit:Number(limit.value||0),min_observations:2}}
+async function runBridge(){try{packet=await KernelObjectiveLanguageShapeBridgeV01.loadCompressAndBridge(opts());show(packet.bridge_report)}catch(e){show({ok:false,error:e.message,belief_movement:'none'})}}
+function updateUi(){const b=packet&&packet.bridge_report;okMetric.textContent=String(packet&&packet.ok===true);okMetric.className=packet&&packet.ok===true?'ok':'bad';vectorMetric.textContent=String(packet&&packet.compressed_packet&&packet.compressed_packet.vector_space.vector_count||0);projectedMetric.textContent=String(b&&b.projected_count||0);okCountMetric.textContent=String(b&&b.ok_count||0);sigMetric.textContent=String(b&&b.projection_summary&&b.projection_summary.anonymous_signature_count||0);renderSignatures(b&&b.projection_summary&&b.projection_summary.repeated_anonymous_signatures||[])}
+function renderSignatures(rows){sigList.innerHTML=rows.slice(0,20).map(r=>`<div class="item"><b>${esc(r.count)}×</b><span>${esc(r.signature)}</span></div>`).join('')||'No repeated signatures.'}
+function showSummary(){if(!packet)return runBridge();show({packet_type:'42ndMind_objective_language_shape_bridge_page_summary_v0_1',bridge_summary:packet.bridge_report.projection_summary,compressed_summary:packet.compressed_packet.summary,belief_movement:'none'})}
+function showObservations(){if(!packet)return runBridge();show({packet_type:'42ndMind_objective_language_shape_bridge_observations_view_v0_1',count:packet.observations.length,observations:packet.observations,belief_movement:'none'})}
+function showFirstProjection(){if(!packet)return runBridge();show(packet.bridge_report.projections[0]||{})}
+async function copyOutput(){const text=JSON.stringify(lastOutput||{},null,2);try{await navigator.clipboard.writeText(text);out.textContent='Copied.\n\n'+text}catch(e){out.textContent=text}}
+runBridge();
+</script>
+</body>
+</html>
