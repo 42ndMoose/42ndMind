@@ -13,12 +13,12 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the 142-entry semantic corpus and modular extension batches.</div></header>
+<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the 146-entry semantic corpus and modular extension batches.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="semantic-corpus-combiner.html">semantic corpus combiner</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-semantic-corpus-to-invariants-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=unit-total-1"></script>
 <script>
   const tests=[]; let packet=null;
   function add(name,fn){tests.push({name,fn});}
@@ -45,55 +45,63 @@
 
   add('default extension list is current',()=>{
     const urls=KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS;
-    assert(urls.length===13,'expected thirteen default extension URLs');
+    assert(urls.length===14,'expected fourteen default extension URLs');
     assert(urls.includes('data/semantic_seed_basis_refinement_v0_1.json'),'basis-refinement extension missing');
     assert(urls.includes('data/semantic_seed_uncertainty_status_negation_v0_1.json'),'status-negation extension missing');
+    assert(urls.includes('data/semantic_seed_unit_total_shape_bridge_v0_1.json'),'unit-total shape bridge extension missing');
   });
 
-  add('loadAndCombine succeeds at 142-entry baseline',async()=>{
+  add('loadAndCombine succeeds at 146-entry baseline',async()=>{
     packet=await KernelSemanticCorpusCombinerV01.loadAndCombine();
     assert(packet.ok===true,'combined packet not ok');
     assert(packet.decision==='COMBINED_CORPUS_READY','wrong decision');
-    assert(packet.combined.entry_count===142,'expected 142 combined entries');
+    assert(packet.combined.entry_count===146,'expected 146 combined entries');
     assert(packet.combined.duplicate_entries.length===0,'expected zero duplicate entries');
-    assert(packet.combined.source_packets.length===14,'expected main plus thirteen extension sources');
+    assert(packet.combined.source_packets.length===15,'expected main plus fourteen extension sources');
     assert(packet.combined.belief_movement==='none','combined corpus moved belief');
   });
 
   add('combined corpus validates',()=>{
     const report=KernelSemanticCorpusCombinerV01.validateCombined(packet.combined);
     assert(report.ok===true,'validation failed: '+JSON.stringify(report.validation.errors));
-    assert(report.combined_entry_count===142,'combined count mismatch');
+    assert(report.combined_entry_count===146,'combined count mismatch');
   });
 
   add('source packet metadata preserves final packet counts',()=>{
     assert(sourceByLabel('main')&&sourceByLabel('main').entry_count===32,'main source missing or wrong count');
     assert(sourceByLabel('extension_12')&&sourceByLabel('extension_12').entry_count===12,'basis-refinement source missing');
     assert(sourceByLabel('extension_13')&&sourceByLabel('extension_13').entry_count===7,'status-negation source missing');
+    assert(sourceByLabel('extension_14')&&sourceByLabel('extension_14').entry_count===4,'unit-total shape bridge source missing');
   });
 
-  add('status-negation and unit-total entries are present',()=>{
+  add('status-negation and unit-total bridge entries are present',()=>{
     const status=packet.combined.entries.find(e=>e.id==='status_negation_not_collusion_public_coordination_005');
     const unit=packet.combined.entries.find(e=>e.id==='status_negation_nested_unit_total_007');
+    const bridge=packet.combined.entries.find(e=>e.id==='unit_total_shape_bridge_projection_001');
+    const force=packet.combined.entries.find(e=>e.id==='unit_total_shape_bridge_force_separation_004');
     assert(status&&status.combiner_metadata.source_label==='extension_13','status-negation entry metadata missing');
     assert(status.semantic_operators.some(op=>op.operator==='not_collusion(actors)'),'not_collusion operator missing');
     assert(unit&&unit.combiner_metadata.source_label==='extension_13','unit-total entry metadata missing');
     assert(unit.semantic_operators.some(op=>op.operator==='unit_total_refinement(shape)'),'unit_total_refinement operator missing');
+    assert(bridge&&bridge.combiner_metadata.source_label==='extension_14','unit-total shape bridge entry metadata missing');
+    assert(bridge.semantic_operators.some(op=>op.operator==='unit_total_shape_projection(semantic_vector)'),'unit_total_shape_projection operator missing');
+    assert(force&&force.semantic_operators.some(op=>op.operator==='force_shape_separation(force,shape)'),'force_shape_separation operator missing');
   });
 
-  add('summary includes new status-negation groups and operators',()=>{
+  add('summary includes new unit-total groups and operators',()=>{
     const summary=KernelSemanticCorpusCombinerV01.summarizeCombined(packet.combined);
     assert(groupCount(summary,'basis_refinement_uncertainty_status_negation')>=1,'status-negation group missing');
-    assert(groupCount(summary,'basis_refinement_unit_total_structure')>=1,'unit-total group missing');
-    ['unresolved','not_settled','not_collusion','unit_total_refinement','expert','settled','collusion','coordinated'].forEach(op=>assert(opCount(summary,op)>=1,'missing operator '+op));
+    assert(groupCount(summary,'basis_refinement_unit_total_structure')>=1,'unit-total structure group missing');
+    assert(groupCount(summary,'basis_refinement_unit_total_shape_bridge')>=1,'unit-total shape bridge group missing');
+    ['unresolved','not_settled','not_collusion','unit_total_refinement','unit_total_shape_projection','anonymous_shape_invariance','anonymous_shape_repetition','force_shape_separation'].forEach(op=>assert(opCount(summary,op)>=1,'missing operator '+op));
     assert(summary.belief_movement==='none','summary moved belief');
   });
 
   add('stale explicit extension lists are completed from defaults',async()=>{
-    const stale=KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.slice(0,12);
+    const stale=KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.slice(0,13);
     const stalePacket=await KernelSemanticCorpusCombinerV01.loadAndCombine({extension_urls:stale});
-    assert(stalePacket.combined.entry_count===142,'stale explicit list should still load current defaults');
-    assert(stalePacket.combined.source_packets.length===14,'stale explicit list should still include all sources');
+    assert(stalePacket.combined.entry_count===146,'stale explicit list should still load current defaults');
+    assert(stalePacket.combined.source_packets.length===15,'stale explicit list should still include all sources');
   });
 
   add('observation batch exports combined corpus',()=>{
@@ -110,7 +118,7 @@
     const passed=results.filter(r=>r.passed).length;
     document.getElementById('summary').className=passed===results.length?'ok':'bad';
     document.getElementById('summary').textContent=`${passed}/${results.length} passed`;
-    document.getElementById('out').textContent=JSON.stringify({packet_type:'42ndMind_semantic_corpus_combiner_v0_1_test_report',combined_entry_count:packet&&packet.combined?packet.combined.entry_count:0,source_packet_count:packet&&packet.combined?packet.combined.source_packets.length:0,duplicate_count:packet&&packet.combined?packet.combined.duplicate_entries.length:0,results},null,2);
+    document.getElementById('out').textContent=JSON.stringify({packet_type:'42ndMind_semantic_corpus_combiner_v0_1_test_report',combined_entry_count:packet&&packet.combined?packet.combined.entry_count:0,source_packet_count:packet&&packet.combined?packet.combined.source_packets.length:0,duplicate_count:packet&&packet.combined?packet.combined.duplicate_entries.length:0,source_packets:packet&&packet.combined?packet.combined.source_packets:[],results},null,2);
   })();
 </script>
 </body>
