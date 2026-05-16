@@ -12,10 +12,9 @@
   const VERSION = '0.1.0';
   const PACKET_TYPE = '42ndMind_objective_language_goal_v0_1';
 
-  function text(value) { return String(value ?? '').trim(); }
+  function text(value) { return String(value == null ? '' : value).trim(); }
   function asArray(value) { return Array.isArray(value) ? value : []; }
   function now() { return new Date().toISOString(); }
-  function clone(value) { return JSON.parse(JSON.stringify(value)); }
   function sumAbs(values) { return asArray(values).reduce((sum, value) => sum + Math.abs(Number(value) || 0), 0); }
   function normalizeL1(values) {
     const nums = asArray(values).map(v => Number(v) || 0);
@@ -84,14 +83,20 @@
     };
   }
 
+  function componentValue(component) {
+    if (component && typeof component === 'object' && Object.prototype.hasOwnProperty.call(component, 'value')) return component.value;
+    return component;
+  }
+
   function normalizeIntentionVector(components, options = {}) {
     const list = asArray(components).map((component, index) => ({
-      id: text(component && component.id || component && component.name || `d_${index + 1}`),
-      local_label: text(component && component.label || component && component.name || component && component.id || `component_${index + 1}`),
-      value: Number(component && component.value ?? component) || 0,
+      id: text(component && (component.id || component.name) || `d_${index + 1}`),
+      local_label: text(component && (component.label || component.name || component.id) || `component_${index + 1}`),
+      value: Number(componentValue(component)) || 0,
       role: text(component && component.role || 'unclassified_intention_pressure')
     }));
     const normalized = normalizeL1(list.map(c => c.value));
+    const intensity = Number(options.intensity_scalar || 1);
     return {
       packet_type: '42ndMind_normalized_intention_vector_v0_1',
       packet_version: VERSION,
@@ -99,8 +104,8 @@
       components: list.map((component, index) => Object.assign({}, component, { normalized_value: normalized[index] })),
       l1_norm: l1Norm(normalized),
       active_shape_total: l1Norm(normalized),
-      intensity_scalar: Number(options.intensity_scalar || 1),
-      behavioral_force_vector: normalized.map(v => Number((v * Number(options.intensity_scalar || 1)).toFixed(8))),
+      intensity_scalar: intensity,
+      behavioral_force_vector: normalized.map(v => Number((v * intensity).toFixed(8))),
       warning: 'This normalizes declared component structure only. It does not validate the true underlying intention.',
       doctrine: doctrine(),
       belief_movement: 'none'
@@ -134,7 +139,7 @@
       includes_contrast_or_invariance: !!(p.contrast_boundaries || p.ranked_invariance_tests || p.contrast_classes || p.invariance_report),
       avoids_label_finalism: !(p.objective_language_claim === 'final_math' || p.final_notation === true)
     };
-    const ok = Object.values(flags).every(Boolean);
+    const ok = flags.preserves_no_belief_movement && flags.avoids_doctrine_promotion && flags.includes_contrast_or_invariance && flags.avoids_label_finalism;
     return {
       packet_type: '42ndMind_objective_language_goal_alignment_check_v0_1',
       packet_version: VERSION,
