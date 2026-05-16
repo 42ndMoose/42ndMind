@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Unit-Total Shape Bridge Seed Test</title>
+  <style>
+    body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}
+    header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}
+    main{padding:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px}
+    h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}
+    pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Unit-Total Shape Bridge Seed Test</h1><div>Validates the standalone reviewed seed packet without adding it to combiner defaults.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="objective-language-shape-observation-review.html">shape observation review page</a> · <a href="kernel-objective-language-shape-observation-review-v0-1-test.html?v=0.1.0">review test</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=status-neg-1"></script>
+<script>
+  const tests=[]; let packet=null;
+  function add(name,fn){tests.push({name,fn});}
+  function assert(cond,msg){if(!cond)throw new Error(msg);}
+  function asArray(v){return Array.isArray(v)?v:[];}
+  function operators(){return packet.entries.flatMap(e=>asArray(e.semantic_operators).map(op=>op.operator));}
+  function pressures(){return packet.entries.flatMap(e=>asArray(e.semantic_operators).flatMap(op=>asArray(op.pressure)));}
+
+  add('load seed packet json',async()=>{
+    const res=await fetch('data/semantic_seed_unit_total_shape_bridge_v0_1.json?v=0.1.0',{cache:'no-store'});
+    assert(res.ok,'fetch failed '+res.status);
+    packet=await res.json();
+    assert(packet.packet_type==='42ndMind_semantic_seed_corpus_v0_1_extension','wrong packet type');
+    assert(packet.packet_version==='0.1.0','wrong packet version');
+  });
+
+  add('packet is standalone and not wired into default combiner yet',()=>{
+    assert(window.KernelSemanticCorpusCombinerV01,'combiner missing');
+    const urls=KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS || [];
+    assert(!urls.includes('data/semantic_seed_unit_total_shape_bridge_v0_1.json'),'seed packet should not be in combiner defaults yet');
+    assert(packet.source_review_summary.import_status==='not_added_to_default_combiner_until_browser_tests_pass','import guard missing');
+  });
+
+  add('doctrine preserves unit-total and no belief movement',()=>{
+    const d=packet.doctrine || {};
+    assert(d.reviewed_seed_packet_is_training_pressure_not_doctrine===true,'training pressure doctrine missing');
+    assert(d.semantic_vectors_can_be_projected_into_unit_total_shapes===true,'semantic projection doctrine missing');
+    assert(d.active_shape_l1_total==='sum_abs_dimensions_equals_1','active shape doctrine missing');
+    assert(d.local_labels_are_metadata_only===true,'label metadata doctrine missing');
+    assert(d.force_intensity_remains_separate_from_shape===true,'force separation doctrine missing');
+    assert(d.belief_movement==='none','packet doctrine moved belief');
+    assert(packet.belief_movement==='none','packet moved belief');
+  });
+
+  add('entries are reviewed candidates with required fields',()=>{
+    assert(packet.entries.length===4,'expected 4 seed entries');
+    packet.entries.forEach(entry=>{
+      assert(entry.id&&entry.text&&entry.language==='en','basic entry fields missing');
+      assert(entry.operator_group==='basis_refinement_unit_total_shape_bridge','wrong operator group');
+      assert(entry.review_status==='reviewed_seed_candidate','wrong review status');
+      assert(asArray(entry.semantic_operators).length>=1,'semantic operators missing');
+      assert(asArray(entry.evidence_burden).length>=4,'evidence burden too thin');
+      assert(entry.expected_kernel_response&&entry.expected_kernel_response.belief_movement&&entry.expected_kernel_response.belief_movement.startsWith('none_'),'belief movement guard missing');
+      assert(entry.workbench_metadata&&entry.workbench_metadata.requires_human_review===true,'human review guard missing');
+    });
+  });
+
+  add('unit-total shape bridge operators are present',()=>{
+    const ops=operators();
+    assert(ops.includes('unit_total_shape_projection(semantic_vector)'),'projection operator missing');
+    assert(ops.includes('anonymous_shape_invariance(shape)'),'invariance operator missing');
+    assert(ops.includes('anonymous_shape_repetition(shape_signature)'),'repetition operator missing');
+    assert(ops.includes('force_shape_separation(force,shape)'),'force separation operator missing');
+  });
+
+  add('all operators use unit-total refinement pressure for now',()=>{
+    assert(pressures().every(p=>p==='unit_total_refinement_pressure'),'unexpected pressure found');
+    assert(pressures().length>=4,'not enough pressure references');
+  });
+
+  add('entries preserve non-truth claim boundaries',()=>{
+    const combined=packet.entries.map(e=>[e.text,e.candidate_intended_meaning,e.expected_kernel_response&&e.expected_kernel_response.source_trust_action].join(' ')).join(' ');
+    assert(combined.includes('not a truth decision'),'truth-decision guard missing');
+    assert(combined.includes('training pressure'),'training-pressure guard missing');
+    assert(combined.includes('metadata'),'label metadata guard missing');
+  });
+
+  (async function run(){
+    const results=[];
+    for(const t of tests){try{await t.fn();results.push({name:t.name,passed:true});}catch(e){results.push({name:t.name,passed:false,error:e.message});}}
+    const passed=results.filter(r=>r.passed).length;
+    document.getElementById('summary').className=passed===tests.length?'ok':'bad';
+    document.getElementById('summary').textContent=`${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent=JSON.stringify({
+      packet_type:'42ndMind_semantic_seed_unit_total_shape_bridge_v0_1_test_report',
+      entry_count:packet&&packet.entries&&packet.entries.length,
+      operators:packet?operators():[],
+      results
+    },null,2);
+  })();
+</script>
+</body>
+</html>
