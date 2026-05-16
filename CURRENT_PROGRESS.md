@@ -66,6 +66,42 @@ belief movement: none
 labels: metadata only
 ```
 
+User verified canonical relation triage output:
+
+```text
+triage rows: 30
+vocabulary collapse: 4
+high severity: 4
+medium severity: 5
+low severity: 21
+top target: orthogonality_bridge_probe_optional (13)
+objective claim: relation_triage_guides_basis_refinement_not_final_math
+belief movement: none
+```
+
+User verified basis refinement seed planner output:
+
+```text
+refinement targets: 4
+high-priority targets: 2
+suggested sentences: 16
+expected new dimensions: 11
+workbench matched: 13
+workbench unmatched: 3
+top target: authority_closure_basis_refinement
+belief movement: none
+active shape rule: Σ |dimension_i| = 1
+force: separate scalar
+```
+
+User verified patched workbench triage behavior after commit `6e77f2915292394924c5542bd538719a9c34ada0`:
+
+```text
+Row 6 should be green / draftable as a one-sided collusion gap probe.
+Row 11 should be yellow / not draftable because it matched only harmful(content), the wrong family.
+User confirmed: "yeah seems good!"
+```
+
 ## Unit-total rule to preserve
 
 This is a core objective-language target and should be carried into future sessions:
@@ -248,6 +284,22 @@ semantic-canonical-relation-triage.html
 kernel-semantic-canonical-relation-triage-v0-1-test.html
 ```
 
+Basis refinement seed planner:
+
+```text
+src/kernel-semantic-basis-refinement-seed-planner-v0-1.js
+semantic-basis-refinement-seed-planner.html
+kernel-semantic-basis-refinement-seed-planner-v0-1-test.html
+```
+
+Basis refinement workbench triage:
+
+```text
+src/kernel-semantic-basis-refinement-workbench-triage-v0-1.js
+semantic-basis-refinement-workbench-triage.html
+kernel-semantic-basis-refinement-workbench-triage-v0-1-test.html
+```
+
 Purpose of the current stack:
 
 ```text
@@ -260,6 +312,8 @@ planner suggested sentence
 → canonicalize law vectors into anonymous basis dimensions
 → propose formal relation candidates
 → triage relation candidates for basis refinement
+→ plan basis-refinement seed candidates
+→ triage workbench preview into draft / rewrite / weak alignment
 → align all of this with the objective-language goal
 ```
 
@@ -339,6 +393,9 @@ no automatic doctrine promotion
 belief movement remains none unless explicit legitimacy conditions are satisfied
 active structure shape should be L1-normalized: Σ |dimension_i| = 1
 force/intensity remains separate from shape
+matched preview is not automatic seed acceptance
+unmatched preview is rewrite or grammar-gap signal
+basis-refinement draft packets require human review before corpus merge
 ```
 
 Current architecture:
@@ -356,6 +413,9 @@ surface phrase
 → relation candidate
 → relation triage
 → basis refinement target
+→ seed plan
+→ workbench preview triage
+→ draft seed packet
 → objective-language alignment check
 ```
 
@@ -372,51 +432,60 @@ a8109e2bf4bf676b758735ac85df6f493a36f711 Clarify canonical containment relation 
 e9b456b82445f5327a4b820f62d8ac4260e641d5 Add semantic canonical relation triage module
 2b68b61ea28274c71b74f16ef20144c7ccf4e65f Add semantic canonical relation triage page
 216ad75931dc14a1611bb251730d11e32bdccfe3 Add semantic canonical relation triage test
+95f705f139c361c1267987ffc8605459bf8f2ac2 Add semantic basis refinement seed planner module
+70e777be95b3e1b2f77e3340abd3c3e50de66004 Add semantic basis refinement seed planner page
+561b79294a6cdda2a4d95c95958ba7bcc073fa06 Add semantic basis refinement seed planner test
+33de24c3a03708dcce66911ff180a5b24b0e2a8a Add semantic basis refinement workbench triage module
+77255878ffeb1d6ab47b124a50380d0241039d63 Add semantic basis refinement workbench triage page
+75a063c152ed81c2d070d3fa7604abe6ec390e2f Add semantic basis refinement workbench triage test
+6e77f2915292394924c5542bd538719a9c34ada0 Tighten basis refinement workbench target alignment
 ```
 
 ## Recommended next build
 
-Next high-value build after Canonical Relation Triage is likely:
+Next high-value build is likely:
 
 ```text
-Basis Refinement Seed Planner
+Basis Refinement Draft Packet Reviewer
 ```
 
 Goal:
 
 ```text
-canonical relation triage
-→ identify vocabulary collapse / missing dimensions
-→ generate targeted contrast seed sentences
-→ validate in workbench
-→ add only clean seed packets
-→ rerun canonical basis
-→ check whether false equivalences split cleanly
+workbench triage draft packet
+→ show draft seed entries grouped by target
+→ mark keep / rewrite / reject manually in UI
+→ export a clean seed-packet JSON candidate
+→ do not merge automatically
+→ rerun combiner/distiller/compressor/planner/canonical basis after manual seed file add
 ```
 
-Primary targets:
+Primary review rules:
 
 ```text
-1. Split expert/source-status from settled/claim-closure.
-2. Split collusion/covert-illicit-agreement from neutral coordination.
-3. Probe reckless-accusation vs motive/coordination direct-burden boundary.
+1. Keep green high-value split candidates that match relevant target operators/pressures.
+2. Keep partial gap candidates only if they test one side of a known vocabulary collapse.
+3. Reject yellow weak-alignment rows unless rewritten.
+4. Rewrite unmatched rows before use.
+5. Never add draft packet directly as doctrine.
 ```
 
 Proposed files:
 
 ```text
-src/kernel-semantic-basis-refinement-seed-planner-v0-1.js
-semantic-basis-refinement-seed-planner.html
-kernel-semantic-basis-refinement-seed-planner-v0-1-test.html
+src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js
+semantic-basis-refinement-draft-reviewer.html
+kernel-semantic-basis-refinement-draft-reviewer-v0-1-test.html
 ```
 
 Expected output shape:
 
 ```text
-triage rows: 30
-high priority refinement targets: X
-suggested contrast sentences: X
-expected new pressure dimensions: X
+draft entries: X
+kept entries: X
+rewrite entries: X
+rejected entries: X
+exportable clean packet: yes/no
 belief movement: none
 ```
 
@@ -450,24 +519,21 @@ Objective-language discovery pipeline.
 Important current state:
 - Semantic corpus baseline is verified: 123 entries, 0 duplicates, 12 source packets.
 - Distiller/compressor/planner baseline is clean.
-- Validation runner, triage planner, law candidate extractor, law invariance tester, canonical vector basis, canonical relation proposer, and canonical relation triage exist.
+- Validation runner, triage planner, law candidate extractor, law invariance tester, canonical vector basis, canonical relation proposer, canonical relation triage, basis refinement seed planner, and basis refinement workbench triage exist.
 - User verified law invariance output: 8 law candidates, 3 objective fragments, 3 strong, 1 proto, 4 weak, 0 insufficient, belief movement none.
 - User verified canonical vector basis output: 14 basis dimensions, 8 canonical vectors, 6 equivalence classes, 2 nontrivial classes, 28 relations, 3 contrast pairs, 2 subset relations, 21 orthogonal pairs, belief movement none.
 - User verified canonical relation proposer output: 30 relation candidates, 28 pair candidates, 2 equivalence class candidates, labels metadata only, belief movement none.
+- User verified basis refinement seed planner output: 4 refinement targets, 2 high-priority targets, 16 suggested sentences, 11 expected new dimensions, 13 matched, 3 unmatched, active shape rule Σ |dimension_i| = 1.
+- Workbench triage was patched so Row 6 is draftable/green as a one-sided collusion probe, while Row 11 is weak-alignment/yellow because it matched only harmful(content). User confirmed the patched behavior looked good.
 - Objective language goal module exists and test passed 9/9.
 - Unit-total rule must be preserved: active structure = Σ |dimension_i| = 1. Force/intensity remains separate as F = M · vector.
 - Correct discoverers should converge on isomorphic law graphs up to translation, symbol renaming, and basis permutation.
 
 Next recommended build:
-Basis Refinement Seed Planner:
-- src/kernel-semantic-basis-refinement-seed-planner-v0-1.js
-- semantic-basis-refinement-seed-planner.html
-- kernel-semantic-basis-refinement-seed-planner-v0-1-test.html
-
-Main targets:
-1. expert/source-status vs settled/claim-closure split.
-2. collusion/covert-illicit-agreement vs neutral coordination split.
-3. reckless-accusation vs motive/coordination direct-burden boundary.
+Basis Refinement Draft Packet Reviewer:
+- src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js
+- semantic-basis-refinement-draft-reviewer.html
+- kernel-semantic-basis-refinement-draft-reviewer-v0-1-test.html
 
 Use the SHA write trick. Make small commits only.
 ```
