@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Unit-Total Nested Shape Test</title>
+  <style>
+    body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}
+    header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}
+    main{padding:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px}
+    h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}
+    pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Unit-Total Nested Shape Test</h1><div>Tests nested L1 active shape, local child 1s, global flattening, and F = M · i.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="unit-total-nested-shape.html">unit-total nested shape page</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-unit-total-nested-shape-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests=[]; let shape=null, report=null, force=null;
+  function add(name,fn){tests.push({name,fn});}
+  function assert(cond,msg){if(!cond)throw new Error(msg);}
+  function near(a,b,tol=1e-9){return Math.abs(Number(a)-Number(b))<=tol;}
+  function asArray(v){return Array.isArray(v)?v:[];}
+
+  add('module loads',()=>{
+    assert(window.KernelUnitTotalNestedShapeV01,'KernelUnitTotalNestedShapeV01 missing');
+    assert(KernelUnitTotalNestedShapeV01.VERSION==='0.1.0','version wrong');
+  });
+
+  add('doctrine preserves unit-total and no belief movement',()=>{
+    const d=KernelUnitTotalNestedShapeV01.doctrine();
+    assert(d.active_shape_l1_total==='sum_abs_dimensions_equals_1','active shape doctrine missing');
+    assert(d.parent_active_shape_can_equal_one_while_children_have_local_one===true,'nested local one doctrine missing');
+    assert(d.mature_scope_remains_one_with_more_dimensions===true,'mature scope doctrine missing');
+    assert(d.force_intensity_remains_separate_from_shape===true,'force separation doctrine missing');
+    assert(d.intention_shape_rule==='||i||_1 = 1','intention rule missing');
+    assert(d.force_rule==='F = M · i','force rule missing');
+    assert(d.belief_movement==='none','belief movement wrong');
+  });
+
+  add('default intention shape analyzes as valid nested unit total',()=>{
+    shape=KernelUnitTotalNestedShapeV01.defaultIntentShape();
+    report=KernelUnitTotalNestedShapeV01.analyzeShape(shape);
+    assert(report.ok===true,'default shape not ok: '+report.errors.join('; '));
+    assert(near(report.root_l1,1),'root L1 should be 1');
+    assert(near(report.flattened_l1,1),'flattened global L1 should be 1');
+    assert(report.scope_count>=8,'expected root plus local child scopes');
+    assert(report.leaf_dimension_count>shape.dimensions.length,'expected expanded leaf dimensions');
+    assert(report.belief_movement==='none','report moved belief');
+  });
+
+  add('each expanded child scope has local L1 equal to 1',()=>{
+    asArray(report.scopes).filter(s=>s.depth>0).forEach(scope=>{
+      assert(near(scope.local_l1,1),scope.path+' local L1 not 1');
+      assert(scope.ok===true,scope.path+' scope not ok');
+    });
+  });
+
+  add('parent child flattening preserves weighted global contribution',()=>{
+    const row=report.flattened_dimensions.find(d=>d.path==='intent.desire.approach_pull');
+    assert(row,'intent.desire.approach_pull missing');
+    assert(near(row.global_weight,0.099),'expected desire 0.18 × approach_pull 0.55 = 0.099');
+    const fatigue=report.flattened_dimensions.find(d=>d.path==='intent.mood.fatigue_drag');
+    assert(fatigue,'intent.mood.fatigue_drag missing');
+    assert(near(fatigue.global_weight,-0.03),'expected mood 0.12 × fatigue_drag -0.25 = -0.03');
+  });
+
+  add('bad global shape fails when parent total exceeds 1',()=>{
+    const bad=KernelUnitTotalNestedShapeV01.defaultIntentShape();
+    bad.dimensions[0].weight=0.50;
+    const badReport=KernelUnitTotalNestedShapeV01.analyzeShape(bad);
+    assert(badReport.ok===false,'bad shape should fail');
+    assert(badReport.errors.some(e=>e.includes('local L1')),'expected local L1 error');
+  });
+
+  add('bad child shape fails when local child total exceeds 1',()=>{
+    const bad=KernelUnitTotalNestedShapeV01.defaultIntentShape();
+    bad.dimensions[0].local_shape.dimensions[0].weight=0.80;
+    const badReport=KernelUnitTotalNestedShapeV01.analyzeShape(bad);
+    assert(badReport.ok===false,'bad child shape should fail');
+    assert(badReport.errors.some(e=>e.includes('desire')&&e.includes('local L1')),'expected desire local L1 error');
+  });
+
+  add('force application keeps intensity separate from shape',()=>{
+    force=KernelUnitTotalNestedShapeV01.applyForce(shape,10);
+    assert(force.ok===true,'force packet not ok');
+    assert(near(force.shape_l1,1),'shape L1 should remain 1');
+    assert(near(force.force_l1,10),'force L1 should equal |M| when shape is valid');
+    const row=force.force_dimensions.find(d=>d.path==='intent.desire.approach_pull');
+    assert(row,'force dimension missing');
+    assert(near(row.force,0.99),'expected force 10 × 0.099 = 0.99');
+    assert(force.belief_movement==='none','force packet moved belief');
+  });
+
+  add('rule explanation states refinement target directly',()=>{
+    const packet=KernelUnitTotalNestedShapeV01.explainRule();
+    assert(packet.statements.some(s=>s.includes('split one overloaded dimension')),'overloaded-dimension explanation missing');
+    assert(packet.equations.includes('F = M · i'),'force equation missing');
+    assert(packet.belief_movement==='none','explanation moved belief');
+  });
+
+  (async function run(){
+    const results=[];
+    for(const t of tests){try{await t.fn();results.push({name:t.name,passed:true});}catch(e){results.push({name:t.name,passed:false,error:e.message});}}
+    const passed=results.filter(r=>r.passed).length;
+    document.getElementById('summary').className=passed===tests.length?'ok':'bad';
+    document.getElementById('summary').textContent=`${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent=JSON.stringify({
+      packet_type:'42ndMind_unit_total_nested_shape_v0_1_test_report',
+      root_l1:report&&report.root_l1,
+      flattened_l1:report&&report.flattened_l1,
+      scope_count:report&&report.scope_count,
+      leaf_dimension_count:report&&report.leaf_dimension_count,
+      force_l1:force&&force.force_l1,
+      results
+    },null,2);
+  })();
+</script>
+</body>
+</html>
