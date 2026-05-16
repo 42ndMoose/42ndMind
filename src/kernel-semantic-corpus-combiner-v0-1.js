@@ -24,7 +24,8 @@
     'data/semantic_seed_vector_template_contrast_v0_2.json',
     'data/semantic_seed_accusation_risk_direct_evidence_v0_1.json',
     'data/semantic_seed_accusation_truth_status_contrast_v0_1.json',
-    'data/semantic_seed_basis_refinement_v0_1.json'
+    'data/semantic_seed_basis_refinement_v0_1.json',
+    'data/semantic_seed_uncertainty_status_negation_v0_1.json'
   ]);
 
   function text(value) { return String(value ?? '').trim(); }
@@ -42,6 +43,8 @@
       duplicate_ids_are_skipped_not_overwritten: true,
       corpus_entries_are_training_pressure_not_truth: true,
       source_status_is_metadata_not_truth: true,
+      active_shape_l1_total: 'sum_abs_dimensions_equals_1',
+      force_intensity_remains_separate_from_shape: true,
       combiner_does_not_move_belief: true,
       combiner_does_not_promote_doctrine: true,
       combiner_does_not_patch_source: true,
