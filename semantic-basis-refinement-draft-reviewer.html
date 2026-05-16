@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Basis Refinement Draft Reviewer</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; display:grid; grid-template-columns:minmax(360px,720px) 1fr; gap:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; margin-bottom:12px; }
+    h1 { font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    h2 { font:700 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 8px; }
+    button { background:#25345c; color:#eef2ff; border:1px solid #3f5592; padding:8px 10px; border-radius:8px; cursor:pointer; margin:3px 3px 8px 0; font:13px system-ui,-apple-system,Segoe UI,sans-serif; }
+    input { width:100%; box-sizing:border-box; background:#0f1218; color:#eef2ff; border:1px solid #2a3040; border-radius:8px; padding:8px; font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    a { color:#9db6ff; } .muted { color:#8b93a7; } .small { font-size:12px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .metric,.item { background:#10131a; border:1px solid #2a3040; border-radius:8px; padding:8px; margin:8px 0; }
+    .metric span,.item span { color:#8b93a7; display:block; }
+    .metric b,.item b { display:block; overflow-wrap:anywhere; }
+    .keep { border-color:#477a55; }
+    .rewrite { border-color:#8a6a2a; }
+    .reject { border-color:#8a3f3f; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Semantic Basis Refinement Draft Reviewer</h1>
+  <div class="muted small">Reviews draft seed candidates and exports a clean seed-packet candidate. This page does not merge corpus entries.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Navigation</h2>
+      <a href="kernel-semantic-basis-refinement-draft-reviewer-v0-1-test.html">draft reviewer test</a> ·
+      <a href="semantic-basis-refinement-workbench-triage.html">workbench triage</a> ·
+      <a href="semantic-basis-refinement-seed-planner.html">seed planner</a>
+    </section>
+    <section>
+      <h2>Inputs</h2>
+      <label class="small muted">Minimum template observations</label>
+      <input id="minObs" value="2" />
+      <label class="small muted">Template limit</label>
+      <input id="limit" value="10" />
+      <label class="small muted">Sentences per template</label>
+      <input id="sentencesPerTemplate" value="4" />
+      <label class="small muted">Minimum strong observations</label>
+      <input id="minStrongObservations" value="4" />
+      <label class="small muted">Minimum refinement priority</label>
+      <input id="minPriority" value="50" />
+      <label class="small muted">Allowed extra pressures before revise</label>
+      <input id="allowedExtraPressures" value="0" />
+      <button onclick="runReviewer()">LOAD TRIAGE + REVIEW DRAFTS</button>
+      <button onclick="showReviewReport()">SHOW review report</button>
+      <button onclick="showCleanPacket()">SHOW clean seed candidate</button>
+      <button onclick="showWorkbenchTriage()">SHOW workbench triage</button>
+      <button onclick="copyOutput()">COPY output</button>
+      <button onclick="downloadOutput()">DOWNLOAD output JSON</button>
+    </section>
+    <section>
+      <h2>Metrics</h2>
+      <div class="row"><div class="metric"><span>draft entries</span><b id="draftCount">0</b></div><div class="metric"><span>kept</span><b id="keptCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>rewrite</span><b id="rewriteCount">0</b></div><div class="metric"><span>rejected</span><b id="rejectCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>exportable clean packet</span><b id="exportable">no</b></div><div class="metric"><span>clean entries</span><b id="cleanCount">0</b></div></div>
+      <div class="row"><div class="metric"><span>active shape rule</span><b>Σ |dimensionᵢ| = 1</b></div><div class="metric"><span>belief movement</span><b>none</b></div></div>
+    </section>
+    <section>
+      <h2>Grouped review</h2>
+      <div id="reviewList" class="small muted">No review yet.</div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Output</h2><pre id="out">No output yet.</pre></section>
+    <section><h2>Doctrine</h2><pre id="doctrineOut"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-10-patch.js?v=0.1.10"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-template-validation-runner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-validation-triage-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-candidate-extractor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-invariance-tester-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-vector-basis-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-proposer-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-triage-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-seed-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-workbench-triage-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js?v=0.1.0"></script>
+<script>
+  let lastPacket = null;
+  let lastOutput = null;
+  function $(id){ return document.getElementById(id); }
+  function options(){ return { min_template_observations:Number($('minObs').value||2), min_observations:Number($('minObs').value||2), limit:Number($('limit').value||10), sentences_per_template:Number($('sentencesPerTemplate').value||4), allowed_extra_pressures:Number($('allowedExtraPressures').value||0), min_strong_observations:Number($('minStrongObservations').value||4), min_priority:Number($('minPriority').value||50) }; }
+  function show(value){ lastOutput = value; $('out').textContent = JSON.stringify(value, null, 2); updateUi(); }
+  async function runReviewer(){ try { lastPacket = await KernelSemanticBasisRefinementDraftReviewerV01.loadReviewAndExport(options()); show(lastPacket.review_report); } catch(e) { show({ ok:false, error:e.message, packet_type:'42ndMind_semantic_basis_refinement_draft_reviewer_error_v0_1' }); } }
+  function showReviewReport(){ if(!lastPacket) return runReviewer(); show(lastPacket.review_report); }
+  function showCleanPacket(){ if(!lastPacket) return runReviewer(); show(lastPacket.clean_seed_packet); }
+  function showWorkbenchTriage(){ if(!lastPacket) return runReviewer(); show(lastPacket.triage_packet.triage_report); }
+  function updateUi(){
+    if(!lastPacket || !lastPacket.review_report) return;
+    const s = lastPacket.review_report.summary || {};
+    $('draftCount').textContent = String(s.draft_entry_count || 0);
+    $('keptCount').textContent = String(s.kept_entry_count || 0);
+    $('rewriteCount').textContent = String(s.rewrite_entry_count || 0);
+    $('rejectCount').textContent = String(s.rejected_entry_count || 0);
+    $('exportable').textContent = s.exportable_clean_packet ? 'yes' : 'no';
+    $('cleanCount').textContent = String(lastPacket.clean_seed_packet && lastPacket.clean_seed_packet.entry_count || 0);
+    renderReviews(lastPacket.review_report.grouped_reviews || []);
+  }
+  function renderReviews(groups){
+    $('reviewList').innerHTML = groups.map(group => `<div class="item"><b>${group.refinement_target}</b><span>${JSON.stringify(group.decision_counts)}</span>${(group.reviews||[]).map(r => `<div class="item ${r.decision}"><b>${r.decision}: ${r.final_text}</b><span>reason: ${r.reason}</span><span>operators: ${(r.observed_operators||[]).join(', ') || 'none'}</span><span>pressures: ${(r.observed_pressures||[]).join(', ') || 'none'}</span></div>`).join('')}</div>`).join('') || 'No reviews.';
+  }
+  async function copyOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
+  function downloadOutput(){ const text = JSON.stringify(lastOutput || {}, null, 2); const blob = new Blob([text], { type:'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = (lastOutput && lastOutput.packet_type ? lastOutput.packet_type : 'semantic_basis_refinement_draft_reviewer') + '.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+  (function init(){ $('doctrineOut').textContent = JSON.stringify(KernelSemanticBasisRefinementDraftReviewerV01.doctrine(), null, 2); })();
+</script>
+</body>
+</html>
