@@ -57,12 +57,19 @@
     coordinated: ['direct_link_evidence_burden|motive_agency_pressure']
   });
 
+  const STATUS_ROLE_SPLIT_PRESSURES = Object.freeze({
+    unresolved: ['general_unresolved_status_pressure'],
+    not_settled: ['claim_nonclosure_status_pressure'],
+    not_collusion: ['negated_collusion_status_pressure']
+  });
+
   function doctrine() {
     return Object.assign({}, base.doctrine(), {
       patch_packet_type: PACKET_TYPE,
       patch_version: VERSION,
       basis_refinement_seeds_can_generate_reviewable_law_candidates: true,
       targeted_collapsed_candidates_can_be_suppressed_when_split_seed_exists: true,
+      status_role_collapsed_candidates_can_be_suppressed_when_role_specific_status_law_exists: true,
       basis_refinement_laws_are_candidates_not_doctrine: true,
       patch_does_not_move_belief: true,
       belief_movement: 'none'
@@ -147,12 +154,46 @@
     };
   }
 
+  function isCollapsedStatusRoleLaw(law) {
+    const name = operatorName(law && law.primary_operator);
+    const sig = text(law && law.pressure_signature || pressureSignature(law && law.pressures));
+    return Object.prototype.hasOwnProperty.call(STATUS_ROLE_SPLIT_PRESSURES, name) && sig === 'uncertainty_calibration_pressure';
+  }
+
+  function hasRoleSpecificStatusLaw(name, basisLaws) {
+    const required = asArray(STATUS_ROLE_SPLIT_PRESSURES[name]);
+    if (!required.length) return false;
+    return asArray(basisLaws).some(candidate =>
+      operatorName(candidate && candidate.primary_operator) === name &&
+      required.every(p => asArray(candidate && candidate.pressures).includes(p))
+    );
+  }
+
+  function shouldSuppressCollapsedBasisLaw(law, basisLaws) {
+    const name = operatorName(law && law.primary_operator);
+    if (!isCollapsedStatusRoleLaw(law)) return false;
+    return hasRoleSpecificStatusLaw(name, basisLaws);
+  }
+
   function shouldSuppressCollapsedLaw(law, basisLaws) {
     const name = operatorName(law && law.primary_operator);
     const sig = text(law && law.pressure_signature || pressureSignature(law && law.pressures));
     const targeted = asArray(TARGETED_COLLAPSED_SIGNATURES[name]);
-    if (!targeted.includes(sig)) return false;
-    return asArray(basisLaws).some(candidate => operatorName(candidate.primary_operator) === name);
+    if (targeted.includes(sig)) {
+      return asArray(basisLaws).some(candidate => operatorName(candidate.primary_operator) === name);
+    }
+    if (isCollapsedStatusRoleLaw(law)) return hasRoleSpecificStatusLaw(name, basisLaws);
+    return false;
+  }
+
+  function suppressedLawRecord(law, reason) {
+    return {
+      law_id: text(law && law.id),
+      primary_operator: text(law && law.primary_operator),
+      pressure_signature: text(law && law.pressure_signature),
+      reason,
+      belief_movement: 'none'
+    };
   }
 
   function augmentLawReportWithBasisRefinement(lawReport, corpus) {
@@ -160,21 +201,25 @@
     const entries = basisRefinementEntries(corpus);
     const basisGroups = groupBasisOperators(entries);
     const pressureDimensions = unique(asArray(lawReport && lawReport.pressure_dimensions).concat(basisGroups.flatMap(group => group.pressures))).sort();
-    const basisLaws = basisGroups.map(group => buildBasisRefinementLaw(group, pressureDimensions));
-    const filteredBaseLaws = baseLaws.filter(law => !shouldSuppressCollapsedLaw(law, basisLaws));
-    const laws = filteredBaseLaws.concat(basisLaws);
-    const suppressed = baseLaws.filter(law => shouldSuppressCollapsedLaw(law, basisLaws)).map(law => ({
-      law_id: text(law.id),
-      primary_operator: text(law.primary_operator),
-      pressure_signature: text(law.pressure_signature),
-      reason: 'suppressed_by_basis_refinement_split_candidate',
-      belief_movement: 'none'
-    }));
+    const rawBasisLaws = basisGroups.map(group => buildBasisRefinementLaw(group, pressureDimensions));
+    const filteredBaseLaws = baseLaws.filter(law => !shouldSuppressCollapsedLaw(law, rawBasisLaws));
+    const filteredBasisLaws = rawBasisLaws.filter(law => !shouldSuppressCollapsedBasisLaw(law, rawBasisLaws));
+    const laws = filteredBaseLaws.concat(filteredBasisLaws);
+    const suppressedBase = baseLaws
+      .filter(law => shouldSuppressCollapsedLaw(law, rawBasisLaws))
+      .map(law => suppressedLawRecord(law, 'suppressed_by_basis_refinement_split_candidate'));
+    const suppressedBasis = rawBasisLaws
+      .filter(law => shouldSuppressCollapsedBasisLaw(law, rawBasisLaws))
+      .map(law => suppressedLawRecord(law, 'suppressed_by_role_specific_status_split_candidate'));
+    const suppressed = suppressedBase.concat(suppressedBasis);
     const summary = Object.assign({}, lawReport && lawReport.summary || {}, {
       law_candidate_count: laws.length,
       basis_refinement_entry_count: entries.length,
-      basis_refinement_law_count: basisLaws.length,
+      basis_refinement_law_count: filteredBasisLaws.length,
+      raw_basis_refinement_law_count: rawBasisLaws.length,
       suppressed_collapsed_law_count: suppressed.length,
+      suppressed_collapsed_base_law_count: suppressedBase.length,
+      suppressed_collapsed_basis_law_count: suppressedBasis.length,
       pressure_dimension_count: pressureDimensions.length,
       law_status_counts: countMap(laws.map(l => l.law_status)),
       top_operator_counts: countMap(laws.map(l => l.primary_operator)),
@@ -190,8 +235,11 @@
       law_candidates: laws,
       basis_refinement_source_summary: {
         source_entry_count: entries.length,
-        generated_law_count: basisLaws.length,
+        generated_law_count: filteredBasisLaws.length,
+        raw_generated_law_count: rawBasisLaws.length,
         suppressed_collapsed_law_count: suppressed.length,
+        suppressed_collapsed_base_law_count: suppressedBase.length,
+        suppressed_collapsed_basis_law_count: suppressedBasis.length,
         suppressed_collapsed_laws: suppressed,
         belief_movement: 'none'
       },
@@ -230,6 +278,9 @@
     basisRefinementEntries,
     groupBasisOperators,
     buildBasisRefinementLaw,
+    isCollapsedStatusRoleLaw,
+    hasRoleSpecificStatusLaw,
+    shouldSuppressCollapsedBasisLaw,
     shouldSuppressCollapsedLaw,
     augmentLawReportWithBasisRefinement,
     loadValidateTriageAndExtract
