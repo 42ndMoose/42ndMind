@@ -16,7 +16,7 @@
 <header><h1>42ndMind Shape Observation Review Test</h1><div>Tests the review gate before unit-total shape observations become seed pressure.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="objective-language-shape-observation-review.html">shape observation review page</a> · <a href="objective-language-shape-bridge.html">shape bridge page</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=unit-total-1"></script>
 <script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=status-neg-1"></script>
 <script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
@@ -40,7 +40,7 @@
     assert(d.shape_observations_are_review_inputs_not_doctrine===true,'review input doctrine missing');
     assert(d.repeated_anonymous_shapes_are_structure_candidates_not_truth===true,'structure candidate doctrine missing');
     assert(d.reviewed_seed_packet_is_training_pressure_not_doctrine===true,'seed pressure doctrine missing');
-    assert(d.do_not_import_seed_packet_without_browser_tests===true,'import guard doctrine missing');
+    assert(d.do_not_import_seed_packet_without_browser_tests===true,'review gate import guard doctrine missing');
     assert(d.belief_movement==='none','belief movement wrong');
   });
 
@@ -50,8 +50,8 @@
     seed=packet.seed_packet_draft;
     assert(packet.ok===true,'review packet not ok');
     assert(packet.bridge_packet.ok===true,'bridge packet not ok');
-    assert(packet.bridge_packet.bridge_report.projected_count===142,'expected 142 projections');
-    assert(review.source_observation_count===142,'expected 142 source observations');
+    assert(packet.bridge_packet.bridge_report.projected_count===146,'expected 146 projections');
+    assert(review.source_observation_count===146,'expected 146 source observations');
     assert(review.accepted_candidate_count>=1,'expected accepted repeated structure candidates');
     assert(seed.entries.length>=1,'expected draft seed entries');
     assert(packet.belief_movement==='none','packet moved belief');
@@ -71,7 +71,7 @@
   add('seed packet draft is training pressure only',()=>{
     assert(seed.packet_type==='42ndMind_semantic_seed_corpus_v0_1_extension','wrong seed packet type');
     assert(seed.doctrine.reviewed_seed_packet_is_training_pressure_not_doctrine===true,'training pressure doctrine missing');
-    assert(seed.source_review_summary.import_status==='not_added_to_default_combiner_until_browser_tests_pass','import guard missing');
+    assert(seed.source_review_summary.import_status==='not_added_to_default_combiner_until_browser_tests_pass','review-gate draft import guard missing');
     assert(seed.entries.every(e=>e.review_status==='reviewed_seed_candidate'),'seed entries not reviewed candidates');
     assert(seed.entries.every(e=>e.expected_kernel_response&&e.expected_kernel_response.belief_movement==='none_from_shape_structure_alone'),'seed movement guard missing');
     assert(seed.belief_movement==='none','seed packet moved belief');
