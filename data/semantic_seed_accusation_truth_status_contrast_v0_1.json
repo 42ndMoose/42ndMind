@@ -1,0 +1,221 @@
+{
+  "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
+  "packet_version": "0.1.0",
+  "created_at": "2026-05-16T00:00:00.000Z",
+  "description": "Adds contrast anchors for accusation truth status: supported accusation versus false accusation. Human review required before doctrine promotion.",
+  "doctrine": {
+    "workbench_outputs_are_drafts_not_doctrine": true,
+    "matched_operators_are_candidate_readings": true,
+    "pressure_labels_do_not_move_belief": true,
+    "contrast_classes_prevent_semantic_collapse": true,
+    "supported_accusation_is_not_automatic_truth_without_direct_evidence": true,
+    "false_accusation_requires_disconfirming_record_or_direct_contradiction": true,
+    "belief_movement": "none"
+  },
+  "entries": [
+    {
+      "id": "accusation_truth_supported_direct_record_001",
+      "text": "The filing supports the accusation with timestamped messages from the accused official.",
+      "language": "en",
+      "operator_group": "accusation_truth_status",
+      "surface_terms": [
+        "supports the accusation",
+        "timestamped messages",
+        "accused official"
+      ],
+      "literal_meaning": "The sentence states that a filing supports an accusation with timestamped messages from the accused official.",
+      "candidate_intended_meaning": "The accusation has direct-record support rather than only allegation, suspicion, or hearsay.",
+      "semantic_operators": [
+        {
+          "operator": "supported_accusation(claim)",
+          "pressure": [
+            "accusation_pressure",
+            "direct_support_pressure",
+            "evidence_contact_pressure",
+            "direct_link_evidence_burden"
+          ],
+          "legitimacy_condition": "Supported-accusation pressure is legitimate only when the accusation is tied to direct evidence that identifies the target, action, and evidential link."
+        }
+      ],
+      "evidence_burden": [
+        "Identify the exact accusation.",
+        "Identify the accused target.",
+        "Verify that the cited record directly supports the accusation.",
+        "Check whether the evidence supports the same action, date, and scope."
+      ],
+      "expected_kernel_response": {
+        "lexical_action": "separate the accusation from the direct evidence offered for it",
+        "source_trust_action": "treat direct-record support as evidence contact, not automatic final truth",
+        "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied",
+        "questions": [
+          "What exact accusation is supported, and what direct record supports it?"
+        ]
+      },
+      "contrast_group": "accusation_truth_status",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "manual_contrast_gap_closure_v0_1",
+        "contrast_classes": [
+          "reckless_accusation(actor,target,claim)",
+          "false_accusation(claim)",
+          "alleges(claim)",
+          "hearsay(source)"
+        ],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "accusation_truth_supported_audit_record_002",
+      "text": "The audit supports the misconduct accusation with signed transaction records.",
+      "language": "en",
+      "operator_group": "accusation_truth_status",
+      "surface_terms": [
+        "supports the misconduct accusation",
+        "signed transaction records"
+      ],
+      "literal_meaning": "The sentence states that an audit supports a misconduct accusation with signed transaction records.",
+      "candidate_intended_meaning": "The accusation has direct documentary support and should be distinguished from a merely unsupported allegation.",
+      "semantic_operators": [
+        {
+          "operator": "supported_accusation(claim)",
+          "pressure": [
+            "accusation_pressure",
+            "direct_support_pressure",
+            "evidence_contact_pressure",
+            "direct_link_evidence_burden"
+          ],
+          "legitimacy_condition": "Supported-accusation pressure is legitimate only when the accusation is tied to direct evidence that identifies the target, action, and evidential link."
+        }
+      ],
+      "evidence_burden": [
+        "Identify the exact accusation.",
+        "Identify the accused target.",
+        "Verify that the cited record directly supports the accusation.",
+        "Check whether the evidence supports the same action, date, and scope."
+      ],
+      "expected_kernel_response": {
+        "lexical_action": "separate the accusation from the direct evidence offered for it",
+        "source_trust_action": "treat direct-record support as evidence contact, not automatic final truth",
+        "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied",
+        "questions": [
+          "What exact accusation is supported, and what direct record supports it?"
+        ]
+      },
+      "contrast_group": "accusation_truth_status",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "manual_contrast_gap_closure_v0_1",
+        "contrast_classes": [
+          "reckless_accusation(actor,target,claim)",
+          "false_accusation(claim)",
+          "alleges(claim)",
+          "hearsay(source)"
+        ],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "accusation_truth_false_video_record_003",
+      "text": "The accusation was false because the full video shows the person was not present.",
+      "language": "en",
+      "operator_group": "accusation_truth_status",
+      "surface_terms": [
+        "accusation was false",
+        "full video",
+        "not present"
+      ],
+      "literal_meaning": "The sentence states that an accusation was false because the full video shows the person was not present.",
+      "candidate_intended_meaning": "The accusation is contradicted by direct evidence rather than merely lacking support.",
+      "semantic_operators": [
+        {
+          "operator": "false_accusation(claim)",
+          "pressure": [
+            "accusation_pressure",
+            "contradiction_pressure",
+            "evidence_contact_pressure",
+            "reputational_risk_pressure"
+          ],
+          "legitimacy_condition": "False-accusation pressure is legitimate only when direct evidence contradicts the accusation's target, action, date, or scope."
+        }
+      ],
+      "evidence_burden": [
+        "Identify the exact accusation.",
+        "Identify the direct record that contradicts it.",
+        "Check that the contradiction uses the same target, action, date, and scope.",
+        "Distinguish false accusation from merely unsupported accusation."
+      ],
+      "expected_kernel_response": {
+        "lexical_action": "separate falsity from lack of evidence and identify the contradictory record",
+        "source_trust_action": "require direct contradiction before treating an accusation as false",
+        "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied",
+        "questions": [
+          "What direct record contradicts the accusation?"
+        ]
+      },
+      "contrast_group": "accusation_truth_status",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "manual_contrast_gap_closure_v0_1",
+        "contrast_classes": [
+          "supported_accusation(claim)",
+          "reckless_accusation(actor,target,claim)",
+          "alleges(claim)",
+          "lacks_evidence(claim)"
+        ],
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "accusation_truth_false_attendance_record_004",
+      "text": "The payroll record shows the theft accusation was false because the employee was off site.",
+      "language": "en",
+      "operator_group": "accusation_truth_status",
+      "surface_terms": [
+        "theft accusation was false",
+        "payroll record",
+        "off site"
+      ],
+      "literal_meaning": "The sentence states that a payroll record shows a theft accusation was false because the employee was off site.",
+      "candidate_intended_meaning": "The accusation is directly contradicted by a record that places the accused away from the alleged action.",
+      "semantic_operators": [
+        {
+          "operator": "false_accusation(claim)",
+          "pressure": [
+            "accusation_pressure",
+            "contradiction_pressure",
+            "evidence_contact_pressure",
+            "reputational_risk_pressure"
+          ],
+          "legitimacy_condition": "False-accusation pressure is legitimate only when direct evidence contradicts the accusation's target, action, date, or scope."
+        }
+      ],
+      "evidence_burden": [
+        "Identify the exact accusation.",
+        "Identify the direct record that contradicts it.",
+        "Check that the contradiction uses the same target, action, date, and scope.",
+        "Distinguish false accusation from merely unsupported accusation."
+      ],
+      "expected_kernel_response": {
+        "lexical_action": "separate falsity from lack of evidence and identify the contradictory record",
+        "source_trust_action": "require direct contradiction before treating an accusation as false",
+        "belief_movement": "none_until_operator_legitimacy_conditions_are_satisfied",
+        "questions": [
+          "What direct record contradicts the accusation?"
+        ]
+      },
+      "contrast_group": "accusation_truth_status",
+      "review_status": "seed_candidate",
+      "workbench_metadata": {
+        "generated_by": "manual_contrast_gap_closure_v0_1",
+        "contrast_classes": [
+          "supported_accusation(claim)",
+          "reckless_accusation(actor,target,claim)",
+          "alleges(claim)",
+          "lacks_evidence(claim)"
+        ],
+        "requires_human_review": true
+      }
+    }
+  ],
+  "belief_movement": "none"
+}
