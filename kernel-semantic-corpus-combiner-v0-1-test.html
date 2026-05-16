@@ -15,12 +15,12 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the 123-entry semantic corpus and modular extension batches.</div></header>
+<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the 135-entry semantic corpus and modular extension batches.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="semantic-corpus-combiner.html">semantic corpus combiner</a> · <a href="kernel-semantic-seed-extension-v0-1-test.html">extension test</a> · <a href="kernel-semantic-corpus-to-invariants-v0-1-test.html">corpus bridge test</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-semantic-corpus-to-invariants-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.3"></script>
 <script>
   const tests = [];
   const TEST_KEY = '42ndMind_semantic_corpus_combiner_v0_1_test';
@@ -46,25 +46,26 @@
   });
 
   add('default extension list is current', () => {
-    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.length === 11, 'expected eleven default extension URLs');
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.length === 12, 'expected twelve default extension URLs');
     assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.includes('data/semantic_seed_accusation_risk_direct_evidence_v0_1.json'), 'accusation-risk extension missing from defaults');
     assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.includes('data/semantic_seed_accusation_truth_status_contrast_v0_1.json'), 'accusation truth-status extension missing from defaults');
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.includes('data/semantic_seed_basis_refinement_v0_1.json'), 'basis-refinement extension missing from defaults');
   });
 
   add('loadAndCombine succeeds', async () => {
     packet = await KernelSemanticCorpusCombinerV01.loadAndCombine();
     assert(packet.ok === true, 'combined packet not ok');
     assert(packet.decision === 'COMBINED_CORPUS_READY', 'wrong decision');
-    assert(packet.combined.entry_count === 123, 'expected 123 combined entries');
+    assert(packet.combined.entry_count === 135, 'expected 135 combined entries');
     assert(packet.combined.duplicate_entries.length === 0, 'expected zero duplicate entries');
-    assert(packet.combined.source_packets.length === 12, 'expected main plus eleven extension sources');
+    assert(packet.combined.source_packets.length === 13, 'expected main plus twelve extension sources');
     assert(packet.combined.belief_movement === 'none', 'combined corpus moved belief');
   });
 
   add('combined corpus validates', () => {
     const report = KernelSemanticCorpusCombinerV01.validateCombined(packet.combined);
     assert(report.ok === true, 'validation failed: ' + JSON.stringify(report.validation.errors));
-    assert(report.combined_entry_count === 123, 'combined count mismatch');
+    assert(report.combined_entry_count === 135, 'combined count mismatch');
   });
 
   add('source packet metadata is preserved', () => {
@@ -80,6 +81,7 @@
     assert(sourceByLabel('extension_9') && sourceByLabel('extension_9').entry_count === 20, 'vector-template v0.2 extension source missing');
     assert(sourceByLabel('extension_10') && sourceByLabel('extension_10').entry_count === 4, 'accusation-risk direct-evidence extension source missing');
     assert(sourceByLabel('extension_11') && sourceByLabel('extension_11').entry_count === 4, 'accusation truth-status contrast extension source missing');
+    assert(sourceByLabel('extension_12') && sourceByLabel('extension_12').entry_count === 12, 'basis-refinement extension source missing');
   });
 
   add('extension entries are included with combiner metadata', () => {
@@ -88,6 +90,7 @@
     const accusationEntry = entryByText('The article recklessly accused the official of misconduct without direct evidence.');
     const supportedEntry = entryByText('The filing supports the accusation with timestamped messages from the accused official.');
     const falseEntry = entryByText('The accusation was false because the full video shows the person was not present.');
+    const basisEntry = entryByText('Similar timing suggests coordination, while collusion requires evidence of a covert agreement.');
     assert(closureEntry && closureEntry.combiner_metadata.source_label === 'extension_1', 'closure extension entry metadata missing');
     assert(vectorSettledEntry && vectorSettledEntry.combiner_metadata.source_label === 'extension_9', 'vector-template v0.2 metadata missing');
     assert(accusationEntry, 'accepted accusation-risk entry missing');
@@ -97,12 +100,14 @@
     assert(falseEntry && falseEntry.combiner_metadata.source_label === 'extension_11', 'false_accusation entry metadata missing');
     assert(supportedEntry.semantic_operators.some(op => op.operator === 'supported_accusation(claim)'), 'supported_accusation operator missing');
     assert(falseEntry.semantic_operators.some(op => op.operator === 'false_accusation(claim)'), 'false_accusation operator missing');
+    assert(basisEntry && basisEntry.combiner_metadata.source_label === 'extension_12', 'basis-refinement entry metadata missing');
+    assert(basisEntry.semantic_operators.some(op => op.operator === 'collusion(actors)'), 'basis-refinement collusion operator missing');
   });
 
   add('summary includes current operator groups', () => {
     const summary = KernelSemanticCorpusCombinerV01.summarizeCombined(packet.combined);
-    ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing','rhetoric_clarity','rhetoric_affect','accusation_risk','accusation_truth_status','fallacy_absence'].forEach(group => assert(summary.groups[group] >= 1, 'missing group ' + group));
-    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by','proved_false','works','reliable','posted','states','deadline_extended','published_summary','collusion','court_filing','alleges','clearly','someone','pressured','conspiracy','different_scope','qualifies','narrows','dataset','footnote','misleading','omission','clip','disputed','hearsay','summary','not_disproven','unverified','obfuscates','emotionally_loaded','reckless_accusation','supported_accusation','false_accusation','argument_from_ignorance','ulterior_motive_attribution','chart','raw_data','settled','same_source','quote'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
+    ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing','rhetoric_clarity','rhetoric_affect','accusation_risk','accusation_truth_status','basis_refinement_authority_closure','basis_refinement_coordination_collusion','basis_refinement_accusation_motive','basis_refinement_motive_coordination_subset','fallacy_absence'].forEach(group => assert(summary.groups[group] >= 1, 'missing group ' + group));
+    ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by','proved_false','works','reliable','posted','states','deadline_extended','published_summary','collusion','coordinated','court_filing','alleges','clearly','someone','pressured','conspiracy','different_scope','qualifies','narrows','dataset','footnote','misleading','omission','clip','disputed','hearsay','summary','not_disproven','unverified','obfuscates','emotionally_loaded','reckless_accusation','supported_accusation','false_accusation','argument_from_ignorance','ulterior_motive_attribution','expert','settled','unresolved','not_settled','not_collusion','intent_attribution','chart','raw_data','same_source','quote'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
     assert(summary.belief_movement === 'none', 'summary moved belief');
   });
 
@@ -115,10 +120,10 @@
   });
 
   add('stale explicit extension lists are completed from defaults', async () => {
-    const stale = KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.slice(0, 10);
+    const stale = KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.slice(0, 11);
     const stalePacket = await KernelSemanticCorpusCombinerV01.loadAndCombine({ extension_urls: stale });
-    assert(stalePacket.combined.entry_count === 123, 'stale explicit list should still load current defaults');
-    assert(stalePacket.combined.source_packets.length === 12, 'stale explicit list should still include all sources');
+    assert(stalePacket.combined.entry_count === 135, 'stale explicit list should still load current defaults');
+    assert(stalePacket.combined.source_packets.length === 13, 'stale explicit list should still include all sources');
   });
 
   add('duplicate ids are skipped, not overwritten', () => {
