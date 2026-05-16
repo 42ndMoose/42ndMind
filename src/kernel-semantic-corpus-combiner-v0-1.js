@@ -23,7 +23,8 @@
     'data/semantic_seed_vector_template_contrast_v0_1.json',
     'data/semantic_seed_vector_template_contrast_v0_2.json',
     'data/semantic_seed_accusation_risk_direct_evidence_v0_1.json',
-    'data/semantic_seed_accusation_truth_status_contrast_v0_1.json'
+    'data/semantic_seed_accusation_truth_status_contrast_v0_1.json',
+    'data/semantic_seed_basis_refinement_v0_1.json'
   ]);
 
   function text(value) { return String(value ?? '').trim(); }
@@ -219,16 +220,28 @@
       packet_type: '42ndMind_semantic_corpus_combiner_bridge_export_v0_1',
       packet_version: VERSION,
       created_at: now(),
-      combined_corpus: combined,
-      semantic_observation_batch: toObservationBatch(combined),
-      belief_movement: 'none',
-      doctrine: doctrine()
+      combined_entry_count: combined && combined.entry_count || entriesOf(combined).length,
+      observation_batch: toObservationBatch(combined),
+      source_summary: summarizeCombined(combined),
+      doctrine: doctrine(),
+      belief_movement: 'none'
     };
   }
 
   global.KernelSemanticCorpusCombinerV01 = Object.freeze({
-    VERSION, PACKET_TYPE, COMBINED_PACKET_TYPE, DEFAULT_MAIN_URL, DEFAULT_EXTENSION_URLS,
-    doctrine, normalizePacket, combinePackets, validateCombined, summarizeCombined,
-    toObservationBatch, buildPacket, fetchJson, loadAndCombine, exportForBridge
+    VERSION,
+    PACKET_TYPE,
+    COMBINED_PACKET_TYPE,
+    DEFAULT_MAIN_URL,
+    DEFAULT_EXTENSION_URLS,
+    doctrine,
+    normalizePacket,
+    combinePackets,
+    validateCombined,
+    summarizeCombined,
+    toObservationBatch,
+    buildPacket,
+    loadAndCombine,
+    exportForBridge
   });
 })(typeof window !== 'undefined' ? window : globalThis);
