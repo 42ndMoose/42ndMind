@@ -20,7 +20,8 @@
     'data/semantic_seed_closure_source_gap_contrast_v0_1.json',
     'data/semantic_seed_unverified_contrast_v0_1.json',
     'data/semantic_seed_rhetoric_intent_pressure_v0_1.json',
-    'data/semantic_seed_vector_template_contrast_v0_1.json'
+    'data/semantic_seed_vector_template_contrast_v0_1.json',
+    'data/semantic_seed_vector_template_contrast_v0_2.json'
   ]);
 
   function text(value) { return String(value ?? '').trim(); }
