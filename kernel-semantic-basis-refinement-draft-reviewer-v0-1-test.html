@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Semantic Basis Refinement Draft Reviewer v0.1 Test</title>
+  <style>
+    body { margin:0; font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0f1115; color:#eef2ff; }
+    header { padding:16px 18px; border-bottom:1px solid #2a3040; background:#11141b; }
+    main { padding:12px; }
+    section { background:#171a21; border:1px solid #2a3040; border-radius:10px; padding:12px; }
+    h1 { font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif; margin:0 0 4px; }
+    pre { white-space:pre-wrap; background:#0d1016; border:1px solid #2a3040; border-radius:10px; padding:10px; overflow:auto; max-height:760px; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; } a { color:#9db6ff; }
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Semantic Basis Refinement Draft Reviewer v0.1 Test</h1><div>Tests review decisions and clean seed-candidate export.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="semantic-basis-refinement-draft-reviewer.html">draft reviewer</a> · <a href="semantic-basis-refinement-workbench-triage.html">workbench triage</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-operator-grammar-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-operator-grammar-v0-1-10-patch.js?v=0.1.10"></script>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-4-patch.js?v=0.1.4"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-5-patch.js?v=0.1.5"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-6-patch.js?v=0.1.6"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-7-patch.js?v=0.1.7"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-8-patch.js?v=0.1.8"></script>
+<script src="src/kernel-semantic-operator-workbench-v0-1-9-patch.js?v=0.1.9"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3"></script>
+<script src="src/kernel-semantic-template-validation-runner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-validation-triage-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-candidate-extractor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-law-invariance-tester-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-vector-basis-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-proposer-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-canonical-relation-triage-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-seed-planner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-workbench-triage-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-basis-refinement-draft-reviewer-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests = [];
+  let fullPacket = null;
+  function add(name, fn) { tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+  const fixtureDraftPacket = {
+    packet_type:'42ndMind_semantic_basis_refinement_seed_draft_v0_1_fixture',
+    entry_count:4,
+    entries:[
+      {
+        entry_id:'draft_001',
+        text:'The expert status raises inspection priority, but it does not close the question.',
+        refinement_target:'authority_closure_basis_refinement',
+        expected_new_dimensions:['source_status_dimension','claim_closure_dimension'],
+        observed_operators:['expert(source)'],
+        observed_pressures:['authority_transfer_pressure'],
+        triage_type:'matched_partial_basis_gap_candidate',
+        review_status:'draft_candidate_requires_human_review',
+        belief_movement:'none'
+      },
+      {
+        entry_id:'draft_002',
+        text:'Similar timing suggests coordination, while collusion requires evidence of a covert agreement.',
+        refinement_target:'coordination_collusion_basis_refinement',
+        expected_new_dimensions:['covert_agreement_dimension'],
+        observed_operators:['coordinated(actor,event)','collusion(actors)'],
+        observed_pressures:['direct_link_evidence_burden','motive_agency_pressure'],
+        triage_type:'high_value_basis_split_candidate',
+        review_status:'draft_candidate_requires_human_review',
+        belief_movement:'none'
+      },
+      {
+        entry_id:'draft_003',
+        text:'The timing raises a motive question, but it does not accuse the target of a specific harmful act.',
+        refinement_target:'accusation_motive_boundary_probe',
+        expected_new_dimensions:['accusation_target_harm_dimension'],
+        observed_operators:['harmful(content)'],
+        observed_pressures:['moral_risk_framing_pressure'],
+        triage_type:'matched_but_target_alignment_weak',
+        review_status:'draft_candidate_requires_human_review',
+        belief_movement:'none'
+      },
+      {
+        entry_id:'draft_004',
+        text:'',
+        refinement_target:'unknown',
+        expected_new_dimensions:[],
+        observed_operators:[],
+        observed_pressures:[],
+        triage_type:'unmatched_rewrite_or_grammar_gap',
+        review_status:'draft_candidate_requires_human_review',
+        belief_movement:'none'
+      }
+    ],
+    belief_movement:'none'
+  };
+
+  add('modules load', () => {
+    assert(window.KernelSemanticBasisRefinementDraftReviewerV01, 'draft reviewer missing');
+    assert(window.KernelSemanticBasisRefinementWorkbenchTriageV01, 'workbench triage missing');
+    assert(KernelSemanticBasisRefinementDraftReviewerV01.VERSION === '0.1.0', 'version wrong');
+  });
+
+  add('doctrine preserves no merge and unit-total rule', () => {
+    const d = KernelSemanticBasisRefinementDraftReviewerV01.doctrine();
+    assert(d.draft_review_is_required_before_seed_merge === true, 'review doctrine missing');
+    assert(d.reviewer_exports_candidate_packet_only === true, 'export-only doctrine missing');
+    assert(d.reviewer_does_not_write_source_files === true, 'write-source doctrine missing');
+    assert(d.active_shape_l1_total === 'sum_abs_dimensions_equals_1', 'unit-total doctrine missing');
+    assert(d.belief_movement === 'none', 'belief movement wrong');
+  });
+
+  add('defaultDecisionForEntry keeps strong candidates', () => {
+    const d1 = KernelSemanticBasisRefinementDraftReviewerV01.defaultDecisionForEntry(fixtureDraftPacket.entries[0]);
+    const d2 = KernelSemanticBasisRefinementDraftReviewerV01.defaultDecisionForEntry(fixtureDraftPacket.entries[1]);
+    assert(d1.decision === 'keep', 'partial gap should keep');
+    assert(d2.decision === 'keep', 'high value split should keep');
+  });
+
+  add('defaultDecisionForEntry rewrites weak or empty entries', () => {
+    const d1 = KernelSemanticBasisRefinementDraftReviewerV01.defaultDecisionForEntry(fixtureDraftPacket.entries[2]);
+    const d2 = KernelSemanticBasisRefinementDraftReviewerV01.defaultDecisionForEntry(fixtureDraftPacket.entries[3]);
+    assert(d1.decision === 'rewrite', 'weak alignment should rewrite');
+    assert(d2.decision === 'reject', 'empty should reject');
+  });
+
+  add('reviewEntry supports manual override', () => {
+    const r = KernelSemanticBasisRefinementDraftReviewerV01.reviewEntry(fixtureDraftPacket.entries[2], { decision:'rewrite', reason:'manual_rewrite', rewritten_text:'The motive claim does not accuse the target of misconduct.' });
+    assert(r.decision === 'rewrite', 'override decision wrong');
+    assert(r.final_text === 'The motive claim does not accuse the target of misconduct.', 'rewrite text wrong');
+    assert(r.exportable === false, 'rewrite should not export by default');
+    assert(r.belief_movement === 'none', 'review moved belief');
+  });
+
+  add('reviewDraftPacket summarizes decisions', () => {
+    const report = KernelSemanticBasisRefinementDraftReviewerV01.reviewDraftPacket(fixtureDraftPacket);
+    assert(report.packet_type === '42ndMind_semantic_basis_refinement_draft_review_report_v0_1', 'wrong report type');
+    assert(report.summary.draft_entry_count === 4, 'draft count wrong');
+    assert(report.summary.kept_entry_count === 2, 'kept count wrong');
+    assert(report.summary.rewrite_entry_count === 1, 'rewrite count wrong');
+    assert(report.summary.rejected_entry_count === 1, 'reject count wrong');
+    assert(report.grouped_reviews.length >= 2, 'grouped reviews missing');
+    assert(report.belief_movement === 'none', 'report moved belief');
+  });
+
+  add('exportCleanSeedPacket exports only kept entries', () => {
+    const report = KernelSemanticBasisRefinementDraftReviewerV01.reviewDraftPacket(fixtureDraftPacket);
+    const packet = KernelSemanticBasisRefinementDraftReviewerV01.exportCleanSeedPacket(report);
+    assert(packet.packet_type === '42ndMind_semantic_basis_refinement_clean_seed_candidate_v0_1', 'wrong export type');
+    assert(packet.entry_count === 2, 'export count wrong');
+    assert(packet.entries.every(e => e.review_status === 'clean_candidate_requires_final_human_approval'), 'review status wrong');
+    assert(packet.entries.every(e => e.belief_movement === 'none'), 'entry moved belief');
+    assert(packet.belief_movement === 'none', 'packet moved belief');
+  });
+
+  add('module availability reports full path', () => {
+    const a = KernelSemanticBasisRefinementDraftReviewerV01.modulesAvailable();
+    assert(a.workbench_triage === true, 'workbench triage unavailable');
+  });
+
+  add('loadReviewAndExport runs current full path', async () => {
+    fullPacket = await KernelSemanticBasisRefinementDraftReviewerV01.loadReviewAndExport({ min_template_observations:2, min_observations:2, limit:10, sentences_per_template:4, allowed_extra_pressures:0, min_strong_observations:4, min_priority:50 });
+    assert(fullPacket.ok === true, 'full packet not ok');
+    assert(fullPacket.review_report.summary.draft_entry_count >= 1, 'expected draft entries');
+    assert(fullPacket.clean_seed_packet.entry_count >= 1, 'expected clean candidates');
+    assert(fullPacket.review_report.belief_movement === 'none', 'review report moved belief');
+    assert(fullPacket.clean_seed_packet.belief_movement === 'none', 'clean packet moved belief');
+    assert(fullPacket.belief_movement === 'none', 'full packet moved belief');
+  });
+
+  (async function run(){
+    const results = [];
+    for (const t of tests) {
+      try { await t.fn(); results.push({ name:t.name, passed:true }); }
+      catch(e) { results.push({ name:t.name, passed:false, error:e.message }); }
+    }
+    const passed = results.filter(r => r.passed).length;
+    document.getElementById('summary').className = passed === tests.length ? 'ok' : 'bad';
+    document.getElementById('summary').textContent = `${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent = JSON.stringify({
+      packet_type:'42ndMind_semantic_basis_refinement_draft_reviewer_v0_1_test_report',
+      full_review_summary: fullPacket && fullPacket.summary,
+      full_clean_packet_summary: fullPacket && fullPacket.clean_seed_packet && { entry_count: fullPacket.clean_seed_packet.entry_count },
+      results
+    }, null, 2);
+  })();
+</script>
+</body>
+</html>
