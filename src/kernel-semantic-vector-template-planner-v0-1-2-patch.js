@@ -50,7 +50,7 @@
         sentences: [
           'The post makes a serious accusation without showing a direct evidence link.',
           'The article recklessly accused the official of misconduct without direct evidence.',
-          'The report makes a serious accusation before identifying the actor, target, and evidence.',
+          'The report recklessly accused the named target of misconduct without direct evidence.',
           'The claim accuses the person of wrongdoing, but the direct evidence link is still missing.'
         ]
       };
