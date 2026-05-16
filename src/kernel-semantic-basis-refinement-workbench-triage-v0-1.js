@@ -50,6 +50,7 @@
       workbench_triage_drafts_seed_candidates_only: true,
       matched_preview_is_not_automatic_seed_acceptance: true,
       unmatched_preview_is_rewrite_or_grammar_gap_signal: true,
+      target_alignment_requires_relevant_observed_operator_or_pressure: true,
       target_alignment_uses_sentence_and_workbench_cues_for_review_not_truth: true,
       unit_total_rule_preserved_for_active_shapes: true,
       active_shape_l1_total: 'sum_abs_dimensions_equals_1',
@@ -82,32 +83,65 @@
     const s = lower(sentence);
     const op = lower(asArray(operators).join(' '));
     const pr = lower(asArray(pressures).join(' '));
-    const all = [s, op, pr].join(' ');
+    const observed = [op, pr].join(' ');
+    const all = [s, observed].join(' ');
 
     if (targetId === 'authority_closure_basis_refinement') {
       const sourceCue = hasAny(all, ['expert', 'source', 'qualified', 'authority', 'status']);
       const closureCue = hasAny(all, ['settled', 'close', 'closure', 'conclusion', 'unresolved']);
       const evidenceCue = hasAny(all, ['record', 'evidence', 'supports', 'shown']);
-      return { aligned: sourceCue && (closureCue || evidenceCue), cues: { sourceCue, closureCue, evidenceCue } };
+      const sourceObserved = hasAny(observed, ['expert', 'source', 'authority_transfer_pressure']);
+      const closureObserved = hasAny(observed, ['settled', 'closure_pressure']);
+      return {
+        aligned: sourceCue && (closureCue || evidenceCue) && sourceObserved,
+        observed_relevant: sourceObserved || closureObserved,
+        observed_complete: sourceObserved && closureObserved,
+        cues: { sourceCue, closureCue, evidenceCue, sourceObserved, closureObserved }
+      };
     }
+
     if (targetId === 'coordination_collusion_basis_refinement') {
       const coordinationCue = hasAny(all, ['coordinated', 'coordination', 'shared plan', 'similar timing', 'schedules']);
-      const collusionCue = hasAny(all, ['collusion', 'colluded', 'covert', 'hidden', 'secret', 'illicit']);
+      const collusionCue = hasAny(all, ['collusion', 'colluded', 'covert', 'hidden', 'secret', 'illicit', 'agreement']);
+      const hiddenAgreementCue = hasAny(all, ['covert', 'hidden', 'secret', 'illicit', 'agreement']);
       const publicCue = hasAny(all, ['openly', 'public']);
-      return { aligned: coordinationCue && collusionCue, cues: { coordinationCue, collusionCue, publicCue } };
+      const coordinationObserved = hasAny(observed, ['coordinated', 'motive_agency_pressure']);
+      const collusionObserved = hasAny(observed, ['collusion', 'direct_link_evidence_burden']);
+      return {
+        aligned: ((coordinationCue && collusionCue) || (collusionCue && hiddenAgreementCue) || (coordinationCue && publicCue)) && (coordinationObserved || collusionObserved),
+        observed_relevant: coordinationObserved || collusionObserved,
+        observed_complete: coordinationObserved && collusionObserved,
+        cues: { coordinationCue, collusionCue, hiddenAgreementCue, publicCue, coordinationObserved, collusionObserved }
+      };
     }
+
     if (targetId === 'accusation_motive_boundary_probe') {
       const accusationCue = hasAny(all, ['accused', 'accuses', 'accusing', 'accusation', 'wrongdoing', 'misconduct']);
       const motiveCue = hasAny(all, ['motive', 'intent', 'attributed', 'speculation']);
       const riskCue = hasAny(all, ['reputational', 'harmful act', 'specific harmful act']);
-      return { aligned: accusationCue || motiveCue, cues: { accusationCue, motiveCue, riskCue } };
+      const motiveObserved = hasAny(observed, ['ulterior_motive_attribution', 'motive_agency_pressure', 'intent_attribution_pressure']);
+      const accusationObserved = hasAny(observed, ['reckless_accusation', 'accusation_pressure', 'reputational_risk_pressure', 'evidence_gap_pressure']);
+      return {
+        aligned: (accusationCue || motiveCue) && (motiveObserved || accusationObserved),
+        observed_relevant: motiveObserved || accusationObserved,
+        observed_complete: motiveObserved && accusationObserved,
+        cues: { accusationCue, motiveCue, riskCue, motiveObserved, accusationObserved }
+      };
     }
+
     if (targetId === 'motive_coordination_subset_probe') {
       const coordinationCue = hasAny(all, ['coordinated', 'coordination', 'shared action']);
       const motiveCue = hasAny(all, ['motive', 'wanted', 'why', 'internal reason']);
-      return { aligned: coordinationCue && motiveCue, cues: { coordinationCue, motiveCue } };
+      const coordinationObserved = hasAny(observed, ['coordinated', 'motive_agency_pressure', 'direct_link_evidence_burden']);
+      const motiveObserved = hasAny(observed, ['ulterior_motive_attribution', 'intent_attribution_pressure']);
+      return {
+        aligned: coordinationCue && motiveCue && coordinationObserved,
+        observed_relevant: coordinationObserved || motiveObserved,
+        observed_complete: coordinationObserved && motiveObserved,
+        cues: { coordinationCue, motiveCue, coordinationObserved, motiveObserved }
+      };
     }
-    return { aligned: false, cues: {} };
+    return { aligned: false, observed_relevant: false, observed_complete: false, cues: {} };
   }
 
   function triagePreviewRow(row, target) {
@@ -130,12 +164,18 @@
       recommended_action = 'rewrite_sentence_or_add_workbench_grammar_before_seed_use';
       draft_candidate = false;
       rationale = 'The workbench did not match this sentence, so it should not become a seed candidate yet.';
-    } else if (!alignment.aligned) {
+    } else if (!alignment.aligned || !alignment.observed_relevant) {
       triage_type = 'matched_but_target_alignment_weak';
       severity = 'medium';
       recommended_action = 'review_whether_sentence_tests_the_intended_basis_gap';
       draft_candidate = false;
-      rationale = 'The workbench matched the sentence, but the sentence does not clearly test the intended refinement target.';
+      rationale = 'The workbench matched the sentence, but the observed operator/pressure pattern does not clearly test the intended refinement target.';
+    } else if (!alignment.observed_complete) {
+      triage_type = 'matched_partial_basis_gap_candidate';
+      severity = 'low';
+      recommended_action = 'review_as_partial_basis_gap_seed_candidate';
+      draft_candidate = true;
+      rationale = 'The sentence matched relevant target structure but did not observe both sides of the intended split. This can still be useful as a gap-probe seed candidate.';
     } else if (targetId === 'authority_closure_basis_refinement' || targetId === 'coordination_collusion_basis_refinement') {
       triage_type = 'high_value_basis_split_candidate';
       severity = 'low';
@@ -202,6 +242,7 @@
       draft_candidate_count: r.filter(x => x.draft_candidate).length,
       rewrite_or_grammar_gap_count: r.filter(x => x.triage_type === 'unmatched_rewrite_or_grammar_gap').length,
       weak_alignment_count: r.filter(x => x.triage_type === 'matched_but_target_alignment_weak').length,
+      partial_gap_candidate_count: r.filter(x => x.triage_type === 'matched_partial_basis_gap_candidate').length,
       triage_type_counts: countMap(r.map(x => x.triage_type)),
       target_counts: countMap(r.map(x => x.target_id)),
       active_shape_l1_rule: 'sum_abs_dimensions_equals_1',
@@ -220,6 +261,7 @@
       expected_new_dimensions: clone(row.expected_new_dimensions),
       observed_operators: clone(row.operators),
       observed_pressures: clone(row.pressures),
+      triage_type: row.triage_type,
       review_status: 'draft_candidate_requires_human_review',
       belief_movement: 'none'
     }));
