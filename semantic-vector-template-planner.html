@@ -55,7 +55,8 @@ data/semantic_seed_unverified_contrast_v0_1.json
 data/semantic_seed_rhetoric_intent_pressure_v0_1.json
 data/semantic_seed_vector_template_contrast_v0_1.json
 data/semantic_seed_vector_template_contrast_v0_2.json
-data/semantic_seed_accusation_risk_direct_evidence_v0_1.json</textarea>
+data/semantic_seed_accusation_risk_direct_evidence_v0_1.json
+data/semantic_seed_accusation_truth_status_contrast_v0_1.json</textarea>
       <button onclick="plan()">LOAD COMBINED + PLAN</button>
       <button onclick="showPlan()">SHOW full plan</button>
       <button onclick="showSuggestedSentences()">SHOW suggested sentences</button>
@@ -86,6 +87,7 @@ data/semantic_seed_accusation_risk_direct_evidence_v0_1.json</textarea>
 <script src="src/kernel-semantic-vector-template-planner-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-vector-template-planner-v0-1-1-patch.js?v=0.1.1"></script>
 <script src="src/kernel-semantic-vector-template-planner-v0-1-2-patch.js?v=0.1.2"></script>
+<script src="src/kernel-semantic-vector-template-planner-v0-1-3-patch.js?v=0.1.3"></script>
 <script>
   let lastPacket = null;
   let lastOutput = null;
@@ -100,7 +102,7 @@ data/semantic_seed_accusation_risk_direct_evidence_v0_1.json</textarea>
     } catch(e) { show({ ok:false, error:e.message, packet_type:'42ndMind_semantic_vector_template_planner_error_v0_1' }, 'error'); }
   }
   function showPlan(){ if(!lastPacket) return plan(); show(lastPacket.plan, 'plan'); }
-  function showSuggestedSentences(){ if(!lastPacket) return plan(); show({ packet_type:'42ndMind_semantic_vector_template_suggested_sentences_v0_1_2', count:lastPacket.plan.suggested_sentence_count, suggested_sentences:lastPacket.plan.suggested_sentences, doctrine:KernelSemanticVectorTemplatePlannerV01.doctrine(), belief_movement:'none' }, 'suggested sentences'); }
+  function showSuggestedSentences(){ if(!lastPacket) return plan(); show({ packet_type:'42ndMind_semantic_vector_template_suggested_sentences_v0_1_3', count:lastPacket.plan.suggested_sentence_count, suggested_sentences:lastPacket.plan.suggested_sentences, doctrine:KernelSemanticVectorTemplatePlannerV01.doctrine(), belief_movement:'none' }, 'suggested sentences'); }
   async function copySuggestedSentences(){ if(!lastPacket) await plan(); const text = (lastPacket && lastPacket.plan && lastPacket.plan.suggested_sentences || []).join('\n'); try { await navigator.clipboard.writeText(text); $('out').textContent = `Copied suggested sentences (${text.length.toLocaleString()} chars).\n\n` + text; } catch(e){ $('out').textContent = text; } }
   function updateUi(){
     if(!lastPacket) return;
