@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>42ndMind Shape Observation Review</title>
+<style>
+body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}main{padding:12px;display:grid;grid-template-columns:390px 1fr;gap:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px;margin-bottom:12px}h1{font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}select,input{width:100%;box-sizing:border-box;background:#0f1218;color:#eef2ff;border:1px solid #2a3040;border-radius:8px;padding:8px;font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}button{background:#25345c;color:#eef2ff;border:1px solid #3f5592;padding:8px 10px;border-radius:8px;cursor:pointer;margin:3px 3px 8px 0}pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.muted{color:#8b93a7}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}.item{background:#10131a;border:1px solid #2a3040;border-radius:8px;padding:8px;margin:8px 0}.item span{color:#8b93a7;display:block}@media(max-width:900px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>42ndMind Shape Observation Review</h1><div class="muted">Reviews repeated anonymous unit-total shape structures before seed pressure. Review output is not doctrine and does not move belief.</div></header>
+<main>
+<section>
+<h2>Controls</h2>
+<a href="index.html">main kernel</a> · <a href="kernel-objective-language-shape-observation-review-v0-1-test.html?v=0.1.0">test page</a> · <a href="objective-language-shape-bridge.html">bridge</a>
+<p class="muted">This page creates a draft seed packet from reviewed repeated structures. Do not wire it into the combiner until browser tests pass.</p>
+<label>Projection basis</label>
+<select id="basis">
+<option value="pressure">pressure</option>
+<option value="operator">operator</option>
+<option value="pressure_family">pressure family</option>
+<option value="blocked_movement">blocked movement</option>
+<option value="required_check">required check</option>
+<option value="allowed_movement">allowed movement</option>
+</select>
+<label>Minimum repetition</label>
+<input id="minRepetition" type="number" value="2" min="2" step="1" />
+<label>Max draft seed entries</label>
+<input id="maxEntries" type="number" value="12" min="1" step="1" />
+<button onclick="runReview()">Run review</button>
+<button onclick="showReview()">Show review</button>
+<button onclick="showAccepted()">Show accepted</button>
+<button onclick="showSeedDraft()">Show seed draft</button>
+<button onclick="copyOutput()">Copy output</button>
+<h2>Status</h2>
+<div>ok: <b id="okMetric">unknown</b></div>
+<div>source observations: <b id="obsMetric">0</b></div>
+<div>anonymous signatures: <b id="sigMetric">0</b></div>
+<div>accepted candidates: <b id="acceptedMetric">0</b></div>
+<div>draft seed entries: <b id="seedMetric">0</b></div>
+</section>
+<section>
+<h2>Accepted candidates</h2>
+<div id="candidateList" class="muted">No review run yet.</div>
+<h2>Output</h2>
+<pre id="out">No output yet.</pre>
+</section>
+</main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-unit-total-nested-shape-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-objective-language-shape-bridge-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-objective-language-shape-observation-review-v0-1.js?v=0.1.0"></script>
+<script>
+let packet=null,lastOutput=null;
+function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+function opts(){return{basis:basis.value,min_observations:2,min_repetition:Number(minRepetition.value||2),max_entries:Number(maxEntries.value||12)}}
+function show(value){lastOutput=value;out.textContent=JSON.stringify(value,null,2);updateUi()}
+async function runReview(){try{packet=await KernelObjectiveLanguageShapeObservationReviewV01.loadBridgeReviewAndDraftSeed(opts());show(packet.review_report)}catch(e){show({ok:false,error:e.message,belief_movement:'none'})}}
+function updateUi(){const r=packet&&packet.review_report;const s=packet&&packet.seed_packet_draft;okMetric.textContent=String(packet&&packet.ok===true);okMetric.className=packet&&packet.ok===true?'ok':'bad';obsMetric.textContent=String(r&&r.source_observation_count||0);sigMetric.textContent=String(r&&r.anonymous_signature_count||0);acceptedMetric.textContent=String(r&&r.accepted_candidate_count||0);seedMetric.textContent=String(s&&s.entries&&s.entries.length||0);renderCandidates(r&&r.accepted_candidates||[])}
+function renderCandidates(rows){candidateList.innerHTML=rows.slice(0,20).map(r=>`<div class="item"><b>${esc(r.repeated_observation_count)}× ${esc(r.candidate_id)}</b><span>${esc(r.anonymous_shape_signature)}</span></div>`).join('')||'No accepted candidates.'}
+function showReview(){if(!packet)return runReview();show(packet.review_report)}
+function showAccepted(){if(!packet)return runReview();show({packet_type:'42ndMind_shape_review_accepted_view_v0_1',accepted_candidates:packet.review_report.accepted_candidates,belief_movement:'none'})}
+function showSeedDraft(){if(!packet)return runReview();show(packet.seed_packet_draft)}
+async function copyOutput(){const text=JSON.stringify(lastOutput||{},null,2);try{await navigator.clipboard.writeText(text);out.textContent='Copied.\n\n'+text}catch(e){out.textContent=text}}
+runReview();
+</script>
+</body>
+</html>
