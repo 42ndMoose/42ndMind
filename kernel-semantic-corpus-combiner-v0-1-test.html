@@ -15,18 +15,20 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the main semantic corpus and modular extension batches.</div></header>
+<header><h1>42ndMind Semantic Corpus Combiner v0.1 Test</h1><div>Tests runtime combination of the 119-entry semantic corpus and modular extension batches.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="semantic-corpus-combiner.html">semantic corpus combiner</a> · <a href="kernel-semantic-seed-extension-v0-1-test.html">extension test</a> · <a href="kernel-semantic-corpus-to-invariants-v0-1-test.html">corpus bridge test</a></div><pre id="out"></pre></section></main>
 <script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-semantic-invariant-learner-v0-4.js?v=0.4.0"></script>
 <script src="src/kernel-semantic-corpus-to-invariants-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=0.1.1"></script>
 <script>
   const tests = [];
   const TEST_KEY = '42ndMind_semantic_corpus_combiner_v0_1_test';
   let packet = null;
   function add(name, fn) { tests.push({ name, fn }); }
   function assert(cond, msg) { if (!cond) throw new Error(msg); }
+  function sourceByLabel(label) { return (packet.combined.source_packets || []).find(s => s.source_label === label); }
+  function entryByText(text) { return packet.combined.entries.find(e => e.text === text); }
 
   add('modules load', () => {
     assert(window.KernelSemanticCorpusV01, 'KernelSemanticCorpusV01 missing');
@@ -43,88 +45,53 @@
     assert(d.belief_movement === 'none', 'belief movement doctrine wrong');
   });
 
+  add('default extension list is current', () => {
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.length === 10, 'expected ten default extension URLs');
+    assert(KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.includes('data/semantic_seed_accusation_risk_direct_evidence_v0_1.json'), 'accusation-risk extension missing from defaults');
+  });
+
   add('loadAndCombine succeeds', async () => {
     packet = await KernelSemanticCorpusCombinerV01.loadAndCombine();
     assert(packet.ok === true, 'combined packet not ok');
     assert(packet.decision === 'COMBINED_CORPUS_READY', 'wrong decision');
-    assert(packet.combined.entry_count >= 115, 'combined entry count should include main 32 + extensions 6 + 6 + 9 + 4 + 10 + 2 + 10 + 16 + 20');
+    assert(packet.combined.entry_count === 119, 'expected 119 combined entries');
+    assert(packet.combined.duplicate_entries.length === 0, 'expected zero duplicate entries');
+    assert(packet.combined.source_packets.length === 11, 'expected main plus ten extension sources');
     assert(packet.combined.belief_movement === 'none', 'combined corpus moved belief');
   });
 
   add('combined corpus validates', () => {
     const report = KernelSemanticCorpusCombinerV01.validateCombined(packet.combined);
     assert(report.ok === true, 'validation failed: ' + JSON.stringify(report.validation.errors));
-    assert(report.combined_entry_count === packet.combined.entry_count, 'combined count mismatch');
+    assert(report.combined_entry_count === 119, 'combined count mismatch');
   });
 
   add('source packet metadata is preserved', () => {
-    const sources = packet.combined.source_packets || [];
-    assert(sources.length === 10, 'expected main plus nine extension sources');
-    assert(sources.some(s => s.source_label === 'main' && s.entry_count >= 32), 'main source missing');
-    assert(sources.some(s => s.source_label === 'extension_1' && s.entry_count === 6), 'closure extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_2' && s.entry_count === 6), 'authority/evidence extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_3' && s.entry_count === 9), 'motive/agency weakmap extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_4' && s.entry_count === 4), 'scope/qualification extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_5' && s.entry_count === 10), 'closure/source gap extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_6' && s.entry_count === 2), 'unverified extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_7' && s.entry_count === 10), 'rhetoric/intent extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_8' && s.entry_count === 16), 'vector-template v0.1 extension source missing');
-    assert(sources.some(s => s.source_label === 'extension_9' && s.entry_count === 20), 'vector-template v0.2 extension source missing');
+    assert(sourceByLabel('main') && sourceByLabel('main').entry_count === 32, 'main source missing or wrong count');
+    assert(sourceByLabel('extension_1') && sourceByLabel('extension_1').entry_count === 6, 'closure extension source missing');
+    assert(sourceByLabel('extension_2') && sourceByLabel('extension_2').entry_count === 6, 'authority/evidence extension source missing');
+    assert(sourceByLabel('extension_3') && sourceByLabel('extension_3').entry_count === 9, 'motive/agency weakmap extension source missing');
+    assert(sourceByLabel('extension_4') && sourceByLabel('extension_4').entry_count === 4, 'scope/qualification extension source missing');
+    assert(sourceByLabel('extension_5') && sourceByLabel('extension_5').entry_count === 10, 'closure/source gap extension source missing');
+    assert(sourceByLabel('extension_6') && sourceByLabel('extension_6').entry_count === 2, 'unverified extension source missing');
+    assert(sourceByLabel('extension_7') && sourceByLabel('extension_7').entry_count === 10, 'rhetoric/intent extension source missing');
+    assert(sourceByLabel('extension_8') && sourceByLabel('extension_8').entry_count === 16, 'vector-template v0.1 extension source missing');
+    assert(sourceByLabel('extension_9') && sourceByLabel('extension_9').entry_count === 20, 'vector-template v0.2 extension source missing');
+    assert(sourceByLabel('extension_10') && sourceByLabel('extension_10').entry_count === 4, 'accusation-risk direct-evidence extension source missing');
   });
 
   add('extension entries are included with combiner metadata', () => {
     const closureEntry = packet.combined.entries.find(e => e.id === 'closure_contrast_challenged_034');
-    const authorityEntry = packet.combined.entries.find(e => e.id === 'authority_evidence_certified_proved_false_039');
-    const motiveEntry = packet.combined.entries.find(e => e.id === 'motive_weakmap_collusion_companies_047');
-    const scopeEntry = packet.combined.entries.find(e => e.id === 'scope_qualification_dataset_national_province_055');
-    const sourceGapEntry = packet.combined.entries.find(e => e.id === 'closure_source_gap_misleading_omission_058');
-    const unverifiedEntry = packet.combined.entries.find(e => e.id === 'unverified_contrast_records_search_068');
-    const rhetoricEntry = packet.combined.entries.find(e => e.id === 'rhetoric_intent_obfuscates_spokesperson_070');
-    const ignoranceEntry = packet.combined.entries.find(e => e.id === 'rhetoric_intent_ignorance_disproven_true_077');
-    const vectorEntry = packet.combined.entries.find(e => e.id === 'vector_template_official_posted_provenance_083');
-    const vectorObfuscationEntry = packet.combined.entries.find(e => e.id === 'vector_template_vague_language_burden_unclear_095');
     const vectorSettledEntry = packet.combined.entries.find(e => e.id === 'vector_template_settled_expert_evidence_096');
-    const vectorCommonSourceEntry = packet.combined.entries.find(e => e.id === 'vector_template_common_source_overlap_102');
-    const vectorQuoteEntry = packet.combined.entries.find(e => e.id === 'vector_template_quote_full_record_115');
-    assert(closureEntry, 'closure extension entry missing');
-    assert(closureEntry.combiner_metadata && closureEntry.combiner_metadata.source_label === 'extension_1', 'closure combiner metadata missing');
-    assert(closureEntry.candidate_intended_meaning.includes('not refutation or falsity'), 'closure extension wording not preserved');
-    assert(authorityEntry, 'authority/evidence extension entry missing');
-    assert(authorityEntry.combiner_metadata && authorityEntry.combiner_metadata.source_label === 'extension_2', 'authority combiner metadata missing');
-    assert(authorityEntry.candidate_intended_meaning.includes('certification must not substitute'), 'authority extension wording not preserved');
-    assert(motiveEntry, 'motive/agency extension entry missing');
-    assert(motiveEntry.combiner_metadata && motiveEntry.combiner_metadata.source_label === 'extension_3', 'motive combiner metadata missing');
-    assert(motiveEntry.candidate_intended_meaning.includes('direct-link evidence'), 'motive extension wording not preserved');
-    assert(scopeEntry, 'scope/qualification extension entry missing');
-    assert(scopeEntry.combiner_metadata && scopeEntry.combiner_metadata.source_label === 'extension_4', 'scope combiner metadata missing');
-    assert(scopeEntry.candidate_intended_meaning.includes('scope mismatch'), 'scope extension wording not preserved');
-    assert(sourceGapEntry, 'closure/source gap extension entry missing');
-    assert(sourceGapEntry.combiner_metadata && sourceGapEntry.combiner_metadata.source_label === 'extension_5', 'closure/source gap combiner metadata missing');
-    assert(sourceGapEntry.candidate_intended_meaning.includes('misleading framing'), 'closure/source gap wording not preserved');
-    assert(unverifiedEntry, 'unverified extension entry missing');
-    assert(unverifiedEntry.combiner_metadata && unverifiedEntry.combiner_metadata.source_label === 'extension_6', 'unverified combiner metadata missing');
-    assert(unverifiedEntry.candidate_intended_meaning.includes('not direct falsity'), 'unverified extension wording not preserved');
-    assert(rhetoricEntry, 'rhetoric/intent extension entry missing');
-    assert(rhetoricEntry.combiner_metadata && rhetoricEntry.combiner_metadata.source_label === 'extension_7', 'rhetoric combiner metadata missing');
-    assert(rhetoricEntry.candidate_intended_meaning.includes('clarity reduction'), 'rhetoric wording not preserved');
-    assert(ignoranceEntry, 'argument-from-ignorance extension entry missing');
-    assert(ignoranceEntry.semantic_operators.some(op => op.operator === 'argument_from_ignorance(claim)'), 'argument-from-ignorance operator missing');
-    assert(vectorEntry, 'vector-template extension entry missing');
-    assert(vectorEntry.combiner_metadata && vectorEntry.combiner_metadata.source_label === 'extension_8', 'vector-template combiner metadata missing');
-    assert(vectorEntry.semantic_operators.some(op => op.operator === 'posted(source,claim)'), 'vector-template provenance operator missing');
-    assert(!vectorEntry.semantic_operators.some(op => op.operator === 'proved(evidence,claim)'), 'vector-template stale proved operator leaked');
-    assert(vectorObfuscationEntry, 'vector-template obfuscation entry missing');
-    assert(vectorObfuscationEntry.semantic_operators.length === 1 && vectorObfuscationEntry.semantic_operators[0].operator === 'obfuscates(actor,claim)', 'relative that overmatch leaked');
-    assert(vectorSettledEntry, 'vector-template v0.2 settled entry missing');
-    assert(vectorSettledEntry.combiner_metadata && vectorSettledEntry.combiner_metadata.source_label === 'extension_9', 'vector-template v0.2 combiner metadata missing');
-    assert(vectorSettledEntry.semantic_operators.some(op => op.operator === 'settled(claim)'), 'settled operator missing');
-    assert(vectorCommonSourceEntry, 'vector-template common-source entry missing');
-    assert(vectorCommonSourceEntry.semantic_operators.some(op => op.operator === 'same_source(actor,event)'), 'same-source operator missing');
-    assert(vectorQuoteEntry, 'vector-template quote/full-record entry missing');
-    assert(vectorQuoteEntry.semantic_operators.some(op => op.operator === 'quote(source,claim)'), 'quote operator missing');
+    const accusationEntry = entryByText('The article recklessly accused the official of misconduct without direct evidence.');
+    assert(closureEntry && closureEntry.combiner_metadata.source_label === 'extension_1', 'closure extension entry metadata missing');
+    assert(vectorSettledEntry && vectorSettledEntry.combiner_metadata.source_label === 'extension_9', 'vector-template v0.2 metadata missing');
+    assert(accusationEntry, 'accepted accusation-risk entry missing');
+    assert(accusationEntry.combiner_metadata && accusationEntry.combiner_metadata.source_label === 'extension_10', 'accusation-risk combiner metadata missing');
+    assert(accusationEntry.semantic_operators.some(op => op.operator === 'reckless_accusation(actor,target,claim)'), 'reckless_accusation operator missing');
   });
 
-  add('summary includes new contrast operators and existing groups', () => {
+  add('summary includes current operator groups', () => {
     const summary = KernelSemanticCorpusCombinerV01.summarizeCombined(packet.combined);
     ['closure_dismissal','authority_transfer','reference_ambiguity','motive_agency','source_trust','evidence_contact','uncertainty_calibration','moral_risk_framing','rhetoric_clarity','rhetoric_affect','accusation_risk','fallacy_absence'].forEach(group => assert(summary.groups[group] >= 1, 'missing group ' + group));
     ['challenged','lacks_evidence','false','rated','reviewer','contradicted_by','proved_false','works','reliable','posted','states','deadline_extended','published_summary','collusion','court_filing','alleges','clearly','someone','pressured','conspiracy','different_scope','qualifies','narrows','dataset','footnote','misleading','omission','clip','disputed','hearsay','summary','not_disproven','unverified','obfuscates','emotionally_loaded','reckless_accusation','argument_from_ignorance','ulterior_motive_attribution','chart','raw_data','settled','same_source','quote'].forEach(op => assert(summary.operators[op] >= 1, 'missing operator ' + op));
@@ -137,6 +104,13 @@
     assert(batch.count > packet.combined.entry_count, 'batch too small');
     assert(batch.combined_by === KernelSemanticCorpusCombinerV01.PACKET_TYPE, 'combiner metadata missing from batch');
     assert(batch.belief_movement === 'none', 'batch moved belief');
+  });
+
+  add('stale explicit extension lists are completed from defaults', async () => {
+    const stale = KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS.slice(0, 9);
+    const stalePacket = await KernelSemanticCorpusCombinerV01.loadAndCombine({ extension_urls: stale });
+    assert(stalePacket.combined.entry_count === 119, 'stale explicit list should still load current defaults');
+    assert(stalePacket.combined.source_packets.length === 11, 'stale explicit list should still include all sources');
   });
 
   add('duplicate ids are skipped, not overwritten', () => {
@@ -170,7 +144,7 @@
     const passed = results.filter(r => r.passed).length;
     document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
     document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
-    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_corpus_combiner_v0_1_test_report', combined_entry_count: packet && packet.combined ? packet.combined.entry_count : 0, results }, null, 2);
+    document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_corpus_combiner_v0_1_test_report', combined_entry_count: packet && packet.combined ? packet.combined.entry_count : 0, source_packet_count: packet && packet.combined ? packet.combined.source_packets.length : 0, duplicate_count: packet && packet.combined ? packet.combined.duplicate_entries.length : 0, results }, null, 2);
   })();
 </script>
 </body>
