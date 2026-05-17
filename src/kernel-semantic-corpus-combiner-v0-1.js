@@ -27,7 +27,8 @@
     'data/semantic_seed_basis_refinement_v0_1.json',
     'data/semantic_seed_uncertainty_status_negation_v0_1.json',
     'data/semantic_seed_unit_total_shape_bridge_v0_1.json',
-    'data/semantic_seed_language_knowledge_growth_v0_1.json'
+    'data/semantic_seed_language_knowledge_growth_v0_1.json',
+    'data/semantic_seed_auto_growth_2026_05_17_extension_16_v0_1.json'
   ]);
 
   function text(value) { return String(value ?? '').trim(); }
