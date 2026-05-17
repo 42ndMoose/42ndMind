@@ -2,7 +2,7 @@
   "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
   "packet_version": "0.1.0",
   "created_at": "2026-05-16T00:00:00.000Z",
-  "description": "Reviewed seed candidates for connecting semantic pressure structures to unit-total active shapes. This packet is training pressure only and is not wired into the default combiner until browser tests and review-gate checks pass.",
+  "description": "Reviewed seed candidates for connecting semantic pressure structures to unit-total active shapes. This packet is training pressure only and is now wired into the default combiner as extension_14 after user browser checks.",
   "doctrine": {
     "reviewed_seed_packet_is_training_pressure_not_doctrine": true,
     "semantic_vectors_can_be_projected_into_unit_total_shapes": true,
@@ -139,7 +139,7 @@
   ],
   "source_review_summary": {
     "source_packet_type": "42ndMind_objective_language_shape_observation_review_v0_1",
-    "import_status": "not_added_to_default_combiner_until_browser_tests_pass",
+    "import_status": "added_to_default_combiner_as_extension_14_after_user_browser_checks",
     "emitted_entry_count": 4,
     "belief_movement": "none"
   },
