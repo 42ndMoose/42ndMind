@@ -1,0 +1,368 @@
+{
+  "packet_type": "42ndMind_semantic_seed_corpus_v0_1_extension",
+  "packet_version": "0.1.0",
+  "created_at": "2026-05-16T00:00:00.000Z",
+  "description": "Reviewed seed candidates generated from deterministic language-knowledge growth over the 146-entry corpus and invariance benchmark cases. This packet expands language anchors for pressures and operators while preserving belief movement at none.",
+  "doctrine": {
+    "reviewed_seed_packet_is_training_pressure_not_doctrine": true,
+    "language_growth_adds_candidate_anchors_not_truth": true,
+    "exponential_growth_must_be_candidate_growth_not_belief_growth": true,
+    "active_shape_l1_total": "sum_abs_dimensions_equals_1",
+    "mature_scope_remains_one_with_more_dimensions": true,
+    "local_labels_are_metadata_only": true,
+    "language_anchor_repetition_is_not_truth": true,
+    "force_intensity_remains_separate_from_shape": true,
+    "belief_movement": "none"
+  },
+  "entries": [
+    {
+      "id": "language_growth_pressure_unit_total_refinement_001",
+      "text": "Repeated language anchors around unit-total refinement should improve recognition of normalized active-shape structure without moving belief.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["unit-total", "active shape", "normalized to one", "local one", "shape remains one", "subdivide the one"],
+      "literal_meaning": "Multiple phrases point toward the unit-total refinement pressure.",
+      "candidate_intended_meaning": "The kernel should recognize unit-total refinement language as structure pressure only, not as truth or certainty.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_pressure(unit_total_refinement_pressure)",
+          "pressure": ["unit_total_refinement_pressure"],
+          "legitimacy_condition": "Anchor improves recognition only when used as training pressure with no belief movement."
+        }
+      ],
+      "evidence_burden": ["Check anchor phrases.", "Check that active shape remains Σ|dimension_i| = 1.", "Check that force/intensity remains separate.", "Do not infer truth from language-anchor repetition."],
+      "expected_kernel_response": {
+        "lexical_action": "increase recognition coverage for unit-total refinement language",
+        "source_trust_action": "training pressure only",
+        "belief_movement": "none_from_language_anchor_alone",
+        "questions": ["Is this phrase pointing to unit-total structure or to force/intensity?"]
+      },
+      "contrast_group": "language_growth_unit_total_refinement",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_pressure_general_unresolved_002",
+      "text": "Repeated language anchors around unresolved status should improve recognition of general uncertainty without collapsing it into claim non-closure or negated collusion.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["unresolved", "undetermined", "unclear", "not yet known", "belum dapat dipastikan", "hindi pa malinaw"],
+      "literal_meaning": "Multiple phrases point toward general unresolved status.",
+      "candidate_intended_meaning": "The kernel should recognize general unresolved status as distinct from claim non-closure and negated collusion.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_pressure(general_unresolved_status_pressure)",
+          "pressure": ["general_unresolved_status_pressure"],
+          "legitimacy_condition": "Anchor is valid only as recognition pressure for general unresolved status, not as closure or denial."
+        }
+      ],
+      "evidence_burden": ["Check whether the phrase is general uncertainty.", "Check whether it instead means claim non-closure.", "Check whether it instead denies collusion.", "Do not collapse distinct roles."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for general unresolved status", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_status_negation_split",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_pressure_claim_nonclosure_003",
+      "text": "Repeated language anchors around not-settled claims should improve recognition of claim non-closure without treating it as falsity or denial.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["not settled", "not established", "evidence incomplete", "claim remains open", "not enough evidence yet"],
+      "literal_meaning": "Multiple phrases point toward claim non-closure status.",
+      "candidate_intended_meaning": "The kernel should treat claim non-closure as an evidence-status condition rather than proof of falsity or proof of truth.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_pressure(claim_nonclosure_status_pressure)",
+          "pressure": ["claim_nonclosure_status_pressure", "evidence_access_burden"],
+          "legitimacy_condition": "Anchor applies when the issue is an unsettled evidential status rather than a negated claim."
+        }
+      ],
+      "evidence_burden": ["Check whether the claim remains open.", "Check whether evidence access is incomplete.", "Do not infer falsity from non-closure.", "Do not infer truth from non-closure."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for claim non-closure", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_status_negation_split",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_pressure_negated_collusion_004",
+      "text": "Repeated language anchors around not-collusion status should improve recognition of negated collusion without collapsing public coordination into covert agreement.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["not collusion", "not a covert agreement", "public coordination", "unless a secret agreement is shown", "coordination is not collusion"],
+      "literal_meaning": "Multiple phrases point toward negated collusion status.",
+      "candidate_intended_meaning": "The kernel should separate public coordination from collusion unless direct covert-agreement evidence is present.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_pressure(negated_collusion_status_pressure)",
+          "pressure": ["negated_collusion_status_pressure", "direct_link_evidence_burden"],
+          "legitimacy_condition": "Anchor applies when the text denies collusion status while preserving the burden for direct covert-agreement evidence."
+        }
+      ],
+      "evidence_burden": ["Check whether coordination is public.", "Check whether a covert agreement is alleged.", "Require direct link evidence before collusion status.", "Do not collapse coordination into collusion."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for negated collusion status", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_status_negation_split",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_pressure_direct_link_evidence_005",
+      "text": "Repeated language anchors around direct-link evidence should improve recognition of when a claim needs specific evidence connecting actor, act, and alleged intent.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["direct evidence", "direct link", "specific connection", "connect actor to act", "evidence of agreement", "show the link"],
+      "literal_meaning": "Multiple phrases point toward a direct-link evidence burden.",
+      "candidate_intended_meaning": "The kernel should detect when a claim needs direct evidence rather than vague association or motive language.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_pressure(direct_link_evidence_burden)",
+          "pressure": ["direct_link_evidence_burden"],
+          "legitimacy_condition": "Anchor applies when the claim requires a specific evidential bridge between actor, action, and alleged status."
+        }
+      ],
+      "evidence_burden": ["Identify the actor.", "Identify the alleged act.", "Identify the alleged link.", "Do not accept association as direct evidence."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for direct-link evidence burden", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_evidence_burden",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_pressure_motive_agency_006",
+      "text": "Repeated language anchors around motive and agency should improve recognition of when intent is being inferred rather than directly shown.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["motive", "intent", "agenda", "ulterior motive", "intended to", "trying to"],
+      "literal_meaning": "Multiple phrases point toward motive-agency pressure.",
+      "candidate_intended_meaning": "The kernel should distinguish motive attribution from direct evidence of action or agreement.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_pressure(motive_agency_pressure)",
+          "pressure": ["motive_agency_pressure", "intent_attribution_pressure"],
+          "legitimacy_condition": "Anchor applies when a phrase attributes motive or intent and therefore requires support before belief movement."
+        }
+      ],
+      "evidence_burden": ["Identify the motive claim.", "Check whether direct intent evidence exists.", "Separate motive from action.", "Do not infer intent from dislike or suspicion alone."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for motive and agency attribution", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_motive_agency",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_unit_total_projection_007",
+      "text": "Repeated operator anchors around unit-total shape projection should improve recognition of semantic vectors becoming normalized active shapes.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["project semantic vector", "unit-total shape projection", "normalized active shape", "semantic vector to shape"],
+      "literal_meaning": "Multiple phrases point toward the unit_total_shape_projection operator.",
+      "candidate_intended_meaning": "The kernel should recognize language that maps semantic pressure structure into normalized active shape form.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(unit_total_shape_projection)",
+          "pressure": ["unit_total_refinement_pressure"],
+          "legitimacy_condition": "Operator anchor applies only when projection preserves Σ|dimension_i| = 1."
+        }
+      ],
+      "evidence_burden": ["Check the source semantic vector.", "Check the normalized shape.", "Check root and flattened L1.", "Do not infer truth from projection."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for unit_total_shape_projection", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_unit_total_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_shape_invariance_008",
+      "text": "Repeated operator anchors around anonymous shape invariance should improve recognition of structure that survives label renaming.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["anonymous shape", "label-invariant", "survives renaming", "same structure with different labels", "structure not label"],
+      "literal_meaning": "Multiple phrases point toward the anonymous_shape_invariance operator.",
+      "candidate_intended_meaning": "The kernel should recognize that objective-language structure must survive local label renaming.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(anonymous_shape_invariance)",
+          "pressure": ["unit_total_refinement_pressure"],
+          "legitimacy_condition": "Operator anchor applies when structure, not local label names, remains stable."
+        }
+      ],
+      "evidence_burden": ["Rename local labels.", "Recompute anonymous signature.", "Compare structure.", "Do not treat labels as truth."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for anonymous shape invariance", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_unit_total_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_shape_repetition_009",
+      "text": "Repeated operator anchors around anonymous shape repetition should improve recognition of reusable structure candidates without treating repetition as truth.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["repeated anonymous signature", "reusable structure", "same shape repeats", "structure candidate", "repetition is not truth"],
+      "literal_meaning": "Multiple phrases point toward anonymous shape repetition.",
+      "candidate_intended_meaning": "The kernel should recognize repeated structure as reviewable structure pressure, not belief movement.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(anonymous_shape_repetition)",
+          "pressure": ["unit_total_refinement_pressure"],
+          "legitimacy_condition": "Operator anchor applies only as structure-candidate pressure and must not move belief."
+        }
+      ],
+      "evidence_burden": ["Group by anonymous signature.", "Check repeated cases.", "Check for over-broad collapse.", "Do not infer truth from repetition."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for anonymous shape repetition", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_unit_total_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_force_shape_separation_010",
+      "text": "Repeated operator anchors around force-shape separation should improve recognition that intensity changes force but not normalized shape.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["force and shape", "intensity separate", "F equals M times i", "same shape stronger force", "magnitude separate from structure"],
+      "literal_meaning": "Multiple phrases point toward force_shape_separation.",
+      "candidate_intended_meaning": "The kernel should recognize language that changes magnitude without changing normalized active shape.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(force_shape_separation)",
+          "pressure": ["unit_total_refinement_pressure"],
+          "legitimacy_condition": "Operator anchor applies when magnitude M is separate from normalized shape i."
+        }
+      ],
+      "evidence_burden": ["Check normalized shape.", "Identify force magnitude.", "Apply F = M · i.", "Do not inflate shape beyond one."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for force_shape_separation", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_unit_total_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_unresolved_011",
+      "text": "Repeated operator anchors around unresolved status should improve recognition of unresolved as a general status operator rather than a proof outcome.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["unresolved", "not determined", "not clear", "open status", "uncertain status"],
+      "literal_meaning": "Multiple phrases point toward the unresolved operator.",
+      "candidate_intended_meaning": "The kernel should recognize unresolved as a general status operator with no belief movement by itself.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(unresolved)",
+          "pressure": ["general_unresolved_status_pressure"],
+          "legitimacy_condition": "Operator anchor applies when language marks an unresolved status rather than truth, falsity, or denial."
+        }
+      ],
+      "evidence_burden": ["Check if status is genuinely unresolved.", "Separate from non-closure.", "Separate from denial.", "Do not move belief."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for unresolved", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_status_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_not_settled_012",
+      "text": "Repeated operator anchors around not-settled status should improve recognition of claim non-closure as distinct from general uncertainty.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["not settled", "not established", "claim remains open", "evidence still incomplete"],
+      "literal_meaning": "Multiple phrases point toward the not_settled operator.",
+      "candidate_intended_meaning": "The kernel should recognize not_settled as a claim non-closure operator rather than a general uncertainty bucket.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(not_settled)",
+          "pressure": ["claim_nonclosure_status_pressure", "evidence_access_burden"],
+          "legitimacy_condition": "Operator anchor applies when a claim has not reached evidential closure."
+        }
+      ],
+      "evidence_burden": ["Check claim-specific closure status.", "Check evidence access.", "Separate from general uncertainty.", "Do not infer falsity."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for not_settled", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_status_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_not_collusion_013",
+      "text": "Repeated operator anchors around not-collusion status should improve recognition that public coordination is not collusion without direct covert-agreement evidence.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["not collusion", "coordination is not collusion", "no covert agreement", "public coordination only"],
+      "literal_meaning": "Multiple phrases point toward the not_collusion operator.",
+      "candidate_intended_meaning": "The kernel should recognize not_collusion as a negated collusion-status operator requiring role separation from coordination.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(not_collusion)",
+          "pressure": ["negated_collusion_status_pressure", "direct_link_evidence_burden"],
+          "legitimacy_condition": "Operator anchor applies when collusion is being denied or withheld absent direct covert-agreement evidence."
+        }
+      ],
+      "evidence_burden": ["Check for public coordination.", "Check for alleged covert agreement.", "Require direct evidence before collusion status.", "Do not collapse roles."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for not_collusion", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_status_operator",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_coordination_014",
+      "text": "Repeated operator anchors around coordination should improve recognition of public aligned action without upgrading it to collusion.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["coordinated", "public coordination", "aligned messaging", "same public action", "worked together publicly"],
+      "literal_meaning": "Multiple phrases point toward coordination as an operator.",
+      "candidate_intended_meaning": "The kernel should recognize coordination as structurally distinct from covert collusion.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(coordinated)",
+          "pressure": ["coordination_pressure"],
+          "legitimacy_condition": "Operator anchor applies when the claim is public or neutral coordination rather than covert agreement."
+        }
+      ],
+      "evidence_burden": ["Check if action is public.", "Check if agreement is alleged.", "Separate coordination from collusion.", "Do not overclaim motive."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for coordination", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_coordination_collusion_split",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_operator_collusion_015",
+      "text": "Repeated operator anchors around collusion should improve recognition that collusion requires covert-agreement burden rather than public coordination alone.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["colluded", "secret agreement", "covert agreement", "conspired together", "hidden coordination"],
+      "literal_meaning": "Multiple phrases point toward collusion as an operator requiring higher evidence burden.",
+      "candidate_intended_meaning": "The kernel should recognize collusion as a stronger claim than coordination and require direct support.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_operator(collusion)",
+          "pressure": ["direct_link_evidence_burden", "motive_agency_pressure"],
+          "legitimacy_condition": "Operator anchor applies only when covert agreement is at issue and direct-link burden is preserved."
+        }
+      ],
+      "evidence_burden": ["Identify alleged covert agreement.", "Require direct link evidence.", "Separate from public coordination.", "Do not infer collusion from alignment alone."],
+      "expected_kernel_response": {"lexical_action": "increase recognition coverage for collusion", "source_trust_action": "training pressure only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_coordination_collusion_split",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    },
+    {
+      "id": "language_growth_token_ambiguity_016",
+      "text": "Ambiguous recurring tokens should become review targets rather than automatic doctrine or belief movement.",
+      "language": "en",
+      "operator_group": "language_knowledge_growth_candidate",
+      "surface_terms": ["ambiguous token", "review target", "same word different role", "language anchor ambiguity", "do not auto-promote"],
+      "literal_meaning": "Repeated tokens can indicate useful language coverage but may also hide role collapse.",
+      "candidate_intended_meaning": "The kernel should grow language knowledge by surfacing ambiguous anchors for review instead of hard-promoting them.",
+      "semantic_operators": [
+        {
+          "operator": "language_anchor_ambiguity_review(token)",
+          "pressure": ["unit_total_refinement_pressure", "ambiguity_pressure"],
+          "legitimacy_condition": "Ambiguous token growth must be reviewed before it becomes seed pressure."
+        }
+      ],
+      "evidence_burden": ["List repeated token uses.", "Check pressure spread.", "Check operator spread.", "Do not auto-promote ambiguous tokens."],
+      "expected_kernel_response": {"lexical_action": "surface ambiguous language anchors for review", "source_trust_action": "review target only", "belief_movement": "none_from_language_anchor_alone"},
+      "contrast_group": "language_growth_review_gate",
+      "review_status": "reviewed_seed_candidate",
+      "workbench_metadata": {"generated_by": "objective_language_knowledge_growth_v0_1", "requires_human_review": true}
+    }
+  ],
+  "source_review_summary": {
+    "source_packet_type": "42ndMind_objective_language_knowledge_growth_v0_1",
+    "source_baseline": "146 entries / 15 source packets",
+    "emitted_entry_count": 16,
+    "import_status": "not_added_to_default_combiner_until_browser_tests_pass",
+    "belief_movement": "none"
+  },
+  "belief_movement": "none"
+}
