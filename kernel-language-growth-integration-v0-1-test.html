@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>42ndMind Language Growth Integration Test</title><style>body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}main{padding:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px}h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}</style></head>
+<body>
+<header><h1>42ndMind Language Growth Integration Test</h1><div>Verifies the 162-entry / 16-source-packet runtime baseline after language-growth seed integration.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="objective-language-knowledge-growth.html">knowledge growth page</a> · <a href="semantic-corpus-combiner.html">semantic corpus combiner</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=language-growth-1"></script>
+<script>
+  const tests=[]; let packet=null;
+  function add(name,fn){tests.push({name,fn});}
+  function assert(cond,msg){if(!cond)throw new Error(msg);}
+  function asArray(v){return Array.isArray(v)?v:[];}
+  function source(label){return asArray(packet&&packet.combined&&packet.combined.source_packets).find(s=>s.source_label===label);}
+  function entry(id){return asArray(packet&&packet.combined&&packet.combined.entries).find(e=>e.id===id);}
+  function allOps(){return asArray(packet&&packet.combined&&packet.combined.entries).flatMap(e=>asArray(e.semantic_operators).map(op=>op.operator));}
+
+  add('modules load',()=>{assert(window.KernelSemanticCorpusV01,'corpus missing');assert(window.KernelSemanticCorpusCombinerV01,'combiner missing');});
+
+  add('combiner default list includes language growth seed',()=>{const urls=KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS;assert(urls.length===15,'expected 15 extension URLs');assert(urls[14]==='data/semantic_seed_language_knowledge_growth_v0_1.json','language-growth seed should be extension 15');});
+
+  add('loadAndCombine reaches 162-entry baseline',async()=>{packet=await KernelSemanticCorpusCombinerV01.loadAndCombine();assert(packet.ok===true,'packet not ok');assert(packet.combined.entry_count===162,'expected 162 entries');assert(packet.combined.source_packets.length===16,'expected 16 source packets');assert(packet.combined.duplicate_entries.length===0,'expected zero duplicates');assert(packet.combined.belief_movement==='none','combined moved belief');});
+
+  add('latest source packet metadata is present',()=>{const s=source('extension_15');assert(s,'extension_15 missing');assert(s.entry_count===16,'extension_15 should have 16 entries');assert(s.description.includes('language-knowledge growth'),'extension_15 description mismatch');});
+
+  add('language growth entries are present',()=>{['language_growth_pressure_unit_total_refinement_001','language_growth_pressure_general_unresolved_002','language_growth_pressure_claim_nonclosure_003','language_growth_pressure_negated_collusion_004','language_growth_operator_force_shape_separation_010','language_growth_token_ambiguity_016'].forEach(id=>assert(entry(id),'missing '+id));});
+
+  add('language growth operators are present',()=>{const ops=allOps();['language_anchor_pressure(unit_total_refinement_pressure)','language_anchor_pressure(general_unresolved_status_pressure)','language_anchor_pressure(claim_nonclosure_status_pressure)','language_anchor_pressure(negated_collusion_status_pressure)','language_anchor_operator(force_shape_separation)','language_anchor_ambiguity_review(token)'].forEach(op=>assert(ops.includes(op),'missing operator '+op));});
+
+  add('combined corpus still validates',()=>{const report=KernelSemanticCorpusCombinerV01.validateCombined(packet.combined);assert(report.ok===true,'validation failed '+JSON.stringify(report.validation&&report.validation.errors));assert(report.combined_entry_count===162,'validation count mismatch');assert(report.belief_movement==='none','validation moved belief');});
+
+  add('observation batch exports from 162-entry corpus',()=>{const batch=KernelSemanticCorpusCombinerV01.toObservationBatch(packet.combined);assert(batch.packet_type==='42ndMind_semantic_observation_batch_v0_4','wrong batch type');assert(batch.count>162,'expected expanded observation count');assert(batch.belief_movement==='none','batch moved belief');});
+
+  (async function run(){const results=[];for(const t of tests){try{await t.fn();results.push({name:t.name,passed:true});}catch(e){results.push({name:t.name,passed:false,error:e.message});}}const passed=results.filter(r=>r.passed).length;document.getElementById('summary').className=passed===tests.length?'ok':'bad';document.getElementById('summary').textContent=`${passed}/${tests.length} passed`;document.getElementById('out').textContent=JSON.stringify({packet_type:'42ndMind_language_growth_integration_v0_1_test_report',combined_entry_count:packet&&packet.combined&&packet.combined.entry_count,source_packet_count:packet&&packet.combined&&packet.combined.source_packets.length,latest_source:packet&&packet.combined&&packet.combined.source_packets[15],duplicate_count:packet&&packet.combined&&packet.combined.duplicate_entries.length,results},null,2);})();
+</script>
+</body>
+</html>
