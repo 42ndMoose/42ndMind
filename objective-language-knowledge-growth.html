@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>42ndMind Objective Language Knowledge Growth</title>
+<style>
+body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}main{padding:12px;display:grid;grid-template-columns:390px 1fr;gap:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px;margin-bottom:12px}h1{font:700 20px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}button{background:#25345c;color:#eef2ff;border:1px solid #3f5592;padding:8px 10px;border-radius:8px;cursor:pointer;margin:3px 3px 8px 0}pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.muted{color:#8b93a7}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}.item{background:#10131a;border:1px solid #2a3040;border-radius:8px;padding:8px;margin:8px 0}.item span{color:#8b93a7;display:block}@media(max-width:900px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>42ndMind Objective Language Knowledge Growth</h1><div class="muted">Deterministic semantic-network growth from corpus entries and benchmark cases. Candidate language anchors only. No belief movement.</div></header>
+<main>
+<section>
+<h2>Controls</h2>
+<a href="index.html">main kernel</a> · <a href="kernel-objective-language-knowledge-growth-v0-1-test.html?v=0.1.0">test page</a> · <a href="objective-language-invariance-benchmark.html">benchmark</a>
+<p class="muted">This grows language knowledge by extracting anchors and grouping them by pressure/operator/token. It does not train a neural net and does not promote truth.</p>
+<button onclick="runGrowth()">Run growth</button>
+<button onclick="showSummary()">Show summary</button>
+<button onclick="showPressures()">Show pressure groups</button>
+<button onclick="showOperators()">Show operator groups</button>
+<button onclick="showTokens()">Show token index</button>
+<button onclick="showCandidates()">Show candidate entries</button>
+<button onclick="copyOutput()">Copy output</button>
+<h2>Status</h2>
+<div>ok: <b id="okMetric">unknown</b></div>
+<div>corpus entries: <b id="corpusMetric">0</b></div>
+<div>anchors: <b id="anchorMetric">0</b></div>
+<div>pressure groups: <b id="pressureMetric">0</b></div>
+<div>operator groups: <b id="operatorMetric">0</b></div>
+<div>tokens: <b id="tokenMetric">0</b></div>
+<div>candidate entries: <b id="candidateMetric">0</b></div>
+</section>
+<section>
+<h2>Top pressure groups</h2>
+<div id="groupList" class="muted">No growth run yet.</div>
+<h2>Output</h2>
+<pre id="out">No output yet.</pre>
+</section>
+</main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=unit-total-1"></script>
+<script src="src/kernel-objective-language-knowledge-growth-v0-1.js?v=0.1.0"></script>
+<script>
+let packet=null,lastOutput=null;
+function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+function show(value){lastOutput=value;out.textContent=JSON.stringify(value,null,2);updateUi()}
+async function runGrowth(){try{packet=await KernelObjectiveLanguageKnowledgeGrowthV01.loadAndGrow({max_entries:16});show(summaryView())}catch(e){show({ok:false,error:e.message,belief_movement:'none'})}}
+function summaryView(){return{packet_type:'42ndMind_objective_language_knowledge_growth_summary_view_v0_1',ok:packet.ok,corpus_entry_count:packet.corpus_entry_count,anchor_count:packet.anchor_count,corpus_anchor_count:packet.corpus_anchor_count,benchmark_anchor_count:packet.benchmark_anchor_count,pressure_group_count:packet.pressure_group_count,operator_group_count:packet.operator_group_count,token_count:packet.token_count,repeated_pressure_group_count:packet.repeated_pressure_group_count,repeated_operator_group_count:packet.repeated_operator_group_count,candidate_entry_count:packet.candidate_entry_count,growth_status:packet.growth_status,belief_movement:'none'}}
+function updateUi(){okMetric.textContent=String(packet&&packet.ok===true);okMetric.className=packet&&packet.ok===true?'ok':'bad';corpusMetric.textContent=String(packet&&packet.corpus_entry_count||0);anchorMetric.textContent=String(packet&&packet.anchor_count||0);pressureMetric.textContent=String(packet&&packet.pressure_group_count||0);operatorMetric.textContent=String(packet&&packet.operator_group_count||0);tokenMetric.textContent=String(packet&&packet.token_count||0);candidateMetric.textContent=String(packet&&packet.candidate_entry_count||0);renderGroups(packet&&packet.pressure_groups||[])}
+function renderGroups(rows){groupList.innerHTML=rows.slice(0,20).map(r=>`<div class="item"><b>${esc(r.pressure)} · ${esc(r.anchor_count)} anchors</b><span>${esc(r.growth_status)} · ${esc((r.sample_phrases||[]).slice(0,3).join(' | '))}</span></div>`).join('')||'No groups.'}
+function showSummary(){if(!packet)return runGrowth();show(summaryView())}
+function showPressures(){if(!packet)return runGrowth();show({packet_type:'42ndMind_language_growth_pressure_groups_view_v0_1',pressure_groups:packet.pressure_groups,belief_movement:'none'})}
+function showOperators(){if(!packet)return runGrowth();show({packet_type:'42ndMind_language_growth_operator_groups_view_v0_1',operator_groups:packet.operator_groups,belief_movement:'none'})}
+function showTokens(){if(!packet)return runGrowth();show({packet_type:'42ndMind_language_growth_token_index_view_v0_1',token_index:packet.token_index,belief_movement:'none'})}
+function showCandidates(){if(!packet)return runGrowth();show({packet_type:'42ndMind_language_growth_candidate_entries_view_v0_1',candidate_entries:packet.candidate_entries,belief_movement:'none'})}
+async function copyOutput(){const text=JSON.stringify(lastOutput||{},null,2);try{await navigator.clipboard.writeText(text);out.textContent='Copied.\n\n'+text}catch(e){out.textContent=text}}
+runGrowth();
+</script>
+</body>
+</html>
