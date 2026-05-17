@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>42ndMind Auto Growth Controller Test</title><style>body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}main{padding:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px}h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}</style></head>
+<body>
+<header><h1>42ndMind Auto Growth Controller Test</h1><div>Runs growth pipeline gates and stages a copyable seed packet without committing it.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="auto-growth-controller.html">auto growth controller</a> · <a href="objective-language-knowledge-growth.html">knowledge growth</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=language-growth-1"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-pressure-registry-v0-1-1-patch.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-vector-compressor-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-unit-total-nested-shape-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-objective-language-shape-bridge-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-objective-language-invariance-benchmark-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-objective-language-knowledge-growth-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-auto-growth-controller-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests=[]; let packet=null;
+  function add(name,fn){tests.push({name,fn});}
+  function assert(cond,msg){if(!cond)throw new Error(msg);}
+  function asArray(v){return Array.isArray(v)?v:[];}
+  function gate(name){return asArray(packet&&packet.gates).find(g=>g.name===name);}
+
+  add('modules load',()=>{assert(window.KernelSemanticCorpusCombinerV01,'combiner missing');assert(window.KernelObjectiveLanguageKnowledgeGrowthV01,'growth engine missing');assert(window.KernelObjectiveLanguageInvarianceBenchmarkV01,'benchmark missing');assert(window.KernelSemanticVectorCompressorV01,'compressor missing');assert(window.KernelAutoGrowthControllerV01,'controller missing');assert(KernelAutoGrowthControllerV01.VERSION==='0.1.0','version wrong');});
+
+  add('doctrine preserves gated non-committing growth',()=>{const d=KernelAutoGrowthControllerV01.doctrine();assert(d.controller_runs_growth_pipeline_but_does_not_commit===true,'non-commit doctrine missing');assert(d.auto_stage_is_not_auto_import===true,'auto-stage doctrine missing');assert(d.exponential_growth_must_be_candidate_growth_not_belief_growth===true,'growth guard missing');assert(d.controller_rejects_schema_failures_before_import===true,'schema rejection doctrine missing');assert(d.belief_movement==='none','belief movement doctrine wrong');});
+
+  add('controller runs and auto-stages clean batch',async()=>{packet=await KernelAutoGrowthControllerV01.runController({max_entries:16});assert(packet.decision==='AUTO_STAGE','expected AUTO_STAGE, got '+packet.decision+': '+packet.decision_reason);assert(packet.ok===true,'packet not ok');assert(packet.current_baseline==='162 entries / 16 source packets','current baseline mismatch');assert(packet.proposed_entry_count===16,'expected 16 staged entries');assert(packet.proposed_next_baseline==='178 entries / 17 source packets','next baseline mismatch');assert(packet.belief_movement==='none','packet moved belief');});
+
+  add('all hard gates pass',()=>{['current_combiner_ok','knowledge_growth_ok','invariance_benchmark_ok','current_vector_compression_ok','candidate_schema_valid','candidate_ids_not_duplicate','belief_movement_guard'].forEach(name=>{const g=gate(name);assert(g,'missing gate '+name);assert(g.status==='pass',name+' did not pass: '+JSON.stringify(g.detail));assert(g.belief_movement==='none',name+' moved belief');});});
+
+  add('seed packet draft is copyable but not imported',()=>{const seed=packet.seed_packet_draft;assert(seed.packet_type==='42ndMind_semantic_seed_corpus_v0_1_extension','wrong seed packet type');assert(seed.entries.length===16,'seed draft should have 16 entries');assert(seed.source_review_summary.import_status==='auto_staged_not_added_to_default_combiner','draft should not be imported');assert(seed.source_review_summary.expected_next_baseline==='178 entries / 17 source packets','draft next baseline mismatch');assert(seed.belief_movement==='none','seed draft moved belief');});
+
+  add('normalized entries have schema questions and no belief movement',()=>{packet.normalized_candidate_entries.forEach(entry=>{assert(entry.expected_kernel_response&&Array.isArray(entry.expected_kernel_response.questions)&&entry.expected_kernel_response.questions.length>=1,'missing questions for '+entry.id);assert(entry.expected_kernel_response.belief_movement==='none_from_language_anchor_alone','bad belief movement for '+entry.id);assert(entry.workbench_metadata&&entry.workbench_metadata.requires_human_review===true,'missing human review guard for '+entry.id);});});
+
+  add('growth summaries are present',()=>{assert(packet.growth_summary.anchor_count>300,'anchor count too low');assert(packet.growth_summary.candidate_entry_count>=16,'candidate entry count too low');assert(packet.benchmark_summary&&packet.benchmark_summary.pass_rate===1,'benchmark summary missing or not passed');assert(packet.compression_summary&&packet.compression_summary.vector_count===162,'compression summary vector count wrong');});
+
+  add('controller does not mutate current combiner baseline',async()=>{const again=await KernelSemanticCorpusCombinerV01.loadAndCombine();assert(again.combined.entry_count===162,'controller should not import staged packet');assert(again.combined.source_packets.length===16,'source count should remain 16');assert(again.combined.duplicate_entries.length===0,'duplicates changed');});
+
+  (async function run(){const results=[];for(const t of tests){try{await t.fn();results.push({name:t.name,passed:true});}catch(e){results.push({name:t.name,passed:false,error:e.message});}}const passed=results.filter(r=>r.passed).length;document.getElementById('summary').className=passed===tests.length?'ok':'bad';document.getElementById('summary').textContent=`${passed}/${tests.length} passed`;document.getElementById('out').textContent=JSON.stringify({packet_type:'42ndMind_auto_growth_controller_v0_1_test_report',decision:packet&&packet.decision,current_baseline:packet&&packet.current_baseline,proposed_next_baseline:packet&&packet.proposed_next_baseline,gates:packet&&packet.gates,results},null,2);})();
+</script>
+</body>
+</html>
