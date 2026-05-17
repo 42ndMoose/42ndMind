@@ -13,9 +13,9 @@
   </style>
 </head>
 <body>
-<header><h1>42ndMind Unit-Total Shape Bridge Seed Test</h1><div>Validates the standalone reviewed seed packet without adding it to combiner defaults.</div></header>
+<header><h1>42ndMind Unit-Total Shape Bridge Seed Test</h1><div>Validates the reviewed seed packet and its combiner integration as extension 14.</div></header>
 <main><section><h2 id="summary">Running...</h2><div><a href="objective-language-shape-observation-review.html">shape observation review page</a> · <a href="kernel-objective-language-shape-observation-review-v0-1-test.html?v=0.1.0">review test</a></div><pre id="out"></pre></section></main>
-<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=status-neg-1"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=unit-total-1"></script>
 <script>
   const tests=[]; let packet=null;
   function add(name,fn){tests.push({name,fn});}
@@ -32,11 +32,13 @@
     assert(packet.packet_version==='0.1.0','wrong packet version');
   });
 
-  add('packet is standalone and not wired into default combiner yet',()=>{
+  add('packet is wired into default combiner as extension 14',()=>{
     assert(window.KernelSemanticCorpusCombinerV01,'combiner missing');
     const urls=KernelSemanticCorpusCombinerV01.DEFAULT_EXTENSION_URLS || [];
-    assert(!urls.includes('data/semantic_seed_unit_total_shape_bridge_v0_1.json'),'seed packet should not be in combiner defaults yet');
-    assert(packet.source_review_summary.import_status==='not_added_to_default_combiner_until_browser_tests_pass','import guard missing');
+    assert(urls.length===14,'expected 14 default extensions');
+    assert(urls.includes('data/semantic_seed_unit_total_shape_bridge_v0_1.json'),'seed packet should be in combiner defaults');
+    assert(urls[13]==='data/semantic_seed_unit_total_shape_bridge_v0_1.json','seed packet should be extension 14');
+    assert(packet.source_review_summary.import_status==='not_added_to_default_combiner_until_browser_tests_pass','original review-gate import guard should remain in packet history');
   });
 
   add('doctrine preserves unit-total and no belief movement',()=>{
