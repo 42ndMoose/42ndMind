@@ -1,0 +1,158 @@
+{
+  "packet_type": "42ndMind_objective_language_invariance_benchmark_cases_v0_1",
+  "packet_version": "0.1.0",
+  "description": "Fixed pilot benchmark cases for testing unit-total objective-language invariance. These are deterministic validation cases, not doctrine and not belief movement.",
+  "doctrine": {
+    "benchmark_cases_are_test_inputs_not_doctrine": true,
+    "active_shape_l1_total": "sum_abs_dimensions_equals_1",
+    "local_labels_are_metadata_only": true,
+    "minimal_pairs_must_change_structure_when_role_changes": true,
+    "paraphrases_and_translations_should_preserve_structure_when_role_is_unchanged": true,
+    "force_intensity_remains_separate_from_shape": true,
+    "belief_movement": "none"
+  },
+  "groups": [
+    {
+      "group_id": "general_unresolved_invariance",
+      "group_type": "same_structure",
+      "description": "Paraphrases and translation-like variants of general unresolved status should preserve the same anonymous shape.",
+      "variants": [
+        {
+          "variant_id": "unresolved_original_en",
+          "language": "en",
+          "text": "The claim is unresolved.",
+          "expected_dimensions": { "general_unresolved_status_pressure": 1 }
+        },
+        {
+          "variant_id": "unresolved_paraphrase_en",
+          "language": "en",
+          "text": "The issue has not been determined yet.",
+          "expected_dimensions": { "general_unresolved_status_pressure": 1 }
+        },
+        {
+          "variant_id": "unresolved_translation_id",
+          "language": "id",
+          "text": "Klaim itu belum dapat dipastikan.",
+          "expected_dimensions": { "general_unresolved_status_pressure": 1 }
+        },
+        {
+          "variant_id": "unresolved_translation_tl",
+          "language": "tl",
+          "text": "Hindi pa malinaw ang claim.",
+          "expected_dimensions": { "general_unresolved_status_pressure": 1 }
+        }
+      ]
+    },
+    {
+      "group_id": "status_negation_minimal_pairs",
+      "group_type": "different_structure",
+      "description": "Overloaded uncertainty statuses should separate into different anonymous shapes after role-specific refinement.",
+      "variants": [
+        {
+          "variant_id": "general_unresolved_status",
+          "language": "en",
+          "text": "The claim is unresolved.",
+          "expected_dimensions": { "general_unresolved_status_pressure": 1 }
+        },
+        {
+          "variant_id": "claim_nonclosure_status",
+          "language": "en",
+          "text": "The claim is not settled because the evidence is incomplete.",
+          "expected_dimensions": { "claim_nonclosure_status_pressure": 0.6, "evidence_access_burden": 0.4 }
+        },
+        {
+          "variant_id": "negated_collusion_status",
+          "language": "en",
+          "text": "Public coordination is not collusion unless a covert agreement is shown.",
+          "expected_dimensions": { "negated_collusion_status_pressure": 0.5, "direct_link_evidence_burden": 0.3, "motive_agency_pressure": 0.2 }
+        }
+      ]
+    },
+    {
+      "group_id": "coordination_collusion_minimal_pairs",
+      "group_type": "different_structure",
+      "description": "Coordination and collusion should not collapse when the covert-agreement burden is added.",
+      "variants": [
+        {
+          "variant_id": "coordination_public_action",
+          "language": "en",
+          "text": "The actors publicly coordinated their messaging.",
+          "expected_dimensions": { "coordination_pressure": 0.7, "public_action_pressure": 0.3 }
+        },
+        {
+          "variant_id": "collusion_covert_agreement",
+          "language": "en",
+          "text": "The actors colluded through a covert agreement.",
+          "expected_dimensions": { "direct_link_evidence_burden": 0.45, "motive_agency_pressure": 0.35, "covert_agreement_pressure": 0.2 }
+        }
+      ]
+    },
+    {
+      "group_id": "force_shape_separation",
+      "group_type": "force_same_shape_different_magnitude",
+      "description": "Changing magnitude should change force but not the normalized active shape.",
+      "variants": [
+        {
+          "variant_id": "low_force_same_shape",
+          "language": "en",
+          "text": "The same intention is weakly expressed.",
+          "magnitude": 2,
+          "expected_dimensions": { "truth_constraint": 0.4, "risk_constraint": 0.3, "resource_constraint": 0.3 }
+        },
+        {
+          "variant_id": "high_force_same_shape",
+          "language": "en",
+          "text": "The same intention is strongly expressed.",
+          "magnitude": 10,
+          "expected_dimensions": { "truth_constraint": 0.4, "risk_constraint": 0.3, "resource_constraint": 0.3 }
+        }
+      ]
+    },
+    {
+      "group_id": "nested_refinement_unit_total",
+      "group_type": "nested_unit_total",
+      "description": "A parent active shape can remain 1 while each expanded child scope has its own local 1.",
+      "shape": {
+        "label": "intent_benchmark",
+        "dimensions": [
+          {
+            "id": "principles",
+            "weight": 0.45,
+            "local_shape": {
+              "label": "principles",
+              "dimensions": [
+                { "id": "truth_constraint", "weight": 0.5 },
+                { "id": "duty_constraint", "weight": 0.3 },
+                { "id": "boundary_constraint", "weight": 0.2 }
+              ]
+            }
+          },
+          {
+            "id": "environment",
+            "weight": 0.35,
+            "local_shape": {
+              "label": "environment",
+              "dimensions": [
+                { "id": "resource_constraint", "weight": 0.4 },
+                { "id": "social_constraint", "weight": 0.35 },
+                { "id": "physical_constraint", "weight": 0.25 }
+              ]
+            }
+          },
+          {
+            "id": "mood",
+            "weight": 0.2,
+            "local_shape": {
+              "label": "mood",
+              "dimensions": [
+                { "id": "arousal", "weight": 0.6 },
+                { "id": "fatigue_drag", "weight": -0.4 }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "belief_movement": "none"
+}
