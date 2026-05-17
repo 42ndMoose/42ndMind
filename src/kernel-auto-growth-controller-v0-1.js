@@ -35,6 +35,7 @@
       growth_candidates_are_training_pressure_not_doctrine: true,
       exponential_growth_must_be_candidate_growth_not_belief_growth: true,
       staged_candidate_ids_are_source_scoped_to_prevent_duplicate_reimport: true,
+      staged_candidates_include_required_contrast_group: true,
       active_shape_l1_total: 'sum_abs_dimensions_equals_1',
       force_intensity_remains_separate_from_shape: true,
       local_labels_are_metadata_only: true,
@@ -72,11 +73,19 @@
     return safeId(base);
   }
 
+  function contrastGroupFor(entry) {
+    const id = text(entry && entry.id);
+    if (id.includes('_operator_')) return 'auto_growth_operator_anchor';
+    if (id.includes('_pressure_')) return 'auto_growth_pressure_anchor';
+    return safeId(entry && (entry.contrast_group || entry.operator_group) || 'auto_growth_language_anchor');
+  }
+
   function normalizeCandidateEntry(entry, index, options = {}) {
     const out = clone(entry || {});
     out.id = scopedCandidateId(out.id, index, options);
     out.language = text(out.language || 'en');
     out.operator_group = text(out.operator_group || 'language_knowledge_growth_candidate');
+    out.contrast_group = text(out.contrast_group || contrastGroupFor(out));
     out.surface_terms = unique(out.surface_terms || []);
     out.evidence_burden = unique(out.evidence_burden || ['Check anchor phrases.', 'Check ambiguity.', 'Do not infer truth.', 'Do not move belief.']);
     out.semantic_operators = asArray(out.semantic_operators).map(op => ({
@@ -107,6 +116,7 @@
     if (!text(entry && entry.text)) errors.push('missing_text');
     if (!text(entry && entry.language)) errors.push('missing_language');
     if (!text(entry && entry.operator_group)) errors.push('missing_operator_group');
+    if (!text(entry && entry.contrast_group)) errors.push('missing_contrast_group');
     if (!asArray(entry && entry.surface_terms).length) errors.push('missing_surface_terms');
     if (!text(entry && entry.literal_meaning)) errors.push('missing_literal_meaning');
     if (!text(entry && entry.candidate_intended_meaning)) errors.push('missing_candidate_intended_meaning');
@@ -154,6 +164,7 @@
         language_growth_adds_candidate_anchors_not_truth: true,
         exponential_growth_must_be_candidate_growth_not_belief_growth: true,
         staged_candidate_ids_are_source_scoped_to_prevent_duplicate_reimport: true,
+        staged_candidates_include_required_contrast_group: true,
         active_shape_l1_total: 'sum_abs_dimensions_equals_1',
         local_labels_are_metadata_only: true,
         language_anchor_repetition_is_not_truth: true,
@@ -264,6 +275,7 @@
     PACKET_TYPE,
     doctrine,
     scopedCandidateId,
+    contrastGroupFor,
     normalizeCandidateEntry,
     validateCandidateEntry,
     duplicateCheck,
