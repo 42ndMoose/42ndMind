@@ -48,7 +48,7 @@ body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospac
 <script src="src/kernel-auto-growth-controller-v0-1.js?v=preflight-1"></script>
 <script>
 let packet=null,lastOutput=null;
-function esc(v){return String(v??'').replace(/[&<>'\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[ch]))}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
 function show(value){lastOutput=value;out.textContent=JSON.stringify(value,null,2);updateUi()}
 async function runController(){try{packet=await KernelAutoGrowthControllerV01.runController({max_entries:Number(maxEntries.value||16)});show(summaryView())}catch(e){show({ok:false,error:e.message,belief_movement:'none'})}}
 function summaryView(){return{packet_type:'42ndMind_auto_growth_controller_summary_view_v0_1',ok:packet.ok,decision:packet.decision,decision_reason:packet.decision_reason,current_baseline:packet.current_baseline,proposed_entry_count:packet.proposed_entry_count,proposed_next_baseline:packet.proposed_next_baseline,growth_summary:packet.growth_summary,benchmark_summary:packet.benchmark_summary,gates:packet.gates,belief_movement:'none'}}
