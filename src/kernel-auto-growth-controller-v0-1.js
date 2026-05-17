@@ -36,6 +36,7 @@
       exponential_growth_must_be_candidate_growth_not_belief_growth: true,
       staged_candidate_ids_are_source_scoped_to_prevent_duplicate_reimport: true,
       staged_candidates_include_required_contrast_group: true,
+      candidate_corpus_validator_preflight_required_before_auto_stage: true,
       active_shape_l1_total: 'sum_abs_dimensions_equals_1',
       force_intensity_remains_separate_from_shape: true,
       local_labels_are_metadata_only: true,
@@ -59,6 +60,7 @@
 
   function benchmarkEngine() { return global.KernelObjectiveLanguageInvarianceBenchmarkV01 || null; }
   function compressorEngine() { return global.KernelSemanticVectorCompressorV01 || null; }
+  function corpusValidator() { return global.KernelSemanticCorpusV01 || null; }
 
   function defaultQuestion(entry) {
     const op = asArray(entry && entry.semantic_operators)[0];
@@ -184,6 +186,39 @@
     };
   }
 
+  function validateSeedPacketPreflight(seedPacket) {
+    const validator = corpusValidator();
+    if (!validator || typeof validator.validateCorpus !== 'function') {
+      return {
+        ok: false,
+        detail: { ok: false, error: 'KernelSemanticCorpusV01.validateCorpus unavailable', belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+    try {
+      const report = validator.validateCorpus(seedPacket);
+      return {
+        ok: report && report.ok === true,
+        detail: {
+          ok: report && report.ok === true,
+          entry_count: report && report.entry_count,
+          valid_entry_count: report && report.valid_entry_count,
+          invalid_entry_count: report && report.invalid_entry_count,
+          errors: report && report.errors || [],
+          warnings: report && report.warnings || [],
+          belief_movement: 'none'
+        },
+        belief_movement: 'none'
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        detail: { ok: false, error: error && error.message || String(error), belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+  }
+
   function decide(gates) {
     const failures = asArray(gates).filter(g => g.status === 'fail');
     const warnings = asArray(gates).filter(g => g.status === 'warn');
@@ -239,6 +274,9 @@
       current_source_packet_count: currentSourceCount
     };
     const seed_packet_draft = buildSeedPacket(normalizedEntries, context, stagingOptions);
+    const corpusPreflight = validateSeedPacketPreflight(seed_packet_draft);
+    gates.push({ name: 'candidate_corpus_validator_preflight', status: corpusPreflight.ok ? 'pass' : 'fail', detail: corpusPreflight.detail, belief_movement: 'none' });
+
     const decision = decide(gates);
 
     return {
@@ -280,6 +318,7 @@
     validateCandidateEntry,
     duplicateCheck,
     buildSeedPacket,
+    validateSeedPacketPreflight,
     decide,
     runController
   });
