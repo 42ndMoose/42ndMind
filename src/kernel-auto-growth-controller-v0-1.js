@@ -5,6 +5,11 @@
  * This controller does not commit to GitHub, does not patch source, does not
  * promote doctrine, and does not move belief. It prepares copyable staged
  * packets and reports only.
+ *
+ * Future belief/world-model layer note, intentionally not implemented here:
+ * truth ideal = 1; belief state = current structured approximation of that 1;
+ * possibilities remain retained branches inside the 1; claim status shapes are
+ * local 1s; force/confidence remains separate from shape.
  */
 (function (global) {
   'use strict';
@@ -37,6 +42,9 @@
       staged_candidate_ids_are_source_scoped_to_prevent_duplicate_reimport: true,
       staged_candidates_include_required_contrast_group: true,
       candidate_corpus_validator_preflight_required_before_auto_stage: true,
+      staged_pressure_registry_preflight_required_before_auto_stage: true,
+      temp_combined_corpus_preflight_required_before_auto_stage: true,
+      temp_vector_compression_preflight_required_before_auto_stage: true,
       active_shape_l1_total: 'sum_abs_dimensions_equals_1',
       force_intensity_remains_separate_from_shape: true,
       local_labels_are_metadata_only: true,
@@ -61,6 +69,7 @@
   function benchmarkEngine() { return global.KernelObjectiveLanguageInvarianceBenchmarkV01 || null; }
   function compressorEngine() { return global.KernelSemanticVectorCompressorV01 || null; }
   function corpusValidator() { return global.KernelSemanticCorpusV01 || null; }
+  function pressureRegistry() { return global.KernelSemanticPressureRegistryV01 || null; }
 
   function defaultQuestion(entry) {
     const op = asArray(entry && entry.semantic_operators)[0];
@@ -219,6 +228,155 @@
     }
   }
 
+  function validateStagedPressureRegistryPreflight(seedPacket) {
+    const registryApi = pressureRegistry();
+    if (!registryApi || typeof registryApi.defaultRegistry !== 'function' || typeof registryApi.validateAgainstCorpus !== 'function') {
+      return {
+        ok: false,
+        detail: { ok: false, error: 'KernelSemanticPressureRegistryV01 pressure validation unavailable', belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+    try {
+      const registry = registryApi.defaultRegistry();
+      const registryReport = typeof registryApi.validateRegistry === 'function' ? registryApi.validateRegistry(registry) : { ok: true, errors: [] };
+      const coverage = registryApi.validateAgainstCorpus(seedPacket, registry);
+      const missing = Number(coverage && coverage.missing_pressure_count || 0);
+      const ok = registryReport.ok === true && coverage && coverage.ok === true && missing === 0;
+      return {
+        ok,
+        detail: {
+          ok,
+          registry_ok: registryReport.ok === true,
+          registry_pressure_count: registry && registry.pressure_count,
+          observed_pressure_count: coverage && coverage.observed_pressure_count,
+          covered_pressure_count: coverage && coverage.covered_pressure_count,
+          missing_pressure_count: missing,
+          missing_pressures: coverage && coverage.missing_pressures || [],
+          registry_errors: registryReport.errors || [],
+          belief_movement: 'none'
+        },
+        belief_movement: 'none'
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        detail: { ok: false, error: error && error.message || String(error), belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+  }
+
+  function validateTempCombinedCorpusPreflight(currentCombined, seedPacket, options = {}) {
+    const comb = combiner();
+    if (!comb || typeof comb.buildPacket !== 'function') {
+      return {
+        ok: false,
+        detail: { ok: false, error: 'KernelSemanticCorpusCombinerV01.buildPacket unavailable', belief_movement: 'none' },
+        temp_combined_corpus: null,
+        belief_movement: 'none'
+      };
+    }
+    try {
+      const expectedEntryCount = asArray(currentCombined && currentCombined.entries).length + asArray(seedPacket && seedPacket.entries).length;
+      const tempPacket = comb.buildPacket(currentCombined, [seedPacket], Object.assign({}, options, {
+        description: 'Temporary future combined semantic corpus preflight only; not durable import.'
+      }));
+      const combined = tempPacket && tempPacket.combined;
+      const duplicateCount = asArray(combined && combined.duplicate_entries).length;
+      const combinedEntryCount = combined && combined.entry_count || asArray(combined && combined.entries).length;
+      const validation = tempPacket && tempPacket.validation && tempPacket.validation.validation;
+      const ok = tempPacket && tempPacket.ok === true && combinedEntryCount === expectedEntryCount && duplicateCount === 0;
+      return {
+        ok,
+        detail: {
+          ok,
+          expected_entry_count: expectedEntryCount,
+          combined_entry_count: combinedEntryCount,
+          duplicate_count: duplicateCount,
+          validation_ok: validation && validation.ok === true,
+          validation_errors: validation && validation.errors || [],
+          validation_warnings: validation && validation.warnings || [],
+          belief_movement: 'none'
+        },
+        temp_combined_corpus: combined || null,
+        belief_movement: 'none'
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        detail: { ok: false, error: error && error.message || String(error), belief_movement: 'none' },
+        temp_combined_corpus: null,
+        belief_movement: 'none'
+      };
+    }
+  }
+
+  function validateTempVectorCompressionPreflight(tempCombinedCorpus, options = {}) {
+    const registryApi = pressureRegistry();
+    const comp = compressorEngine();
+    if (!tempCombinedCorpus || !Array.isArray(tempCombinedCorpus.entries)) {
+      return {
+        ok: false,
+        detail: { ok: false, error: 'temp combined corpus unavailable', belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+    if (!registryApi || typeof registryApi.defaultRegistry !== 'function' || typeof registryApi.buildOntologyFromCorpus !== 'function') {
+      return {
+        ok: false,
+        detail: { ok: false, error: 'KernelSemanticPressureRegistryV01 ontology unavailable', belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+    if (!comp || typeof comp.buildVectorSpace !== 'function') {
+      return {
+        ok: false,
+        detail: { ok: false, error: 'KernelSemanticVectorCompressorV01.buildVectorSpace unavailable', belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+    try {
+      const registry = registryApi.defaultRegistry();
+      const ontology = registryApi.buildOntologyFromCorpus(tempCombinedCorpus, registry);
+      const missing = Number(ontology && ontology.validation && ontology.validation.missing_pressure_count || 0);
+      const vectorSpace = comp.buildVectorSpace(tempCombinedCorpus, Object.assign({}, options, { registry, ontology }));
+      const summary = typeof comp.summarizeVectorSpace === 'function' ? comp.summarizeVectorSpace(vectorSpace) : null;
+      const expectedVectorCount = asArray(tempCombinedCorpus.entries).length;
+      const vectorCount = Number(vectorSpace && vectorSpace.vector_count || 0);
+      const ok = ontology && ontology.validation && ontology.validation.ok === true && missing === 0 && vectorCount === expectedVectorCount;
+      return {
+        ok,
+        detail: {
+          ok,
+          vector_count: vectorCount,
+          expected_vector_count: expectedVectorCount,
+          missing_pressure_count: missing,
+          pressure_count: ontology && ontology.pressure_count,
+          family_count: ontology && ontology.family_count,
+          template_count: vectorSpace && vectorSpace.template_count,
+          pressure_dimension_count: vectorSpace && vectorSpace.pressure_dimension_count,
+          ontology_ok: ontology && ontology.validation && ontology.validation.ok === true,
+          summary: summary ? {
+            corpus_entry_count: summary.corpus_entry_count,
+            vector_count: summary.vector_count,
+            pressure_dimension_count: summary.pressure_dimension_count,
+            template_count: summary.template_count,
+            ontology_summary: summary.ontology_summary
+          } : null,
+          belief_movement: 'none'
+        },
+        belief_movement: 'none'
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        detail: { ok: false, error: error && error.message || String(error), belief_movement: 'none' },
+        belief_movement: 'none'
+      };
+    }
+  }
+
   function decide(gates) {
     const failures = asArray(gates).filter(g => g.status === 'fail');
     const warnings = asArray(gates).filter(g => g.status === 'warn');
@@ -277,6 +435,15 @@
     const corpusPreflight = validateSeedPacketPreflight(seed_packet_draft);
     gates.push({ name: 'candidate_corpus_validator_preflight', status: corpusPreflight.ok ? 'pass' : 'fail', detail: corpusPreflight.detail, belief_movement: 'none' });
 
+    const stagedPressurePreflight = validateStagedPressureRegistryPreflight(seed_packet_draft);
+    gates.push({ name: 'staged_pressure_registry_preflight', status: stagedPressurePreflight.ok ? 'pass' : 'fail', detail: stagedPressurePreflight.detail, belief_movement: 'none' });
+
+    const tempCombinedPreflight = validateTempCombinedCorpusPreflight(current.combined, seed_packet_draft, stagingOptions);
+    gates.push({ name: 'temp_combined_corpus_preflight', status: tempCombinedPreflight.ok ? 'pass' : 'fail', detail: tempCombinedPreflight.detail, belief_movement: 'none' });
+
+    const tempVectorPreflight = validateTempVectorCompressionPreflight(tempCombinedPreflight.temp_combined_corpus, stagingOptions);
+    gates.push({ name: 'temp_vector_compression_preflight', status: tempVectorPreflight.ok ? 'pass' : 'fail', detail: tempVectorPreflight.detail, belief_movement: 'none' });
+
     const decision = decide(gates);
 
     return {
@@ -303,6 +470,16 @@
       },
       benchmark_summary: benchmark && benchmark.summary || null,
       compression_summary: compression && compression.summary || null,
+      future_preflight_summary: {
+        staged_seed_packet_valid: corpusPreflight.ok === true,
+        staged_pressures_registered: stagedPressurePreflight.ok === true,
+        temp_combined_corpus_valid: tempCombinedPreflight.ok === true,
+        temp_vector_compression_ok: tempVectorPreflight.ok === true,
+        temp_combined_entry_count: tempCombinedPreflight.detail && tempCombinedPreflight.detail.combined_entry_count,
+        temp_vector_count: tempVectorPreflight.detail && tempVectorPreflight.detail.vector_count,
+        missing_pressure_count: tempVectorPreflight.detail && tempVectorPreflight.detail.missing_pressure_count,
+        belief_movement: 'none'
+      },
       doctrine: doctrine(),
       belief_movement: 'none'
     };
@@ -319,6 +496,9 @@
     duplicateCheck,
     buildSeedPacket,
     validateSeedPacketPreflight,
+    validateStagedPressureRegistryPreflight,
+    validateTempCombinedCorpusPreflight,
+    validateTempVectorCompressionPreflight,
     decide,
     runController
   });
