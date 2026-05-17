@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Objective Language Knowledge Growth Test</title>
+  <style>
+    body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1115;color:#eef2ff}
+    header{padding:16px 18px;border-bottom:1px solid #2a3040;background:#11141b}
+    main{padding:12px}section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px}
+    h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}
+    pre{white-space:pre-wrap;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;overflow:auto;max-height:760px}.ok{color:#9dffb4}.bad{color:#ff8b8b}a{color:#9db6ff}
+  </style>
+</head>
+<body>
+<header><h1>42ndMind Objective Language Knowledge Growth Test</h1><div>Tests deterministic language-anchor growth from corpus entries and benchmark cases.</div></header>
+<main><section><h2 id="summary">Running...</h2><div><a href="objective-language-knowledge-growth.html">knowledge growth page</a> · <a href="objective-language-invariance-benchmark.html">invariance benchmark</a></div><pre id="out"></pre></section></main>
+<script src="src/kernel-semantic-corpus-v0-1.js?v=0.1.0"></script>
+<script src="src/kernel-semantic-corpus-combiner-v0-1.js?v=unit-total-1"></script>
+<script src="src/kernel-objective-language-knowledge-growth-v0-1.js?v=0.1.0"></script>
+<script>
+  const tests=[]; let packet=null;
+  function add(name,fn){tests.push({name,fn});}
+  function assert(cond,msg){if(!cond)throw new Error(msg);}
+  function asArray(v){return Array.isArray(v)?v:[];}
+  function hasPressure(p){return asArray(packet&&packet.pressure_groups).some(g=>g.pressure===p);}
+  function hasOperator(op){return asArray(packet&&packet.operator_groups).some(g=>g.operator===op);}
+
+  add('modules load',()=>{
+    assert(window.KernelSemanticCorpusV01,'corpus missing');
+    assert(window.KernelSemanticCorpusCombinerV01,'combiner missing');
+    assert(window.KernelObjectiveLanguageKnowledgeGrowthV01,'knowledge growth missing');
+    assert(KernelObjectiveLanguageKnowledgeGrowthV01.VERSION==='0.1.0','growth version wrong');
+  });
+
+  add('doctrine preserves gated growth and no belief movement',()=>{
+    const d=KernelObjectiveLanguageKnowledgeGrowthV01.doctrine();
+    assert(d.growth_engine_is_gated_semantic_network_not_unbounded_neural_training===true,'gated growth doctrine missing');
+    assert(d.exponential_growth_must_be_candidate_growth_not_belief_growth===true,'candidate-growth doctrine missing');
+    assert(d.active_shape_l1_total==='sum_abs_dimensions_equals_1','unit-total doctrine missing');
+    assert(d.language_anchor_repetition_is_not_truth===true,'anchor truth guard missing');
+    assert(d.belief_movement==='none','belief movement doctrine wrong');
+  });
+
+  add('load and grow succeeds from current corpus and benchmark cases',async()=>{
+    packet=await KernelObjectiveLanguageKnowledgeGrowthV01.loadAndGrow({max_entries:16});
+    assert(packet.ok===true,'growth packet not ok');
+    assert(packet.combiner_summary.entry_count===146,'expected 146 corpus entries');
+    assert(packet.combiner_summary.source_packet_count===15,'expected 15 source packets');
+    assert(packet.benchmark_group_count===5,'expected 5 benchmark groups');
+    assert(packet.anchor_count>300,'expected substantial anchor growth');
+    assert(packet.pressure_group_count>=50,'expected pressure groups');
+    assert(packet.operator_group_count>=100,'expected operator groups');
+    assert(packet.token_count>200,'expected token index growth');
+    assert(packet.belief_movement==='none','growth packet moved belief');
+  });
+
+  add('core pressures are represented by language anchors',()=>{
+    ['unit_total_refinement_pressure','general_unresolved_status_pressure','claim_nonclosure_status_pressure','negated_collusion_status_pressure','direct_link_evidence_burden'].forEach(p=>assert(hasPressure(p),'missing pressure group '+p));
+  });
+
+  add('core objective-language operators are represented by anchors',()=>{
+    ['unit_total_shape_projection','anonymous_shape_invariance','anonymous_shape_repetition','force_shape_separation'].forEach(op=>assert(hasOperator(op),'missing operator group '+op));
+  });
+
+  add('benchmark language anchors are included',()=>{
+    assert(packet.benchmark_anchor_count>=12,'benchmark anchors too low');
+    assert(packet.anchors.some(a=>a.source==='invariance_benchmark_case'&&a.language==='id'),'Indonesian benchmark anchor missing');
+    assert(packet.anchors.some(a=>a.source==='invariance_benchmark_case'&&a.language==='tl'),'Tagalog benchmark anchor missing');
+    assert(packet.anchors.every(a=>a.belief_movement==='none'),'anchor moved belief');
+  });
+
+  add('candidate entries are review-gated and non-doctrinal',()=>{
+    assert(packet.candidate_entry_count>0,'candidate entries missing');
+    assert(packet.candidate_entries.every(e=>e.review_status==='growth_seed_candidate'),'candidate review status wrong');
+    assert(packet.candidate_entries.every(e=>e.expected_kernel_response&&e.expected_kernel_response.belief_movement==='none_from_language_anchor_alone'),'belief movement guard missing');
+    assert(packet.candidate_entries.every(e=>e.workbench_metadata&&e.workbench_metadata.requires_human_review===true),'human review guard missing');
+  });
+
+  add('token index surfaces ambiguity for review',()=>{
+    assert(packet.token_index.length===packet.token_count,'token count mismatch');
+    assert(packet.token_index.some(t=>t.review_status==='ambiguous_token_review_needed'),'expected ambiguous token review target');
+    assert(packet.token_index.every(t=>t.belief_movement==='none'),'token row moved belief');
+  });
+
+  add('growth status is candidate-only',()=>{
+    assert(packet.growth_status==='candidate_language_knowledge_growth_ready_for_review','growth status wrong');
+    assert(packet.doctrine.language_growth_adds_candidate_anchors_not_truth===true,'candidate-only doctrine missing');
+    assert(packet.doctrine.growth_engine_does_not_promote_doctrine===true,'promotion guard missing');
+  });
+
+  (async function run(){
+    const results=[];
+    for(const t of tests){try{await t.fn();results.push({name:t.name,passed:true});}catch(e){results.push({name:t.name,passed:false,error:e.message});}}
+    const passed=results.filter(r=>r.passed).length;
+    document.getElementById('summary').className=passed===tests.length?'ok':'bad';
+    document.getElementById('summary').textContent=`${passed}/${tests.length} passed`;
+    document.getElementById('out').textContent=JSON.stringify({
+      packet_type:'42ndMind_objective_language_knowledge_growth_v0_1_test_report',
+      corpus_entry_count:packet&&packet.combiner_summary&&packet.combiner_summary.entry_count,
+      anchor_count:packet&&packet.anchor_count,
+      pressure_group_count:packet&&packet.pressure_group_count,
+      operator_group_count:packet&&packet.operator_group_count,
+      token_count:packet&&packet.token_count,
+      candidate_entry_count:packet&&packet.candidate_entry_count,
+      results
+    },null,2);
+  })();
+</script>
+</body>
+</html>
