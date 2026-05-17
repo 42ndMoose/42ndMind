@@ -16,7 +16,7 @@
   function asArray(value) { return Array.isArray(value) ? value : []; }
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
   function now() { return new Date().toISOString(); }
-  function safeId(value) { return text(value).toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 80) || 'auto_growth'; }
+  function safeId(value) { return text(value).toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 120) || 'auto_growth'; }
   function unique(items) {
     const seen = new Set();
     const out = [];
@@ -34,6 +34,7 @@
       auto_stage_is_not_auto_import: true,
       growth_candidates_are_training_pressure_not_doctrine: true,
       exponential_growth_must_be_candidate_growth_not_belief_growth: true,
+      staged_candidate_ids_are_source_scoped_to_prevent_duplicate_reimport: true,
       active_shape_l1_total: 'sum_abs_dimensions_equals_1',
       force_intensity_remains_separate_from_shape: true,
       local_labels_are_metadata_only: true,
@@ -55,13 +56,8 @@
     return global.KernelObjectiveLanguageKnowledgeGrowthV01;
   }
 
-  function benchmarkEngine() {
-    return global.KernelObjectiveLanguageInvarianceBenchmarkV01 || null;
-  }
-
-  function compressorEngine() {
-    return global.KernelSemanticVectorCompressorV01 || null;
-  }
+  function benchmarkEngine() { return global.KernelObjectiveLanguageInvarianceBenchmarkV01 || null; }
+  function compressorEngine() { return global.KernelSemanticVectorCompressorV01 || null; }
 
   function defaultQuestion(entry) {
     const op = asArray(entry && entry.semantic_operators)[0];
@@ -69,11 +65,16 @@
     return `Does this ${operator} candidate improve recognition without moving belief or promoting doctrine?`;
   }
 
+  function scopedCandidateId(rawId, index, options) {
+    const prefix = text(options && options.id_prefix || 'auto_growth');
+    const base = text(rawId) || `${prefix}_${String(index + 1).padStart(3, '0')}`;
+    if (options && options.force_id_scope === true) return safeId(`${prefix}_${String(index + 1).padStart(3, '0')}_${base}`);
+    return safeId(base);
+  }
+
   function normalizeCandidateEntry(entry, index, options = {}) {
     const out = clone(entry || {});
-    const prefix = text(options.id_prefix || 'auto_growth');
-    const id = text(out.id) || `${prefix}_${String(index + 1).padStart(3, '0')}`;
-    out.id = safeId(id);
+    out.id = scopedCandidateId(out.id, index, options);
     out.language = text(out.language || 'en');
     out.operator_group = text(out.operator_group || 'language_knowledge_growth_candidate');
     out.surface_terms = unique(out.surface_terms || []);
@@ -94,6 +95,7 @@
       generated_by: PACKET_TYPE,
       normalized_by: 'normalizeCandidateEntry',
       source_growth_engine: 'KernelObjectiveLanguageKnowledgeGrowthV01',
+      id_scope: text(options.id_prefix || 'auto_growth'),
       requires_human_review: true
     });
     return out;
@@ -151,6 +153,7 @@
         auto_staged_seed_packet_is_training_pressure_not_doctrine: true,
         language_growth_adds_candidate_anchors_not_truth: true,
         exponential_growth_must_be_candidate_growth_not_belief_growth: true,
+        staged_candidate_ids_are_source_scoped_to_prevent_duplicate_reimport: true,
         active_shape_l1_total: 'sum_abs_dimensions_equals_1',
         local_labels_are_metadata_only: true,
         language_anchor_repetition_is_not_truth: true,
@@ -182,7 +185,11 @@
     const maxEntries = Math.max(1, Number(options.max_entries || 16));
     const gates = [];
     const current = await combiner().loadAndCombine(options);
-    gates.push({ name: 'current_combiner_ok', status: current.ok === true ? 'pass' : 'fail', detail: { entry_count: current.combined && current.combined.entry_count, source_packet_count: asArray(current.combined && current.combined.source_packets).length }, belief_movement: 'none' });
+    const currentSourceCount = asArray(current && current.combined && current.combined.source_packets).length;
+    const nextIdPrefix = text(options.id_prefix || `auto_growth_extension_${currentSourceCount + 1}`);
+    const stagingOptions = Object.assign({}, options, { id_prefix: nextIdPrefix, force_id_scope: options.force_id_scope !== false });
+
+    gates.push({ name: 'current_combiner_ok', status: current.ok === true ? 'pass' : 'fail', detail: { entry_count: current.combined && current.combined.entry_count, source_packet_count: currentSourceCount }, belief_movement: 'none' });
 
     const growth = await growthEngine().loadAndGrow(Object.assign({}, options, { max_entries: maxEntries }));
     gates.push({ name: 'knowledge_growth_ok', status: growth.ok === true ? 'pass' : 'fail', detail: { anchor_count: growth.anchor_count, candidate_entry_count: growth.candidate_entry_count }, belief_movement: 'none' });
@@ -206,7 +213,7 @@
       gates.push({ name: 'vector_compressor_unavailable', status: 'warn', detail: 'compressor module not loaded', belief_movement: 'none' });
     }
 
-    const normalizedEntries = asArray(growth.candidate_entries).slice(0, maxEntries).map((entry, index) => normalizeCandidateEntry(entry, index, options));
+    const normalizedEntries = asArray(growth.candidate_entries).slice(0, maxEntries).map((entry, index) => normalizeCandidateEntry(entry, index, stagingOptions));
     const validations = normalizedEntries.map(validateCandidateEntry);
     gates.push({ name: 'candidate_schema_valid', status: validations.every(v => v.ok) && normalizedEntries.length > 0 ? 'pass' : 'fail', detail: validations, belief_movement: 'none' });
 
@@ -218,9 +225,9 @@
 
     const context = {
       current_entry_count: current.combined && current.combined.entry_count || 0,
-      current_source_packet_count: asArray(current.combined && current.combined.source_packets).length
+      current_source_packet_count: currentSourceCount
     };
-    const seed_packet_draft = buildSeedPacket(normalizedEntries, context, options);
+    const seed_packet_draft = buildSeedPacket(normalizedEntries, context, stagingOptions);
     const decision = decide(gates);
 
     return {
@@ -242,6 +249,7 @@
         operator_group_count: growth.operator_group_count,
         token_count: growth.token_count,
         candidate_entry_count: growth.candidate_entry_count,
+        id_prefix: nextIdPrefix,
         belief_movement: 'none'
       },
       benchmark_summary: benchmark && benchmark.summary || null,
@@ -255,6 +263,7 @@
     VERSION,
     PACKET_TYPE,
     doctrine,
+    scopedCandidateId,
     normalizeCandidateEntry,
     validateCandidateEntry,
     duplicateCheck,
