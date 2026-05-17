@@ -13,8 +13,8 @@ body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospac
 <main>
 <section>
 <h2>Controls</h2>
-<a href="index.html">main kernel</a> · <a href="kernel-auto-growth-controller-v0-1-test.html?v=preflight-1">test page</a> · <a href="objective-language-knowledge-growth.html">knowledge growth</a>
-<p class="muted">AUTO_STAGE means the batch is schema-valid and safe to copy for a later commit. HOLD means inspect warnings. REJECT means a hard gate failed.</p>
+<a href="index.html">main kernel</a> · <a href="kernel-auto-growth-controller-v0-1-test.html?v=future-preflight-1">test page</a> · <a href="objective-language-knowledge-growth.html">knowledge growth</a>
+<p class="muted">AUTO_STAGE means the staged seed, staged pressures, temporary future corpus, and future vector compression all pass before import. HOLD means inspect warnings. REJECT means a hard gate failed.</p>
 <label>Max staged entries</label>
 <input id="maxEntries" type="number" min="1" step="1" value="16" />
 <button onclick="runController()">Run controller</button>
@@ -45,13 +45,13 @@ body{margin:0;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospac
 <script src="src/kernel-objective-language-shape-bridge-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-objective-language-invariance-benchmark-v0-1.js?v=0.1.0"></script>
 <script src="src/kernel-objective-language-knowledge-growth-v0-1.js?v=0.1.0"></script>
-<script src="src/kernel-auto-growth-controller-v0-1.js?v=preflight-1"></script>
+<script src="src/kernel-auto-growth-controller-v0-1.js?v=future-preflight-1"></script>
 <script>
 let packet=null,lastOutput=null;
 function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
 function show(value){lastOutput=value;out.textContent=JSON.stringify(value,null,2);updateUi()}
 async function runController(){try{packet=await KernelAutoGrowthControllerV01.runController({max_entries:Number(maxEntries.value||16)});show(summaryView())}catch(e){show({ok:false,error:e.message,belief_movement:'none'})}}
-function summaryView(){return{packet_type:'42ndMind_auto_growth_controller_summary_view_v0_1',ok:packet.ok,decision:packet.decision,decision_reason:packet.decision_reason,current_baseline:packet.current_baseline,proposed_entry_count:packet.proposed_entry_count,proposed_next_baseline:packet.proposed_next_baseline,growth_summary:packet.growth_summary,benchmark_summary:packet.benchmark_summary,gates:packet.gates,belief_movement:'none'}}
+function summaryView(){return{packet_type:'42ndMind_auto_growth_controller_summary_view_v0_1',ok:packet.ok,decision:packet.decision,decision_reason:packet.decision_reason,current_baseline:packet.current_baseline,proposed_entry_count:packet.proposed_entry_count,proposed_next_baseline:packet.proposed_next_baseline,growth_summary:packet.growth_summary,benchmark_summary:packet.benchmark_summary,future_preflight_summary:packet.future_preflight_summary,gates:packet.gates,belief_movement:'none'}}
 function updateUi(){decisionMetric.textContent=packet&&packet.decision||'not run';decisionMetric.className=packet&&packet.decision==='AUTO_STAGE'?'ok':packet&&packet.decision==='HOLD'?'warn':'bad';currentMetric.textContent=packet&&packet.current_baseline||'none';nextMetric.textContent=packet&&packet.proposed_next_baseline||'none';entryMetric.textContent=String(packet&&packet.proposed_entry_count||0);anchorMetric.textContent=String(packet&&packet.growth_summary&&packet.growth_summary.anchor_count||0);renderGates(packet&&packet.gates||[])}
 function renderGates(rows){gateList.innerHTML=rows.map(g=>`<div class="item"><b class="${g.status==='pass'?'ok':g.status==='warn'?'warn':'bad'}">${esc(g.name)} · ${esc(g.status)}</b><span>${esc(JSON.stringify(g.detail))}</span></div>`).join('')||'No gates.'}
 function showReport(){if(!packet)return runController();show(summaryView())}
