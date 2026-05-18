@@ -54,7 +54,7 @@
         belief_assertion_mismatch: ['belief_assertion_mismatch', 'speaker_belief_conflicts_with_assertion', 'claimed_content_not_owned_as_true'],
         concealment_of_mismatch: ['concealment_of_mismatch', 'hiding_the_mismatch', 'unmarked_nonliteral_or_uncertain_frame_absent'],
         attainment_pull: ['attainment_pull', 'pull_toward_attainment', 'directional_wanting_pressure'],
-        recipient_reliance_invitation: ['recipient_reliance_invitation', 'invites_other_to_rely', 'interpersonal_reliance_hook'],
+        recipient_reliance_invitation: ['recipient_reliance_invitation', 'invites_other_to_rely', 'interpersonal_reliance_hook', 'reliance_link_to_other_person'],
         future_action_or_state_commitment: ['future_action_or_state_commitment', 'future_commitment', 'commitment_to_future_state']
       },
       neighbors: {
@@ -62,7 +62,8 @@
         fiction: ['fiction', 'valid_nonliteral_story_frame', 'imaginary_frame'],
         preference: ['preference', 'ranking_without_attainment_pull', 'mere_preference'],
         private_intention: ['private_intention', 'private_plan', 'uncommunicated_intent'],
-        plan: ['plan', 'tentative_private_plan', 'future_plan']
+        plan: ['plan', 'tentative_private_plan', 'future_plan'],
+        present_statement: ['present_statement', 'nonfuture_statement', 'statement_without_future_commitment']
       }
     };
   }
@@ -127,10 +128,10 @@
         id: 'promise_plan_future_language_invariance',
         case_type: 'future_language_relation',
         concept_alias: 'giving_ones_word',
-        dimension_alias: 'future_commitment',
+        dimension_alias: 'reliance_link_to_other_person',
         neighbor_alias: 'future_plan',
-        expected: { concept: 'promise', dimension: 'future_action_or_state_commitment', neighbor: 'plan' },
-        expected_result: 'collapse_or_shift_pressure'
+        expected: { concept: 'promise', dimension: 'recipient_reliance_invitation', neighbor: 'plan' },
+        note: 'Plan is reached when interpersonal reliance is removed. Removing future commitment itself shifts toward present_statement/preference, not plan.'
       }
     ];
   }
@@ -161,6 +162,7 @@
       relation_exists,
       ok: canonical_ok && relation_exists,
       failure_reason: canonical_ok && relation_exists ? '' : 'alias did not resolve to stable existing lattice relation',
+      note: text(testCase.note),
       belief_movement: 'none'
     };
   }
