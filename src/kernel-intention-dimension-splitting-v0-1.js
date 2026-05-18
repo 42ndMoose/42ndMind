@@ -69,7 +69,10 @@
     const role = safeId(term && term.role);
     const coefficient = Number(term && term.coefficient || 0);
     const sign = coefficient < 0 ? -1 : 1;
-    const half = Number((Math.abs(coefficient) / 2).toFixed(6)) * sign;
+    const parentAbs = Number(Math.abs(coefficient).toFixed(6));
+    const childOneAbs = Number((parentAbs / 2).toFixed(6));
+    const childTwoAbs = Number((parentAbs - childOneAbs).toFixed(6));
+    const childCoefficients = [childOneAbs * sign, childTwoAbs * sign];
     const suffixes = role === 'core_shape'
       ? ['identity_component', 'contrast_boundary_component']
       : role === 'boundary_shape'
@@ -79,7 +82,7 @@
           : ['primary_component', 'pressure_component'];
     return suffixes.map((suffix, index) => ({
       dimension: `${dimension}_${suffix}`,
-      coefficient: half,
+      coefficient: Number(childCoefficients[index].toFixed(6)),
       parent_dimension: dimension,
       split_index: index + 1,
       role: text(term && term.role) || 'shape_term',
