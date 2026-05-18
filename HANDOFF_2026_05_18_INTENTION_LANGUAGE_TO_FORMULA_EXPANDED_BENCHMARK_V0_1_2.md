@@ -12,6 +12,8 @@ A cold stone rests under a table beside a lamp.
 
 The base parser treated the word `under` as a weak dimension-only hit for `proposition_under_consideration`, producing a low-confidence `doubt` candidate.
 
+After the patch, both unmatched negative controls may be counted as weak-noise holdouts because both contain only weak dimension-level noise and no concept alias support.
+
 ## Patch decision
 
 The patch adds an unmatched holdout rule for weak dimension-only noise.
@@ -105,7 +107,7 @@ Parse cases: 27
 Labelled: 22
 Ambiguity: 3
 Unmatched: 2
-Holdouts: 1
+Holdouts: 2
 ```
 
 ## What this proves
