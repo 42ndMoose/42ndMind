@@ -55,8 +55,27 @@
     };
   }
 
+  function neighborExpansionMap() {
+    return {
+      fiction_joke_roleplay_or_marked_uncertainty: ['fiction', 'joke', 'roleplay', 'marked_uncertainty'],
+      fiction_roleplay_or_private_expression: ['fiction', 'roleplay', 'private_expression'],
+      private_intention_or_plan: ['private_intention', 'plan'],
+      prediction_or_external_expectation: ['prediction', 'external_expectation'],
+      preference_or_valuation_without_lack: ['preference', 'valuation_without_lack'],
+      fantasy_or_unbounded_want: ['fantasy', 'unbounded_want'],
+      unbounded_or_vague_variant: ['unbounded_variant', 'vague_variant'],
+      curiosity_or_abstract_goal_state: ['curiosity', 'abstract_goal_state'],
+      plan_or_preference: ['plan', 'preference'],
+      present_statement_or_preference: ['present_statement', 'preference']
+    };
+  }
+
   function splitNeighborShift(value) {
-    return unique(text(value).split(/\s+or\s+|\/|,|\band\b/g).map(v => v.trim()).filter(Boolean));
+    const raw = safeId(value);
+    if (!raw) return [];
+    const mapped = neighborExpansionMap()[raw];
+    if (mapped) return unique(mapped);
+    return unique(text(value).split(/\s+or\s+|_or_|\/|,|\band\b/g).map(v => v.trim()).filter(Boolean));
   }
 
   function edgeKind(removalResult, necessityClass) {
@@ -214,6 +233,7 @@
     VERSION,
     PACKET_TYPE,
     doctrine,
+    neighborExpansionMap,
     splitNeighborShift,
     edgeKind,
     edgeWeight,
