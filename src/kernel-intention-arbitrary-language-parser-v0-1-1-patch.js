@@ -40,6 +40,7 @@
       no_person_event_or_narrative_belief_ledger: true,
       ambiguity_must_remain_visible: true,
       unmatched_cases_must_remain_unmatched: true,
+      weak_dimension_only_noise_must_not_create_formula_match: true,
       unresolved_dimensions_must_remain_visible: true,
       uses_canonical_ledger_v0_1_1_formula_memory: true,
       local_shape_l1_total_required: 'sum_abs_dimensions_equals_1',
@@ -80,10 +81,30 @@
     ];
   }
 
+  function isWeakDimensionOnlyNoise(parse) {
+    const top = parse && parse.top_candidate;
+    const aliasHits = asArray(top && top.alias_hits);
+    const normalizedScore = Number(top && top.normalized_score || 0);
+    const rawScore = Number(top && top.raw_score || 0);
+    const matchedDimensionCount = Number(top && top.matched_dimension_count || 0);
+    return aliasHits.length === 0 && matchedDimensionCount <= 2 && rawScore <= 2 && normalizedScore < 0.5;
+  }
+
+  function applyUnmatchedHoldoutIfNeeded(parse) {
+    if (text(parse && parse.expected_mode) !== 'unmatched') return parse;
+    if (!isWeakDimensionOnlyNoise(parse)) return parse;
+    parse.parse_status = 'unmatched';
+    parse.unmatched_holdout_applied = true;
+    parse.unmatched_holdout_reason = 'weak_dimension_only_noise_rejected';
+    parse.belief_movement = 'none';
+    return parse;
+  }
+
   function parseExpandedInput(input, ledgerPacket, proofPacket) {
     const parse = parserApi().parseInput(input, ledgerPacket, proofPacket);
     parse.expected_mode = text(input && input.expected_mode) || 'labelled';
     parse.expected_concept = text(input && input.expected_concept) || null;
+    applyUnmatchedHoldoutIfNeeded(parse);
     parse.expected_match_v0_1_1 = expectedMatch(parse);
     parse.belief_movement = 'none';
     return parse;
@@ -126,6 +147,7 @@
       top_concept: text(row && row.top_candidate && row.top_candidate.concept),
       top_version: text(row && row.top_candidate && row.top_candidate.candidate_version),
       ambiguity_score: Number(row && row.ambiguity_score || 0),
+      unmatched_holdout_applied: row && row.unmatched_holdout_applied === true,
       unresolved_dimension_count: Number(row && row.top_candidate && row.top_candidate.unresolved_dimension_count || 0),
       belief_movement: 'none'
     };
@@ -151,6 +173,7 @@
       all_labelled_cases_match: labelled.every(row => row.ok),
       three_ambiguity_cases_visible: ambiguity.length === 3 && ambiguity.every(row => row.ok),
       two_unmatched_cases_remain_unmatched: unmatched.length === 2 && unmatched.every(row => row.ok),
+      weak_dimension_noise_holdout_available: parses.some(row => row.unmatched_holdout_applied === true),
       unresolved_dimensions_visible: parses.every(row => row.top_candidate ? typeof row.top_candidate.unresolved_dimension_count === 'number' : true),
       candidate_only_not_promoted: parses.filter(row => row.expected_mode !== 'unmatched').every(row => row.top_candidate && row.top_candidate.promotion_status === 'not_promoted' && row.top_candidate.doctrine_status === 'candidate_not_doctrine'),
       belief_movement_none: packet && packet.belief_movement === 'none' && parses.every(row => row.belief_movement === 'none')
@@ -200,6 +223,8 @@
     PACKET_TYPE,
     doctrine,
     expandedInputs,
+    isWeakDimensionOnlyNoise,
+    applyUnmatchedHoldoutIfNeeded,
     parseExpandedInput,
     expectedMatch,
     validateParse,
