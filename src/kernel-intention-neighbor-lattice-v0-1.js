@@ -49,6 +49,7 @@
       lattice_edges_are_candidate_not_doctrine: true,
       edge_weight_is_structural_pressure_not_truth: true,
       each_concept_shape_is_local_scope_total_1: true,
+      source_concepts_are_promoted_over_neighbor_aliases: true,
       force_intensity_remains_separate_from_shape: true,
       unit_total_growth_is_subdivision_not_mass_inflation: true,
       belief_movement: 'none'
@@ -110,24 +111,37 @@
 
   function buildNodes(necessityPacket) {
     const nodes = [];
-    const seen = new Set();
-    function add(node) {
-      if (!node.id || seen.has(node.id)) return;
-      seen.add(node.id);
-      nodes.push(node);
+    const byId = new Map();
+    function put(node) {
+      if (!node.id) return;
+      const existing = byId.get(node.id);
+      if (!existing) {
+        byId.set(node.id, node);
+        nodes.push(node);
+        return;
+      }
+      if (node.node_type === 'source_intention_concept' && existing.node_type !== 'source_intention_concept') {
+        const index = nodes.findIndex(row => row.id === node.id);
+        byId.set(node.id, node);
+        if (index >= 0) nodes[index] = node;
+      }
     }
+
     asArray(necessityPacket && necessityPacket.candidates).forEach(candidate => {
-      add(makeNode(candidate.concept, candidate.concept, 'source_intention_concept', {
+      put(makeNode(candidate.concept, candidate.concept, 'source_intention_concept', {
         source: 'necessity_candidate',
         necessary_core_count: asArray(candidate.necessary_core_dimensions).length,
         boundary_count: asArray(candidate.boundary_dimensions).length,
         derivative_expression_count: asArray(candidate.derivative_expression_dimensions).length,
         review_status: text(candidate.necessity_review_status)
       }));
+    });
+
+    asArray(necessityPacket && necessityPacket.candidates).forEach(candidate => {
       asArray(candidate.dimension_tests).forEach(test => {
         splitNeighborShift(test.neighbor_shift).forEach(neighbor => {
           const type = test.removal_result === 'concept_collapses' ? 'collapse_or_residue_neighbor' : 'neighbor_intention_concept';
-          add(makeNode(neighbor, neighbor, type, { discovered_from: candidate.concept, via_removed_dimension: test.dimension }));
+          put(makeNode(neighbor, neighbor, type, { discovered_from: candidate.concept, via_removed_dimension: test.dimension }));
         });
       });
     });
@@ -184,9 +198,14 @@
     const nodes = asArray(packet && packet.nodes);
     const edges = asArray(packet && packet.edges);
     const nodeIds = new Set(nodes.map(node => node.id));
+    const sourceIds = new Set(asArray(packet && packet.source_candidate_concepts).map(safeId));
     if (!nodes.length) errors.push('missing_nodes');
     if (!edges.length) errors.push('missing_edges');
     if (!nodes.some(node => node.node_type === 'source_intention_concept')) errors.push('missing_source_concepts');
+    sourceIds.forEach(id => {
+      const node = nodes.find(row => row.id === id);
+      if (!node || node.node_type !== 'source_intention_concept') errors.push(`source_concept_not_promoted:${id}`);
+    });
     edges.forEach(edge => {
       if (!nodeIds.has(edge.from)) errors.push(`edge_missing_from:${edge.id}`);
       if (!nodeIds.has(edge.to)) errors.push(`edge_missing_to:${edge.id}`);
@@ -218,6 +237,7 @@
       created_at: now(),
       description: 'Candidate neighbor lattice for objective intention concepts. Edges map concept shifts under removed dimensions. Not doctrine; no real-world intent attribution.',
       source_necessity_ok: necessity && necessity.ok === true,
+      source_candidate_concepts: asArray(necessity && necessity.candidates).map(candidate => safeId(candidate.concept)),
       nodes,
       edges,
       summary: summarize(nodes, edges),
