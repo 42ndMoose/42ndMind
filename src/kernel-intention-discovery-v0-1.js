@@ -134,14 +134,23 @@
   function normalizeShape(shapeDimensions, weights) {
     const dims = asArray(shapeDimensions).filter(row => text(row && row.name));
     const raw = {};
-    dims.forEach((dim, index) => {
+    dims.forEach(dim => {
       const supplied = weights && weights[dim.name];
       raw[dim.name] = supplied == null ? 1 : Number(supplied);
       if (!Number.isFinite(raw[dim.name])) raw[dim.name] = 1;
     });
+    const names = Object.keys(raw);
     const total = Object.values(raw).reduce((sum, value) => sum + Math.abs(value), 0) || 1;
     const shape = {};
-    Object.entries(raw).forEach(([name, value]) => { shape[name] = Number((value / total).toFixed(6)); });
+    names.forEach((name, index) => {
+      if (index === names.length - 1) {
+        const prior = Object.values(shape).reduce((sum, value) => sum + Math.abs(Number(value) || 0), 0);
+        const sign = raw[name] < 0 ? -1 : 1;
+        shape[name] = Number((sign * Math.max(0, 1 - prior)).toFixed(6));
+      } else {
+        shape[name] = Number((raw[name] / total).toFixed(6));
+      }
+    });
     const l1 = Number(Object.values(shape).reduce((sum, value) => sum + Math.abs(Number(value) || 0), 0).toFixed(6));
     return { shape, l1_total: l1, unit_total_error: Number(Math.abs(1 - l1).toFixed(6)), belief_movement: 'none' };
   }
