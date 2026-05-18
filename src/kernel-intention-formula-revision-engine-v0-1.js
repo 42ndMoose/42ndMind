@@ -27,6 +27,11 @@
   function lower(value) { return text(value).toLowerCase(); }
   function safeId(value) { return lower(value).replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '') || 'concept'; }
 
+  function expansionApi() {
+    if (!global.KernelIntentionConceptExpansionLoopV01) throw new Error('KernelIntentionConceptExpansionLoopV01 unavailable');
+    return global.KernelIntentionConceptExpansionLoopV01;
+  }
+
   function loopApi() {
     if (!global.KernelIntentionContradictionRefinementLoopV01) throw new Error('KernelIntentionContradictionRefinementLoopV01 unavailable');
     return global.KernelIntentionContradictionRefinementLoopV01;
@@ -47,18 +52,16 @@
     };
   }
 
-  function findFormula(loopPacket, concept) {
-    const compiled = loopPacket && loopPacket.source_expansion_packet && loopPacket.source_expansion_packet.compiled_packet;
+  function findFormula(expansionPacket, concept) {
+    const compiled = expansionPacket && expansionPacket.compiled_packet;
     const formulas = compiled && compiled.compiled_formulas || [];
     const id = safeId(concept);
     return asArray(formulas).find(f => safeId(f.concept) === id) || null;
   }
 
-  function allFormulas(loopPacket) {
-    const compiled = loopPacket && loopPacket.source_expansion_packet && loopPacket.source_expansion_packet.compiled_packet;
+  function allFormulas(expansionPacket) {
+    const compiled = expansionPacket && expansionPacket.compiled_packet;
     if (compiled && Array.isArray(compiled.compiled_formulas)) return compiled.compiled_formulas;
-    const expansion = loopPacket && loopPacket.expansion_packet;
-    if (expansion && expansion.compiled_packet && Array.isArray(expansion.compiled_packet.compiled_formulas)) return expansion.compiled_packet.compiled_formulas;
     return [];
   }
 
@@ -188,6 +191,7 @@
     const errors = [];
     if (!candidates.length) errors.push('missing_revision_candidates');
     if (packet && packet.belief_movement !== 'none') errors.push('packet_belief_movement_not_none');
+    if (packet && packet.source_expansion_ok !== true) errors.push('source_expansion_not_ok');
     if (packet && packet.source_loop_ok !== true) errors.push('source_loop_not_ok');
     validations.forEach(v => { if (!v.ok) errors.push(`${v.concept}:${v.errors.join('|')}`); });
     return {
@@ -203,16 +207,19 @@
   }
 
   function runRevisionEngine(options = {}) {
-    const loopPacket = options.loop_packet || loopApi().runLoop(options.loop_options || {});
-    const formulas = allFormulas(loopPacket);
+    const expansionPacket = options.expansion_packet || expansionApi().runExpansion(options.expansion_options || {});
+    const loopPacket = options.loop_packet || loopApi().runLoop(Object.assign({}, options.loop_options || {}, { expansion_packet: expansionPacket }));
+    const formulas = allFormulas(expansionPacket);
     const candidates = formulas.map(formula => buildRevisionCandidate(loopPacket, formula));
     const packet = {
       packet_type: PACKET_TYPE,
       packet_version: VERSION,
       created_at: now(),
       description: 'Staged formula revision candidates generated from contradiction/refinement pressure. Source formulas are not mutated and doctrine is not promoted.',
+      source_expansion_ok: expansionPacket && expansionPacket.ok === true,
       source_loop_ok: loopPacket && loopPacket.ok === true,
       source_pair_analysis_count: loopPacket && loopPacket.pair_analysis_count || 0,
+      source_compiled_formula_count: formulas.length,
       revision_candidate_count: candidates.length,
       guarded_revision_count: candidates.filter(c => c.revision_adds_guards).length,
       revision_candidates: candidates,
