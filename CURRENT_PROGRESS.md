@@ -19,7 +19,7 @@ CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
-TRUTH_PRESSURE_SYNTHESIS_READY
+TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -43,7 +43,7 @@ objective claim trace layer
 external anchor packet schema
 source/provenance registry
 evidence/media registry
-truth-pressure synthesis
+truth-pressure synthesis v0.1.1
 ```
 
 ## Current main formula-inspection URL
@@ -77,23 +77,32 @@ https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
 
 ## Most recent added layers
 
-Truth-pressure synthesis v0.1:
+Truth-pressure synthesis v0.1.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-test.html?v=truth-1
-https://42ndmoose.github.io/42ndMind/truth-pressure-synthesis.html?v=truth-1
+https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-1-test.html?v=truth-2
+https://42ndmoose.github.io/42ndMind/truth-pressure-synthesis-v0-1-1.html?v=truth-2
 ```
 
 Expected metrics:
 
 ```text
-Decision: TRUTH_PRESSURE_SYNTHESIS_READY
+Decision: TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
+Version: 0.1.1
 Claims: 8
 Evidence records: 5
 External summaries: 4
 Synthesis records: 8
 LLM used: false
 Lookup: false
+```
+
+Important v0.1.1 fix:
+
+```text
+narrative_overclaim_pressure_candidate now remains narrative_overclaim_pressure_visible_candidate even when propaganda_pressure is high.
+propaganda_pressure remains visible as a component, not the overriding synthesis status.
+motive_evidence_required_before_motive_truth remains visible as a gap note.
 ```
 
 Evidence/media registry v0.1:
@@ -152,6 +161,7 @@ belief_movement: none
 contradiction detection is not contradiction resolution
 narrative pressure is not proof of hidden motive
 propaganda pressure is structural pressure, not external fact-checking
+specific narrative-overclaim status outranks broad propaganda-threshold classification
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
@@ -232,6 +242,7 @@ src/kernel-external-anchor-packet-schema-v0-1.js
 src/kernel-source-provenance-registry-v0-1.js
 src/kernel-evidence-media-registry-v0-1.js
 src/kernel-truth-pressure-synthesis-v0-1.js
+src/kernel-truth-pressure-synthesis-v0-1-1-patch.js
 ```
 
 ## Current architecture interpretation
@@ -248,7 +259,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, and truth-pressure synthesis.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, and truth-pressure synthesis v0.1.1.
 
 ## What remains
 
