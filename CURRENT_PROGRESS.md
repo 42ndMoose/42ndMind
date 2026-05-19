@@ -21,6 +21,7 @@ UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
 TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
 CLAIM_NARRATIVE_BENCHMARK_READY
+ADVERSARIAL_NARRATIVE_PRESSURE_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -46,6 +47,7 @@ source/provenance registry
 evidence/media registry
 truth-pressure synthesis v0.1.1
 claim/narrative benchmark v0.1
+adversarial narrative-pressure suite v0.1
 ```
 
 ## Current main formula-inspection URL
@@ -65,19 +67,42 @@ Admitted: 6
 Total formulas: 17
 ```
 
-Base inspector remains available for canonical-only inspection:
-
-```text
-https://42ndmoose.github.io/42ndMind/intention-formula-inspector.html?v=inspect-1
-```
-
-Concept admission registry remains available for admission-specific records:
-
-```text
-https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
-```
-
 ## Most recent added layers
+
+Adversarial narrative-pressure suite v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-adversarial-narrative-pressure-v0-1-test.html?v=adv-1
+https://42ndmoose.github.io/42ndMind/adversarial-narrative-pressure.html?v=adv-1
+```
+
+Expected metrics:
+
+```text
+Decision: ADVERSARIAL_NARRATIVE_PRESSURE_READY
+Source benchmark: true v0.1.0
+Attack records: 12
+Attack families: 12
+LLM used: false
+Lookup: false
+```
+
+Adversarial attack families covered:
+
+```text
+quantifier_injection
+condition_deletion
+no_good_interpretation
+motive_stuffing
+context_stripping
+quote_clipping
+burden_inversion
+equivalence_smuggling
+certainty_inflation
+source_laundering
+ambiguity_weaponization
+loaded_label_substitution
+```
 
 Claim/narrative benchmark v0.1:
 
@@ -95,12 +120,6 @@ Benchmark records: 12
 Case families: 12
 LLM used: false
 Lookup: false
-```
-
-Important benchmark addition:
-
-```text
-bad-actor distortion pressure is now represented neutrally through quantifier/scope distortion, condition deletion, no-good-interpretation framing, and modal strength inflation.
 ```
 
 Truth-pressure synthesis v0.1.1:
@@ -151,29 +170,6 @@ Lookup: false
 
 Note: five evidence records compress into four unique claim summaries because two independent documentary evidence rows support `claim_cost_change`.
 
-Concept admission / formula registration registry v0.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-concept-admission-registry-v0-1-test.html?v=admit-1
-https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
-```
-
-Unified formula inspector v0.1.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-1-test.html?v=inspect-2
-https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
-```
-
-Source/provenance registry v0.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
-https://42ndmoose.github.io/42ndMind/source-provenance-registry.html?v=prov-1
-```
-
-Note: source provenance UI should show `Source records: 4` and `Source groups: 3`. This is correct because two sources share `user_context_group`.
-
 ## Current doctrine invariants
 
 Preserve:
@@ -189,9 +185,13 @@ narrative pressure is not proof of hidden motive
 propaganda pressure is structural pressure, not external fact-checking
 specific narrative-overclaim status outranks broad propaganda-threshold classification
 bad-actor reframe is pressure, not truth
+hostile reframe is not the same claim
 quantifier injection is not the same claim
 condition deletion is not the same claim
 no-good-interpretation framing is structural distortion pressure
+motive stuffing is not motive proof
+source laundering is not independent convergence
+ambiguity weaponization does not close ambiguity
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
@@ -274,6 +274,7 @@ src/kernel-evidence-media-registry-v0-1.js
 src/kernel-truth-pressure-synthesis-v0-1.js
 src/kernel-truth-pressure-synthesis-v0-1-1-patch.js
 src/kernel-claim-narrative-benchmark-v0-1.js
+src/kernel-adversarial-narrative-pressure-v0-1.js
 ```
 
 ## Current architecture interpretation
@@ -290,7 +291,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, and a larger claim/narrative benchmark.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, claim/narrative benchmark v0.1, and adversarial narrative-pressure suite v0.1.
 
 ## What remains
 
@@ -305,7 +306,7 @@ real-world packet ingestion discipline
 larger multilingual benchmark
 world-model relation expansion
 coverage stress tests
-adversarial narrative-pressure tests
+final truth ledger / adjudication layer, only after ingestion discipline and more benchmark passes
 ```
 
 ## Next task
@@ -325,7 +326,7 @@ Purpose:
 
 ```text
 Define how user-described real-world material enters the kernel as packets without becoming automatic truth.
-Keep raw descriptions, source references, media descriptions, evidence claims, uncertainty notes, and ingestion warnings separate.
+Keep raw descriptions, source references, media descriptions, evidence claims, uncertainty notes, ingestion warnings, adversarial-pressure notes, and truth-pressure hooks separate.
 ```
 
 ## File growth rule
