@@ -1,8 +1,8 @@
-# HANDOFF 2026-05-18: World-Model Relation Stress Benchmark v0.1
+# HANDOFF 2026-05-18: World-Model Relation Stress Benchmark v0.1.1
 
 ## Scope
 
-This handoff records the world-model relation stress benchmark layer.
+This handoff records the world-model relation stress benchmark layer and its v0.1.1 validation patch.
 
 This layer consumes:
 
@@ -22,10 +22,37 @@ It stress-tests relation records inside the unified objective language grammar.
 
 ```text
 src/kernel-world-model-relation-stress-benchmark-v0-1.js
+src/kernel-world-model-relation-stress-benchmark-v0-1-1-patch.js
 kernel-world-model-relation-stress-benchmark-v0-1-test.html
 world-model-relation-stress-benchmark.html
 HANDOFF_2026_05_18_WORLD_MODEL_RELATION_STRESS_BENCHMARK.md
 ```
+
+## v0.1.1 patch note
+
+The first `wmrelstress-1` browser run produced 5/8 because the validation whitelist treated these safe postures as unsafe:
+
+```text
+relation_counter_pressure_candidate_not_disproof
+relation_media_uncertainty_candidate_not_verification
+relation_mixed_pressure_candidate_not_promoted
+```
+
+The underlying records were safe: unsafe mutations were rejected, no truth was promoted, no lookup occurred, and belief movement stayed none.
+
+Patch v0.1.1 updates posture validation to recognize safe negative postures:
+
+```text
+not_truth
+not_resolved
+not_disproof
+not_verification
+not_promoted
+candidate_visible
+no_belief_movement
+```
+
+No doctrine was changed.
 
 ## Dependency stack
 
@@ -44,6 +71,7 @@ src/kernel-truth-ledger-preledger-v0-1.js?v=preledger-1
 src/kernel-truth-ledger-preledger-stress-benchmark-v0-1.js?v=prestress-1
 src/kernel-world-model-relation-expansion-v0-1.js?v=wmrel-1
 src/kernel-world-model-relation-stress-benchmark-v0-1.js?v=wmrelstress-1
+src/kernel-world-model-relation-stress-benchmark-v0-1-1-patch.js?v=wmrelstress-2
 ```
 
 ## Core doctrine
@@ -144,6 +172,7 @@ Source relation expansion: true v0.1.0
 Source relation records: 37
 Relation stress records: 16
 Relation stress families: 16
+Patch: 0.1.1 applied true
 Final authority: false
 LLM used: false
 Lookup: false
@@ -203,7 +232,7 @@ does not add political-specific logic
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-world-model-relation-stress-benchmark-v0-1-test.html?v=wmrelstress-1
+https://42ndmoose.github.io/42ndMind/kernel-world-model-relation-stress-benchmark-v0-1-test.html?v=wmrelstress-2
 ```
 
 Expected result:
@@ -230,7 +259,7 @@ The 8 test groups are:
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/world-model-relation-stress-benchmark.html?v=wmrelstress-1
+https://42ndmoose.github.io/42ndMind/world-model-relation-stress-benchmark.html?v=wmrelstress-2
 ```
 
 The UI can show:
@@ -246,7 +275,7 @@ copyable output
 ## Cache key
 
 ```text
-wmrelstress-1
+wmrelstress-2
 ```
 
 ## What this adds
@@ -276,7 +305,7 @@ This hardens world-model structure without making the kernel a final truth autho
 
 ## Next suggested layer
 
-Recommended next build:
+Recommended next build after patched relation stress passes:
 
 ```text
 coverage expansion library v0.1
