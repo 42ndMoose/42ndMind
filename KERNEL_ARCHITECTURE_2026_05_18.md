@@ -27,6 +27,9 @@ narrative pressure is not proof of hidden motive
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
+support is not truth
+counterevidence is not automatic disproof
+truth-pressure synthesis is not final truth promotion
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
 F = M · i
@@ -172,12 +175,13 @@ https://42ndmoose.github.io/42ndMind/kernel-objective-claim-language-v0-1-1-test
 https://42ndmoose.github.io/42ndMind/kernel-objective-claim-trace-v0-1-test.html?v=ctrace-1
 ```
 
-### 5. External-world anchoring stack
+### 5. External-world anchoring and truth-pressure stack
 
 ```text
 src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
 src/kernel-source-provenance-registry-v0-1.js?v=prov-1
 src/kernel-evidence-media-registry-v0-1.js?v=evidence-1
+src/kernel-truth-pressure-synthesis-v0-1.js?v=truth-1
 ```
 
 Status:
@@ -186,6 +190,7 @@ Status:
 external anchor packet schema ready
 source/provenance registry ready
 evidence/media registry ready
+truth-pressure synthesis ready
 ```
 
 Important URLs:
@@ -194,6 +199,7 @@ Important URLs:
 https://42ndmoose.github.io/42ndMind/kernel-external-anchor-packet-schema-v0-1-test.html?v=anchor-1
 https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
 https://42ndmoose.github.io/42ndMind/kernel-evidence-media-registry-v0-1-test.html?v=evidence-1
+https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-test.html?v=truth-1
 ```
 
 Important UI notes:
@@ -203,9 +209,13 @@ source records: 4
 source groups: 3
 evidence records: 5
 evidence groups: 3
+evidence claim summaries: 4
+truth-pressure synthesis records: 8
 ```
 
 Source groups = 3 is correct because two source records share `user_context_group`.
+
+Evidence claim summaries = 4 is correct because two evidence records support `claim_cost_change`.
 
 ## Current maturity status
 
@@ -214,6 +224,7 @@ CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
+TRUTH_PRESSURE_SYNTHESIS_READY
 ```
 
 This means:
@@ -230,6 +241,7 @@ claim traces exist
 external anchors exist
 source/provenance tracking exists
 evidence/media tracking exists
+truth-pressure synthesis exists
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -242,6 +254,7 @@ every source type has full anchor schema coverage
 every real-world event can be adjudicated automatically
 external truth is finalized without evidence anchors
 admitted meanings are canonical doctrine
+truth-pressure synthesis is final truth promotion
 ```
 
 ## What remains
@@ -251,7 +264,6 @@ The remaining work is not core-language invention from zero.
 The remaining work is:
 
 ```text
-truth-pressure synthesis
 larger multilingual and claim benchmark
 world-model relation expansion
 stress testing against adversarial narrative forms
@@ -260,23 +272,21 @@ real-world packet ingestion discipline
 
 ## Next build
 
-Build truth-pressure synthesis v0.1.
+Build larger claim/narrative benchmark v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-truth-pressure-synthesis-v0-1.js
-kernel-truth-pressure-synthesis-v0-1-test.html
-truth-pressure-synthesis.html
-HANDOFF_2026_05_18_TRUTH_PRESSURE_SYNTHESIS.md
+src/kernel-claim-narrative-benchmark-v0-1.js
+kernel-claim-narrative-benchmark-v0-1-test.html
+claim-narrative-benchmark.html
+HANDOFF_2026_05_18_CLAIM_NARRATIVE_BENCHMARK.md
 ```
 
 Purpose:
 
 ```text
-Consume claim-language outputs, source provenance, and evidence/media summaries.
-Produce candidate truth-pressure synthesis without final truth promotion.
-Keep support, counterevidence, contradiction, narrative pressure, propaganda pressure, and unresolved gaps separate.
+Stress-test truth-pressure synthesis across more claim types, including support-only, counterevidence, ambiguity, causal jumps, hidden motive claims, loaded-label propaganda, unsupported rumor, independent corroboration, duplicate provenance, and unresolved evidence gaps.
 ```
 
 ## File growth rule
