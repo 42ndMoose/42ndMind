@@ -19,6 +19,7 @@ CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
+TRUTH_PRESSURE_SYNTHESIS_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -42,6 +43,7 @@ objective claim trace layer
 external anchor packet schema
 source/provenance registry
 evidence/media registry
+truth-pressure synthesis
 ```
 
 ## Current main formula-inspection URL
@@ -74,6 +76,25 @@ https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
 ```
 
 ## Most recent added layers
+
+Truth-pressure synthesis v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-test.html?v=truth-1
+https://42ndmoose.github.io/42ndMind/truth-pressure-synthesis.html?v=truth-1
+```
+
+Expected metrics:
+
+```text
+Decision: TRUTH_PRESSURE_SYNTHESIS_READY
+Claims: 8
+Evidence records: 5
+External summaries: 4
+Synthesis records: 8
+LLM used: false
+Lookup: false
+```
 
 Evidence/media registry v0.1:
 
@@ -134,6 +155,9 @@ propaganda pressure is structural pressure, not external fact-checking
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
+support is not truth
+counterevidence is not automatic disproof
+truth-pressure synthesis is not final truth promotion
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
 F = M · i
@@ -207,6 +231,7 @@ External-world stack:
 src/kernel-external-anchor-packet-schema-v0-1.js
 src/kernel-source-provenance-registry-v0-1.js
 src/kernel-evidence-media-registry-v0-1.js
+src/kernel-truth-pressure-synthesis-v0-1.js
 ```
 
 ## Current architecture interpretation
@@ -223,7 +248,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, and evidence/media structure.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, and truth-pressure synthesis.
 
 ## What remains
 
@@ -234,9 +259,8 @@ The language is not complete in universal coverage yet.
 Remaining work:
 
 ```text
-truth-pressure synthesis
-larger multilingual benchmark
 larger claim/narrative benchmark
+larger multilingual benchmark
 world-model relation expansion
 coverage stress tests
 adversarial narrative-pressure tests
@@ -245,23 +269,21 @@ real-world packet ingestion discipline
 
 ## Next task
 
-Build truth-pressure synthesis v0.1.
+Build larger claim/narrative benchmark v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-truth-pressure-synthesis-v0-1.js
-kernel-truth-pressure-synthesis-v0-1-test.html
-truth-pressure-synthesis.html
-HANDOFF_2026_05_18_TRUTH_PRESSURE_SYNTHESIS.md
+src/kernel-claim-narrative-benchmark-v0-1.js
+kernel-claim-narrative-benchmark-v0-1-test.html
+claim-narrative-benchmark.html
+HANDOFF_2026_05_18_CLAIM_NARRATIVE_BENCHMARK.md
 ```
 
 Purpose:
 
 ```text
-Consume claim-language outputs, source provenance, and evidence/media summaries.
-Produce candidate truth-pressure synthesis without final truth promotion.
-Keep support, counterevidence, contradiction, narrative pressure, propaganda pressure, and unresolved gaps separate.
+Stress-test truth-pressure synthesis across more claim types, including support-only, counterevidence, ambiguity, causal jumps, hidden motive claims, loaded-label propaganda, unsupported rumor, independent corroboration, duplicate provenance, and unresolved evidence gaps.
 ```
 
 ## File growth rule
