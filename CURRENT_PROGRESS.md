@@ -22,6 +22,7 @@ EXTERNAL_WORLD_EVIDENCE_STACK_READY
 TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
 CLAIM_NARRATIVE_BENCHMARK_READY
 ADVERSARIAL_NARRATIVE_PRESSURE_READY
+REAL_WORLD_PACKET_INGESTION_DISCIPLINE_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -48,6 +49,7 @@ evidence/media registry
 truth-pressure synthesis v0.1.1
 claim/narrative benchmark v0.1
 adversarial narrative-pressure suite v0.1
+real-world packet ingestion discipline v0.1
 ```
 
 ## Current main formula-inspection URL
@@ -68,6 +70,31 @@ Total formulas: 17
 ```
 
 ## Most recent added layers
+
+Real-world packet ingestion discipline v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-real-world-packet-ingestion-discipline-v0-1-test.html?v=ingest-1
+https://42ndmoose.github.io/42ndMind/real-world-packet-ingestion-discipline.html?v=ingest-1
+```
+
+Expected metrics:
+
+```text
+Decision: REAL_WORLD_PACKET_INGESTION_DISCIPLINE_READY
+Source adversarial suite: true v0.1.0
+Ingestion records: 8
+Material types: 8
+LLM used: false
+Lookup: false
+```
+
+Important ingestion rule:
+
+```text
+user-described real-world material enters as a context packet, not truth.
+raw descriptions, source references, media descriptions, evidence claims, uncertainty notes, warnings, adversarial hooks, and truth-pressure hooks stay separate.
+```
 
 Adversarial narrative-pressure suite v0.1:
 
@@ -142,14 +169,6 @@ LLM used: false
 Lookup: false
 ```
 
-Important v0.1.1 fix:
-
-```text
-narrative_overclaim_pressure_candidate now remains narrative_overclaim_pressure_visible_candidate even when propaganda_pressure is high.
-propaganda_pressure remains visible as a component, not the overriding synthesis status.
-motive_evidence_required_before_motive_truth remains visible as a gap note.
-```
-
 Evidence/media registry v0.1:
 
 ```text
@@ -193,6 +212,11 @@ motive stuffing is not motive proof
 source laundering is not independent convergence
 ambiguity weaponization does not close ambiguity
 user-supplied context is context, not automatic truth
+user-described real-world material enters as context packet, not truth
+source reference is anchor, not lookup
+media description is context, not media verification
+evidence claim is separate from evidence verification
+uncertainty notes and ingestion warnings stay visible
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
 support is not truth
@@ -275,6 +299,7 @@ src/kernel-truth-pressure-synthesis-v0-1.js
 src/kernel-truth-pressure-synthesis-v0-1-1-patch.js
 src/kernel-claim-narrative-benchmark-v0-1.js
 src/kernel-adversarial-narrative-pressure-v0-1.js
+src/kernel-real-world-packet-ingestion-discipline-v0-1.js
 ```
 
 ## Current architecture interpretation
@@ -291,7 +316,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, claim/narrative benchmark v0.1, and adversarial narrative-pressure suite v0.1.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, claim/narrative benchmark v0.1, adversarial narrative-pressure suite v0.1, and real-world packet ingestion discipline v0.1.
 
 ## What remains
 
@@ -302,31 +327,30 @@ The language is not complete in universal coverage yet.
 Remaining work:
 
 ```text
-real-world packet ingestion discipline
+truth-ledger preledger / adjudication discipline
 larger multilingual benchmark
 world-model relation expansion
 coverage stress tests
-final truth ledger / adjudication layer, only after ingestion discipline and more benchmark passes
+final truth ledger / adjudication layer only after preledger discipline and more benchmark passes
 ```
 
 ## Next task
 
-Build real-world packet ingestion discipline v0.1.
+Build truth-ledger preledger v0.1 as candidate discipline, not final truth authority.
 
 Suggested files:
 
 ```text
-src/kernel-real-world-packet-ingestion-discipline-v0-1.js
-kernel-real-world-packet-ingestion-discipline-v0-1-test.html
-real-world-packet-ingestion-discipline.html
-HANDOFF_2026_05_18_REAL_WORLD_PACKET_INGESTION_DISCIPLINE.md
+src/kernel-truth-ledger-preledger-v0-1.js
+kernel-truth-ledger-preledger-v0-1-test.html
+truth-ledger-preledger.html
+HANDOFF_2026_05_18_TRUTH_LEDGER_PRELEDGER.md
 ```
 
 Purpose:
 
 ```text
-Define how user-described real-world material enters the kernel as packets without becoming automatic truth.
-Keep raw descriptions, source references, media descriptions, evidence claims, uncertainty notes, ingestion warnings, adversarial-pressure notes, and truth-pressure hooks separate.
+Collect truth-pressure outputs and real-world ingestion packets into candidate truth ledger entries while preserving non-promotion, unresolved gaps, contradiction pressure, source/media uncertainty, adversarial warnings, and rollback.
 ```
 
 ## File growth rule
@@ -363,6 +387,7 @@ do not treat user descriptions as truth
 do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
+do not make the preledger a final truth authority
 do not read unrelated uploaded files
 ```
 
