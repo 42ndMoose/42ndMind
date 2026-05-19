@@ -28,14 +28,21 @@ contradiction detection is not contradiction resolution
 contradiction relation is not contradiction resolution
 relation strength is not truth
 relation direction must be explicit
+relation direction must be preserved unless changed by explicit revision
+direction reversal requires explicit revision, not silent mutation
 support relation is not truth
 counter relation is not automatic disproof
 corroboration relation is not final truth
 temporal sequence is not causal proof
 causal relation requires bridge
 source relation is not source lookup
+source laundering is not independent convergence
+duplicate provenance is not independent convergence
 media relation is not media verification
 adversarial relation is pressure, not truth
+unresolved gap deletion is silent mutation
+motive relation is not motive proof
+quote relation requires context
 narrative pressure is not proof of hidden motive
 specific narrative-overclaim status outranks broad propaganda-threshold classification
 bad-actor reframe is pressure, not truth
@@ -44,7 +51,6 @@ quantifier injection is not the same claim
 condition deletion is not the same claim
 no-good-interpretation framing is structural distortion pressure
 motive stuffing is not motive proof
-source laundering is not independent convergence
 ambiguity weaponization does not close ambiguity
 user confidence is not evidence
 user-supplied context is context, not automatic truth
@@ -57,7 +63,8 @@ truth-ledger preledger is not final truth authority
 candidate preledger entries are not final truth
 preledger stress benchmark is not final truth authority
 world-model relation expansion is not final truth authority
-rollback and revision trail are required for preledger, stress, and relation entries
+world-model relation stress benchmark is not final truth authority
+rollback and revision trail are required for preledger, stress, relation, and relation-stress entries
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
 support is not truth
@@ -175,7 +182,7 @@ because + ordinary event sequence -> causal_claim
 because + hidden motive language -> motive_attribution_claim
 ```
 
-### 5. External-world anchoring, truth-pressure, benchmark, ingestion, preledger, stress, and relation stack
+### 5. External-world anchoring, truth-pressure, benchmark, ingestion, preledger, stress, relation, and relation-stress stack
 
 ```text
 src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
@@ -189,6 +196,7 @@ src/kernel-real-world-packet-ingestion-discipline-v0-1.js?v=ingest-1
 src/kernel-truth-ledger-preledger-v0-1.js?v=preledger-1
 src/kernel-truth-ledger-preledger-stress-benchmark-v0-1.js?v=prestress-1
 src/kernel-world-model-relation-expansion-v0-1.js?v=wmrel-1
+src/kernel-world-model-relation-stress-benchmark-v0-1.js?v=wmrelstress-1
 ```
 
 Status:
@@ -203,7 +211,8 @@ adversarial narrative-pressure suite ready v0.1
 real-world packet ingestion discipline ready v0.1
 truth-ledger preledger ready v0.1
 truth-ledger preledger stress benchmark ready v0.1, user-confirmed pass
-world-model relation expansion v0.1 built for verification
+world-model relation expansion ready v0.1, user-confirmed pass
+world-model relation stress benchmark v0.1 built for verification
 ```
 
 Important URLs:
@@ -219,6 +228,7 @@ https://42ndmoose.github.io/42ndMind/kernel-real-world-packet-ingestion-discipli
 https://42ndmoose.github.io/42ndMind/kernel-truth-ledger-preledger-v0-1-test.html?v=preledger-1
 https://42ndmoose.github.io/42ndMind/kernel-truth-ledger-preledger-stress-benchmark-v0-1-test.html?v=prestress-1
 https://42ndmoose.github.io/42ndMind/kernel-world-model-relation-expansion-v0-1-test.html?v=wmrel-1
+https://42ndmoose.github.io/42ndMind/kernel-world-model-relation-stress-benchmark-v0-1-test.html?v=wmrelstress-1
 ```
 
 Important UI notes:
@@ -246,6 +256,9 @@ world-model relation records: 37
 world-model relation families: 24
 world-model relation groups: 9
 world-model relation final authority: false
+world-model relation stress records: 16
+world-model relation stress families: 16
+world-model relation stress final authority: false
 ```
 
 Source groups = 3 is correct because two source records share `user_context_group`.
@@ -371,6 +384,27 @@ weaponizes_ambiguity
 leaves_unresolved
 ```
 
+The world-model relation stress benchmark adds sixteen relation-specific failure families:
+
+```text
+direction_reversal
+false_causal_promotion
+temporal_causal_smuggling
+support_to_truth_inflation
+counter_to_disproof_inflation
+corroboration_truth_promotion
+source_laundering
+duplicate_independence_smuggling
+hostile_reframe_equivalence
+media_verification_collapse
+unresolved_gap_deletion
+contradiction_resolution_collapse
+motive_relation_proof_inflation
+quote_context_relation_collapse
+relation_strength_belief_movement
+mixed_relation_pressure_collapse
+```
+
 ## Current maturity status
 
 ```text
@@ -384,10 +418,12 @@ ADVERSARIAL_NARRATIVE_PRESSURE_READY
 REAL_WORLD_PACKET_INGESTION_DISCIPLINE_READY
 TRUTH_LEDGER_PRELEDGER_READY
 TRUTH_LEDGER_PRELEDGER_STRESS_READY
-WORLD_MODEL_RELATION_EXPANSION_BUILT_FOR_VERIFICATION
+WORLD_MODEL_RELATION_EXPANSION_READY
+WORLD_MODEL_RELATION_STRESS_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
-RELATION_LAYER_FIRST_PASS_BUILT
+RELATION_LAYER_FIRST_PASS_CONFIRMED
+RELATION_STRESS_FIRST_PASS_BUILT
 ```
 
 This means:
@@ -410,13 +446,15 @@ adversarial narrative-pressure suite v0.1 exists
 real-world packet ingestion discipline v0.1 exists
 truth-ledger preledger v0.1 exists
 preledger stress benchmark v0.1 exists and passed
-world-model relation expansion v0.1 exists for verification
+world-model relation expansion v0.1 exists and passed
+world-model relation stress benchmark v0.1 exists for verification
 bad-actor distortion pressure is represented structurally
 hostile reframes are explicitly not the same claim
 user-described real-world material enters as context packet, not truth
 candidate truth preledger entries are not final truth
 stress pressure does not promote truth
 relations do not promote truth
+relation stress does not promote truth
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -434,6 +472,7 @@ real-world ingestion is final truth promotion
 preledger is final truth authority
 stress benchmark is final truth authority
 world-model relation expansion is final truth authority
+world-model relation stress benchmark is final truth authority
 relation strength is proof
 ```
 
@@ -451,7 +490,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, a larger claim/narrative benchmark, an adversarial narrative-pressure suite, real-world packet ingestion discipline, truth-ledger preledger, preledger stress benchmark, and world-model relation expansion.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, a larger claim/narrative benchmark, an adversarial narrative-pressure suite, real-world packet ingestion discipline, truth-ledger preledger, preledger stress benchmark, world-model relation expansion, and world-model relation stress benchmark.
 
 The benchmark distinguishes an original scoped claim from a bad-actor reframe that injects universals, removes conditions, or pretends no good-faith interpretation exists.
 
@@ -465,9 +504,11 @@ The stress benchmark hardens the preledger against conflict, duplicate provenanc
 
 The relation expansion begins world-model structure by creating candidate relation records across causal, temporal, evidential, contradiction, source, media, narrative, adversarial, and uncertainty relation groups without truth promotion.
 
+The relation stress benchmark hardens the relation layer against direction reversal, false causal promotion, temporal-causal smuggling, support-to-truth inflation, counter-to-disproof inflation, source laundering, hostile reframe equivalence, media verification collapse, unresolved-gap deletion, contradiction-resolution collapse, motive proof inflation, quote context collapse, relation-strength belief movement, and mixed pressure collapse.
+
 ## Roadmap status
 
-The five-step roadmap is complete through candidate preledger, the first hardening benchmark has passed, and the first relation layer is built for verification:
+The five-step roadmap is complete through candidate preledger, the first hardening benchmark has passed, relation expansion has passed, and relation stress is built for verification:
 
 ```text
 1. truth-pressure synthesis v0.1.1: complete
@@ -476,49 +517,42 @@ The five-step roadmap is complete through candidate preledger, the first hardeni
 4. real-world packet ingestion discipline v0.1: complete
 5. truth-ledger preledger v0.1: complete
 6. preledger stress benchmark v0.1: user-confirmed pass
-7. world-model relation expansion v0.1: built for verification
+7. world-model relation expansion v0.1: user-confirmed pass
+8. world-model relation stress benchmark v0.1: built for verification
 ```
 
 ## What remains
 
-The core roadmap is complete through candidate preledger, and relation expansion has begun.
+The core roadmap is complete through candidate preledger, and relation expansion/stress has begun.
 
 The language is still not guaranteed complete in universal coverage.
 
 Remaining optional expansion work:
 
 ```text
-world-model relation stress benchmark
+coverage expansion library
 larger multilingual benchmark
+deterministic packet ingestion form/UI
 coverage stress tests
 final truth ledger / adjudication discipline only after more stress passes
 ```
 
 ## Next build
 
-Run the world-model relation expansion browser test.
+Run the world-model relation stress benchmark browser test.
 
-After it passes, treat `WORLD_MODEL_RELATION_EXPANSION_READY` as confirmed.
+After it passes, treat `WORLD_MODEL_RELATION_STRESS_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-world-model relation stress benchmark v0.1
+coverage expansion library v0.1
 ```
 
-Suggested files:
+Alternative next build:
 
 ```text
-src/kernel-world-model-relation-stress-benchmark-v0-1.js
-kernel-world-model-relation-stress-benchmark-v0-1-test.html
-world-model-relation-stress-benchmark.html
-HANDOFF_2026_05_18_WORLD_MODEL_RELATION_STRESS_BENCHMARK.md
-```
-
-Purpose:
-
-```text
-Stress-test relation expansion against direction reversal, false causal promotion, support-to-truth inflation, counterevidence-to-disproof inflation, source laundering, hostile reframe equivalence, media verification collapse, and unresolved-gap deletion.
+deterministic packet ingestion form/UI v0.1
 ```
 
 ## File growth rule
@@ -579,6 +613,6 @@ do not treat user descriptions as truth
 do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
-do not make the preledger, stress benchmark, or relation expansion a final truth authority
+do not make the preledger, stress benchmark, relation expansion, or relation stress benchmark a final truth authority
 do not read unrelated uploaded files
 ```
