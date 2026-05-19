@@ -33,13 +33,13 @@ TRUTH_LEDGER_PRELEDGER_STRESS_READY
 WORLD_MODEL_RELATION_EXPANSION_READY
 WORLD_MODEL_RELATION_STRESS_READY
 COVERAGE_EXPANSION_LIBRARY_READY
-COVERAGE_STRESS_BENCHMARK_BUILT_FOR_VERIFICATION
+COVERAGE_STRESS_BENCHMARK_READY
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
 RELATION_STRESS_FIRST_PASS_CONFIRMED
 META_GRAMMAR_COVERAGE_FIRST_PASS_CONFIRMED
-COVERAGE_STRESS_FIRST_PASS_BUILT
+COVERAGE_STRESS_FIRST_PASS_CONFIRMED
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -88,7 +88,7 @@ Admitted: 6
 Total formulas: 17
 ```
 
-## Most recent added layer
+## Most recent confirmed layer
 
 Coverage stress benchmark v0.1:
 
@@ -97,9 +97,10 @@ https://42ndmoose.github.io/42ndMind/kernel-coverage-stress-benchmark-v0-1-test.
 https://42ndmoose.github.io/42ndMind/coverage-stress-benchmark.html?v=coverstress-1
 ```
 
-Expected metrics:
+User-confirmed metrics:
 
 ```text
+8/8 passed
 Decision: COVERAGE_STRESS_BENCHMARK_READY
 Source coverage: true v0.1.0
 Source coverage records: 22
@@ -170,33 +171,6 @@ This is meta-grammar coverage, not dictionary population.
 The kernel can recognize general classes of language phenomena before knowing every instance.
 Unknown specifics hold for admission when accuracy requires it.
 The kernel does not fake exact meaning.
-```
-
-Coverage families:
-
-```text
-literal_statement
-idiom_or_fixed_expression
-sarcasm_or_irony
-metaphor_or_analogy
-ambiguity_polysemy
-deixis_indexicality
-scope_quantifier
-modality_possibility
-modality_necessity
-conditional_relation
-negation
-comparison
-identity_definition
-obligation_permission
-ability_capacity
-temporal_relation
-causal_relation
-evidence_marker
-question_request
-command_directive
-quotation_report
-unknown_pattern_hold_for_admission
 ```
 
 World-model relation stress benchmark v0.1.1:
@@ -346,16 +320,12 @@ HANDOFF_2026_05_19_COVERAGE_STRESS_BENCHMARK.md
 7. world-model relation expansion v0.1: passed by user
 8. world-model relation stress benchmark v0.1.1: passed by user
 9. coverage expansion library v0.1: passed by user
-10. coverage stress benchmark v0.1: built for verification
+10. coverage stress benchmark v0.1: passed by user
 ```
 
 ## Next task
 
-Run the coverage stress browser test.
-
-After it passes, treat `COVERAGE_STRESS_BENCHMARK_READY` as confirmed.
-
-Recommended next build after that:
+Recommended next build:
 
 ```text
 deterministic packet ingestion form/UI v0.1
