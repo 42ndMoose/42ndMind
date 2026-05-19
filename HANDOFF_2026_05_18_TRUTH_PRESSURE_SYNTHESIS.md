@@ -1,8 +1,8 @@
-# HANDOFF 2026-05-18: Truth-Pressure Synthesis v0.1
+# HANDOFF 2026-05-18: Truth-Pressure Synthesis v0.1.1
 
 ## Scope
 
-This handoff records the first truth-pressure synthesis layer.
+This handoff records the truth-pressure synthesis layer and its v0.1.1 priority patch.
 
 This layer consumes:
 
@@ -44,16 +44,49 @@ It does not treat narrative pressure as proof of hidden motive.
 
 It does not treat propaganda pressure as an external fact-check.
 
+## Important v0.1.1 fix
+
+The first v0.1 run failed 4/8 because a high propaganda-pressure threshold swallowed the motive/narrative-overclaim case.
+
+The bad behavior was:
+
+```text
+source_truth_status_candidate: narrative_overclaim_pressure_candidate
+synthesis_status_candidate: propaganda_pressure_visible_candidate
+```
+
+The corrected v0.1.1 behavior is:
+
+```text
+source_truth_status_candidate: narrative_overclaim_pressure_candidate
+synthesis_status_candidate: narrative_overclaim_pressure_visible_candidate
+```
+
+The propaganda pressure remains visible as a component.
+
+The synthesis classification now preserves the more specific upstream narrative-overclaim status before applying the broader propaganda threshold.
+
+The patch also ensures the motive gap remains visible:
+
+```text
+motive_evidence_required_before_motive_truth
+```
+
 ## Built files
 
 ```text
 src/kernel-truth-pressure-synthesis-v0-1.js
+src/kernel-truth-pressure-synthesis-v0-1-1-patch.js
 kernel-truth-pressure-synthesis-v0-1-test.html
+kernel-truth-pressure-synthesis-v0-1-1-test.html
 truth-pressure-synthesis.html
+truth-pressure-synthesis-v0-1-1.html
 HANDOFF_2026_05_18_TRUTH_PRESSURE_SYNTHESIS.md
 ```
 
 ## Dependency stack
+
+Use the v0.1.1 stack:
 
 ```text
 src/kernel-objective-claim-language-v0-1.js?v=claim-1
@@ -62,6 +95,7 @@ src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
 src/kernel-source-provenance-registry-v0-1.js?v=prov-1
 src/kernel-evidence-media-registry-v0-1.js?v=evidence-1
 src/kernel-truth-pressure-synthesis-v0-1.js?v=truth-1
+src/kernel-truth-pressure-synthesis-v0-1-1-patch.js?v=truth-2
 ```
 
 ## Core doctrine
@@ -76,6 +110,8 @@ propaganda_pressure_is_structural_not_external_fact_check: true
 evidence_descriptions_are_context_not_truth: true
 source_provenance_informs_weight_without_source_lookup: true
 unresolved_gaps_remain_visible: true
+narrative_overclaim_has_priority_over_general_propaganda_threshold: true
+upstream_narrative_overclaim_status_preserves_motive_gap_even_when_claim_kind_is_causal: true
 no_llm: true
 no_source_lookup: true
 candidate_only_not_doctrine: true
@@ -129,7 +165,7 @@ The synthesis layer must not collapse these into a single final truth score.
 
 ## Synthesis statuses
 
-The v0.1 sample set should produce these status families:
+The v0.1.1 sample set should produce these status families:
 
 ```text
 evidence_supported_pressure_candidate
@@ -178,7 +214,7 @@ These guards are the core value of this layer.
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-test.html?v=truth-1
+https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-1-test.html?v=truth-2
 ```
 
 Expected result:
@@ -190,13 +226,13 @@ Expected result:
 The 8 test groups are:
 
 ```text
-1. module loads and doctrine synthesizes pressure without truth promotion
+1. module loads and v0.1.1 doctrine preserves narrative-overclaim priority
 2. synthesis runs from claim language and evidence media registry
 3. all expected pressure statuses are visible
-4. pressure components stay separate and bounded
-5. separation guards prevent false promotion
-6. external evidence summaries are linked without requiring final truth
-7. unresolved gaps remain visible
+4. motive-overclaim is not swallowed by propaganda threshold
+5. pressure components stay separate and bounded
+6. unresolved gaps and external evidence bridge remain visible
+7. separation guards prevent false promotion
 8. no LLM, no lookup, candidate-only status, and belief movement are preserved
 ```
 
@@ -205,13 +241,14 @@ The 8 test groups are:
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/truth-pressure-synthesis.html?v=truth-1
+https://42ndmoose.github.io/42ndMind/truth-pressure-synthesis-v0-1-1.html?v=truth-2
 ```
 
 Expected metrics:
 
 ```text
-Decision: TRUTH_PRESSURE_SYNTHESIS_READY
+Decision: TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
+Version: 0.1.1
 Claims: 8
 Evidence records: 5
 External summaries: 4
