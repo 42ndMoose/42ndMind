@@ -16,6 +16,8 @@ This file is the compact operational status. The architecture file is the detail
 
 ```text
 CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
+FORMULA_ADMISSION_PATH_READY
+UNIFIED_FORMULA_INSPECTOR_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -29,33 +31,70 @@ objective intention/concept formula grammar
 canonical formula ledger
 formula proof output
 formula inspector
+concept admission / formula registration registry
+unified formula inspector
 Epistemic Octahedron language alignment
 arbitrary/expanded language parser
 expanded parser proof trace
 objective claim-language kernel
 objective claim trace layer
+external anchor packet schema
+source/provenance registry
 ```
 
-## Most recent passed layer
+## Current main formula-inspection URL
 
-Objective claim trace v0.1 passed.
-
-Important URLs:
+Use this as the main place to inspect formulas for both canonical concepts and newly admitted candidate meanings:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-objective-claim-trace-v0-1-test.html?v=ctrace-1
-https://42ndmoose.github.io/42ndMind/objective-claim-trace.html?v=ctrace-1
+https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
 ```
 
 Expected metrics:
 
 ```text
-Decision: OBJECTIVE_CLAIM_TRACE_READY
-Source version: 0.1.1
-Traces: 8
-LLM used: false
-Source lookup: false
+Decision: UNIFIED_FORMULA_INSPECTOR_READY
+Canonical: 11
+Admitted: 6
+Total formulas: 17
 ```
+
+Base inspector remains available for canonical-only inspection:
+
+```text
+https://42ndmoose.github.io/42ndMind/intention-formula-inspector.html?v=inspect-1
+```
+
+Concept admission registry remains available for admission-specific records:
+
+```text
+https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
+```
+
+## Most recent added layers
+
+Concept admission / formula registration registry v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-concept-admission-registry-v0-1-test.html?v=admit-1
+https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
+```
+
+Unified formula inspector v0.1.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-1-test.html?v=inspect-2
+https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
+```
+
+Source/provenance registry v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
+https://42ndmoose.github.io/42ndMind/source-provenance-registry.html?v=prov-1
+```
+
+Note: source provenance UI should show `Source records: 4` and `Source groups: 3`. This is correct because two sources share `user_context_group`.
 
 ## Current doctrine invariants
 
@@ -76,6 +115,8 @@ active local shape preserves Σ |dimension_i| = 1
 F = M · i
 no silent mutation
 rollback/version trail required for formula changes
+new meanings enter through admission records, not silent canonical mutation
+admitted meanings do not fake proof references
 ```
 
 ## Key current files
@@ -105,6 +146,9 @@ src/kernel-intention-minimal-pair-library-v0-1.js
 src/kernel-intention-dimension-splitting-v0-1.js
 src/kernel-intention-coefficient-dimension-revision-engine-v0-1.js
 src/kernel-intention-canonical-formula-ledger-v0-1-1-patch.js
+src/kernel-intention-formula-inspector-v0-1.js
+src/kernel-concept-admission-registry-v0-1.js
+src/kernel-intention-formula-inspector-v0-1-1-patch.js
 ```
 
 Language/parser stack:
@@ -120,6 +164,8 @@ Inspection/alignment:
 
 ```text
 src/kernel-intention-formula-inspector-v0-1.js
+src/kernel-concept-admission-registry-v0-1.js
+src/kernel-intention-formula-inspector-v0-1-1-patch.js
 src/epistemic-octahedron-language-alignment-v0-1.js
 ```
 
@@ -131,13 +177,11 @@ src/kernel-objective-claim-language-v0-1-1-patch.js
 src/kernel-objective-claim-trace-v0-1.js
 ```
 
-## Current passed test URLs
+External-world stack:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-test.html?v=inspect-1
-https://42ndmoose.github.io/42ndMind/epistemic-octahedron-language-alignment-v0-1-test.html?v=eoalign-1
-https://42ndmoose.github.io/42ndMind/kernel-objective-claim-language-v0-1-1-test.html?v=claim-2
-https://42ndmoose.github.io/42ndMind/kernel-objective-claim-trace-v0-1-test.html?v=ctrace-1
+src/kernel-external-anchor-packet-schema-v0-1.js
+src/kernel-source-provenance-registry-v0-1.js
 ```
 
 ## Current architecture interpretation
@@ -148,7 +192,11 @@ The objective language-math kernel operationalized those semantics into determin
 
 The alignment layer confirmed that the Epistemic Octahedron's operational core is mathematically coherent inside the built kernel.
 
-The claim-language layer then extended the same objective grammar into claim/world-model/narrative/propaganda-pressure analysis without LLM use or source lookup.
+The claim-language layer extended the same objective grammar into claim/world-model/narrative/propaganda-pressure analysis without LLM use or source lookup.
+
+The concept admission registry now gives the kernel a deterministic route for newly learned meanings to become candidate formulas.
+
+The unified formula inspector now exposes both canonical formulas and admitted candidate formulas in one place.
 
 ## What remains
 
@@ -159,36 +207,32 @@ The language is not complete in universal coverage yet.
 Remaining work:
 
 ```text
-external anchor packet schema
-source/provenance registry
 evidence/media registry
 larger multilingual benchmark
 larger claim/narrative benchmark
 world-model relation expansion
 coverage stress tests
 adversarial narrative-pressure tests
+real-world packet ingestion discipline
 ```
 
 ## Next task
 
-Build external anchor packet schema v0.1.
+Build evidence/media registry v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-external-anchor-packet-schema-v0-1.js
-kernel-external-anchor-packet-schema-v0-1-test.html
-external-anchor-packet-schema.html
-HANDOFF_2026_05_18_EXTERNAL_ANCHOR_PACKET_SCHEMA.md
+src/kernel-evidence-media-registry-v0-1.js
+kernel-evidence-media-registry-v0-1-test.html
+evidence-media-registry.html
+HANDOFF_2026_05_18_EVIDENCE_MEDIA_REGISTRY.md
 ```
 
 Purpose:
 
 ```text
-Define modular anchor packets for names/entities, events, dates, source/provenance, and evidence/media.
-Do not make source lookup automatic.
-Do not treat user descriptions as truth.
-Do not merge anchors into the formula language itself.
+Track evidence type, media/record/user-description posture, support/counterevidence direction, strength, independence group, source linkage, contradiction contribution, and whether evidence is direct, documentary, hearsay, or ambiguous.
 ```
 
 ## File growth rule
