@@ -88,10 +88,12 @@ Expected metrics:
 Decision: EVIDENCE_MEDIA_REGISTRY_READY
 Evidence records: 5
 Evidence groups: 3
-Claim summaries: 5
+Claim summaries: 4
 LLM used: false
 Lookup: false
 ```
+
+Note: five evidence records compress into four unique claim summaries because two independent documentary evidence rows support `claim_cost_change`.
 
 Concept admission / formula registration registry v0.1:
 
