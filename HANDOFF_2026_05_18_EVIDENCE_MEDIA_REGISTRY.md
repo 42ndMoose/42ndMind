@@ -169,6 +169,8 @@ claim_evidence_status
 belief_movement
 ```
 
+The sample packet has five evidence rows but four unique claim summaries because two independent documentary evidence rows support the same `claim_cost_change` claim reference.
+
 This is not a truth-status decision.
 
 It is a structured bridge for a later truth-pressure synthesis layer.
@@ -214,7 +216,7 @@ Expected metrics:
 Decision: EVIDENCE_MEDIA_REGISTRY_READY
 Evidence records: 5
 Evidence groups: 3
-Claim summaries: 5
+Claim summaries: 4
 Contradiction pressure: pressure_visible_not_resolved or no_contradiction_pressure_visible
 LLM used: false
 Lookup: false
