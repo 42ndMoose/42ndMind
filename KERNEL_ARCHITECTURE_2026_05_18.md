@@ -25,6 +25,8 @@ belief_movement: none
 contradiction detection is not contradiction resolution
 narrative pressure is not proof of hidden motive
 user-supplied context is context, not automatic truth
+evidence descriptions are context, not automatic truth
+support/counterevidence direction is separate from truth
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
 F = M · i
@@ -175,6 +177,7 @@ https://42ndmoose.github.io/42ndMind/kernel-objective-claim-trace-v0-1-test.html
 ```text
 src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
 src/kernel-source-provenance-registry-v0-1.js?v=prov-1
+src/kernel-evidence-media-registry-v0-1.js?v=evidence-1
 ```
 
 Status:
@@ -182,6 +185,7 @@ Status:
 ```text
 external anchor packet schema ready
 source/provenance registry ready
+evidence/media registry ready
 ```
 
 Important URLs:
@@ -189,16 +193,19 @@ Important URLs:
 ```text
 https://42ndmoose.github.io/42ndMind/kernel-external-anchor-packet-schema-v0-1-test.html?v=anchor-1
 https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
+https://42ndmoose.github.io/42ndMind/kernel-evidence-media-registry-v0-1-test.html?v=evidence-1
 ```
 
-Important UI note:
+Important UI notes:
 
 ```text
 source records: 4
 source groups: 3
+evidence records: 5
+evidence groups: 3
 ```
 
-This is correct because two source records share `user_context_group`.
+Source groups = 3 is correct because two source records share `user_context_group`.
 
 ## Current maturity status
 
@@ -206,6 +213,7 @@ This is correct because two source records share `user_context_group`.
 CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
+EXTERNAL_WORLD_EVIDENCE_STACK_READY
 ```
 
 This means:
@@ -221,6 +229,7 @@ claim-language analysis exists
 claim traces exist
 external anchors exist
 source/provenance tracking exists
+evidence/media tracking exists
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -242,7 +251,7 @@ The remaining work is not core-language invention from zero.
 The remaining work is:
 
 ```text
-evidence/media registry
+truth-pressure synthesis
 larger multilingual and claim benchmark
 world-model relation expansion
 stress testing against adversarial narrative forms
@@ -251,21 +260,23 @@ real-world packet ingestion discipline
 
 ## Next build
 
-Build evidence/media registry v0.1.
+Build truth-pressure synthesis v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-evidence-media-registry-v0-1.js
-kernel-evidence-media-registry-v0-1-test.html
-evidence-media-registry.html
-HANDOFF_2026_05_18_EVIDENCE_MEDIA_REGISTRY.md
+src/kernel-truth-pressure-synthesis-v0-1.js
+kernel-truth-pressure-synthesis-v0-1-test.html
+truth-pressure-synthesis.html
+HANDOFF_2026_05_18_TRUTH_PRESSURE_SYNTHESIS.md
 ```
 
 Purpose:
 
 ```text
-Track evidence type, media/record/user-description posture, support/counterevidence direction, strength, independence group, source linkage, contradiction contribution, and whether evidence is direct, documentary, hearsay, or ambiguous.
+Consume claim-language outputs, source provenance, and evidence/media summaries.
+Produce candidate truth-pressure synthesis without final truth promotion.
+Keep support, counterevidence, contradiction, narrative pressure, propaganda pressure, and unresolved gaps separate.
 ```
 
 ## File growth rule
@@ -322,6 +333,7 @@ For existing files:
 do not build political-specific logic
 do not make source lookup automatic
 do not treat user descriptions as truth
+do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
 do not read unrelated uploaded files
