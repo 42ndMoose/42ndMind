@@ -24,7 +24,9 @@ CLAIM_NARRATIVE_BENCHMARK_READY
 ADVERSARIAL_NARRATIVE_PRESSURE_READY
 REAL_WORLD_PACKET_INGESTION_DISCIPLINE_READY
 TRUTH_LEDGER_PRELEDGER_READY
+TRUTH_LEDGER_PRELEDGER_STRESS_READY
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
+PRELEDGER_HARDENING_PASS_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -53,6 +55,7 @@ claim/narrative benchmark v0.1
 adversarial narrative-pressure suite v0.1
 real-world packet ingestion discipline v0.1
 truth-ledger preledger v0.1
+truth-ledger preledger stress benchmark v0.1
 ```
 
 ## Current main formula-inspection URL
@@ -74,6 +77,32 @@ Total formulas: 17
 
 ## Most recent added layers
 
+Truth-ledger preledger stress benchmark v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-truth-ledger-preledger-stress-benchmark-v0-1-test.html?v=prestress-1
+https://42ndmoose.github.io/42ndMind/truth-ledger-preledger-stress-benchmark.html?v=prestress-1
+```
+
+Expected metrics:
+
+```text
+Decision: TRUTH_LEDGER_PRELEDGER_STRESS_READY
+Source preledger: true v0.1.0
+Stress records: 16
+Stress families: 16
+Final authority: false
+LLM used: false
+Lookup: false
+```
+
+Important stress rule:
+
+```text
+stress pressure does not promote truth.
+conflict, duplicate provenance, bad-actor reframe, missing context, media uncertainty, user confidence, anonymous claim, causal overclaim, motive stuffing, counterevidence, corroboration, ambiguity weaponization, and mixed pressure stacks stay candidate-only.
+```
+
 Truth-ledger preledger v0.1:
 
 ```text
@@ -91,13 +120,6 @@ Preledger entries: 8
 Final authority: false
 LLM used: false
 Lookup: false
-```
-
-Important preledger rule:
-
-```text
-truth-pressure outputs and real-world ingestion packets are collected into candidate entries, not final truth.
-unresolved gaps, contradiction pressure, source/media/evidence uncertainty, adversarial warnings, rollback, and revision trails stay visible.
 ```
 
 Real-world packet ingestion discipline v0.1:
@@ -216,6 +238,7 @@ no-good-interpretation framing is structural distortion pressure
 motive stuffing is not motive proof
 source laundering is not independent convergence
 ambiguity weaponization does not close ambiguity
+user confidence is not evidence
 user-supplied context is context, not automatic truth
 user-described real-world material enters as context packet, not truth
 source reference is anchor, not lookup
@@ -224,11 +247,13 @@ evidence claim is separate from evidence verification
 uncertainty notes and ingestion warnings stay visible
 truth-ledger preledger is not final truth authority
 candidate preledger entries are not final truth
-rollback and revision trail are required for preledger entries
+preledger stress benchmark is not final truth authority
+rollback and revision trail are required for preledger and stress entries
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
 support is not truth
 counterevidence is not automatic disproof
+corroboration pressure is not final truth
 truth-pressure synthesis is not final truth promotion
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
@@ -248,55 +273,6 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 CURRENT_PROGRESS.md
 ```
 
-Formula / intention stack:
-
-```text
-src/kernel-intention-discovery-v0-1.js
-src/kernel-intention-refinement-v0-1.js
-src/kernel-intention-necessity-test-v0-1.js
-src/kernel-intention-neighbor-lattice-v0-1.js
-src/kernel-intention-lattice-invariance-benchmark-v0-1.js
-src/kernel-intention-formula-compiler-v0-1.js
-src/kernel-intention-concept-expansion-loop-v0-1.js
-src/kernel-intention-contradiction-refinement-loop-v0-1.js
-src/kernel-intention-formula-revision-engine-v0-1.js
-src/kernel-intention-canonical-formula-ledger-v0-1.js
-src/kernel-intention-proof-output-v0-1.js
-src/kernel-intention-minimal-pair-library-v0-1.js
-src/kernel-intention-dimension-splitting-v0-1.js
-src/kernel-intention-coefficient-dimension-revision-engine-v0-1.js
-src/kernel-intention-canonical-formula-ledger-v0-1-1-patch.js
-src/kernel-intention-formula-inspector-v0-1.js
-src/kernel-concept-admission-registry-v0-1.js
-src/kernel-intention-formula-inspector-v0-1-1-patch.js
-```
-
-Language/parser stack:
-
-```text
-src/kernel-intention-arbitrary-language-parser-v0-1.js
-src/kernel-intention-arbitrary-language-parser-v0-1-1-patch.js
-src/kernel-intention-parser-proof-trace-v0-1.js
-src/kernel-intention-parser-proof-trace-v0-1-1-patch.js
-```
-
-Inspection/alignment:
-
-```text
-src/kernel-intention-formula-inspector-v0-1.js
-src/kernel-concept-admission-registry-v0-1.js
-src/kernel-intention-formula-inspector-v0-1-1-patch.js
-src/epistemic-octahedron-language-alignment-v0-1.js
-```
-
-Claim stack:
-
-```text
-src/kernel-objective-claim-language-v0-1.js
-src/kernel-objective-claim-language-v0-1-1-patch.js
-src/kernel-objective-claim-trace-v0-1.js
-```
-
 External-world stack:
 
 ```text
@@ -309,27 +285,14 @@ src/kernel-claim-narrative-benchmark-v0-1.js
 src/kernel-adversarial-narrative-pressure-v0-1.js
 src/kernel-real-world-packet-ingestion-discipline-v0-1.js
 src/kernel-truth-ledger-preledger-v0-1.js
+src/kernel-truth-ledger-preledger-stress-benchmark-v0-1.js
 ```
 
-## Current architecture interpretation
-
-The Epistemic Octahedron supplied invariant geometry and maturity semantics.
-
-The objective language-math kernel operationalized those semantics into deterministic machinery.
-
-The alignment layer confirmed that the Epistemic Octahedron's operational core is mathematically coherent inside the built kernel.
-
-The claim-language layer extended the same objective grammar into claim/world-model/narrative/propaganda-pressure analysis without LLM use or source lookup.
-
-The concept admission registry gives the kernel a deterministic route for newly learned meanings to become candidate formulas.
-
-The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
-
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, claim/narrative benchmark v0.1, adversarial narrative-pressure suite v0.1, real-world packet ingestion discipline v0.1, and truth-ledger preledger v0.1.
+Formula / language / claim stack remains as previously recorded in `KERNEL_ARCHITECTURE_2026_05_18.md`.
 
 ## Roadmap status
 
-The five-step roadmap is complete through candidate preledger:
+The five-step roadmap is complete through candidate preledger, and the first hardening benchmark is built:
 
 ```text
 1. truth-pressure synthesis v0.1.1: complete
@@ -337,6 +300,7 @@ The five-step roadmap is complete through candidate preledger:
 3. adversarial narrative-pressure cases v0.1: complete
 4. real-world packet ingestion discipline v0.1: complete
 5. truth-ledger preledger v0.1: complete
+6. preledger stress benchmark v0.1: built for verification
 ```
 
 ## What remains
@@ -348,57 +312,31 @@ The language is still not guaranteed complete in universal coverage.
 Remaining optional expansion work:
 
 ```text
-larger multilingual benchmark
 world-model relation expansion
+larger multilingual benchmark
 coverage stress tests
-preledger stress benchmark
-final truth ledger / adjudication layer only after more stress passes
+final truth ledger / adjudication discipline only after more stress passes
 ```
 
 ## Next task
 
-Run the truth-ledger preledger test.
+Run the truth-ledger preledger stress benchmark test.
 
-After it passes, the next best build is probably a preledger stress benchmark, not a final truth authority yet.
+After it passes, the next best build is likely world-model relation expansion v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-truth-ledger-preledger-stress-benchmark-v0-1.js
-kernel-truth-ledger-preledger-stress-benchmark-v0-1-test.html
-truth-ledger-preledger-stress-benchmark.html
-HANDOFF_2026_05_18_TRUTH_LEDGER_PRELEDGER_STRESS_BENCHMARK.md
+src/kernel-world-model-relation-expansion-v0-1.js
+kernel-world-model-relation-expansion-v0-1-test.html
+world-model-relation-expansion.html
+HANDOFF_2026_05_18_WORLD_MODEL_RELATION_EXPANSION.md
 ```
 
 Purpose:
 
 ```text
-Stress-test candidate preledger behavior across more conflict, uncertainty, adversarial reframe, duplicate provenance, media uncertainty, and corroboration cases without promoting final truth.
-```
-
-## File growth rule
-
-New files are acceptable only if they add one clear layer.
-
-Each new layer should normally include:
-
-```text
-src/<module>.js
-<module>-test.html
-<module-ui>.html
-HANDOFF_<date>_<MODULE>.md
-```
-
-Every handoff must state:
-
-```text
-what it consumes
-what it produces
-what it refuses to do
-cache keys
-browser test URL
-UI URL
-next suggested layer
+Represent causal, temporal, evidential, contradiction, source, and narrative relations between claims without final truth promotion.
 ```
 
 ## Do not do yet
@@ -410,7 +348,7 @@ do not treat user descriptions as truth
 do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
-do not make the preledger a final truth authority
+do not make the preledger or stress benchmark a final truth authority
 do not read unrelated uploaded files
 ```
 
