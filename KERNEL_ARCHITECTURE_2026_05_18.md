@@ -10,7 +10,7 @@ The current kernel is a working deterministic language-math brain for the covere
 
 It is not a political/narrative-specific system.
 
-It is not LLM-dependent.
+It is not LLM-dependent for structured packets.
 
 It is not a source lookup engine yet.
 
@@ -30,6 +30,8 @@ active local shape preserves Σ |dimension_i| = 1
 F = M · i
 no silent mutation
 rollback/version trail required for formula changes
+new meanings enter through admission records, not silent canonical mutation
+admitted meanings do not fake proof references
 ```
 
 ## Current stack map
@@ -87,10 +89,12 @@ https://42ndmoose.github.io/42ndMind/kernel-intention-language-to-formula-expand
 https://42ndmoose.github.io/42ndMind/kernel-intention-expanded-parser-proof-trace-v0-1-1-test.html?v=ptrace-2
 ```
 
-### 3. Formula inspection and octahedron alignment
+### 3. Formula inspection, concept admission, and octahedron alignment
 
 ```text
 src/kernel-intention-formula-inspector-v0-1.js?v=inspect-1
+src/kernel-concept-admission-registry-v0-1.js?v=admit-1
+src/kernel-intention-formula-inspector-v0-1-1-patch.js?v=inspect-2
 src/epistemic-octahedron-language-alignment-v0-1.js?v=eoalign-1
 ```
 
@@ -98,6 +102,8 @@ Status:
 
 ```text
 formula inspector ready
+concept admission / formula registration ready
+unified formula inspector ready
 octahedron language alignment ready
 ```
 
@@ -107,13 +113,32 @@ Meaning:
 Epistemic Octahedron supplied invariant geometry and maturity semantics.
 The language-math kernel operationalized them.
 The alignment layer confirmed the core semantics are mathematically coherent inside the built kernel.
+Newly learned meanings now enter through candidate admission records.
+The unified inspector exposes canonical formulas and admitted candidate formulas in one place.
 ```
 
 Important URLs:
 
 ```text
 https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-test.html?v=inspect-1
+https://42ndmoose.github.io/42ndMind/kernel-concept-admission-registry-v0-1-test.html?v=admit-1
+https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-1-test.html?v=inspect-2
+https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
 https://42ndmoose.github.io/42ndMind/epistemic-octahedron-language-alignment-v0-1-test.html?v=eoalign-1
+```
+
+Main formula inspection URL:
+
+```text
+https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
+```
+
+Expected current formula counts:
+
+```text
+canonical formulas: 11
+admitted candidate formulas: 6
+total formula records: 17
 ```
 
 ### 4. Objective claim-language stack
@@ -145,10 +170,42 @@ https://42ndmoose.github.io/42ndMind/kernel-objective-claim-language-v0-1-1-test
 https://42ndmoose.github.io/42ndMind/kernel-objective-claim-trace-v0-1-test.html?v=ctrace-1
 ```
 
+### 5. External-world anchoring stack
+
+```text
+src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
+src/kernel-source-provenance-registry-v0-1.js?v=prov-1
+```
+
+Status:
+
+```text
+external anchor packet schema ready
+source/provenance registry ready
+```
+
+Important URLs:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-external-anchor-packet-schema-v0-1-test.html?v=anchor-1
+https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
+```
+
+Important UI note:
+
+```text
+source records: 4
+source groups: 3
+```
+
+This is correct because two source records share `user_context_group`.
+
 ## Current maturity status
 
 ```text
 CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
+FORMULA_ADMISSION_PATH_READY
+UNIFIED_FORMULA_INSPECTOR_READY
 ```
 
 This means:
@@ -157,9 +214,13 @@ This means:
 working deterministic language-math brain for covered grammar
 formula memory exists
 formula inspection exists
+newly learned meanings can be admitted as candidate formulas
+unified formula inspection exists
 proof traces exist
 claim-language analysis exists
 claim traces exist
+external anchors exist
+source/provenance tracking exists
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -168,9 +229,10 @@ This does not mean:
 
 ```text
 every word in every language has coverage
-every source type has an anchor schema
+every source type has full anchor schema coverage
 every real-world event can be adjudicated automatically
 external truth is finalized without evidence anchors
+admitted meanings are canonical doctrine
 ```
 
 ## What remains
@@ -180,35 +242,30 @@ The remaining work is not core-language invention from zero.
 The remaining work is:
 
 ```text
-coverage expansion
-external anchor packet schema
-source/provenance registry
 evidence/media registry
 larger multilingual and claim benchmark
 world-model relation expansion
 stress testing against adversarial narrative forms
+real-world packet ingestion discipline
 ```
 
 ## Next build
 
-Build external anchor packet schema v0.1.
+Build evidence/media registry v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-external-anchor-packet-schema-v0-1.js
-kernel-external-anchor-packet-schema-v0-1-test.html
-external-anchor-packet-schema.html
-HANDOFF_2026_05_18_EXTERNAL_ANCHOR_PACKET_SCHEMA.md
+src/kernel-evidence-media-registry-v0-1.js
+kernel-evidence-media-registry-v0-1-test.html
+evidence-media-registry.html
+HANDOFF_2026_05_18_EVIDENCE_MEDIA_REGISTRY.md
 ```
 
 Purpose:
 
 ```text
-Define modular anchor packets for names/entities, events, dates, source/provenance, and evidence/media.
-Do not make source lookup automatic.
-Do not treat user descriptions as truth.
-Do not merge anchors into the formula language itself.
+Track evidence type, media/record/user-description posture, support/counterevidence direction, strength, independence group, source linkage, contradiction contribution, and whether evidence is direct, documentary, hearsay, or ambiguous.
 ```
 
 ## File growth rule
