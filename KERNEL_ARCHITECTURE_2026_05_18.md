@@ -4,7 +4,7 @@
 
 This is the compact architecture map for the current objective language-math kernel.
 
-Read this before touching the repo when continuing the objective-language work.
+Read this before touching the repo when continuing objective-language work.
 
 The current kernel is a working deterministic language-math brain for the covered grammar.
 
@@ -25,6 +25,10 @@ belief_movement: none
 contradiction detection is not contradiction resolution
 narrative pressure is not proof of hidden motive
 specific narrative-overclaim status outranks broad propaganda-threshold classification
+bad-actor reframe is pressure, not truth
+quantifier injection is not the same claim
+condition deletion is not the same claim
+no-good-interpretation framing is structural distortion pressure
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
@@ -88,13 +92,6 @@ weak dimension-only noise holdout ready
 expanded parser proof trace ready
 ```
 
-Important URLs:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-intention-language-to-formula-expanded-benchmark-v0-1-2-test.html?v=parser-3
-https://42ndmoose.github.io/42ndMind/kernel-intention-expanded-parser-proof-trace-v0-1-1-test.html?v=ptrace-2
-```
-
 ### 3. Formula inspection, concept admission, and octahedron alignment
 
 ```text
@@ -149,14 +146,7 @@ because + ordinary event sequence -> causal_claim
 because + hidden motive language -> motive_attribution_claim
 ```
 
-Important URLs:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-objective-claim-language-v0-1-1-test.html?v=claim-2
-https://42ndmoose.github.io/42ndMind/kernel-objective-claim-trace-v0-1-test.html?v=ctrace-1
-```
-
-### 5. External-world anchoring and truth-pressure stack
+### 5. External-world anchoring, truth-pressure, and benchmark stack
 
 ```text
 src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
@@ -164,6 +154,7 @@ src/kernel-source-provenance-registry-v0-1.js?v=prov-1
 src/kernel-evidence-media-registry-v0-1.js?v=evidence-1
 src/kernel-truth-pressure-synthesis-v0-1.js?v=truth-1
 src/kernel-truth-pressure-synthesis-v0-1-1-patch.js?v=truth-2
+src/kernel-claim-narrative-benchmark-v0-1.js?v=bench-1
 ```
 
 Status:
@@ -173,6 +164,7 @@ external anchor packet schema ready
 source/provenance registry ready
 evidence/media registry ready
 truth-pressure synthesis ready v0.1.1
+claim/narrative benchmark ready v0.1
 ```
 
 Important URLs:
@@ -182,6 +174,7 @@ https://42ndmoose.github.io/42ndMind/kernel-external-anchor-packet-schema-v0-1-t
 https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
 https://42ndmoose.github.io/42ndMind/kernel-evidence-media-registry-v0-1-test.html?v=evidence-1
 https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-1-test.html?v=truth-2
+https://42ndmoose.github.io/42ndMind/kernel-claim-narrative-benchmark-v0-1-test.html?v=bench-1
 ```
 
 Important UI notes:
@@ -194,6 +187,8 @@ evidence groups: 3
 evidence claim summaries: 4
 truth-pressure synthesis records: 8
 truth-pressure synthesis version: 0.1.1
+claim/narrative benchmark records: 12
+claim/narrative benchmark case families: 12
 ```
 
 Source groups = 3 is correct because two source records share `user_context_group`.
@@ -201,6 +196,15 @@ Source groups = 3 is correct because two source records share `user_context_grou
 Evidence claim summaries = 4 is correct because two evidence records support `claim_cost_change`.
 
 The v0.1.1 truth-pressure patch fixes the earlier 4/8 failure by preserving `narrative_overclaim_pressure_visible_candidate` before applying the broader propaganda-pressure threshold.
+
+The claim/narrative benchmark adds neutral synthetic bad-actor distortion tests:
+
+```text
+quantifier/scope distortion
+condition deletion
+no-good-interpretation framing
+modal strength inflation
+```
 
 ## Current maturity status
 
@@ -210,6 +214,7 @@ FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
 TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
+CLAIM_NARRATIVE_BENCHMARK_READY
 ```
 
 This means:
@@ -227,6 +232,8 @@ external anchors exist
 source/provenance tracking exists
 evidence/media tracking exists
 truth-pressure synthesis v0.1.1 exists
+claim/narrative benchmark v0.1 exists
+bad-actor distortion pressure is represented structurally
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -256,38 +263,42 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, and truth-pressure synthesis v0.1.1.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, and a larger claim/narrative benchmark.
+
+The benchmark now distinguishes an original scoped claim from a bad-actor reframe that injects universals, removes conditions, or pretends no good-faith interpretation exists.
 
 ## What remains
 
 The remaining work is not core-language invention from zero.
 
-The remaining work is:
+Remaining work:
 
 ```text
-larger multilingual and claim benchmark
-world-model relation expansion
-stress testing against adversarial narrative forms
 real-world packet ingestion discipline
+larger multilingual benchmark
+world-model relation expansion
+coverage stress tests
+adversarial narrative-pressure tests
 ```
 
 ## Next build
 
-Build larger claim/narrative benchmark v0.1.
+Build real-world packet ingestion discipline v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-claim-narrative-benchmark-v0-1.js
-kernel-claim-narrative-benchmark-v0-1-test.html
-claim-narrative-benchmark.html
-HANDOFF_2026_05_18_CLAIM_NARRATIVE_BENCHMARK.md
+src/kernel-real-world-packet-ingestion-discipline-v0-1.js
+kernel-real-world-packet-ingestion-discipline-v0-1-test.html
+real-world-packet-ingestion-discipline.html
+HANDOFF_2026_05_18_REAL_WORLD_PACKET_INGESTION_DISCIPLINE.md
 ```
 
 Purpose:
 
 ```text
-Stress-test truth-pressure synthesis across more claim types, including support-only, counterevidence, ambiguity, causal jumps, hidden motive claims, loaded-label propaganda, unsupported rumor, independent corroboration, duplicate provenance, and unresolved evidence gaps.
+Define how user-described real-world material enters the kernel as packets without becoming automatic truth.
+Keep raw descriptions, source references, media descriptions, evidence claims, uncertainty notes, and ingestion warnings separate.
 ```
 
 ## File growth rule
