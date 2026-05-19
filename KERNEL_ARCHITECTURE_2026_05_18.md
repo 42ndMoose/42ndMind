@@ -33,6 +33,7 @@ no-good-interpretation framing is structural distortion pressure
 motive stuffing is not motive proof
 source laundering is not independent convergence
 ambiguity weaponization does not close ambiguity
+user confidence is not evidence
 user-supplied context is context, not automatic truth
 user-described real-world material enters as context packet, not truth
 source reference is anchor, not lookup
@@ -41,11 +42,13 @@ evidence claim is separate from evidence verification
 uncertainty notes and ingestion warnings stay visible
 truth-ledger preledger is not final truth authority
 candidate preledger entries are not final truth
-rollback and revision trail are required for preledger entries
+preledger stress benchmark is not final truth authority
+rollback and revision trail are required for preledger and stress entries
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
 support is not truth
 counterevidence is not automatic disproof
+corroboration pressure is not final truth
 truth-pressure synthesis is not final truth promotion
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
@@ -158,7 +161,7 @@ because + ordinary event sequence -> causal_claim
 because + hidden motive language -> motive_attribution_claim
 ```
 
-### 5. External-world anchoring, truth-pressure, benchmark, ingestion, and preledger stack
+### 5. External-world anchoring, truth-pressure, benchmark, ingestion, preledger, and stress stack
 
 ```text
 src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
@@ -170,6 +173,7 @@ src/kernel-claim-narrative-benchmark-v0-1.js?v=bench-1
 src/kernel-adversarial-narrative-pressure-v0-1.js?v=adv-1
 src/kernel-real-world-packet-ingestion-discipline-v0-1.js?v=ingest-1
 src/kernel-truth-ledger-preledger-v0-1.js?v=preledger-1
+src/kernel-truth-ledger-preledger-stress-benchmark-v0-1.js?v=prestress-1
 ```
 
 Status:
@@ -183,6 +187,7 @@ claim/narrative benchmark ready v0.1
 adversarial narrative-pressure suite ready v0.1
 real-world packet ingestion discipline ready v0.1
 truth-ledger preledger ready v0.1
+truth-ledger preledger stress benchmark ready v0.1
 ```
 
 Important URLs:
@@ -196,6 +201,7 @@ https://42ndmoose.github.io/42ndMind/kernel-claim-narrative-benchmark-v0-1-test.
 https://42ndmoose.github.io/42ndMind/kernel-adversarial-narrative-pressure-v0-1-test.html?v=adv-1
 https://42ndmoose.github.io/42ndMind/kernel-real-world-packet-ingestion-discipline-v0-1-test.html?v=ingest-1
 https://42ndmoose.github.io/42ndMind/kernel-truth-ledger-preledger-v0-1-test.html?v=preledger-1
+https://42ndmoose.github.io/42ndMind/kernel-truth-ledger-preledger-stress-benchmark-v0-1-test.html?v=prestress-1
 ```
 
 Important UI notes:
@@ -216,6 +222,9 @@ real-world ingestion records: 8
 real-world material types: 8
 truth preledger entries: 8
 truth preledger final authority: false
+preledger stress records: 16
+preledger stress families: 16
+preledger stress final authority: false
 ```
 
 Source groups = 3 is correct because two source records share `user_context_group`.
@@ -277,6 +286,27 @@ not_adjudicated truth status
 candidate_preledger_not_truth ledger status
 ```
 
+The preledger stress benchmark adds sixteen synthetic pressure families:
+
+```text
+direct_conflict
+duplicate_provenance
+adversarial_quantifier_injection
+no_good_interpretation_framing
+quote_clipping
+context_stripping
+media_metadata_missing
+edited_media_risk
+high_user_confidence
+anonymous_claim_stack
+causal_bridge_gap
+motive_stuffing
+counterevidence_pressure
+independent_corroboration
+ambiguity_weaponization
+mixed_pressure_stack
+```
+
 ## Current maturity status
 
 ```text
@@ -289,7 +319,9 @@ CLAIM_NARRATIVE_BENCHMARK_READY
 ADVERSARIAL_NARRATIVE_PRESSURE_READY
 REAL_WORLD_PACKET_INGESTION_DISCIPLINE_READY
 TRUTH_LEDGER_PRELEDGER_READY
+TRUTH_LEDGER_PRELEDGER_STRESS_READY
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
+PRELEDGER_HARDENING_PASS_READY
 ```
 
 This means:
@@ -311,10 +343,12 @@ claim/narrative benchmark v0.1 exists
 adversarial narrative-pressure suite v0.1 exists
 real-world packet ingestion discipline v0.1 exists
 truth-ledger preledger v0.1 exists
+preledger stress benchmark v0.1 exists
 bad-actor distortion pressure is represented structurally
 hostile reframes are explicitly not the same claim
 user-described real-world material enters as context packet, not truth
 candidate truth preledger entries are not final truth
+stress pressure does not promote truth
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -330,6 +364,7 @@ admitted meanings are canonical doctrine
 truth-pressure synthesis is final truth promotion
 real-world ingestion is final truth promotion
 preledger is final truth authority
+stress benchmark is final truth authority
 ```
 
 ## Current architecture interpretation
@@ -346,7 +381,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, a larger claim/narrative benchmark, an adversarial narrative-pressure suite, real-world packet ingestion discipline, and truth-ledger preledger.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, a larger claim/narrative benchmark, an adversarial narrative-pressure suite, real-world packet ingestion discipline, truth-ledger preledger, and preledger stress benchmark.
 
 The benchmark distinguishes an original scoped claim from a bad-actor reframe that injects universals, removes conditions, or pretends no good-faith interpretation exists.
 
@@ -356,9 +391,11 @@ The ingestion layer defines how user-described videos, screenshots, quotes, arti
 
 The preledger collects ingestion snapshots and truth-pressure links into candidate entries without making them final truth.
 
+The stress benchmark hardens the preledger against conflict, duplicate provenance, adversarial reframe, context stripping, media uncertainty, user confidence, anonymous claims, causal gaps, motive stuffing, counterevidence, corroboration, ambiguity weaponization, and mixed pressure stacks.
+
 ## Roadmap status
 
-The five-step roadmap is complete through candidate preledger:
+The five-step roadmap is complete through candidate preledger, and the first hardening benchmark is built:
 
 ```text
 1. truth-pressure synthesis v0.1.1: complete
@@ -366,6 +403,7 @@ The five-step roadmap is complete through candidate preledger:
 3. adversarial narrative-pressure cases v0.1: complete
 4. real-world packet ingestion discipline v0.1: complete
 5. truth-ledger preledger v0.1: complete
+6. preledger stress benchmark v0.1: built for verification
 ```
 
 ## What remains
@@ -377,32 +415,31 @@ The language is still not guaranteed complete in universal coverage.
 Remaining optional expansion work:
 
 ```text
-larger multilingual benchmark
 world-model relation expansion
+larger multilingual benchmark
 coverage stress tests
-preledger stress benchmark
-final truth ledger / adjudication layer only after more stress passes
+final truth ledger / adjudication discipline only after more stress passes
 ```
 
 ## Next build
 
-Run the truth-ledger preledger test first.
+Run the truth-ledger preledger stress benchmark test.
 
-After it passes, the next best build is probably a preledger stress benchmark, not a final truth authority yet.
+After it passes, the next best build is likely world-model relation expansion v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-truth-ledger-preledger-stress-benchmark-v0-1.js
-kernel-truth-ledger-preledger-stress-benchmark-v0-1-test.html
-truth-ledger-preledger-stress-benchmark.html
-HANDOFF_2026_05_18_TRUTH_LEDGER_PRELEDGER_STRESS_BENCHMARK.md
+src/kernel-world-model-relation-expansion-v0-1.js
+kernel-world-model-relation-expansion-v0-1-test.html
+world-model-relation-expansion.html
+HANDOFF_2026_05_18_WORLD_MODEL_RELATION_EXPANSION.md
 ```
 
 Purpose:
 
 ```text
-Stress-test candidate preledger behavior across more conflict, uncertainty, adversarial reframe, duplicate provenance, media uncertainty, and corroboration cases without promoting final truth.
+Represent causal, temporal, evidential, contradiction, source, and narrative relations between claims without final truth promotion.
 ```
 
 ## File growth rule
@@ -462,6 +499,6 @@ do not treat user descriptions as truth
 do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
-do not make the preledger a final truth authority
+do not make the preledger or stress benchmark a final truth authority
 do not read unrelated uploaded files
 ```
