@@ -18,6 +18,7 @@ This file is the compact operational status. The architecture file is the detail
 CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
+EXTERNAL_WORLD_EVIDENCE_STACK_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -40,6 +41,7 @@ objective claim-language kernel
 objective claim trace layer
 external anchor packet schema
 source/provenance registry
+evidence/media registry
 ```
 
 ## Current main formula-inspection URL
@@ -72,6 +74,24 @@ https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
 ```
 
 ## Most recent added layers
+
+Evidence/media registry v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-evidence-media-registry-v0-1-test.html?v=evidence-1
+https://42ndmoose.github.io/42ndMind/evidence-media-registry.html?v=evidence-1
+```
+
+Expected metrics:
+
+```text
+Decision: EVIDENCE_MEDIA_REGISTRY_READY
+Evidence records: 5
+Evidence groups: 3
+Claim summaries: 5
+LLM used: false
+Lookup: false
+```
 
 Concept admission / formula registration registry v0.1:
 
@@ -110,6 +130,8 @@ contradiction detection is not contradiction resolution
 narrative pressure is not proof of hidden motive
 propaganda pressure is structural pressure, not external fact-checking
 user-supplied context is context, not automatic truth
+evidence descriptions are context, not automatic truth
+support/counterevidence direction is separate from truth
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
 F = M · i
@@ -182,6 +204,7 @@ External-world stack:
 ```text
 src/kernel-external-anchor-packet-schema-v0-1.js
 src/kernel-source-provenance-registry-v0-1.js
+src/kernel-evidence-media-registry-v0-1.js
 ```
 
 ## Current architecture interpretation
@@ -194,9 +217,11 @@ The alignment layer confirmed that the Epistemic Octahedron's operational core i
 
 The claim-language layer extended the same objective grammar into claim/world-model/narrative/propaganda-pressure analysis without LLM use or source lookup.
 
-The concept admission registry now gives the kernel a deterministic route for newly learned meanings to become candidate formulas.
+The concept admission registry gives the kernel a deterministic route for newly learned meanings to become candidate formulas.
 
-The unified formula inspector now exposes both canonical formulas and admitted candidate formulas in one place.
+The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
+
+The external-world stack now has anchor packets, source/provenance, and evidence/media structure.
 
 ## What remains
 
@@ -207,7 +232,7 @@ The language is not complete in universal coverage yet.
 Remaining work:
 
 ```text
-evidence/media registry
+truth-pressure synthesis
 larger multilingual benchmark
 larger claim/narrative benchmark
 world-model relation expansion
@@ -218,21 +243,23 @@ real-world packet ingestion discipline
 
 ## Next task
 
-Build evidence/media registry v0.1.
+Build truth-pressure synthesis v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-evidence-media-registry-v0-1.js
-kernel-evidence-media-registry-v0-1-test.html
-evidence-media-registry.html
-HANDOFF_2026_05_18_EVIDENCE_MEDIA_REGISTRY.md
+src/kernel-truth-pressure-synthesis-v0-1.js
+kernel-truth-pressure-synthesis-v0-1-test.html
+truth-pressure-synthesis.html
+HANDOFF_2026_05_18_TRUTH_PRESSURE_SYNTHESIS.md
 ```
 
 Purpose:
 
 ```text
-Track evidence type, media/record/user-description posture, support/counterevidence direction, strength, independence group, source linkage, contradiction contribution, and whether evidence is direct, documentary, hearsay, or ambiguous.
+Consume claim-language outputs, source provenance, and evidence/media summaries.
+Produce candidate truth-pressure synthesis without final truth promotion.
+Keep support, counterevidence, contradiction, narrative pressure, propaganda pressure, and unresolved gaps separate.
 ```
 
 ## File growth rule
@@ -266,6 +293,7 @@ next suggested layer
 do not build political-specific logic
 do not make source lookup automatic
 do not treat user descriptions as truth
+do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
 do not read unrelated uploaded files
