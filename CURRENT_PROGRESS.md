@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_19_UNIFIED_BRAIN_RUNTIME_DIRECTION.md
 HANDOFF_2026_05_19_UNIFIED_RUNTIME_RECEPTOR_REGISTRY.md
+HANDOFF_2026_05_19_RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR.md
 ```
 
 ## Current status
@@ -38,7 +38,8 @@ DETERMINISTIC_PACKET_INGESTION_FORM_READY
 DOSSIER_TO_PACKET_COMPILER_READY
 INGESTION_TO_PRELEDGER_BRIDGE_READY
 DOSSIER_PACKET_STRESS_BENCHMARK_READY
-UNIFIED_RUNTIME_RECEPTOR_REGISTRY_BUILT_FOR_VERIFICATION
+UNIFIED_RUNTIME_RECEPTOR_REGISTRY_READY
+RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -50,7 +51,8 @@ DOSSIER_COMPILER_FIRST_PASS_CONFIRMED
 PRELEDGER_BRIDGE_FIRST_PASS_CONFIRMED
 DOSSIER_PACKET_STRESS_FIRST_PASS_CONFIRMED
 UNIFIED_BRAIN_RUNTIME_ARCHITECTURE_CORRECTION_RECORDED
-UNIFIED_RUNTIME_FIRST_PASS_BUILT
+UNIFIED_RUNTIME_FIRST_PASS_CONFIRMED
+RAW_INTAKE_RECEPTOR_FIRST_PASS_BUILT
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -87,9 +89,48 @@ dossier-to-packet compiler v0.1
 ingestion-to-preledger bridge v0.1
 dossier packet stress benchmark v0.1
 unified runtime receptor registry v0.1
+raw messy language intake receptor v0.1
 ```
 
 ## Most recent added layer
+
+Raw messy language intake receptor v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-raw-messy-language-intake-receptor-v0-1-test.html?v=rawintake-1
+https://42ndmoose.github.io/42ndMind/raw-messy-language-intake-receptor.html?v=rawintake-1
+```
+
+Expected metrics:
+
+```text
+Decision: RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY
+Source unified runtime: true v0.1.0
+Source receptors: 14
+Source runtime is one brain: true
+Source modules as side filters: false
+Raw intake records: 5
+Candidate interpretations: >= 5
+Candidate packets: >= 7
+Relation candidates: >= 4
+Typo variant hypotheses: >= 1
+Unknown/new meaning hypotheses: >= 1
+Admission candidates: >= 1
+Final authority: false
+LLM used: false
+Lookup: false
+```
+
+What it means:
+
+```text
+Arbitrary messy text now enters the unified runtime as candidate interpretations.
+The raw intake path is a receptor inside one runtime, not an external parser/filter.
+It detects candidate claims, belief pressure, source references, evidence/media descriptions, quote fragments, hostile reframes, relation/causal language, idiom/metaphor candidates, typo variants, unknown terms, and admission candidates.
+It does not promote truth or move belief.
+```
+
+## Recently confirmed layer
 
 Unified runtime receptor registry v0.1:
 
@@ -98,9 +139,10 @@ https://42ndmoose.github.io/42ndMind/kernel-unified-runtime-receptor-registry-v0
 https://42ndmoose.github.io/42ndMind/unified-runtime-receptor-registry.html?v=runtime-1
 ```
 
-Expected metrics:
+User-confirmed metrics:
 
 ```text
+8/8 passed
 Decision: UNIFIED_RUNTIME_RECEPTOR_REGISTRY_READY
 Source dossier stress: true v0.1.0
 Source dossier stress records: 16
@@ -116,77 +158,22 @@ LLM used: false
 Lookup: false
 ```
 
-What it means:
+## Architecture direction
+
+The current direction is:
 
 ```text
-Existing deterministic capabilities are now represented as receptors/operators inside one runtime state.
-This is an architectural consolidation layer, not a raw messy language parser yet.
-It prevents the next intake layer from becoming a loose external filter.
-Runtime events activate receptors inside the unified brain state.
-Candidate interpretations, packets, relations, pressure components, unresolved items, admission candidates, and rollback snapshots form inside the same runtime.
-No truth promotion or belief movement occurs.
+one brain = 1
+modules = receptors/operators inside 1
+raw text enters the unified runtime
+candidate meanings/packets/relations/pressures/admission candidates form inside 1
+truth promotion and belief movement require future explicit criteria
 ```
 
-Registered receptor families:
+This is the correction away from:
 
 ```text
-coverage_receptor
-claim_receptor
-source_anchor_receptor
-evidence_description_receptor
-media_description_receptor
-quote_context_receptor
-adversarial_reframe_receptor
-relation_receptor
-truth_pressure_receptor
-preledger_receptor
-dossier_packet_receptor
-unknown_or_typo_candidate_receptor
-meaning_admission_receptor
-rollback_receptor
-```
-
-## Architecture correction
-
-The latest user correction is now preserved in code and handoff:
-
-```text
-The brain itself should be 1.
-Modules should be receptors/operators inside 1, not side systems operating beside it.
-Structured packets are a safety scaffold, not the final intake model.
-The kernel should eventually handle arbitrary text, claims, meanings, beliefs, typos, fragments, and messy input through one unified objective language runtime.
-```
-
-Recorded in:
-
-```text
-HANDOFF_2026_05_19_UNIFIED_BRAIN_RUNTIME_DIRECTION.md
-HANDOFF_2026_05_19_UNIFIED_RUNTIME_RECEPTOR_REGISTRY.md
-```
-
-## Recently confirmed layer
-
-Dossier packet stress benchmark v0.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-dossier-packet-stress-benchmark-v0-1-test.html?v=dossierstress-1
-https://42ndmoose.github.io/42ndMind/dossier-packet-stress-benchmark.html?v=dossierstress-1
-```
-
-User-confirmed metrics:
-
-```text
-8/8 passed
-Decision: DOSSIER_PACKET_STRESS_BENCHMARK_READY
-Source preledger bridge: true v0.1.0
-Source preledger-ready entries: 21
-Source packet types: 10
-Source preledger categories: 10
-Dossier stress records: 16
-Dossier stress families: 16
-Final authority: false
-LLM used: false
-Lookup: false
+main brain + loose side modules
 ```
 
 ## Current doctrine invariants
@@ -199,12 +186,15 @@ brain itself is 1
 modules are receptors/operators inside 1
 modules are not side filters
 raw intake is not an external filter
+raw intake is a receptor inside one runtime
 structured packets are scaffold, not final intake
 runtime event activates receptors, not loose connectors
 candidate interpretation is not truth
 whole scope of language sits inside 1
 coverage class is not exact meaning
 unknown or typo repair is candidate only
+fragment completion is candidate only
+belief statement is pressure, not truth
 user confidence is not evidence
 support pressure is not truth
 counter pressure is not disproof
@@ -225,10 +215,10 @@ no silent mutation
 ## Key current files
 
 ```text
-src/kernel-unified-runtime-receptor-registry-v0-1.js
-kernel-unified-runtime-receptor-registry-v0-1-test.html
-unified-runtime-receptor-registry.html
-HANDOFF_2026_05_19_UNIFIED_RUNTIME_RECEPTOR_REGISTRY.md
+src/kernel-raw-messy-language-intake-receptor-v0-1.js
+kernel-raw-messy-language-intake-receptor-v0-1-test.html
+raw-messy-language-intake-receptor.html
+HANDOFF_2026_05_19_RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR.md
 ```
 
 ## Roadmap status
@@ -249,31 +239,32 @@ HANDOFF_2026_05_19_UNIFIED_RUNTIME_RECEPTOR_REGISTRY.md
 13. ingestion-to-preledger bridge v0.1: passed by user
 14. dossier packet stress benchmark v0.1: passed by user
 15. unified brain runtime architecture correction: recorded
-16. unified runtime receptor registry v0.1: built for verification
+16. unified runtime receptor registry v0.1: passed by user
+17. raw messy language intake receptor v0.1: built for verification
 ```
 
 ## Next task
 
-Run the unified runtime receptor registry browser test.
+Run the raw messy language intake receptor browser test.
 
-After it passes, treat `UNIFIED_RUNTIME_RECEPTOR_REGISTRY_READY` as confirmed.
+After it passes, treat `RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-raw messy language intake receptor v0.1
+meaning admission / self-expansion loop v0.1
 ```
 
 Purpose:
 
 ```text
-Accept arbitrary text into the unified runtime and produce candidate interpretations, typo/variant hypotheses, packet candidates, relation candidates, coverage holds, and admission candidates without fake exact meaning or truth promotion.
+Let the runtime propose candidate subdivisions and meaning additions when receptors detect unknown terms, idioms, typos, or recurring gaps, without silently mutating canonical knowledge.
 ```
 
 Alternative next build:
 
 ```text
-meaning admission / self-expansion loop v0.1
+raw intake stress benchmark v0.1
 ```
 
 ## Do not do yet
@@ -286,8 +277,7 @@ do not treat user descriptions as truth
 do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
-do not move belief from runtime events
+do not move belief from raw intake records
 do not fake exact meaning for arbitrary raw text
 do not collapse typo repair into certainty
-do not keep adding disconnected feature modules without receptor registration
 ```
