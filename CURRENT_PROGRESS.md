@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_19_UNIFIED_RUNTIME_RECEPTOR_REGISTRY.md
 HANDOFF_2026_05_19_RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR.md
+HANDOFF_2026_05_19_MEANING_ADMISSION_SELF_EXPANSION_LOOP.md
 ```
 
 ## Current status
@@ -39,7 +39,8 @@ DOSSIER_TO_PACKET_COMPILER_READY
 INGESTION_TO_PRELEDGER_BRIDGE_READY
 DOSSIER_PACKET_STRESS_BENCHMARK_READY
 UNIFIED_RUNTIME_RECEPTOR_REGISTRY_READY
-RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_BUILT_FOR_VERIFICATION
+RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY
+MEANING_ADMISSION_SELF_EXPANSION_LOOP_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -52,7 +53,8 @@ PRELEDGER_BRIDGE_FIRST_PASS_CONFIRMED
 DOSSIER_PACKET_STRESS_FIRST_PASS_CONFIRMED
 UNIFIED_BRAIN_RUNTIME_ARCHITECTURE_CORRECTION_RECORDED
 UNIFIED_RUNTIME_FIRST_PASS_CONFIRMED
-RAW_INTAKE_RECEPTOR_FIRST_PASS_BUILT
+RAW_INTAKE_RECEPTOR_FIRST_PASS_CONFIRMED
+SELF_EXPANSION_LOOP_FIRST_PASS_BUILT
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -90,9 +92,58 @@ ingestion-to-preledger bridge v0.1
 dossier packet stress benchmark v0.1
 unified runtime receptor registry v0.1
 raw messy language intake receptor v0.1
+meaning admission / self-expansion loop v0.1
 ```
 
 ## Most recent added layer
+
+Meaning admission / self-expansion loop v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-meaning-admission-self-expansion-loop-v0-1-test.html?v=selfexpand-1
+https://42ndmoose.github.io/42ndMind/meaning-admission-self-expansion-loop.html?v=selfexpand-1
+```
+
+Expected metrics:
+
+```text
+Decision: MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY
+Source raw intake: true v0.1.0
+Source raw records: 5
+Expansion proposals: 8
+Proposal families: 8
+Canonical mutation performed: false
+Final authority: false
+LLM used: false
+Lookup: false
+Belief movement: none
+```
+
+What it means:
+
+```text
+Raw-intake uncertainty now produces candidate subdivision/admission proposals.
+This is controlled self-expansion, not silent self-rewrite.
+Unknowns, typos, idioms, belief-pressure gaps, source/evidence/media gaps, quote/reframe gaps, causal-bridge gaps, and claim-scope gaps can generate proposed subdivisions.
+No canonical meaning is mutated.
+No truth is promoted.
+No belief movement occurs.
+```
+
+Proposal families:
+
+```text
+typo_variant_subdivision
+unknown_term_admission
+idiom_metaphor_subdivision
+belief_pressure_subdivision
+source_evidence_media_separation
+quote_reframe_scope_subdivision
+causal_bridge_relation_subdivision
+claim_scope_subdivision
+```
+
+## Recently confirmed layer
 
 Raw messy language intake receptor v0.1:
 
@@ -101,9 +152,10 @@ https://42ndmoose.github.io/42ndMind/kernel-raw-messy-language-intake-receptor-v
 https://42ndmoose.github.io/42ndMind/raw-messy-language-intake-receptor.html?v=rawintake-1
 ```
 
-Expected metrics:
+User-confirmed metrics:
 
 ```text
+8/8 passed
 Decision: RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY
 Source unified runtime: true v0.1.0
 Source receptors: 14
@@ -121,43 +173,6 @@ LLM used: false
 Lookup: false
 ```
 
-What it means:
-
-```text
-Arbitrary messy text now enters the unified runtime as candidate interpretations.
-The raw intake path is a receptor inside one runtime, not an external parser/filter.
-It detects candidate claims, belief pressure, source references, evidence/media descriptions, quote fragments, hostile reframes, relation/causal language, idiom/metaphor candidates, typo variants, unknown terms, and admission candidates.
-It does not promote truth or move belief.
-```
-
-## Recently confirmed layer
-
-Unified runtime receptor registry v0.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-unified-runtime-receptor-registry-v0-1-test.html?v=runtime-1
-https://42ndmoose.github.io/42ndMind/unified-runtime-receptor-registry.html?v=runtime-1
-```
-
-User-confirmed metrics:
-
-```text
-8/8 passed
-Decision: UNIFIED_RUNTIME_RECEPTOR_REGISTRY_READY
-Source dossier stress: true v0.1.0
-Source dossier stress records: 16
-Receptors: 14
-Receptor families: 14
-Operators: 8
-Runtime events: 3
-Runtime is one brain: true
-Modules as receptors inside one: true
-Modules as side filters: false
-Final authority: false
-LLM used: false
-Lookup: false
-```
-
 ## Architecture direction
 
 The current direction is:
@@ -167,6 +182,7 @@ one brain = 1
 modules = receptors/operators inside 1
 raw text enters the unified runtime
 candidate meanings/packets/relations/pressures/admission candidates form inside 1
+self-expansion proposes subdivisions without canonical mutation
 truth promotion and belief movement require future explicit criteria
 ```
 
@@ -202,6 +218,10 @@ source reference is anchor, not lookup
 evidence/media description is not verification
 hostile reframe is pressure, not same claim
 causal relation requires bridge
+self-expansion is not silent self-rewrite
+growth means subdivision, not mass inflation
+candidate admission is not canonical meaning
+no canonical mutation
 belief movement requires future promotion criteria
 candidate only unless a future ledger explicitly promotes
 belief_movement: none
@@ -215,10 +235,10 @@ no silent mutation
 ## Key current files
 
 ```text
-src/kernel-raw-messy-language-intake-receptor-v0-1.js
-kernel-raw-messy-language-intake-receptor-v0-1-test.html
-raw-messy-language-intake-receptor.html
-HANDOFF_2026_05_19_RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR.md
+src/kernel-meaning-admission-self-expansion-loop-v0-1.js
+kernel-meaning-admission-self-expansion-loop-v0-1-test.html
+meaning-admission-self-expansion-loop.html
+HANDOFF_2026_05_19_MEANING_ADMISSION_SELF_EXPANSION_LOOP.md
 ```
 
 ## Roadmap status
@@ -240,31 +260,32 @@ HANDOFF_2026_05_19_RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR.md
 14. dossier packet stress benchmark v0.1: passed by user
 15. unified brain runtime architecture correction: recorded
 16. unified runtime receptor registry v0.1: passed by user
-17. raw messy language intake receptor v0.1: built for verification
+17. raw messy language intake receptor v0.1: passed by user
+18. meaning admission / self-expansion loop v0.1: built for verification
 ```
 
 ## Next task
 
-Run the raw messy language intake receptor browser test.
+Run the meaning admission / self-expansion loop browser test.
 
-After it passes, treat `RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY` as confirmed.
+After it passes, treat `MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-meaning admission / self-expansion loop v0.1
+self-expansion stress benchmark v0.1
 ```
 
 Purpose:
 
 ```text
-Let the runtime propose candidate subdivisions and meaning additions when receptors detect unknown terms, idioms, typos, or recurring gaps, without silently mutating canonical knowledge.
+Stress-test the self-expansion loop against silent rewrite, canonical mutation, fake meaning, typo certainty, doctrine promotion, belief movement, and mass inflation.
 ```
 
 Alternative next build:
 
 ```text
-raw intake stress benchmark v0.1
+admission acceptance gate v0.1
 ```
 
 ## Do not do yet
@@ -277,7 +298,8 @@ do not treat user descriptions as truth
 do not treat evidence descriptions as truth
 do not promote candidates to doctrine
 do not use real people/events as built-in truth examples
-do not move belief from raw intake records
+do not move belief from raw intake records or expansion proposals
 do not fake exact meaning for arbitrary raw text
 do not collapse typo repair into certainty
+do not collapse candidate admission into canonical mutation
 ```
