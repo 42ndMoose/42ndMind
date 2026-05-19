@@ -10,10 +10,11 @@ Then read:
 KERNEL_ARCHITECTURE_2026_05_18.md
 ```
 
-For the newest coverage layer, also read:
+For the newest coverage layers, also read:
 
 ```text
 HANDOFF_2026_05_19_COVERAGE_EXPANSION_LIBRARY.md
+HANDOFF_2026_05_19_COVERAGE_STRESS_BENCHMARK.md
 ```
 
 ## Current status
@@ -31,12 +32,14 @@ TRUTH_LEDGER_PRELEDGER_READY
 TRUTH_LEDGER_PRELEDGER_STRESS_READY
 WORLD_MODEL_RELATION_EXPANSION_READY
 WORLD_MODEL_RELATION_STRESS_READY
-COVERAGE_EXPANSION_LIBRARY_BUILT_FOR_VERIFICATION
+COVERAGE_EXPANSION_LIBRARY_READY
+COVERAGE_STRESS_BENCHMARK_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
 RELATION_STRESS_FIRST_PASS_CONFIRMED
-META_GRAMMAR_COVERAGE_FIRST_PASS_BUILT
+META_GRAMMAR_COVERAGE_FIRST_PASS_CONFIRMED
+COVERAGE_STRESS_FIRST_PASS_BUILT
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -67,6 +70,7 @@ truth-ledger preledger stress benchmark v0.1
 world-model relation expansion v0.1
 world-model relation stress benchmark v0.1.1
 coverage expansion library v0.1
+coverage stress benchmark v0.1
 ```
 
 ## Current main formula-inspection URL
@@ -86,6 +90,59 @@ Total formulas: 17
 
 ## Most recent added layer
 
+Coverage stress benchmark v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-coverage-stress-benchmark-v0-1-test.html?v=coverstress-1
+https://42ndmoose.github.io/42ndMind/coverage-stress-benchmark.html?v=coverstress-1
+```
+
+Expected metrics:
+
+```text
+Decision: COVERAGE_STRESS_BENCHMARK_READY
+Source coverage: true v0.1.0
+Source coverage records: 22
+Source coverage families: 22
+Coverage stress records: 16
+Coverage stress families: 16
+Final authority: false
+LLM used: false
+Lookup: false
+```
+
+What it means:
+
+```text
+Class recognition is not exact meaning.
+Exact meaning requires context or admission.
+Unknown meaning must not be faked.
+Coverage stress does not promote truth.
+```
+
+Coverage stress families:
+
+```text
+fake_exact_meaning
+idiom_literalization
+sarcasm_literalization
+metaphor_collapse
+ambiguity_closure
+missing_deictic_anchor
+scope_drift
+modality_inflation
+necessity_source_gap
+condition_deletion
+negation_scope_failure
+comparison_axis_loss
+causal_overclaim
+evidence_verification_collapse
+question_command_conflation
+dictionary_inflation_attempt
+```
+
+## Recently confirmed layers
+
 Coverage expansion library v0.1:
 
 ```text
@@ -93,9 +150,10 @@ https://42ndmoose.github.io/42ndMind/kernel-coverage-expansion-library-v0-1-test
 https://42ndmoose.github.io/42ndMind/coverage-expansion-library.html?v=coverage-1
 ```
 
-Expected metrics:
+User-confirmed metrics:
 
 ```text
+8/8 passed
 Decision: COVERAGE_EXPANSION_LIBRARY_READY
 Source relation stress: true patch 0.1.1
 Coverage records: 22
@@ -105,7 +163,7 @@ LLM used: false
 Lookup: false
 ```
 
-What it means:
+Coverage expansion meaning:
 
 ```text
 This is meta-grammar coverage, not dictionary population.
@@ -140,8 +198,6 @@ command_directive
 quotation_report
 unknown_pattern_hold_for_admission
 ```
-
-## Recently confirmed layers
 
 World-model relation stress benchmark v0.1.1:
 
@@ -214,6 +270,7 @@ Preserve:
 unified language grammar
 whole scope of language sits inside 1
 coverage expansion is meta-grammar, not dictionary population
+coverage class is not exact meaning
 meaning class can be known before every instance is known
 unknown specifics hold for admission when needed
 learn detail only when accuracy requires it
@@ -257,6 +314,7 @@ preledger stress benchmark is not final truth authority
 world-model relation expansion is not final truth authority
 world-model relation stress benchmark is not final truth authority
 coverage expansion library is not final truth authority
+coverage stress benchmark is not final truth authority
 rollback and revision trail are required
 force/intensity remains outside shape
 active local shape preserves Σ |dimension_i| = 1
@@ -268,12 +326,12 @@ new meanings enter through admission records, not silent canonical mutation
 ## Key current files
 
 ```text
-src/kernel-world-model-relation-stress-benchmark-v0-1.js
-src/kernel-world-model-relation-stress-benchmark-v0-1-1-patch.js
 src/kernel-coverage-expansion-library-v0-1.js
-kernel-coverage-expansion-library-v0-1-test.html
-coverage-expansion-library.html
+src/kernel-coverage-stress-benchmark-v0-1.js
+kernel-coverage-stress-benchmark-v0-1-test.html
+coverage-stress-benchmark.html
 HANDOFF_2026_05_19_COVERAGE_EXPANSION_LIBRARY.md
+HANDOFF_2026_05_19_COVERAGE_STRESS_BENCHMARK.md
 ```
 
 ## Roadmap status
@@ -287,31 +345,32 @@ HANDOFF_2026_05_19_COVERAGE_EXPANSION_LIBRARY.md
 6. preledger stress benchmark v0.1: passed by user
 7. world-model relation expansion v0.1: passed by user
 8. world-model relation stress benchmark v0.1.1: passed by user
-9. coverage expansion library v0.1: built for verification
+9. coverage expansion library v0.1: passed by user
+10. coverage stress benchmark v0.1: built for verification
 ```
 
 ## Next task
 
-Run the coverage expansion browser test.
+Run the coverage stress browser test.
 
-After it passes, treat `COVERAGE_EXPANSION_LIBRARY_READY` as confirmed.
+After it passes, treat `COVERAGE_STRESS_BENCHMARK_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-coverage stress benchmark v0.1
+deterministic packet ingestion form/UI v0.1
 ```
 
 Purpose:
 
 ```text
-Stress-test the coverage library against fake exact meaning, idiom literalization, sarcasm literalization, metaphor collapse, ambiguity closure, missing deictic anchors, scope drift, modality inflation, condition deletion, negation scope failure, causal overclaim, and unknown-pattern hallucination.
+Let a human enter structured packets directly without relying on an LLM intake assistant, while preserving candidate-only truth discipline, source/media/evidence separation, relation structure, and coverage-class holds.
 ```
 
 Alternative next build:
 
 ```text
-deterministic packet ingestion form/UI v0.1
+coverage expansion library v0.2
 ```
 
 ## Do not do yet
