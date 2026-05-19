@@ -24,6 +24,7 @@ candidate only unless a future ledger explicitly promotes
 belief_movement: none
 contradiction detection is not contradiction resolution
 narrative pressure is not proof of hidden motive
+specific narrative-overclaim status outranks broad propaganda-threshold classification
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
@@ -112,33 +113,13 @@ unified formula inspector ready
 octahedron language alignment ready
 ```
 
-Meaning:
-
-```text
-Epistemic Octahedron supplied invariant geometry and maturity semantics.
-The language-math kernel operationalized them.
-The alignment layer confirmed the core semantics are mathematically coherent inside the built kernel.
-Newly learned meanings now enter through candidate admission records.
-The unified inspector exposes canonical formulas and admitted candidate formulas in one place.
-```
-
-Important URLs:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-test.html?v=inspect-1
-https://42ndmoose.github.io/42ndMind/kernel-concept-admission-registry-v0-1-test.html?v=admit-1
-https://42ndmoose.github.io/42ndMind/kernel-intention-formula-inspector-v0-1-1-test.html?v=inspect-2
-https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
-https://42ndmoose.github.io/42ndMind/epistemic-octahedron-language-alignment-v0-1-test.html?v=eoalign-1
-```
-
 Main formula inspection URL:
 
 ```text
 https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
 ```
 
-Expected current formula counts:
+Expected formula counts:
 
 ```text
 canonical formulas: 11
@@ -182,6 +163,7 @@ src/kernel-external-anchor-packet-schema-v0-1.js?v=anchor-1
 src/kernel-source-provenance-registry-v0-1.js?v=prov-1
 src/kernel-evidence-media-registry-v0-1.js?v=evidence-1
 src/kernel-truth-pressure-synthesis-v0-1.js?v=truth-1
+src/kernel-truth-pressure-synthesis-v0-1-1-patch.js?v=truth-2
 ```
 
 Status:
@@ -190,7 +172,7 @@ Status:
 external anchor packet schema ready
 source/provenance registry ready
 evidence/media registry ready
-truth-pressure synthesis ready
+truth-pressure synthesis ready v0.1.1
 ```
 
 Important URLs:
@@ -199,7 +181,7 @@ Important URLs:
 https://42ndmoose.github.io/42ndMind/kernel-external-anchor-packet-schema-v0-1-test.html?v=anchor-1
 https://42ndmoose.github.io/42ndMind/kernel-source-provenance-registry-v0-1-test.html?v=prov-1
 https://42ndmoose.github.io/42ndMind/kernel-evidence-media-registry-v0-1-test.html?v=evidence-1
-https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-test.html?v=truth-1
+https://42ndmoose.github.io/42ndMind/kernel-truth-pressure-synthesis-v0-1-1-test.html?v=truth-2
 ```
 
 Important UI notes:
@@ -211,11 +193,14 @@ evidence records: 5
 evidence groups: 3
 evidence claim summaries: 4
 truth-pressure synthesis records: 8
+truth-pressure synthesis version: 0.1.1
 ```
 
 Source groups = 3 is correct because two source records share `user_context_group`.
 
 Evidence claim summaries = 4 is correct because two evidence records support `claim_cost_change`.
+
+The v0.1.1 truth-pressure patch fixes the earlier 4/8 failure by preserving `narrative_overclaim_pressure_visible_candidate` before applying the broader propaganda-pressure threshold.
 
 ## Current maturity status
 
@@ -224,7 +209,7 @@ CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
-TRUTH_PRESSURE_SYNTHESIS_READY
+TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
 ```
 
 This means:
@@ -241,7 +226,7 @@ claim traces exist
 external anchors exist
 source/provenance tracking exists
 evidence/media tracking exists
-truth-pressure synthesis exists
+truth-pressure synthesis v0.1.1 exists
 no LLM dependency for structured packets
 no source lookup dependency for structured packets
 ```
@@ -256,6 +241,22 @@ external truth is finalized without evidence anchors
 admitted meanings are canonical doctrine
 truth-pressure synthesis is final truth promotion
 ```
+
+## Current architecture interpretation
+
+The Epistemic Octahedron supplied invariant geometry and maturity semantics.
+
+The objective language-math kernel operationalized those semantics into deterministic machinery.
+
+The alignment layer confirmed that the Epistemic Octahedron's operational core is mathematically coherent inside the built kernel.
+
+The claim-language layer extended the same objective grammar into claim/world-model/narrative/propaganda-pressure analysis without LLM use or source lookup.
+
+The concept admission registry gives the kernel a deterministic route for newly learned meanings to become candidate formulas.
+
+The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
+
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, and truth-pressure synthesis v0.1.1.
 
 ## What remains
 
