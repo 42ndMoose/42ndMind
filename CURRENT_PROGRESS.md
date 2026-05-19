@@ -20,6 +20,7 @@ FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
 EXTERNAL_WORLD_EVIDENCE_STACK_READY
 TRUTH_PRESSURE_SYNTHESIS_READY_V0_1_1
+CLAIM_NARRATIVE_BENCHMARK_READY
 ```
 
 The kernel is now a working deterministic language-math brain for the covered grammar.
@@ -44,6 +45,7 @@ external anchor packet schema
 source/provenance registry
 evidence/media registry
 truth-pressure synthesis v0.1.1
+claim/narrative benchmark v0.1
 ```
 
 ## Current main formula-inspection URL
@@ -76,6 +78,30 @@ https://42ndmoose.github.io/42ndMind/concept-admission-registry.html?v=admit-1
 ```
 
 ## Most recent added layers
+
+Claim/narrative benchmark v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-claim-narrative-benchmark-v0-1-test.html?v=bench-1
+https://42ndmoose.github.io/42ndMind/claim-narrative-benchmark.html?v=bench-1
+```
+
+Expected metrics:
+
+```text
+Decision: CLAIM_NARRATIVE_BENCHMARK_READY
+Source truth pressure: true v0.1.1
+Benchmark records: 12
+Case families: 12
+LLM used: false
+Lookup: false
+```
+
+Important benchmark addition:
+
+```text
+bad-actor distortion pressure is now represented neutrally through quantifier/scope distortion, condition deletion, no-good-interpretation framing, and modal strength inflation.
+```
 
 Truth-pressure synthesis v0.1.1:
 
@@ -162,6 +188,10 @@ contradiction detection is not contradiction resolution
 narrative pressure is not proof of hidden motive
 propaganda pressure is structural pressure, not external fact-checking
 specific narrative-overclaim status outranks broad propaganda-threshold classification
+bad-actor reframe is pressure, not truth
+quantifier injection is not the same claim
+condition deletion is not the same claim
+no-good-interpretation framing is structural distortion pressure
 user-supplied context is context, not automatic truth
 evidence descriptions are context, not automatic truth
 support/counterevidence direction is separate from truth
@@ -243,6 +273,7 @@ src/kernel-source-provenance-registry-v0-1.js
 src/kernel-evidence-media-registry-v0-1.js
 src/kernel-truth-pressure-synthesis-v0-1.js
 src/kernel-truth-pressure-synthesis-v0-1-1-patch.js
+src/kernel-claim-narrative-benchmark-v0-1.js
 ```
 
 ## Current architecture interpretation
@@ -259,7 +290,7 @@ The concept admission registry gives the kernel a deterministic route for newly 
 
 The unified formula inspector exposes both canonical formulas and admitted candidate formulas in one place.
 
-The external-world stack now has anchor packets, source/provenance, evidence/media structure, and truth-pressure synthesis v0.1.1.
+The external-world stack now has anchor packets, source/provenance, evidence/media structure, truth-pressure synthesis v0.1.1, and a larger claim/narrative benchmark.
 
 ## What remains
 
@@ -270,31 +301,31 @@ The language is not complete in universal coverage yet.
 Remaining work:
 
 ```text
-larger claim/narrative benchmark
+real-world packet ingestion discipline
 larger multilingual benchmark
 world-model relation expansion
 coverage stress tests
 adversarial narrative-pressure tests
-real-world packet ingestion discipline
 ```
 
 ## Next task
 
-Build larger claim/narrative benchmark v0.1.
+Build real-world packet ingestion discipline v0.1.
 
 Suggested files:
 
 ```text
-src/kernel-claim-narrative-benchmark-v0-1.js
-kernel-claim-narrative-benchmark-v0-1-test.html
-claim-narrative-benchmark.html
-HANDOFF_2026_05_18_CLAIM_NARRATIVE_BENCHMARK.md
+src/kernel-real-world-packet-ingestion-discipline-v0-1.js
+kernel-real-world-packet-ingestion-discipline-v0-1-test.html
+real-world-packet-ingestion-discipline.html
+HANDOFF_2026_05_18_REAL_WORLD_PACKET_INGESTION_DISCIPLINE.md
 ```
 
 Purpose:
 
 ```text
-Stress-test truth-pressure synthesis across more claim types, including support-only, counterevidence, ambiguity, causal jumps, hidden motive claims, loaded-label propaganda, unsupported rumor, independent corroboration, duplicate provenance, and unresolved evidence gaps.
+Define how user-described real-world material enters the kernel as packets without becoming automatic truth.
+Keep raw descriptions, source references, media descriptions, evidence claims, uncertainty notes, and ingestion warnings separate.
 ```
 
 ## File growth rule
