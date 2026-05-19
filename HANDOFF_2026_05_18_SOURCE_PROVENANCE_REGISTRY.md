@@ -90,6 +90,22 @@ duplicate provenance is not independent convergence
 
 Independent convergence is only possible across distinct independence groups.
 
+The demo packet has four source records but three distinct source independence groups:
+
+```text
+source_user_description -> user_context_group
+source_video_description -> user_context_group
+source_record_a -> record_group_a
+source_record_b -> record_group_b
+```
+
+So the UI should show:
+
+```text
+Source records: 4
+Source groups: 3
+```
+
 This registry does not yet decide truth from convergence. It only exposes the provenance structure.
 
 ## Evidence-source links
@@ -152,7 +168,7 @@ Decision: SOURCE_PROVENANCE_REGISTRY_READY
 Source records: 4
 Evidence links: 5
 Duplicate provenance: 0
-Source groups: 4
+Source groups: 3
 LLM used: false
 Lookup: false
 ```
