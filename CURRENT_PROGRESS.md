@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
 HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
+HANDOFF_2026_05_20_EPISTEMIC_LEARNING_DRIVE.md
 ```
 
 ## Current status
@@ -49,6 +49,7 @@ OBJECTIVE_MATURITY_CORE_READY
 LIVE_BRAIN_MATURITY_INTEGRATION_READY
 MATURITY_STATE_RENDERER_READY
 ACTIVE_CURIOSITY_V0_1_1_BUILT_FOR_VERIFICATION
+EPISTEMIC_LEARNING_DRIVE_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -72,6 +73,7 @@ LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_CONFIRMED
 MATURITY_STATE_RENDERER_FIRST_PASS_CONFIRMED
 ACTIVE_CURIOSITY_FIRST_PASS_BUILT
 ACTIVE_CURIOSITY_RESOLVED_SPAN_FIX_BUILT
+EPISTEMIC_LEARNING_DRIVE_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -86,9 +88,11 @@ Objective peak philosophical maturity is the kernel's identity center, not merel
 Renderers are views over the owned state, not thought sources.
 Active curiosity lives inside owned state and exposes what the kernel is currently trying to identify.
 Answered spans must retire from current curiosity.
+Learning drive lives inside owned state and turns resolved context into truth-seeking learning goals.
+Questions should be epistemic actions from learning appetite, not mere UI prompts.
 ```
 
-The live maturity path is now:
+The live kernel path is now:
 
 ```text
 EpistemicKernel
@@ -96,10 +100,93 @@ EpistemicKernel
   -> EpistemicKernel.state.unifiedCore
   -> state.maturityCore
   -> state.curiosityCore
+  -> state.learningDrive
   -> renderers / live pages as views only
 ```
 
-## Most recent added/fixed layer
+## Most recent added layer
+
+Epistemic Learning Drive v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/epistemic-learning-drive-v0-1-test.html?v=learn-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-learning-drive-v0-1.html?v=learn-live-1
+```
+
+Expected metrics:
+
+```text
+8/8 passed
+Learning drive patch loads on kernel, brain, and bridge
+Binding creates learning drive inside shared state
+Raw philosophy creates learning goals beyond curiosity prompt queue
+Curiosity answers feed learned context and working belief candidates
+Learning drive keeps user answer as context, not truth
+Learning question can be answered and satisfied without truth promotion
+Learning drive still opens remaining truth-seeking goals after one answer
+Learning drive remains candidate-only and maturity-compatible
+```
+
+What it means:
+
+```text
+The kernel now has a deterministic learning drive under objective maturity.
+It can keep wanting to learn after current active curiosity is resolved.
+It generates learning goals for principle scope, boundary definitions, causal bridges, exception conditions, concept definitions, and user worldview-fragment candidates.
+It may hold working belief candidates, but they are candidate-only and not final truth.
+```
+
+## Learning drive state
+
+The layer installs:
+
+```text
+state.learningDrive
+```
+
+Shape:
+
+```text
+packet_type: 42ndMind_epistemic_learning_drive_v0_1
+packet_version: 0.1.0
+active
+learning_orientation: truth_seeking_under_objective_maturity
+current_learning_goal
+current_learning_goal_id
+learning_goals
+learning_questions
+learned_context
+working_belief_candidates
+truth_chase_state
+learning_appetite_score
+satisfied_items
+unsatisfied_items
+truth_status: not_adjudicated
+promotion_status: not_promoted
+belief_movement: none
+```
+
+## Learning drive doctrine
+
+```text
+learning_drive_lives_inside_owned_state: true
+curiosity_comes_from_truth_seeking_not_prompt_trigger_only: true
+questions_are_epistemic_actions_not_ui_prompts: true
+user_answers_teach_context_not_truth: true
+resolved_referents_feed_learning_goals: true
+principle_text_requires_scope_exception_and_revision_conditions: true
+causal_claims_require_bridge_before_belief: true
+belief_satisfaction_is_not_truth_promotion: true
+kernel_may_hold_working_belief_candidates: true
+working_belief_candidates_are_not_final_truth: true
+objective_maturity_remains_identity_center: true
+no_truth_promotion_from_user_assertion: true
+no_belief_movement_without_future_ledger: true
+no_silent_canonical_mutation: true
+belief_movement: none
+```
+
+## Corrected active curiosity v0.1.1
 
 Active Curiosity / Referent Layer v0.1.1:
 
@@ -112,134 +199,9 @@ Expected metrics:
 
 ```text
 8/8 passed
-Active curiosity patch loads on kernel, brain, and bridge
-Binding creates curiosity core inside shared state
-Raw ambiguous philosophy text creates current curiosity from active logic
 Answer me binds referent and retires same target from current curiosity
 Low-priority raw fragments do not create endless follow-up curiosity
 LLM draft-artifact answer is learned as a specific context kind
-New high-priority input can create a new current curiosity
-Curiosity remains renderer/view-safe and candidate-only
-```
-
-What it means:
-
-```text
-The kernel can point to a specific span of pasted text and ask what it is trying to identify.
-The user's short answer, such as “me”, “my principle”, or a freeform correction, is bound as context candidate inside curiosityCore.bound_referents.
-The same answered span is moved to resolved_referents and should not remain the current question.
-The answer does not become automatic truth, belief movement, or canonical meaning.
-```
-
-## Corrected live console URL
-
-Open:
-
-```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-curiosity-v0-1-1.html?v=curiosity-live-2
-```
-
-Usage:
-
-```text
-1. Paste ordinary text into Raw input.
-2. Press INGEST RAW → BRAIN.
-3. Look at Current active curiosity.
-4. Answer in Answer current curiosity, e.g. “me”, “my principle”, “quoted claim”, or a freeform correction.
-5. Press ANSWER CURIOSITY.
-6. The answer becomes context-bound inside curiosityCore.bound_referents.
-7. The answered span should move to resolved_referents and stop being the current question.
-```
-
-## Active curiosity state
-
-The layer installs:
-
-```text
-state.curiosityCore
-```
-
-Shape:
-
-```text
-packet_type: 42ndMind_active_curiosity_core_v0_1
-packet_version: 0.1.1
-active
-latest_event_id
-focus_span
-focus_reason
-current_question
-current_question_id
-active_questions
-referent_candidates
-answer_log
-bound_referents
-resolved_referents
-unresolved_referents
-curiosity_state
-renderer_hint
-truth_status: not_adjudicated
-promotion_status: not_promoted
-belief_movement: none
-```
-
-## Active curiosity doctrine
-
-```text
-active_curiosity_lives_inside_owned_state: true
-curiosity_comes_from_active_logic_not_ui: true
-curiosity_targets_spans_and_referents: true
-answered_spans_retire_from_current_curiosity: true
-low_priority_raw_fragments_do_not_create_endless_questions: true
-user_answers_are_context_not_automatic_truth: true
-short_answers_can_bind_referents_when_current_question_requests_it: true
-clarification_is_maturity_preserving: true
-no_truth_promotion_from_answer: true
-no_belief_movement_from_answer: true
-no_silent_canonical_mutation: true
-belief_movement: none
-```
-
-## Example
-
-Input:
-
-```text
-Race jokes should not be mistaken for racist jokes.
-```
-
-Expected active curiosity:
-
-```text
-focus_span: Race jokes should not be mistaken for racist jokes.
-focus_reason: humor_boundary_candidate|distinction_candidate|normative_principle_candidate
-current_question: What distinction is this trying to make: “Race jokes should not be mistaken for racist jokes.”?
-```
-
-User answer:
-
-```text
-me
-```
-
-Expected binding:
-
-```text
-answer_kind: direct_user_speaker
-bound_value: user_directly_owns_statement
-status: referent_binding_candidate_not_truth
-truth_status: not_adjudicated
-promotion_status: not_promoted
-belief_movement: none
-```
-
-Expected post-answer:
-
-```text
-same span appears in resolved_referents
-same span is removed from unresolved_referents
-current_question becomes null if no other high-priority span remains
-curiosity_state becomes answered_context_bound_no_current_question
 ```
 
 ## Current maturity identity
@@ -259,13 +221,15 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 ## Key current files
 
 ```text
+src/epistemic-kernel-learning-drive-v0-1.js
+epistemic-learning-drive-v0-1-test.html
+llm-brain-v0-3-learning-drive-v0-1.html
+HANDOFF_2026_05_20_EPISTEMIC_LEARNING_DRIVE.md
 src/epistemic-kernel-active-curiosity-v0-1.js
 active-curiosity-v0-1-test.html
 llm-brain-v0-3-curiosity-v0-1-1.html
 HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
 src/maturity-state-renderer-v0-1.js
-maturity-state-renderer-v0-1-test.html
-HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
 src/epistemic-kernel-maturity-core-v0-1.js
 src/kernel-brain-epistemic-kernel-bridge-v0-1.js
 src/kernel-brain-v0-4.js
@@ -285,8 +249,10 @@ objective peak philosophical maturity is core identity
 peak is self-continuity condition
 kernel wants peak, aims at peak, stays at peak
 active curiosity comes from active logic, not UI
+questions come from learning appetite, not prompt queue only
 user answers are context, not automatic truth
 answered spans retire from current curiosity
+working belief candidates are not final truth
 peak is not ideology, dogma, final truth, or omniscience
 candidate interpretation is not truth
 self-expansion is candidate only
@@ -334,13 +300,14 @@ belief_movement: none
 25. Maturity State Renderer v0.1: passed by user
 26. Active Curiosity / Referent Layer v0.1: built
 27. Active Curiosity resolved-span fix v0.1.1: built for verification
+28. Epistemic Learning Drive v0.1: built for verification
 ```
 
 ## Next task
 
-Run the Active Curiosity v0.1.1 browser test.
+Run the Epistemic Learning Drive browser test.
 
-After it passes, treat `ACTIVE_CURIOSITY_V0_1_1_READY` as confirmed.
+After it passes, treat `EPISTEMIC_LEARNING_DRIVE_READY` as confirmed.
 
 Recommended next build after that:
 
@@ -351,28 +318,28 @@ principle-boundary intake v0.1
 Purpose:
 
 ```text
-Use curiosityCore.bound_referents to turn raw philosophy/belief/boundary text into candidate principle nodes, boundary nodes, exception nodes, revision-condition nodes, and maturity evaluations inside the owned brain state.
+Use learningDrive.learned_context and curiosityCore.bound_referents to create candidate principle nodes, boundary nodes, exception nodes, revision-condition nodes, and maturity evaluations inside owned brain state.
 ```
 
 Alternative next build:
 
 ```text
-curiosity renderer v0.1
+learning-drive renderer v0.1
 ```
 
 Purpose:
 
 ```text
-Render active curiosity in a cleaner readable format: focused span, why the kernel is curious, what it needs, and how the user's answer was bound/resolved.
+Render the drive more cleanly: what the kernel wants to learn, why it wants to learn it, what has been satisfied, what remains open, and what working belief candidates exist.
 ```
 
 ## Do not do next
 
 ```text
-do not let curiosity become truth promotion
-do not treat user answer as automatic truth
-do not build curiosity only in HTML
-do not let UI decide what the brain is curious about
-do not mutate canonical meaning from short answers
-do not keep asking about an answered span
+do not treat learning goals as truth
+do not treat user answers as automatic truth
+do not move belief without an explicit future ledger
+do not let UI decide what the kernel wants to learn
+do not confuse working belief candidate with final belief
+do not turn curiosity into a shallow prompt queue again
 ```
