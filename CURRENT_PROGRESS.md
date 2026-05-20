@@ -10,16 +10,28 @@ Then read:
 KERNEL_ARCHITECTURE_2026_05_18.md
 ```
 
-Newest handoffs:
+Newest relevant handoffs:
 
 ```text
-HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
+HANDOFF_2026_05_20_BELIEF_MEMORY_ENGINE.md
 HANDOFF_2026_05_20_EPISTEMIC_LEARNING_DRIVE.md
+HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
+HANDOFF_2026_05_20_OBJECTIVE_MATURITY_CORE.md
+HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
+HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
 ```
+
+Do not read older handoffs unless implementation details are needed.
 
 ## Current status
 
 ```text
+BELIEF_MEMORY_ENGINE_BUILT_FOR_VERIFICATION
+EPISTEMIC_LEARNING_DRIVE_READY
+ACTIVE_CURIOSITY_V0_1_1_READY
+OBJECTIVE_MATURITY_CORE_READY
+LIVE_BRAIN_MATURITY_INTEGRATION_READY
+MATURITY_STATE_RENDERER_READY
 CORE_LANGUAGE_MATH_KERNEL_MATURE_CANDIDATE_THRESHOLD_PASSED
 FORMULA_ADMISSION_PATH_READY
 UNIFIED_FORMULA_INSPECTOR_READY
@@ -45,35 +57,8 @@ KERNEL_OWNED_UNIFIED_CORE_BUILT_FOR_VERIFICATION
 CORE_MIGRATION_PASS_V0_1_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
-OBJECTIVE_MATURITY_CORE_READY
-LIVE_BRAIN_MATURITY_INTEGRATION_READY
-MATURITY_STATE_RENDERER_READY
-ACTIVE_CURIOSITY_V0_1_1_BUILT_FOR_VERIFICATION
-EPISTEMIC_LEARNING_DRIVE_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
-PRELEDGER_HARDENING_PASS_CONFIRMED
-RELATION_LAYER_FIRST_PASS_CONFIRMED
-RELATION_STRESS_FIRST_PASS_CONFIRMED
-META_GRAMMAR_COVERAGE_FIRST_PASS_CONFIRMED
-COVERAGE_STRESS_FIRST_PASS_CONFIRMED
-DETERMINISTIC_FEED_POINT_FIRST_PASS_CONFIRMED
-DOSSIER_COMPILER_FIRST_PASS_CONFIRMED
-PRELEDGER_BRIDGE_FIRST_PASS_CONFIRMED
-DOSSIER_PACKET_STRESS_FIRST_PASS_CONFIRMED
 UNIFIED_BRAIN_RUNTIME_ARCHITECTURE_CORRECTION_RECORDED
-UNIFIED_RUNTIME_FIRST_PASS_CONFIRMED
-RAW_INTAKE_RECEPTOR_FIRST_PASS_CONFIRMED
-SELF_EXPANSION_LOOP_FIRST_PASS_CONFIRMED
-KERNEL_OWNED_CORE_FIRST_PASS_BUILT
-CORE_MIGRATION_PASS_FIRST_PASS_BUILT
-KERNEL_BRAIN_OWNED_ORGANISM_FIRST_PASS_BUILT
-SHARED_STATE_BRIDGE_FIRST_PASS_BUILT
-OBJECTIVE_MATURITY_CORE_FIRST_PASS_CONFIRMED
-LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_CONFIRMED
-MATURITY_STATE_RENDERER_FIRST_PASS_CONFIRMED
-ACTIVE_CURIOSITY_FIRST_PASS_BUILT
-ACTIVE_CURIOSITY_RESOLVED_SPAN_FIX_BUILT
-EPISTEMIC_LEARNING_DRIVE_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -89,7 +74,8 @@ Renderers are views over the owned state, not thought sources.
 Active curiosity lives inside owned state and exposes what the kernel is currently trying to identify.
 Answered spans must retire from current curiosity.
 Learning drive lives inside owned state and turns resolved context into truth-seeking learning goals.
-Questions should be epistemic actions from learning appetite, not mere UI prompts.
+Belief-memory now lives inside owned state and lets the kernel infer, remember, partially trust, provisionally believe, challenge itself, and ask only useful truth-need questions.
+Questions should be epistemic actions from learning appetite and truth need, not mere UI prompts.
 ```
 
 The live kernel path is now:
@@ -101,108 +87,159 @@ EpistemicKernel
   -> state.maturityCore
   -> state.curiosityCore
   -> state.learningDrive
+  -> state.beliefMemoryCore
   -> renderers / live pages as views only
 ```
 
 ## Most recent added layer
 
-Epistemic Learning Drive v0.1:
+Belief-Memory Engine v0.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-learning-drive-v0-1-test.html?v=learn-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-learning-drive-v0-1.html?v=learn-live-1
+https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-test.html?v=belief-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-1
 ```
 
 Expected metrics:
 
 ```text
-8/8 passed
-Learning drive patch loads on kernel, brain, and bridge
-Binding creates learning drive inside shared state
-Raw philosophy creates learning goals beyond curiosity prompt queue
-Curiosity answers feed learned context and working belief candidates
-Learning drive keeps user answer as context, not truth
-Learning question can be answered and satisfied without truth promotion
-Learning drive still opens remaining truth-seeking goals after one answer
-Learning drive remains candidate-only and maturity-compatible
+10/10 passed
+module loads and patches EpistemicKernel, KernelBrain, and bridge
+binding creates beliefMemoryCore inside shared owned state
+raw philosophy produces inferred principles and boundaries without manual labels
+user trust profile is created or updated
+learned context can become provisional belief, not final truth
+provisional belief has confidence, source trust, challenges, and truth requirements
+kernel asks fewer but better questions based on missing truth conditions
+memory items are reusable in future input
+no final truth promotion occurs anywhere in belief-memory core
+objective maturity remains identity center
 ```
 
 What it means:
 
 ```text
-The kernel now has a deterministic learning drive under objective maturity.
-It can keep wanting to learn after current active curiosity is resolved.
-It generates learning goals for principle scope, boundary definitions, causal bridges, exception conditions, concept definitions, and user worldview-fragment candidates.
-It may hold working belief candidates, but they are candidate-only and not final truth.
+The kernel now has a deterministic first-pass belief-memory engine under objective maturity.
+It can store user statements and inferred context as core-readable memory.
+It can infer principles, boundaries, conditions, exceptions, causal bridge needs, concerns, and worldview fragments before asking questions.
+It can create partial source/user trust profiles.
+It can hold provisional beliefs with confidence while separating user-worldview confidence from objective-truth confidence.
+It can challenge its own provisional beliefs.
+It can reuse memory items in future input.
+It still does not promote final truth.
 ```
 
-## Learning drive state
+## Belief-memory state
 
 The layer installs:
 
 ```text
-state.learningDrive
+state.beliefMemoryCore
 ```
 
 Shape:
 
 ```text
-packet_type: 42ndMind_epistemic_learning_drive_v0_1
+packet_type: 42ndMind_belief_memory_engine_v0_1
 packet_version: 0.1.0
-active
-learning_orientation: truth_seeking_under_objective_maturity
-current_learning_goal
-current_learning_goal_id
-learning_goals
-learning_questions
-learned_context
-working_belief_candidates
-truth_chase_state
-learning_appetite_score
-satisfied_items
-unsatisfied_items
-truth_status: not_adjudicated
-promotion_status: not_promoted
-belief_movement: none
+memory_items
+source_trust_profiles
+user_trust_profile
+inferred_principles
+inferred_boundaries
+inferred_conditions
+inferred_exceptions
+inferred_causal_claims
+inferred_worldview_fragments
+inferred_concerns
+overclaim_flags
+provisional_beliefs
+belief_challenges
+belief_update_log
+inference_trace
+open_truth_requirements
+active_questions
+memory_reuse_hits
+current_uncertainty
+truth_status: not_final
+promotion_status: not_promoted_to_final_truth
+belief_movement: provisional_only
 ```
 
-## Learning drive doctrine
+## Belief-memory doctrine
 
 ```text
-learning_drive_lives_inside_owned_state: true
-curiosity_comes_from_truth_seeking_not_prompt_trigger_only: true
-questions_are_epistemic_actions_not_ui_prompts: true
-user_answers_teach_context_not_truth: true
-resolved_referents_feed_learning_goals: true
-principle_text_requires_scope_exception_and_revision_conditions: true
-causal_claims_require_bridge_before_belief: true
-belief_satisfaction_is_not_truth_promotion: true
-kernel_may_hold_working_belief_candidates: true
-working_belief_candidates_are_not_final_truth: true
+belief_memory_engine_lives_inside_owned_state: true
+memory_is_core_readable_drawer_not_connector: true
+kernel_may_infer_before_asking: true
+questions_arise_from_truth_need_not_unresolved_text_alone: true
+user_input_is_context_not_final_truth: true
+user_trust_is_partial_revisable_and_source_bound: true
+provisional_beliefs_are_allowed: true
+provisional_beliefs_can_influence_future_interpretation: true
+provisional_beliefs_remain_challengeable: true
+belief_confidence_is_separate_from_objective_truth: true
+final_truth_requires_future_explicit_promotion_discipline: true
 objective_maturity_remains_identity_center: true
-no_truth_promotion_from_user_assertion: true
-no_belief_movement_without_future_ledger: true
+no_final_truth_promotion: true
 no_silent_canonical_mutation: true
-belief_movement: none
+belief_movement: provisional_only
 ```
 
-## Corrected active curiosity v0.1.1
-
-Active Curiosity / Referent Layer v0.1.1:
+## Belief ladder
 
 ```text
-https://42ndmoose.github.io/42ndMind/active-curiosity-v0-1-test.html?v=curiosity-2
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-curiosity-v0-1-1.html?v=curiosity-live-2
+1. raw_context
+2. learned_context
+3. inferred_candidate
+4. provisional_belief
+5. high_confidence_belief_candidate
+6. truth_preledger_candidate
+7. final_truth_promoted only in a future strict ledger layer
 ```
 
-Expected metrics:
+For v0.1, stop at:
 
 ```text
-8/8 passed
-Answer me binds referent and retires same target from current curiosity
-Low-priority raw fragments do not create endless follow-up curiosity
-LLM draft-artifact answer is learned as a specific context kind
+provisional_belief / high_confidence_belief_candidate
 ```
+
+Do not build final truth promotion yet.
+
+## Current live UI rule
+
+The active live page is:
+
+```text
+llm-brain-v0-3-belief-memory-v0-1.html
+```
+
+It intentionally uses:
+
+```text
+one input area
+one SEND / INGEST button
+```
+
+It should render:
+
+```text
+What I inferred
+What I provisionally believe
+What I am challenging
+What I still need to know
+Memory items updated
+Source/user trust
+```
+
+Do not regress back into separate confusing boxes like:
+
+```text
+Answer current curiosity
+Answer current goal
+```
+
+unless a future design has a strong reason.
 
 ## Current maturity identity
 
@@ -221,6 +258,10 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 ## Key current files
 
 ```text
+src/epistemic-kernel-belief-memory-engine-v0-1.js
+epistemic-belief-memory-engine-v0-1-test.html
+llm-brain-v0-3-belief-memory-v0-1.html
+HANDOFF_2026_05_20_BELIEF_MEMORY_ENGINE.md
 src/epistemic-kernel-learning-drive-v0-1.js
 epistemic-learning-drive-v0-1-test.html
 llm-brain-v0-3-learning-drive-v0-1.html
@@ -249,17 +290,20 @@ objective peak philosophical maturity is core identity
 peak is self-continuity condition
 kernel wants peak, aims at peak, stays at peak
 active curiosity comes from active logic, not UI
-questions come from learning appetite, not prompt queue only
+questions come from learning appetite and truth need, not prompt queue only
 user answers are context, not automatic truth
 answered spans retire from current curiosity
-working belief candidates are not final truth
+memory is core-readable drawer, not connector
+provisional belief is allowed but remains challengeable
+belief confidence is separate from objective truth
+source/user trust is partial and revisable
+final truth requires future explicit promotion discipline
 peak is not ideology, dogma, final truth, or omniscience
 candidate interpretation is not truth
 self-expansion is candidate only
 growth means subdivision, not mass inflation
 no silent canonical mutation
 no final truth promotion
-belief movement requires explicit future promotion
 support pressure is not truth
 counterpressure is not disproof
 source reference is anchor, not lookup
@@ -267,7 +311,8 @@ evidence/media description is not verification
 hostile reframe is pressure, not same claim
 causal relation requires bridge
 rollback required
-belief_movement: none
+belief_movement: provisional_only only inside beliefMemoryCore
+older candidate-only layers may still use belief_movement: none
 ```
 
 ## Roadmap status
@@ -298,48 +343,64 @@ belief_movement: none
 23. Objective Maturity Core v0.1: passed by user after maturity-2 patch
 24. Live Brain Maturity Integration v0.1: passed by user
 25. Maturity State Renderer v0.1: passed by user
-26. Active Curiosity / Referent Layer v0.1: built
-27. Active Curiosity resolved-span fix v0.1.1: built for verification
-28. Epistemic Learning Drive v0.1: built for verification
+26. Active Curiosity / Referent Layer v0.1.1: ready
+27. Epistemic Learning Drive v0.1: ready
+28. Belief-Memory Engine v0.1: built for verification
 ```
 
 ## Next task
 
-Run the Epistemic Learning Drive browser test.
-
-After it passes, treat `EPISTEMIC_LEARNING_DRIVE_READY` as confirmed.
-
-Recommended next build after that:
+Run the Belief-Memory Engine browser test:
 
 ```text
-principle-boundary intake v0.1
+https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-test.html?v=belief-1
+```
+
+Expected:
+
+```text
+10/10 passed
+```
+
+Then open the live page:
+
+```text
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-1
+```
+
+Recommended next build after test passes:
+
+```text
+belief-memory renderer / inspector v0.1
 ```
 
 Purpose:
 
 ```text
-Use learningDrive.learned_context and curiosityCore.bound_referents to create candidate principle nodes, boundary nodes, exception nodes, revision-condition nodes, and maturity evaluations inside owned brain state.
+Create a cleaner renderer that explains belief confidence, objective truth confidence, memory reuse, source trust, challenge pressure, and truth requirements without requiring raw JSON reading.
 ```
 
 Alternative next build:
 
 ```text
-learning-drive renderer v0.1
+principle-boundary generalization library v0.1
 ```
 
 Purpose:
 
 ```text
-Render the drive more cleanly: what the kernel wants to learn, why it wants to learn it, what has been satisfied, what remains open, and what working belief candidates exist.
+Generalize the race-humor benchmark behavior into reusable inference families for principles, boundaries, exceptions, causal bridges, trust conditions, identity claims, creator claims, governance claims, and humor/speech claims.
 ```
 
 ## Do not do next
 
 ```text
-do not treat learning goals as truth
-do not treat user answers as automatic truth
-do not move belief without an explicit future ledger
-do not let UI decide what the kernel wants to learn
-do not confuse working belief candidate with final belief
+do not build final truth promotion
+do not treat provisional belief as final truth
+do not treat user input as automatic truth
+do not treat source trust as proof
+do not move belief outside beliefMemoryCore without explicit design
+do not let UI decide what the kernel wants to learn or believe
+do not split the live UI into multiple confusing answer boxes
 do not turn curiosity into a shallow prompt queue again
 ```
