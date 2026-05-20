@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
 HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
+HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
 ```
 
 ## Current status
@@ -47,7 +47,8 @@ KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
 OBJECTIVE_MATURITY_CORE_READY
 LIVE_BRAIN_MATURITY_INTEGRATION_READY
-MATURITY_STATE_RENDERER_BUILT_FOR_VERIFICATION
+MATURITY_STATE_RENDERER_READY
+ACTIVE_CURIOSITY_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -68,7 +69,8 @@ KERNEL_BRAIN_OWNED_ORGANISM_FIRST_PASS_BUILT
 SHARED_STATE_BRIDGE_FIRST_PASS_BUILT
 OBJECTIVE_MATURITY_CORE_FIRST_PASS_CONFIRMED
 LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_CONFIRMED
-MATURITY_STATE_RENDERER_FIRST_PASS_BUILT
+MATURITY_STATE_RENDERER_FIRST_PASS_CONFIRMED
+ACTIVE_CURIOSITY_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -81,6 +83,7 @@ The actual thinking logic must live inside owned brain state and methods.
 Modules/pages should present what the brain thinks, not decide what it should think.
 Objective peak philosophical maturity is the kernel's identity center, not merely an external guardrail.
 Renderers are views over the owned state, not thought sources.
+Active curiosity lives inside owned state and exposes what the kernel is currently trying to identify.
 ```
 
 The live maturity path is now:
@@ -91,38 +94,39 @@ llm-brain-v0-3-maturity.html
   -> KernelBrainV04 bound by reference
   -> EpistemicKernel.state.unifiedCore
   -> state.maturityCore
+  -> state.curiosityCore
   -> MaturityStateRendererV01 view only
 ```
 
 ## Most recent added layer
 
-Maturity State Renderer v0.1:
+Active Curiosity / Referent Layer v0.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/maturity-state-renderer-v0-1-test.html?v=renderer-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-2
+https://42ndmoose.github.io/42ndMind/active-curiosity-v0-1-test.html?v=curiosity-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=curiosity-live-1
 ```
 
 Expected metrics:
 
 ```text
 8/8 passed
-Renderer and live maturity stack load
-Renderer reads shared state after raw ingest
-Renderer explains event packets and relation families
-Renderer exposes peak identity conditions
-Renderer explains pressure and maturity response
-Renderer does not promote truth or move belief
-Renderer can explain hostile reframe pressure
-Renderer output is JSON-safe and markdown readable
+Active curiosity patch loads on kernel, brain, and bridge
+Binding creates curiosity core inside shared state
+Raw ambiguous philosophy text creates current curiosity from active logic
+Curiosity question points to span and expected answer shape
+Answer me binds referent as direct user speaker/context candidate
+Answer does not promote truth or move belief
+New input can create a new current curiosity
+Curiosity remains renderer/view-safe and candidate-only
 ```
 
 What it means:
 
 ```text
-The live maturity console now has a readable maturity-state rendering panel.
-After raw ingest, the page explains what the kernel saw, what pressure exists, what recovery actions preserve peak maturity, and which identity conditions are active.
-The renderer is deterministic and read-only.
+The kernel can now point to a specific span of pasted text and ask what it is trying to identify.
+The user's short answer, such as “me” or “my principle,” is bound as context candidate inside curiosityCore.bound_referents.
+The answer does not become automatic truth, belief movement, or canonical meaning.
 ```
 
 ## Live console URL
@@ -130,7 +134,7 @@ The renderer is deterministic and read-only.
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=curiosity-live-1
 ```
 
 Usage:
@@ -138,31 +142,89 @@ Usage:
 ```text
 1. Paste ordinary text into Raw brain input.
 2. Press INGEST RAW → BRAIN.
-3. Read the Readable maturity-state rendering panel.
-4. Use COPY readable or COPY brain packet if needed.
+3. Look at Current active curiosity.
+4. Answer in Active curiosity answer, e.g. “me”, “my principle”, “quoted claim”.
+5. Press ANSWER CURIOSITY.
+6. The answer becomes context-bound inside curiosityCore.bound_referents.
 ```
 
-## Renderer identity conditions behind wants/aims/stays peak
+## Active curiosity state
 
-The renderer treats these as the active conditions behind:
+The layer installs:
 
 ```text
-wants_peak
-aims_at_peak
-stays_at_peak
+state.curiosityCore
 ```
 
-Conditions:
+Shape:
 
 ```text
-maturityCore exists in owned/shared state
-core philosophy is objective_peak_philosophical_maturity
-identity lock is self_continuity_not_external_guardrail
-target position is peak {x:0,y:1,z:0}
-self position is peak {x:0,y:1,z:0}
-peak is explicitly not ideology, dogma, omniscience, or authoritarian certainty
-identity alone does not move belief or promote truth
-maturity requires reality contact and self-correction
+packet_type: 42ndMind_active_curiosity_core_v0_1
+packet_version
+active
+latest_event_id
+focus_span
+focus_reason
+current_question
+current_question_id
+active_questions
+referent_candidates
+answer_log
+bound_referents
+unresolved_referents
+curiosity_state
+renderer_hint
+truth_status: not_adjudicated
+promotion_status: not_promoted
+belief_movement: none
+```
+
+## Active curiosity doctrine
+
+```text
+active_curiosity_lives_inside_owned_state: true
+curiosity_comes_from_active_logic_not_ui: true
+curiosity_targets_spans_and_referents: true
+user_answers_are_context_not_automatic_truth: true
+short_answers_can_bind_referents_when_current_question_requests_it: true
+clarification_is_maturity_preserving: true
+no_truth_promotion_from_answer: true
+no_belief_movement_from_answer: true
+no_silent_canonical_mutation: true
+belief_movement: none
+```
+
+## Example
+
+Input:
+
+```text
+Race jokes should not be mistaken for racist jokes.
+```
+
+Expected active curiosity:
+
+```text
+focus_span: Race jokes should not be mistaken for racist jokes.
+focus_reason: humor_boundary_candidate|distinction_candidate|normative_principle_candidate
+current_question: What distinction is this trying to make: “Race jokes should not be mistaken for racist jokes.”?
+```
+
+User answer:
+
+```text
+me
+```
+
+Expected binding:
+
+```text
+answer_kind: direct_user_speaker
+bound_value: user_directly_owns_statement
+status: referent_binding_candidate_not_truth
+truth_status: not_adjudicated
+promotion_status: not_promoted
+belief_movement: none
 ```
 
 ## Current maturity identity
@@ -182,12 +244,13 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 ## Key current files
 
 ```text
+src/epistemic-kernel-active-curiosity-v0-1.js
+active-curiosity-v0-1-test.html
+HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
+llm-brain-v0-3-maturity.html
 src/maturity-state-renderer-v0-1.js
 maturity-state-renderer-v0-1-test.html
 HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
-llm-brain-v0-3-maturity.html
-live-brain-maturity-integration-v0-1-test.html
-HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
 src/epistemic-kernel-maturity-core-v0-1.js
 src/kernel-brain-epistemic-kernel-bridge-v0-1.js
 src/kernel-brain-v0-4.js
@@ -201,25 +264,20 @@ Preserve:
 ```text
 brain owns its state
 modules are views, not thought sources
-adapters are optional external reports
-receptors are internal tables, not external registries
 one backing state by reference where surfaces are bridged
 no duplicated consciousness
 objective peak philosophical maturity is core identity
 peak is self-continuity condition
 kernel wants peak, aims at peak, stays at peak
+active curiosity comes from active logic, not UI
+user answers are context, not automatic truth
 peak is not ideology, dogma, final truth, or omniscience
-unified tick loop
-raw input enters brain/core before UI modules
-meaning/claim/relation/pressure/admission live inside the brain/core
 candidate interpretation is not truth
 self-expansion is candidate only
 growth means subdivision, not mass inflation
 no silent canonical mutation
 no final truth promotion
 belief movement requires explicit future promotion
-epistemic octahedron maturity guard active
-objective maturity refuses premature certainty
 support pressure is not truth
 counterpressure is not disproof
 source reference is anchor, not lookup
@@ -257,45 +315,46 @@ belief_movement: none
 22. KernelBrainV04 ↔ EpistemicKernel bridge v0.1.1: built for verification
 23. Objective Maturity Core v0.1: passed by user after maturity-2 patch
 24. Live Brain Maturity Integration v0.1: passed by user
-25. Maturity State Renderer v0.1: built for verification
+25. Maturity State Renderer v0.1: passed by user
+26. Active Curiosity / Referent Layer v0.1: built for verification
 ```
 
 ## Next task
 
-Run the Maturity State Renderer browser test.
+Run the Active Curiosity browser test.
 
-After it passes, treat `MATURITY_STATE_RENDERER_READY` as confirmed.
+After it passes, treat `ACTIVE_CURIOSITY_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-maturity-core stress benchmark v0.1
+principle-boundary intake v0.1
 ```
 
 Purpose:
 
 ```text
-Attack peak identity with dogmatism, self-discontinuity, false certainty, collapse pressure, ideology substitution, hostile reframes, and maturity-language hijacking to verify the kernel keeps peak maturity as identity without turning it into authoritarian certainty.
+Use curiosityCore.bound_referents to turn raw philosophy/belief/boundary text into candidate principle nodes, boundary nodes, exception nodes, revision-condition nodes, and maturity evaluations inside the owned brain state.
 ```
 
 Alternative next build:
 
 ```text
-live maturity UX polish v0.1
+curiosity renderer v0.1
 ```
 
 Purpose:
 
 ```text
-Make the live page easier to read on mobile, show compact cards for what it saw / pressure / recovery, and reduce raw JSON prominence.
+Render active curiosity in a cleaner readable format: focused span, why the kernel is curious, what it needs, and how the user's answer was bound.
 ```
 
 ## Do not do next
 
 ```text
-do not let the renderer decide truth
-do not let the renderer mutate maturityCore
-do not let the renderer move belief
-do not confuse readable explanation with final understanding
-do not turn peak into dogma or final truth authority
+do not let curiosity become truth promotion
+do not treat user answer as automatic truth
+do not build curiosity only in HTML
+do not let UI decide what the brain is curious about
+do not mutate canonical meaning from short answers
 ```
