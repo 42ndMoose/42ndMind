@@ -48,7 +48,7 @@ KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
 OBJECTIVE_MATURITY_CORE_READY
 LIVE_BRAIN_MATURITY_INTEGRATION_READY
 MATURITY_STATE_RENDERER_READY
-ACTIVE_CURIOSITY_BUILT_FOR_VERIFICATION
+ACTIVE_CURIOSITY_V0_1_1_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -71,6 +71,7 @@ OBJECTIVE_MATURITY_CORE_FIRST_PASS_CONFIRMED
 LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_CONFIRMED
 MATURITY_STATE_RENDERER_FIRST_PASS_CONFIRMED
 ACTIVE_CURIOSITY_FIRST_PASS_BUILT
+ACTIVE_CURIOSITY_RESOLVED_SPAN_FIX_BUILT
 ```
 
 ## Critical architecture correction
@@ -84,27 +85,27 @@ Modules/pages should present what the brain thinks, not decide what it should th
 Objective peak philosophical maturity is the kernel's identity center, not merely an external guardrail.
 Renderers are views over the owned state, not thought sources.
 Active curiosity lives inside owned state and exposes what the kernel is currently trying to identify.
+Answered spans must retire from current curiosity.
 ```
 
 The live maturity path is now:
 
 ```text
-llm-brain-v0-3-maturity.html
-  -> EpistemicKernel
+EpistemicKernel
   -> KernelBrainV04 bound by reference
   -> EpistemicKernel.state.unifiedCore
   -> state.maturityCore
   -> state.curiosityCore
-  -> MaturityStateRendererV01 view only
+  -> renderers / live pages as views only
 ```
 
-## Most recent added layer
+## Most recent added/fixed layer
 
-Active Curiosity / Referent Layer v0.1:
+Active Curiosity / Referent Layer v0.1.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/active-curiosity-v0-1-test.html?v=curiosity-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=curiosity-live-1
+https://42ndmoose.github.io/42ndMind/active-curiosity-v0-1-test.html?v=curiosity-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-curiosity-v0-1-1.html?v=curiosity-live-2
 ```
 
 Expected metrics:
@@ -114,38 +115,40 @@ Expected metrics:
 Active curiosity patch loads on kernel, brain, and bridge
 Binding creates curiosity core inside shared state
 Raw ambiguous philosophy text creates current curiosity from active logic
-Curiosity question points to span and expected answer shape
-Answer me binds referent as direct user speaker/context candidate
-Answer does not promote truth or move belief
-New input can create a new current curiosity
+Answer me binds referent and retires same target from current curiosity
+Low-priority raw fragments do not create endless follow-up curiosity
+LLM draft-artifact answer is learned as a specific context kind
+New high-priority input can create a new current curiosity
 Curiosity remains renderer/view-safe and candidate-only
 ```
 
 What it means:
 
 ```text
-The kernel can now point to a specific span of pasted text and ask what it is trying to identify.
-The user's short answer, such as “me” or “my principle,” is bound as context candidate inside curiosityCore.bound_referents.
+The kernel can point to a specific span of pasted text and ask what it is trying to identify.
+The user's short answer, such as “me”, “my principle”, or a freeform correction, is bound as context candidate inside curiosityCore.bound_referents.
+The same answered span is moved to resolved_referents and should not remain the current question.
 The answer does not become automatic truth, belief movement, or canonical meaning.
 ```
 
-## Live console URL
+## Corrected live console URL
 
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=curiosity-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-curiosity-v0-1-1.html?v=curiosity-live-2
 ```
 
 Usage:
 
 ```text
-1. Paste ordinary text into Raw brain input.
+1. Paste ordinary text into Raw input.
 2. Press INGEST RAW → BRAIN.
 3. Look at Current active curiosity.
-4. Answer in Active curiosity answer, e.g. “me”, “my principle”, “quoted claim”.
+4. Answer in Answer current curiosity, e.g. “me”, “my principle”, “quoted claim”, or a freeform correction.
 5. Press ANSWER CURIOSITY.
 6. The answer becomes context-bound inside curiosityCore.bound_referents.
+7. The answered span should move to resolved_referents and stop being the current question.
 ```
 
 ## Active curiosity state
@@ -160,7 +163,7 @@ Shape:
 
 ```text
 packet_type: 42ndMind_active_curiosity_core_v0_1
-packet_version
+packet_version: 0.1.1
 active
 latest_event_id
 focus_span
@@ -171,6 +174,7 @@ active_questions
 referent_candidates
 answer_log
 bound_referents
+resolved_referents
 unresolved_referents
 curiosity_state
 renderer_hint
@@ -185,6 +189,8 @@ belief_movement: none
 active_curiosity_lives_inside_owned_state: true
 curiosity_comes_from_active_logic_not_ui: true
 curiosity_targets_spans_and_referents: true
+answered_spans_retire_from_current_curiosity: true
+low_priority_raw_fragments_do_not_create_endless_questions: true
 user_answers_are_context_not_automatic_truth: true
 short_answers_can_bind_referents_when_current_question_requests_it: true
 clarification_is_maturity_preserving: true
@@ -227,6 +233,15 @@ promotion_status: not_promoted
 belief_movement: none
 ```
 
+Expected post-answer:
+
+```text
+same span appears in resolved_referents
+same span is removed from unresolved_referents
+current_question becomes null if no other high-priority span remains
+curiosity_state becomes answered_context_bound_no_current_question
+```
+
 ## Current maturity identity
 
 Preserve:
@@ -246,8 +261,8 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 ```text
 src/epistemic-kernel-active-curiosity-v0-1.js
 active-curiosity-v0-1-test.html
+llm-brain-v0-3-curiosity-v0-1-1.html
 HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
-llm-brain-v0-3-maturity.html
 src/maturity-state-renderer-v0-1.js
 maturity-state-renderer-v0-1-test.html
 HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
@@ -271,6 +286,7 @@ peak is self-continuity condition
 kernel wants peak, aims at peak, stays at peak
 active curiosity comes from active logic, not UI
 user answers are context, not automatic truth
+answered spans retire from current curiosity
 peak is not ideology, dogma, final truth, or omniscience
 candidate interpretation is not truth
 self-expansion is candidate only
@@ -316,14 +332,15 @@ belief_movement: none
 23. Objective Maturity Core v0.1: passed by user after maturity-2 patch
 24. Live Brain Maturity Integration v0.1: passed by user
 25. Maturity State Renderer v0.1: passed by user
-26. Active Curiosity / Referent Layer v0.1: built for verification
+26. Active Curiosity / Referent Layer v0.1: built
+27. Active Curiosity resolved-span fix v0.1.1: built for verification
 ```
 
 ## Next task
 
-Run the Active Curiosity browser test.
+Run the Active Curiosity v0.1.1 browser test.
 
-After it passes, treat `ACTIVE_CURIOSITY_READY` as confirmed.
+After it passes, treat `ACTIVE_CURIOSITY_V0_1_1_READY` as confirmed.
 
 Recommended next build after that:
 
@@ -346,7 +363,7 @@ curiosity renderer v0.1
 Purpose:
 
 ```text
-Render active curiosity in a cleaner readable format: focused span, why the kernel is curious, what it needs, and how the user's answer was bound.
+Render active curiosity in a cleaner readable format: focused span, why the kernel is curious, what it needs, and how the user's answer was bound/resolved.
 ```
 
 ## Do not do next
@@ -357,4 +374,5 @@ do not treat user answer as automatic truth
 do not build curiosity only in HTML
 do not let UI decide what the brain is curious about
 do not mutate canonical meaning from short answers
+do not keep asking about an answered span
 ```
