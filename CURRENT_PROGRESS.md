@@ -13,6 +13,7 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest relevant handoffs:
 
 ```text
+HANDOFF_2026_05_20_LANGUAGE_MATH_CORE.md
 HANDOFF_2026_05_20_BELIEF_MEMORY_ENGINE.md
 HANDOFF_2026_05_20_EPISTEMIC_LEARNING_DRIVE.md
 HANDOFF_2026_05_20_ACTIVE_CURIOSITY.md
@@ -26,6 +27,7 @@ Do not read older handoffs unless implementation details are needed.
 ## Current status
 
 ```text
+LANGUAGE_MATH_CORE_V0_1_BUILT_FOR_VERIFICATION
 BELIEF_MEMORY_ENGINE_V0_1_1_BUILT_FOR_VERIFICATION
 BELIEF_MEMORY_ENGINE_V0_1_BUILT_FOR_VERIFICATION
 EPISTEMIC_LEARNING_DRIVE_READY
@@ -77,7 +79,8 @@ Answered spans must retire from current curiosity.
 Learning drive lives inside owned state and turns resolved context into truth-seeking learning goals.
 Belief-memory lives inside owned state and lets the kernel infer, remember, partially trust, provisionally believe, challenge itself, and ask only useful truth-need questions.
 Belief-memory v0.1.1 adds internal memory self-optimization so the kernel wants memory to remain usable for future reasoning.
-Questions should be epistemic actions from learning appetite and truth need, not mere UI prompts.
+Language-math core v0.1 integrates the existing objective language-math stack into owned state as languageMathCore and communicationCore.
+Questions and communication should be epistemic actions from learning appetite, truth need, semantic conflict, memory pressure, and attention, not UI prompts.
 ```
 
 The live kernel path is now:
@@ -90,96 +93,144 @@ EpistemicKernel
   -> state.curiosityCore
   -> state.learningDrive
   -> state.beliefMemoryCore
+  -> state.languageMathCore
+  -> state.communicationCore
   -> renderers / live pages as views only
 ```
 
-## Most recent added patch
+## Most recent added layer
 
-Belief-Memory Engine v0.1.1 patch:
+Language-Math Core v0.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-1-test.html?v=belief-2
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-2
+https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-test.html?v=langmath-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1.html?v=langmath-live-1
 ```
 
 Expected metrics:
 
 ```text
 10/10 passed
-v0.1.1 patch loads on kernel, brain, and bridge
-binding creates self-optimization drive inside beliefMemoryCore
-long pasted context still creates a visible reaction
-memory pressure triggers internal self-optimization
-raw memory bulk is compacted while semantic memory is preserved
-repeat refreshes do not re-teach same event or bulk memory
-snapshot does not bulk memory or recount trust
-creator/trust input creates proof-path reaction without blind trust
-no final truth promotion occurs during optimization
-objective maturity remains identity center after optimization
+module loads and patches kernel, brain, and bridge
+binding creates languageMathCore and communicationCore inside shared state
+existing objective language-math dependencies and formula memory are visible
+semantic remapping claim is detected as relation formula
+semantic inconsistency creates scoped trust hold, not total user distrust
+communicationCore projects one live thought challenging the claim
+reply can be carried as benefit-of-doubt back-of-head context
+ordinary language still routes through parser toward candidate formula concepts
+candidate admission requests do not silently mutate canonical meaning
+no final truth promotion and maturity identity preserved
 ```
 
-What it fixes:
+What it means:
 
 ```text
-Extra pasted context previously looked like it had no reaction.
-Memory could bulk because refresh/snapshot/bind touched the same latest event repeatedly.
-v0.1.1 adds latest_reaction so the UI shows a visible response.
-v0.1.1 adds event_processing so duplicate refreshes do not reteach the same event.
-v0.1.1 adds self_optimization_drive so the kernel internally wants memory to stay usable.
-v0.1.1 compacts long raw memory while preserving higher-value semantic memory.
+The existing objective language-math kernel is now wrapped into live owned state.
+This is not a new replacement formalization layer.
+This is not a connector that owns thought.
+languageMathCore reads formula memory, parser output, concept admission pressure, and semantic relation claims.
+communicationCore projects one current thought/question from live state pressure.
+The kernel can challenge claims like “chicken means stretch” without totally distrusting the user.
+The kernel can hold a user explanation as benefit-of-doubt / back-of-head context without objective truth promotion.
 ```
 
-## Belief-memory state
+## Existing objective language-math stack location
+
+Do not lose this map.
+
+The existing objective language-math kernel lives mainly in:
+
+```text
+src/kernel-intention-formula-compiler-v0-1.js
+src/kernel-intention-arbitrary-language-parser-v0-1.js
+src/kernel-intention-formula-inspector-v0-1.js
+src/kernel-intention-formula-inspector-v0-1-1-patch.js
+src/kernel-concept-admission-registry-v0-1.js
+src/kernel-objective-claim-language-v0-1.js
+```
+
+The unified formula inspector live page is:
+
+```text
+https://42ndmoose.github.io/42ndMind/intention-formula-inspector-v0-1-1.html?v=inspect-2
+```
+
+Expected formula memory:
+
+```text
+canonical formulas: 11
+admitted candidate formulas: 6
+total formula records: 17
+```
+
+## Language-math state
 
 The layer installs:
 
 ```text
-state.beliefMemoryCore
+state.languageMathCore
+state.communicationCore
 ```
 
-v0.1.1 keeps the v0.1 fields and adds:
+`state.languageMathCore` includes:
 
 ```text
-event_processing
-self_optimization_drive
-memory_compaction_log
-optimized_memory_items
-memory_reaction_log
-latest_reaction
-patch_version: 0.1.1
+dependency_status
+formula_memory_summary
+parser_results
+claim_language_results
+semantic_relation_claims
+semantic_conflicts
+scoped_trust_adjustments
+benefit_of_doubt_context
+back_of_head_context
+candidate_admission_requests
+communication_pressure
+live_thought
+integration_log
+truth_status: not_final
+promotion_status: not_promoted_to_final_truth
+belief_movement: provisional_only
 ```
 
-## Belief-memory doctrine
+`state.communicationCore` includes:
 
 ```text
-belief_memory_engine_lives_inside_owned_state: true
-memory_is_core_readable_drawer_not_connector: true
-kernel_may_infer_before_asking: true
-questions_arise_from_truth_need_not_unresolved_text_alone: true
-user_input_is_context_not_final_truth: true
-user_trust_is_partial_revisable_and_source_bound: true
-provisional_beliefs_are_allowed: true
-provisional_beliefs_can_influence_future_interpretation: true
-provisional_beliefs_remain_challengeable: true
-belief_confidence_is_separate_from_objective_truth: true
-final_truth_requires_future_explicit_promotion_discipline: true
-refresh_idempotence_required: true
-memory_self_optimization_drive_lives_inside_owned_state: true
-kernel_wants_memory_to_remain_usable: true
-optimization_is_internal_maturity_appetite_not_external_cleanup: true
-compact_raw_bulk_preserve_semantic_memory: true
-objective_maturity_remains_identity_center: true
-no_final_truth_promotion: true
+current_message
+message_history
+attention_source: language_math_core
+truth_status: not_final
+promotion_status: not_promoted_to_final_truth
+belief_movement: provisional_only
+```
+
+## Language-math doctrine
+
+```text
+language_math_core_lives_inside_owned_state: true
+integrates_existing_objective_language_math_kernel: true
+not_a_connector_that_owns_thought: true
+wraps_formula_inspector_parser_concept_admission_and_claim_language: true
+language_meaning_enters_as_relations_constraints_and_formula_candidates: true
+meaning_claims_must_preserve_scope_and_conflict_pressure: true
+semantic_conflict_adjusts_scoped_trust_not_total_user_trust: true
+benefit_of_doubt_context_is_allowed_during_conversation: true
+back_of_head_context_is_live_attention_not_final_truth: true
+communication_is_projection_of_state_pressure_not_scripted_chat: true
+formula_memory_remains_candidate_not_doctrine: true
 no_silent_canonical_mutation: true
+no_repo_commit_without_review: true
+no_final_truth_promotion: true
 belief_movement: provisional_only
 ```
 
 ## Current live UI rule
 
-The active live page is:
+The active language-math live page is:
 
 ```text
-llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-2
+llm-brain-v0-3-language-math-v0-1.html?v=langmath-live-1
 ```
 
 It intentionally uses:
@@ -187,32 +238,25 @@ It intentionally uses:
 ```text
 one input area
 one SEND / INGEST button
+one visible “Kernel says” thought
 ```
 
-It now renders:
+It renders:
 
 ```text
-Latest reaction
-Kernel memory self-optimization
-What I inferred
-What I provisionally believe
-What I am challenging
-What I still need to know
-Memory items updated
-Optimized semantic memory
-Source/user trust
-Belief-memory packet
-Full shared packet
+Kernel says
+Formula memory
+Semantic relation claims
+Scoped trust adjustments
+Back-of-head context
+Candidate admission requests
+Parser results
+Language-math packet
+Communication packet
+Full shared packet summary
 ```
 
-Do not regress back into separate confusing boxes like:
-
-```text
-Answer current curiosity
-Answer current goal
-```
-
-unless a future design has a strong reason.
+Do not turn communication into scripted chatbot dressing. Communication must project live state pressure.
 
 ## Current maturity identity
 
@@ -231,6 +275,10 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 ## Key current files
 
 ```text
+src/epistemic-kernel-language-math-core-v0-1.js
+epistemic-language-math-core-v0-1-test.html
+llm-brain-v0-3-language-math-v0-1.html
+HANDOFF_2026_05_20_LANGUAGE_MATH_CORE.md
 src/epistemic-kernel-belief-memory-engine-v0-1.js
 src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js
 epistemic-belief-memory-engine-v0-1-test.html
@@ -266,6 +314,7 @@ peak is self-continuity condition
 kernel wants peak, aims at peak, stays at peak
 active curiosity comes from active logic, not UI
 questions come from learning appetite and truth need, not prompt queue only
+communication projects live state pressure, not a script
 user answers are context, not automatic truth
 answered spans retire from current curiosity
 memory is core-readable drawer, not connector
@@ -273,6 +322,9 @@ memory self-optimization is kernel-owned, not UI cleanup
 provisional belief is allowed but remains challengeable
 belief confidence is separate from objective truth
 source/user trust is partial and revisable
+semantic conflict adjusts scoped trust, not total user trust
+formula memory is candidate, not doctrine
+concept admission requires review and rollback
 final truth requires future explicit promotion discipline
 peak is not ideology, dogma, final truth, or omniscience
 candidate interpretation is not truth
@@ -287,8 +339,8 @@ evidence/media description is not verification
 hostile reframe is pressure, not same claim
 causal relation requires bridge
 rollback required
-belief_movement: provisional_only only inside beliefMemoryCore
-older candidate-only layers may still use belief_movement: none
+belief_movement: provisional_only only inside beliefMemoryCore and languageMathCore live integration
+older candidate-only language-math layers may still use belief_movement: none
 ```
 
 ## Roadmap status
@@ -323,14 +375,15 @@ older candidate-only layers may still use belief_movement: none
 27. Epistemic Learning Drive v0.1: ready
 28. Belief-Memory Engine v0.1: built for verification
 29. Belief-Memory Engine v0.1.1 self-optimization patch: built for verification
+30. Language-Math Core v0.1 live integration: built for verification
 ```
 
 ## Next task
 
-Run the Belief-Memory Engine v0.1.1 browser test:
+Run the Language-Math Core browser test:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-1-test.html?v=belief-2
+https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-test.html?v=langmath-1
 ```
 
 Expected:
@@ -342,31 +395,31 @@ Expected:
 Then open the live page:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1.html?v=langmath-live-1
 ```
 
 Recommended next build after test passes:
 
 ```text
-principle-boundary generalization library v0.1
+communication attention v0.1
 ```
 
 Purpose:
 
 ```text
-Generalize the race-humor benchmark behavior into reusable inference families for principles, boundaries, exceptions, causal bridges, trust conditions, identity claims, creator claims, governance claims, and humor/speech claims.
+Unify communicationCore with curiosityCore, learningDrive, beliefMemoryCore, and languageMathCore so the kernel chooses one thing to say from all live pressures, not just language-math pressure.
 ```
 
 Alternative next build:
 
 ```text
-belief-memory renderer / inspector v0.1
+semantic prior / lexicon admission review v0.1
 ```
 
 Purpose:
 
 ```text
-Make the current visible reaction, memory pressure, compaction log, source trust, and confidence separation easier to inspect without raw JSON.
+Make semantic conflict checks less toy-like by routing unknown and known word claims through a reviewable lexicon/formula-admission path.
 ```
 
 ## Do not do next
@@ -376,8 +429,9 @@ do not build final truth promotion
 do not treat provisional belief as final truth
 do not treat user input as automatic truth
 do not treat source trust as proof
-do not move belief outside beliefMemoryCore without explicit design
-do not let UI decide what the kernel wants to learn or believe
+do not move belief outside beliefMemoryCore or languageMathCore without explicit design
+do not let UI decide what the kernel wants to learn, believe, or say
 do not split the live UI into multiple confusing answer boxes
 do not turn curiosity into a shallow prompt queue again
+do not replace the existing objective language-math stack with a new fake formalization layer
 ```
