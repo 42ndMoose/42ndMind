@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
 HANDOFF_2026_05_19_KERNEL_BRAIN_OWNED_ORGANISM_V0_4.md
+HANDOFF_2026_05_19_KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE.md
 ```
 
 ## Current status
@@ -44,6 +44,7 @@ MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY
 KERNEL_OWNED_UNIFIED_CORE_BUILT_FOR_VERIFICATION
 CORE_MIGRATION_PASS_V0_1_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
+KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -61,6 +62,7 @@ SELF_EXPANSION_LOOP_FIRST_PASS_CONFIRMED
 KERNEL_OWNED_CORE_FIRST_PASS_BUILT
 CORE_MIGRATION_PASS_FIRST_PASS_BUILT
 KERNEL_BRAIN_OWNED_ORGANISM_FIRST_PASS_BUILT
+SHARED_STATE_BRIDGE_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -73,16 +75,78 @@ The actual thinking logic must live inside owned brain state and methods.
 Modules/pages should present what the brain thinks, not decide what it should think.
 ```
 
-Two live paths now point in that direction:
+The two owned-brain surfaces are now bound by reference instead of drifting into duplicated consciousness:
 
 ```text
 EpistemicKernel.state.unifiedCore
-KernelBrainV04.createBrain().state
+KernelBrainV04 bound brain state
 ```
 
-The next migration concern is avoiding duplicated consciousness between those two surfaces.
+After binding:
+
+```text
+epistemicKernel.kernelBrainV04.state === epistemicKernel.state.unifiedCore
+```
 
 ## Most recent added layer
+
+KernelBrainV04 ↔ EpistemicKernel Bridge v0.1.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-brain-epistemic-kernel-bridge-v0-1-test.html?v=bridge-2
+```
+
+Expected metrics:
+
+```text
+8/8 passed
+Bridge version: 0.1.1
+Binding mode: shared_reference_not_copy
+One backing state: true
+Duplicate consciousness: false
+KernelBrain bound state === EpistemicKernel.state.unifiedCore
+KernelBrain bound ingest writes into EpistemicKernel unifiedCore
+EpistemicKernel ingest writes into the same backing state
+KernelBrain process uses the same shared state
+admissions remain candidate-only with no canonical mutation
+no final truth or belief movement across shared bridge state
+```
+
+What it means:
+
+```text
+KernelBrainV04 can now drive or present the same state used by EpistemicKernel.state.unifiedCore.
+The bridge is reference-binding only.
+It is not another thought module.
+It prevents KernelBrainV04 and EpistemicKernel from evolving as two separate brains.
+```
+
+## Bridge files
+
+```text
+src/kernel-brain-epistemic-kernel-bridge-v0-1.js
+kernel-brain-epistemic-kernel-bridge-v0-1-test.html
+HANDOFF_2026_05_19_KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE.md
+```
+
+## Bridge doctrine
+
+```text
+bridge_is_reference_binding_not_thought_module: true
+one_backing_state: true
+kernel_brain_state_is_epistemic_unified_core: true
+no_state_mirroring_as_normal_path: true
+no_duplicate_consciousness: true
+modules_are_views_not_thought_sources: true
+kernel_brain_can_present_or_drive_same_core_state: true
+epistemic_kernel_remains_live_owner: true
+no_truth_promotion: true
+no_belief_movement: true
+no_silent_canonical_mutation: true
+belief_movement: none
+```
+
+## Recently added KernelBrain owned-organism pass
 
 KernelBrain v0.4 owned-organism pass:
 
@@ -102,84 +166,6 @@ optional adapters are reports, not owners
 graph exposes one owned brain root
 admissions remain candidate-only with no canonical mutation
 no final truth or belief movement occurs
-```
-
-What it means:
-
-```text
-src/kernel-brain-v0-4.js is no longer only a thin adapter coordinator.
-KernelBrainV04 now owns compact internal state, internal receptor rows, ingest behavior, meaning nodes, claim/evidence nodes, relation edges, pressure state, admission proposals, graph, and tick summaries.
-Adapters are optional reports/views, not thought owners.
-```
-
-## KernelBrainV04 owned state fields
-
-```text
-state_type: kernel_brain_v0_4_owned_state
-version
-created_at
-updated_at
-doctrine
-tick
-receptors
-runtimeEvents
-interpretations
-meaningNodes
-claimNodes
-evidenceNodes
-relationEdges
-pressureState
-admissionProposals
-beliefCommitments
-externalReports
-graph
-eventIndex
-stats
-last_tick_summary
-```
-
-## KernelBrainV04 owned methods
-
-```text
-KernelBrainV04.createState(seed)
-KernelBrainV04.createBrain(seed)
-KernelBrainV04.ingest(state, input, meta)
-KernelBrainV04.tick(state, reason)
-KernelBrainV04.process(input, options)
-```
-
-A brain instance returned by `createBrain()` supports:
-
-```text
-brain.ingest(input, meta)
-brain.proposeAdmissions()
-brain.tick(reason)
-brain.snapshot()
-brain.process(input, options)
-```
-
-## Internal receptors owned by KernelBrainV04
-
-```text
-raw_event_receptor
-coverage_receptor
-claim_receptor
-source_anchor_receptor
-evidence_description_receptor
-media_description_receptor
-quote_context_receptor
-adversarial_reframe_receptor
-relation_receptor
-truth_pressure_receptor
-admission_receptor
-rollback_receptor
-```
-
-Each is marked:
-
-```text
-status: owned_inside_kernel_brain_v0_4
-external: false
 ```
 
 ## Recently added direct EpistemicKernel core migration
@@ -215,7 +201,8 @@ brain owns its state
 modules are views, not thought sources
 adapters are optional external reports
 receptors are internal tables, not external registries
-one owned state
+one backing state by reference where surfaces are bridged
+no duplicated consciousness
 unified tick loop
 raw input enters brain/core before UI modules
 meaning/claim/relation/pressure/admission live inside the brain/core
@@ -248,6 +235,9 @@ They are secondary to the owned brain/core state.
 ## Key current files
 
 ```text
+src/kernel-brain-epistemic-kernel-bridge-v0-1.js
+kernel-brain-epistemic-kernel-bridge-v0-1-test.html
+HANDOFF_2026_05_19_KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE.md
 src/kernel-brain-v0-4.js
 kernel-brain-owned-organism-v0-4-test.html
 HANDOFF_2026_05_19_KERNEL_BRAIN_OWNED_ORGANISM_V0_4.md
@@ -280,27 +270,16 @@ HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
 19. kernel-owned unified core v0.4 first pass: built
 20. core migration pass v0.1: built for verification
 21. KernelBrain v0.4 owned-organism pass: built for verification
+22. KernelBrainV04 ↔ EpistemicKernel bridge v0.1.1: built for verification
 ```
 
 ## Next task
 
-Run the KernelBrain v0.4 owned-organism browser test.
+Run the KernelBrainV04 ↔ EpistemicKernel bridge browser test.
 
-After it passes, treat `KERNEL_BRAIN_V0_4_OWNED_ORGANISM_READY` as confirmed.
+After it passes, treat `KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_READY` as confirmed.
 
 Recommended next build after that:
-
-```text
-KernelBrainV04 <-> EpistemicKernel bridge v0.1
-```
-
-Purpose:
-
-```text
-Make KernelBrainV04 owned state and EpistemicKernel.state.unifiedCore interoperate cleanly without duplicating consciousness.
-```
-
-Alternative next build:
 
 ```text
 core/brain authority guardrail v0.1
@@ -312,10 +291,23 @@ Purpose:
 Fail if a standalone global module is treated as a truth/meaning/belief/admission authority instead of an optional report/view around the owned brain state.
 ```
 
+Alternative next build:
+
+```text
+live-brain bridge integration v0.1
+```
+
+Purpose:
+
+```text
+Load the KernelBrainV04 ↔ EpistemicKernel bridge in llm-brain-v0-3.html and expose bridge status in the live packet/UI without making the UI the thought source.
+```
+
 ## Do not do next
 
 ```text
 do not add another loose connector as the thinking layer
+do not mirror state by copying as the normal path
 do not let external modules decide meaning before the brain sees it
 do not promote beliefs yet
 do not mutate canonical meanings silently
