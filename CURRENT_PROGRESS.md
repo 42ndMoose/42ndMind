@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_19_MEANING_ADMISSION_SELF_EXPANSION_LOOP.md
 HANDOFF_2026_05_19_KERNEL_OWNED_UNIFIED_CORE.md
+HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
 ```
 
 ## Current status
@@ -42,6 +42,7 @@ UNIFIED_RUNTIME_RECEPTOR_REGISTRY_READY
 RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY
 MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY
 KERNEL_OWNED_UNIFIED_CORE_BUILT_FOR_VERIFICATION
+CORE_MIGRATION_PASS_V0_1_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -57,11 +58,12 @@ UNIFIED_RUNTIME_FIRST_PASS_CONFIRMED
 RAW_INTAKE_RECEPTOR_FIRST_PASS_CONFIRMED
 SELF_EXPANSION_LOOP_FIRST_PASS_CONFIRMED
 KERNEL_OWNED_CORE_FIRST_PASS_BUILT
+CORE_MIGRATION_PASS_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
 
-The latest correction is now the active direction:
+The active direction is now:
 
 ```text
 Do not keep adding connector modules as if they are the brain.
@@ -69,19 +71,19 @@ The actual thinking logic must live inside EpistemicKernel-owned state and metho
 Modules/pages should present what the brain thinks, not decide what it should think.
 ```
 
-The first real core-owned patch is now built in:
+The live kernel patch point is:
 
 ```text
 src/epistemic-kernel-v0-2-patches.js
 ```
 
-That file now attaches:
+That file now attaches and operates:
 
 ```text
 state.unifiedCore
 ```
 
-directly to `EpistemicKernel`.
+directly inside `EpistemicKernel`.
 
 The live brain already loads this file:
 
@@ -89,15 +91,13 @@ The live brain already loads this file:
 llm-brain-v0-3.html
 ```
 
-So the live brain should now expose `kernel_state.unifiedCore` in the copied brain packet and raw state after refresh.
-
 ## Most recent added layer
 
-Kernel-owned unified core v0.4 first pass:
+Core Migration Pass v0.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-owned-unified-core-v0-4-test.html?v=core-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3.html?v=core-1
+https://42ndmoose.github.io/42ndMind/kernel-core-migration-pass-v0-1-test.html?v=coremig-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3.html?v=coremig-1
 ```
 
 Expected metrics:
@@ -105,24 +105,43 @@ Expected metrics:
 ```text
 8/8 passed
 Patch loaded: true
-Unified core version: epistemic_unified_core_v0_4_first_pass
-state.unifiedCore exists at construction
-quickIngest writes raw events and claim nodes into unifiedCore
-addEvidence writes evidence nodes and relation edges into unifiedCore
-unknown/typo input creates core-owned admission proposals
+Unified core version: epistemic_unified_core_v0_4_migration_pass_1
+new kernel owns unifiedCore
+kernel.ingest runs interpret, relate, pressure, and admission inside unifiedCore
+quickIngest uses the same core-owned path before old claim creation
+addClaim/addEvidence write claim/evidence nodes and relation edges into same core
 structured packet import writes through the same core
-snapshot exposes unifiedCore as owned kernel state
-belief commitments remain empty before promotion criteria
-no final truth, no belief movement, no silent canonical mutation
+core graph and snapshot expose one owned organism state
+no standalone module decides truth/belief/canonical admission in this path
 ```
 
 What it means:
 
 ```text
-EpistemicKernel now owns a unifiedCore state.
-EpistemicKernel methods write into unifiedCore during real kernel operations.
-This is no longer merely a global connector registry.
-The UI can inspect unifiedCore, but unifiedCore belongs to the brain object.
+Raw intake, interpretation, relation creation, pressure application, and admission proposal now exist as EpistemicKernel methods.
+The main path is now kernel-owned:
+
+kernel.ingest(rawInput)
+  -> kernel.interpret(rawInput)
+  -> kernel.relate(event)
+  -> kernel.applyPressure()
+  -> kernel.proposeAdmissions()
+  -> kernel.unifiedTick('ingest')
+
+This is the first direct move away from connector federation into one organism.
+```
+
+## Kernel-owned methods now available
+
+```text
+ingest(rawInput, meta)
+interpret(rawInput, meta)
+relate(eventOrId)
+applyPressure()
+proposeAdmissions()
+unifiedIngestRaw(text, meta)
+unifiedTick(reason)
+unifiedCoreSnapshot()
 ```
 
 ## state.unifiedCore fields
@@ -134,6 +153,7 @@ updated_at
 doctrine
 tick
 runtimeEvents
+interpretations
 meaningNodes
 claimNodes
 evidenceNodes
@@ -148,30 +168,6 @@ stats
 last_tick_summary
 ```
 
-## Kernel methods patched into the owned core
-
-```text
-createEmptyState
-migrateState
-quickIngest
-addObservation
-addClaim
-addEvidence
-addPrinciple
-importExtractionPacket
-recalculate
-snapshot
-selfAudit
-```
-
-New kernel-owned methods:
-
-```text
-unifiedIngestRaw(text, meta)
-unifiedTick(reason)
-unifiedCoreSnapshot()
-```
-
 ## Current doctrine invariants
 
 Preserve:
@@ -182,8 +178,10 @@ modules are views, not thought sources
 one owned state
 unified tick loop
 raw input enters core before UI modules
+meaning/claim/relation/pressure/admission live inside kernel
 candidate interpretation is not truth
 self-expansion is candidate only
+growth means subdivision, not mass inflation
 no silent canonical mutation
 no final truth promotion
 belief movement requires explicit future promotion
@@ -201,15 +199,20 @@ belief_movement: none
 
 ## Previous connector-like layers remain useful but demoted
 
-The earlier standalone modules remain as tests, views, and scaffolds, but they should not be treated as the final brain architecture.
+The earlier standalone modules remain as tests, views, and scaffolds.
 
-They are now secondary to:
+They should not be treated as the source of thought.
+
+They are secondary to:
 
 ```text
 EpistemicKernel.state.unifiedCore
+EpistemicKernel.ingest()
+EpistemicKernel.interpret()
+EpistemicKernel.relate()
+EpistemicKernel.applyPressure()
+EpistemicKernel.proposeAdmissions()
 ```
-
-Future work should move logic into the core object or make it inspect core state, not add more loose global connectors.
 
 ## Recently confirmed layer
 
@@ -231,8 +234,8 @@ Decision: MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY
 
 ```text
 src/epistemic-kernel-v0-2-patches.js
-kernel-owned-unified-core-v0-4-test.html
-HANDOFF_2026_05_19_KERNEL_OWNED_UNIFIED_CORE.md
+kernel-core-migration-pass-v0-1-test.html
+HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
 ```
 
 ## Roadmap status
@@ -256,16 +259,29 @@ HANDOFF_2026_05_19_KERNEL_OWNED_UNIFIED_CORE.md
 16. unified runtime receptor registry v0.1: passed by user
 17. raw messy language intake receptor v0.1: passed by user
 18. meaning admission / self-expansion loop v0.1: passed by user
-19. kernel-owned unified core v0.4 first pass: built for verification
+19. kernel-owned unified core v0.4 first pass: built
+20. core migration pass v0.1: built for verification
 ```
 
 ## Next task
 
-Run the kernel-owned unified core browser test.
+Run the core migration pass browser test.
 
-After it passes, treat `KERNEL_OWNED_UNIFIED_CORE_READY` as confirmed.
+After it passes, treat `CORE_MIGRATION_PASS_V0_1_READY` as confirmed.
 
 Recommended next build after that:
+
+```text
+core migration guardrail v0.1
+```
+
+Purpose:
+
+```text
+Add a test that fails if global standalone modules are treated as truth/meaning/belief/admission authorities instead of views/tests/scaffolds around EpistemicKernel.state.unifiedCore.
+```
+
+Alternative next build:
 
 ```text
 core-owned admission acceptance gate v0.1
@@ -277,22 +293,10 @@ Purpose:
 Let EpistemicKernel evaluate state.unifiedCore.admissionProposals and mark some as admitted non-canonical meanings only under explicit criteria, still without truth promotion or belief movement.
 ```
 
-Alternative next build:
-
-```text
-core-owned raw intake improvement v0.1
-```
-
-Purpose:
-
-```text
-Move more raw messy intake behavior into EpistemicKernel methods and reduce dependence on standalone intake modules.
-```
-
 ## Do not do next
 
 ```text
-do not add another loose connector benchmark
+do not add another loose connector as the thinking layer
 do not let external modules decide meaning before the kernel sees it
 do not promote beliefs yet
 do not mutate canonical meanings silently
