@@ -26,7 +26,8 @@ Do not read older handoffs unless implementation details are needed.
 ## Current status
 
 ```text
-BELIEF_MEMORY_ENGINE_BUILT_FOR_VERIFICATION
+BELIEF_MEMORY_ENGINE_V0_1_1_BUILT_FOR_VERIFICATION
+BELIEF_MEMORY_ENGINE_V0_1_BUILT_FOR_VERIFICATION
 EPISTEMIC_LEARNING_DRIVE_READY
 ACTIVE_CURIOSITY_V0_1_1_READY
 OBJECTIVE_MATURITY_CORE_READY
@@ -74,7 +75,8 @@ Renderers are views over the owned state, not thought sources.
 Active curiosity lives inside owned state and exposes what the kernel is currently trying to identify.
 Answered spans must retire from current curiosity.
 Learning drive lives inside owned state and turns resolved context into truth-seeking learning goals.
-Belief-memory now lives inside owned state and lets the kernel infer, remember, partially trust, provisionally believe, challenge itself, and ask only useful truth-need questions.
+Belief-memory lives inside owned state and lets the kernel infer, remember, partially trust, provisionally believe, challenge itself, and ask only useful truth-need questions.
+Belief-memory v0.1.1 adds internal memory self-optimization so the kernel wants memory to remain usable for future reasoning.
 Questions should be epistemic actions from learning appetite and truth need, not mere UI prompts.
 ```
 
@@ -91,42 +93,40 @@ EpistemicKernel
   -> renderers / live pages as views only
 ```
 
-## Most recent added layer
+## Most recent added patch
 
-Belief-Memory Engine v0.1:
+Belief-Memory Engine v0.1.1 patch:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-test.html?v=belief-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-1
+https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-1-test.html?v=belief-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-2
 ```
 
 Expected metrics:
 
 ```text
 10/10 passed
-module loads and patches EpistemicKernel, KernelBrain, and bridge
-binding creates beliefMemoryCore inside shared owned state
-raw philosophy produces inferred principles and boundaries without manual labels
-user trust profile is created or updated
-learned context can become provisional belief, not final truth
-provisional belief has confidence, source trust, challenges, and truth requirements
-kernel asks fewer but better questions based on missing truth conditions
-memory items are reusable in future input
-no final truth promotion occurs anywhere in belief-memory core
-objective maturity remains identity center
+v0.1.1 patch loads on kernel, brain, and bridge
+binding creates self-optimization drive inside beliefMemoryCore
+long pasted context still creates a visible reaction
+memory pressure triggers internal self-optimization
+raw memory bulk is compacted while semantic memory is preserved
+repeat refreshes do not re-teach same event or bulk memory
+snapshot does not bulk memory or recount trust
+creator/trust input creates proof-path reaction without blind trust
+no final truth promotion occurs during optimization
+objective maturity remains identity center after optimization
 ```
 
-What it means:
+What it fixes:
 
 ```text
-The kernel now has a deterministic first-pass belief-memory engine under objective maturity.
-It can store user statements and inferred context as core-readable memory.
-It can infer principles, boundaries, conditions, exceptions, causal bridge needs, concerns, and worldview fragments before asking questions.
-It can create partial source/user trust profiles.
-It can hold provisional beliefs with confidence while separating user-worldview confidence from objective-truth confidence.
-It can challenge its own provisional beliefs.
-It can reuse memory items in future input.
-It still does not promote final truth.
+Extra pasted context previously looked like it had no reaction.
+Memory could bulk because refresh/snapshot/bind touched the same latest event repeatedly.
+v0.1.1 adds latest_reaction so the UI shows a visible response.
+v0.1.1 adds event_processing so duplicate refreshes do not reteach the same event.
+v0.1.1 adds self_optimization_drive so the kernel internally wants memory to stay usable.
+v0.1.1 compacts long raw memory while preserving higher-value semantic memory.
 ```
 
 ## Belief-memory state
@@ -137,33 +137,16 @@ The layer installs:
 state.beliefMemoryCore
 ```
 
-Shape:
+v0.1.1 keeps the v0.1 fields and adds:
 
 ```text
-packet_type: 42ndMind_belief_memory_engine_v0_1
-packet_version: 0.1.0
-memory_items
-source_trust_profiles
-user_trust_profile
-inferred_principles
-inferred_boundaries
-inferred_conditions
-inferred_exceptions
-inferred_causal_claims
-inferred_worldview_fragments
-inferred_concerns
-overclaim_flags
-provisional_beliefs
-belief_challenges
-belief_update_log
-inference_trace
-open_truth_requirements
-active_questions
-memory_reuse_hits
-current_uncertainty
-truth_status: not_final
-promotion_status: not_promoted_to_final_truth
-belief_movement: provisional_only
+event_processing
+self_optimization_drive
+memory_compaction_log
+optimized_memory_items
+memory_reaction_log
+latest_reaction
+patch_version: 0.1.1
 ```
 
 ## Belief-memory doctrine
@@ -180,38 +163,23 @@ provisional_beliefs_can_influence_future_interpretation: true
 provisional_beliefs_remain_challengeable: true
 belief_confidence_is_separate_from_objective_truth: true
 final_truth_requires_future_explicit_promotion_discipline: true
+refresh_idempotence_required: true
+memory_self_optimization_drive_lives_inside_owned_state: true
+kernel_wants_memory_to_remain_usable: true
+optimization_is_internal_maturity_appetite_not_external_cleanup: true
+compact_raw_bulk_preserve_semantic_memory: true
 objective_maturity_remains_identity_center: true
 no_final_truth_promotion: true
 no_silent_canonical_mutation: true
 belief_movement: provisional_only
 ```
 
-## Belief ladder
-
-```text
-1. raw_context
-2. learned_context
-3. inferred_candidate
-4. provisional_belief
-5. high_confidence_belief_candidate
-6. truth_preledger_candidate
-7. final_truth_promoted only in a future strict ledger layer
-```
-
-For v0.1, stop at:
-
-```text
-provisional_belief / high_confidence_belief_candidate
-```
-
-Do not build final truth promotion yet.
-
 ## Current live UI rule
 
 The active live page is:
 
 ```text
-llm-brain-v0-3-belief-memory-v0-1.html
+llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-2
 ```
 
 It intentionally uses:
@@ -221,15 +189,20 @@ one input area
 one SEND / INGEST button
 ```
 
-It should render:
+It now renders:
 
 ```text
+Latest reaction
+Kernel memory self-optimization
 What I inferred
 What I provisionally believe
 What I am challenging
 What I still need to know
 Memory items updated
+Optimized semantic memory
 Source/user trust
+Belief-memory packet
+Full shared packet
 ```
 
 Do not regress back into separate confusing boxes like:
@@ -259,7 +232,9 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 
 ```text
 src/epistemic-kernel-belief-memory-engine-v0-1.js
+src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js
 epistemic-belief-memory-engine-v0-1-test.html
+epistemic-belief-memory-engine-v0-1-1-test.html
 llm-brain-v0-3-belief-memory-v0-1.html
 HANDOFF_2026_05_20_BELIEF_MEMORY_ENGINE.md
 src/epistemic-kernel-learning-drive-v0-1.js
@@ -294,6 +269,7 @@ questions come from learning appetite and truth need, not prompt queue only
 user answers are context, not automatic truth
 answered spans retire from current curiosity
 memory is core-readable drawer, not connector
+memory self-optimization is kernel-owned, not UI cleanup
 provisional belief is allowed but remains challengeable
 belief confidence is separate from objective truth
 source/user trust is partial and revisable
@@ -346,14 +322,15 @@ older candidate-only layers may still use belief_movement: none
 26. Active Curiosity / Referent Layer v0.1.1: ready
 27. Epistemic Learning Drive v0.1: ready
 28. Belief-Memory Engine v0.1: built for verification
+29. Belief-Memory Engine v0.1.1 self-optimization patch: built for verification
 ```
 
 ## Next task
 
-Run the Belief-Memory Engine browser test:
+Run the Belief-Memory Engine v0.1.1 browser test:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-test.html?v=belief-1
+https://42ndmoose.github.io/42ndMind/epistemic-belief-memory-engine-v0-1-1-test.html?v=belief-2
 ```
 
 Expected:
@@ -365,22 +342,10 @@ Expected:
 Then open the live page:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-belief-memory-v0-1.html?v=belief-live-2
 ```
 
 Recommended next build after test passes:
-
-```text
-belief-memory renderer / inspector v0.1
-```
-
-Purpose:
-
-```text
-Create a cleaner renderer that explains belief confidence, objective truth confidence, memory reuse, source trust, challenge pressure, and truth requirements without requiring raw JSON reading.
-```
-
-Alternative next build:
 
 ```text
 principle-boundary generalization library v0.1
@@ -390,6 +355,18 @@ Purpose:
 
 ```text
 Generalize the race-humor benchmark behavior into reusable inference families for principles, boundaries, exceptions, causal bridges, trust conditions, identity claims, creator claims, governance claims, and humor/speech claims.
+```
+
+Alternative next build:
+
+```text
+belief-memory renderer / inspector v0.1
+```
+
+Purpose:
+
+```text
+Make the current visible reaction, memory pressure, compaction log, source trust, and confidence separation easier to inspect without raw JSON.
 ```
 
 ## Do not do next
