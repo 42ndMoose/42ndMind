@@ -10,7 +10,8 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
+  const ASK_THRESHOLD = 0.45;
 
   function text(value) { return String(value ?? '').trim(); }
   function lower(value) { return text(value).toLowerCase(); }
@@ -26,6 +27,8 @@
       active_curiosity_lives_inside_owned_state: true,
       curiosity_comes_from_active_logic_not_ui: true,
       curiosity_targets_spans_and_referents: true,
+      answered_spans_retire_from_current_curiosity: true,
+      low_priority_raw_fragments_do_not_create_endless_questions: true,
       user_answers_are_context_not_automatic_truth: true,
       short_answers_can_bind_referents_when_current_question_requests_it: true,
       clarification_is_maturity_preserving: true,
@@ -53,6 +56,7 @@
       referent_candidates: [],
       answer_log: [],
       bound_referents: [],
+      resolved_referents: [],
       unresolved_referents: [],
       curiosity_state: 'idle',
       renderer_hint: 'Show the current question, the exact span it refers to, and the answer box.',
@@ -74,6 +78,7 @@
     core.referent_candidates = asArray(core.referent_candidates);
     core.answer_log = asArray(core.answer_log);
     core.bound_referents = asArray(core.bound_referents);
+    core.resolved_referents = asArray(core.resolved_referents);
     core.unresolved_referents = asArray(core.unresolved_referents);
     core.truth_status = 'not_adjudicated';
     core.promotion_status = 'not_promoted';
@@ -182,6 +187,45 @@
     return Math.min(1, Number(score.toFixed(3)));
   }
 
+  function resolvedKeys(core) {
+    const keys = new Set();
+    asArray(core.bound_referents).forEach(b => {
+      if (b.question_id) keys.add(`q:${b.question_id}`);
+      if (b.target_span) keys.add(`span:${text(b.target_span)}`);
+    });
+    asArray(core.active_questions).forEach(q => {
+      if (q.answered) {
+        keys.add(`q:${q.question_id}`);
+        keys.add(`span:${text(q.target_span)}`);
+      }
+    });
+    asArray(core.resolved_referents).forEach(r => {
+      if (r.question_id) keys.add(`q:${r.question_id}`);
+      if (r.target_span || r.span) keys.add(`span:${text(r.target_span || r.span)}`);
+    });
+    return keys;
+  }
+
+  function isResolvedCandidate(core, candidate, questionId) {
+    const keys = resolvedKeys(core);
+    return keys.has(`span:${text(candidate && candidate.span)}`) || (questionId && keys.has(`q:${questionId}`));
+  }
+
+  function resolvedRows(core) {
+    const rows = [];
+    asArray(core.bound_referents).forEach(b => rows.push({
+      question_id: b.question_id || null,
+      target_span: b.target_span || null,
+      answer_kind: b.answer_kind || 'unknown',
+      bound_value: b.bound_value || '',
+      status: 'resolved_by_user_context_candidate',
+      truth_status: 'not_adjudicated',
+      promotion_status: 'not_promoted',
+      belief_movement: 'none'
+    }));
+    return rows;
+  }
+
   function deriveCuriosity(state, reason) {
     const core = ensureCuriosityCore(state);
     const event = latestEvent(state);
@@ -213,10 +257,16 @@
       return candidate;
     }).sort((a, b) => b.curiosity_priority - a.curiosity_priority);
 
-    const top = candidates[0] || null;
+    core.referent_candidates = candidates.map(c => Object.assign({}, c, {
+      resolved_by_user_context: isResolvedCandidate(core, c, null),
+      status: isResolvedCandidate(core, c, null) ? 'resolved_referent_candidate_not_truth' : c.status
+    }));
+
+    const unresolvedCandidates = candidates.filter(c => !isResolvedCandidate(core, c, null) && c.curiosity_priority >= ASK_THRESHOLD);
+    const top = unresolvedCandidates[0] || null;
     const question = top ? questionForCandidate(top, event) : null;
     const questionId = top && question ? `q_${top.candidate_id}_${safeId(question.question_family)}` : null;
-    const qRow = top && question ? {
+    const qRow = top && question && !isResolvedCandidate(core, top, questionId) ? {
       question_id: questionId,
       event_id: event.id,
       target_candidate_id: top.candidate_id,
@@ -233,17 +283,30 @@
       belief_movement: 'none'
     } : null;
 
-    core.active = !!qRow;
     core.latest_event_id = event.id;
-    core.focus_span = top ? top.span : null;
-    core.focus_reason = top ? top.candidate_types.join('|') : 'no_candidate';
-    core.referent_candidates = candidates;
-    core.current_question = qRow ? qRow.question_text : null;
-    core.current_question_id = qRow ? qRow.question_id : null;
-    if (qRow && !core.active_questions.some(q => q.question_id === qRow.question_id)) core.active_questions.unshift(qRow);
+    core.resolved_referents = resolvedRows(core).slice(0, 50);
+    core.unresolved_referents = unresolvedCandidates.map(c => ({ candidate_id: c.candidate_id, span: c.span, candidate_types: c.candidate_types, curiosity_priority: c.curiosity_priority }));
+
+    if (qRow) {
+      core.active = true;
+      core.focus_span = top.span;
+      core.focus_reason = top.candidate_types.join('|');
+      core.current_question = qRow.question_text;
+      core.current_question_id = qRow.question_id;
+      const existing = core.active_questions.find(q => q.question_id === qRow.question_id);
+      if (!existing) core.active_questions.unshift(qRow);
+      else if (!existing.answered) Object.assign(existing, qRow, { asked_at: existing.asked_at || qRow.asked_at });
+      core.curiosity_state = 'asking_targeted_question';
+    } else {
+      core.active = false;
+      core.focus_span = null;
+      core.focus_reason = unresolvedCandidates.length ? 'no_unresolved_question_created' : 'all_high_priority_referents_resolved_or_below_threshold';
+      core.current_question = null;
+      core.current_question_id = null;
+      core.curiosity_state = core.resolved_referents.length ? 'answered_context_bound_no_current_question' : 'idle';
+    }
+
     core.active_questions = core.active_questions.slice(0, 20);
-    core.unresolved_referents = candidates.filter(c => c.curiosity_priority >= 0.45).map(c => ({ candidate_id: c.candidate_id, span: c.span, candidate_types: c.candidate_types, curiosity_priority: c.curiosity_priority }));
-    core.curiosity_state = qRow ? 'asking_targeted_question' : 'idle';
     core.last_refresh_reason = reason || 'derive_curiosity';
     core.updated_at = now();
     return core;
@@ -251,7 +314,6 @@
 
   function normalizeAnswer(answer, question) {
     const raw = text(answer);
-    const low = lower(raw);
     const normalized = {
       raw_answer: raw,
       answer_kind: 'freeform_context',
@@ -262,6 +324,10 @@
       normalized.answer_kind = 'direct_user_speaker';
       normalized.bound_value = 'user_directly_owns_statement';
       normalized.confidence = 0.9;
+    } else if (/\b(llm|assistant|chatgpt|gpt|model)\b/i.test(raw) && /\b(label|writ|remind|mistake|report|draft)\b/i.test(raw)) {
+      normalized.answer_kind = 'llm_assisted_draft_artifact';
+      normalized.bound_value = 'llm_assisted_report_artifact_or_drafting_note';
+      normalized.confidence = 0.78;
     } else if (/\b(my principle|principle|i believe|belief)\b/i.test(raw)) {
       normalized.answer_kind = 'personal_principle';
       normalized.bound_value = 'user_principle_or_belief';
@@ -286,12 +352,13 @@
   function answerCuriosity(state, answer, meta) {
     const core = ensureCuriosityCore(state);
     if (!core.current_question_id) deriveCuriosity(state, 'answer_without_current_question_refresh');
-    const question = core.active_questions.find(q => q.question_id === core.current_question_id) || core.active_questions[0] || null;
+    const question = core.active_questions.find(q => q.question_id === core.current_question_id) || core.active_questions.find(q => !q.answered) || core.active_questions[0] || null;
     const normalized = normalizeAnswer(answer, question);
     const row = {
       answer_id: `ans_${tinyHash((question && question.question_id || 'noq') + '|' + text(answer)).slice(0, 8)}`,
       answered_at: now(),
       question_id: question && question.question_id || null,
+      target_candidate_id: question && question.target_candidate_id || null,
       target_span: question && question.target_span || core.focus_span || null,
       raw_answer: text(answer),
       normalized_answer: normalized,
@@ -307,13 +374,16 @@
       question.answered = true;
       question.answer_id = row.answer_id;
       question.status = 'answered_context_candidate';
+      question.answered_at = row.answered_at;
     }
     core.bound_referents.unshift({
       binding_id: `bind_${row.answer_id}`,
       question_id: row.question_id,
+      target_candidate_id: row.target_candidate_id,
       target_span: row.target_span,
       answer_kind: normalized.answer_kind,
       bound_value: normalized.bound_value,
+      raw_answer: normalized.raw_answer,
       confidence: normalized.confidence,
       status: 'referent_binding_candidate_not_truth',
       truth_status: 'not_adjudicated',
@@ -322,11 +392,13 @@
       created_at: now()
     });
     core.bound_referents = core.bound_referents.slice(0, 50);
+    core.resolved_referents = resolvedRows(core).slice(0, 50);
     core.current_question = null;
     core.current_question_id = null;
     core.active = false;
     core.curiosity_state = 'answer_received_context_candidate';
     core.updated_at = now();
+    deriveCuriosity(state, 'answer_resolved_referent_refresh');
     return row;
   }
 
@@ -397,6 +469,7 @@
 
   global.EpistemicKernelActiveCuriosityV01 = Object.freeze({
     VERSION,
+    ASK_THRESHOLD,
     curiosityDoctrine,
     createCuriosityCore,
     ensureCuriosityCore,
