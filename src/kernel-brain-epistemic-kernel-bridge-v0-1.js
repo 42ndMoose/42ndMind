@@ -14,7 +14,7 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
   const PACKET_TYPE = '42ndMind_kernel_brain_epistemic_kernel_bridge_v0_1';
 
   function text(value) { return String(value ?? '').trim(); }
@@ -118,14 +118,9 @@
         return event;
       },
       proposeAdmissions() {
-        if (typeof brain.createBrain === 'function') {
-          const temp = brain.createBrain(sharedState);
-          temp.state = sharedState;
-          const rows = temp.proposeAdmissions ? temp.proposeAdmissions() : sharedState.admissionProposals;
-          sharedState.bridge.last_writer = 'KernelBrainV04.bound.proposeAdmissions';
-          sharedState.bridge.updated_at = now();
-          return rows;
-        }
+        sharedState.bridge.last_writer = 'KernelBrainV04.bound.proposeAdmissions';
+        sharedState.bridge.updated_at = now();
+        brain.tick(sharedState, 'bound_propose_admissions_reference_only');
         return sharedState.admissionProposals;
       },
       tick(reason = 'bound_tick') {
