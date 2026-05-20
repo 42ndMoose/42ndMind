@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>42ndMind Live Brain v0.3 Maturity Integration</title>
+  <style>
+    :root{--bg:#0f1115;--panel:#171a21;--line:#2a3040;--text:#eef2ff;--muted:#8b93a7;--good:#9dffb4;--bad:#ff8b8b;--warn:#ffd28b;--accent:#9db6ff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}header{padding:16px 18px;background:#11141b;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}h1{font:700 19px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 4px}h2{font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 8px;color:#dfe6ff}.sub,.muted{color:var(--muted)}main{display:grid;grid-template-columns:minmax(340px,520px) 1fr;gap:12px;padding:12px}section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}textarea,input{width:100%;background:#0f1218;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}textarea{min-height:220px;resize:vertical}button{background:#25345c;color:var(--text);border:1px solid #3f5592;padding:8px 10px;border-radius:8px;cursor:pointer;margin:3px 3px 3px 0;font:13px system-ui,-apple-system,Segoe UI,sans-serif}button:hover{background:#304274}button.good{background:#1f4a31;border-color:#3b7f55}button.warn{background:#4a3a1f;border-color:#7f633b}button.bad{background:#44222a;border-color:#7d3c4a}pre{white-space:pre-wrap;overflow:auto;background:#0d1016;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:620px}a{color:var(--accent)}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{background:#10131a;border:1px solid var(--line);border-radius:8px;padding:8px;min-height:68px}.metric span{display:block;color:var(--muted)}.metric b{display:block;font-size:20px}.ok{color:var(--good)}.no{color:var(--bad)}.maybe{color:var(--warn)}.card{background:#10131a;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin:2px;font-size:12px;background:#11151d}.small{font-size:12px}.tiny{font-size:11px}@media(max-width:920px){main{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Live Brain v0.3 · Maturity Integration</h1>
+  <div class="sub">Paste raw text, ingest it into the owned kernel state, and inspect objective maturity as the kernel's self-continuity center.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Controls</h2>
+      <a href="llm-brain-v0-3.html?v=coremig-1">classic live brain</a> · <a href="kernel-objective-maturity-core-v0-1-test.html?v=maturity-2">maturity test</a> · <a href="index.html">index</a>
+      <div style="margin-top:8px">
+        <button class="good" onclick="bootRefresh()">BOOT / refresh</button>
+        <button class="good" onclick="ingestRaw()">INGEST RAW → BRAIN</button>
+        <button onclick="runSelfAudit()">RUN self-audit</button>
+        <button onclick="copyBrainPacket()">COPY brain packet</button>
+        <button class="warn" onclick="loadPressureExample()">LOAD pressure example</button>
+        <button class="bad" onclick="resetBrain()">RESET</button>
+      </div>
+      <div id="status" class="small muted"></div>
+    </section>
+
+    <section>
+      <h2>Raw brain input</h2>
+      <div class="small muted">Paste ordinary text here. This is the easiest place to test the brain. Press <b>INGEST RAW → BRAIN</b>.</div>
+      <textarea id="rawInput" spellcheck="false">The source says the claim is definitely proven, but the screenshot is not verified and context is unresolved.</textarea>
+      <button class="good" onclick="ingestRaw()">INGEST RAW → BRAIN</button>
+      <button onclick="loadMessyExample()">Load messy example</button>
+      <button onclick="loadReframeExample()">Load hostile reframe example</button>
+    </section>
+
+    <section>
+      <h2>Structured command packet</h2>
+      <div class="small muted">For structured JSON. Optional. Raw input above is the faster test path.</div>
+      <textarea id="commandInput" spellcheck="false"></textarea>
+      <button class="good" onclick="runCommands()">IMPORT / RUN</button>
+      <button onclick="loadCommandExample()">Load command example</button>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2>Objective maturity core</h2>
+      <div class="metrics">
+        <div class="metric"><span>wants peak</span><b id="wantsPeak">?</b></div>
+        <div class="metric"><span>aims peak</span><b id="aimsPeak">?</b></div>
+        <div class="metric"><span>stays peak</span><b id="staysPeak">?</b></div>
+        <div class="metric"><span>alignment</span><b id="alignment">?</b></div>
+      </div>
+      <div id="maturitySummary" class="card small"></div>
+    </section>
+
+    <section>
+      <h2>Kernel / bridge status</h2>
+      <pre id="bridgeStatus"></pre>
+    </section>
+
+    <section>
+      <h2>Last ingest event</h2>
+      <pre id="lastEvent"></pre>
+    </section>
+
+    <section>
+      <h2>Brain packet output</h2>
+      <textarea id="packetOutput" spellcheck="false"></textarea>
+    </section>
+
+    <section>
+      <h2>Raw shared state</h2>
+      <pre id="rawState"></pre>
+    </section>
+  </div>
+</main>
+
+<script src="src/epistemic-kernel-v0-2.js?v=corebase-1"></script>
+<script src="src/epistemic-kernel-v0-2-patches.js?v=coremig-1"></script>
+<script src="src/kernel-brain-v0-4.js?v=brain-2"></script>
+<script src="src/kernel-brain-epistemic-kernel-bridge-v0-1.js?v=bridge-2"></script>
+<script src="src/epistemic-kernel-maturity-core-v0-1.js?v=maturity-2"></script>
+<script>
+  const STORAGE_KEY = 'epistemic_kernel_v0_state';
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const kernel = new EpistemicKernel(saved ? JSON.parse(saved) : null);
+  let binding = null;
+  let boundBrain = null;
+  let lastEvent = null;
+
+  function $(id){ return document.getElementById(id); }
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function clone(v){ return v == null ? v : JSON.parse(JSON.stringify(v)); }
+  function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(kernel.snapshot())); }
+  function shared(){ return kernel.state && kernel.state.unifiedCore ? kernel.state.unifiedCore : kernel.state; }
+  function maturity(){ const st = shared(); return st && st.maturityCore; }
+  function fmt(n){ return Number(n || 0).toFixed(3); }
+
+  function bindBridge(){
+    if (window.KernelBrainEpistemicKernelBridgeV01 && !boundBrain) {
+      binding = KernelBrainEpistemicKernelBridgeV01.bind(kernel);
+      boundBrain = binding.bound_brain;
+    }
+    if (kernel.refreshObjectiveMaturityCore) kernel.refreshObjectiveMaturityCore('live_brain_maturity_refresh');
+  }
+
+  function bootRefresh(){ bindBridge(); refresh(); $('status').textContent='Booted. Maturity core refreshed.'; }
+
+  function ingestRaw(){
+    bindBridge();
+    const text = $('rawInput').value || '';
+    if (!text.trim()) { $('status').textContent='Paste text first.'; return; }
+    lastEvent = boundBrain ? boundBrain.ingest(text, {kind:'live_raw_input', source:'llm-brain-v0-3-maturity'}) : kernel.ingest(text, {kind:'live_raw_input', source:'llm-brain-v0-3-maturity'});
+    if (kernel.refreshObjectiveMaturityCore) kernel.refreshObjectiveMaturityCore('live_raw_ingest');
+    save(); refresh();
+    $('status').textContent='Ingested raw text into the owned brain state.';
+  }
+
+  function runCommands(){
+    bindBridge();
+    try {
+      const packet = JSON.parse($('commandInput').value);
+      const commands = Array.isArray(packet.commands) ? packet.commands : [packet];
+      const results = [];
+      for (const c of commands) {
+        if (c.op === 'quick_ingest') results.push(kernel.quickIngest(c.text || '', {mode:c.mode || 'auto'}));
+        else if (c.op === 'import_packet') results.push(kernel.importExtractionPacket(c.packet || c.extraction_packet || {}));
+        else if (c.op === 'add_evidence') results.push(kernel.addEvidence({...c, claimId:c.claimId || c.target || c.target_claim_text || c.target_client_id}));
+        else if (c.op === 'add_claim') results.push(kernel.addClaim(c));
+        else if (c.op === 'self_audit') results.push(kernel.selfAudit());
+        else throw new Error('Unknown op: '+c.op);
+      }
+      if (kernel.refreshObjectiveMaturityCore) kernel.refreshObjectiveMaturityCore('live_command_run');
+      save(); refresh(); $('status').textContent='Ran '+results.length+' command(s).';
+    } catch (e) { $('status').textContent='Command failed: '+e.message; }
+  }
+
+  function runSelfAudit(){ bindBridge(); const audit = kernel.selfAudit(); save(); refresh(); $('lastEvent').textContent=JSON.stringify(audit,null,2); $('status').textContent='Self-audit complete.'; }
+  function resetBrain(){ if (!confirm('Reset kernel state?')) return; kernel.reset(); binding=null; boundBrain=null; bindBridge(); save(); refresh(); $('status').textContent='Reset.'; }
+
+  function brainPacket(){
+    bindBridge();
+    const state = kernel.snapshot();
+    const sharedState = shared();
+    const mc = maturity();
+    return {
+      packet_type:'42ndMind_live_brain_maturity_packet_v0_1',
+      packet_version:'0.1.0',
+      created_at:new Date().toISOString(),
+      source_console:'llm-brain-v0-3-maturity.html',
+      patch_status:{
+        v02_patches_applied:!!EpistemicKernel.__v02PatchesApplied,
+        core_migration_applied:!!EpistemicKernel.__coreMigrationPassApplied,
+        kernel_brain_available:!!window.KernelBrainV04,
+        bridge_available:!!window.KernelBrainEpistemicKernelBridgeV01,
+        maturity_core_available:!!window.EpistemicKernelObjectiveMaturityCoreV01,
+        objective_maturity_patch_applied:!!EpistemicKernel.__objectiveMaturityCorePatchApplied
+      },
+      shared_state_bridge:{
+        bound:!!boundBrain,
+        same_reference:!!(boundBrain && boundBrain.state === kernel.state.unifiedCore),
+        binding_mode:binding && binding.binding_mode,
+        duplicate_consciousness:binding && binding.duplicate_consciousness
+      },
+      maturity_core:mc,
+      maturity_summary: mc ? {
+        core_philosophy:mc.core_philosophy,
+        identity_lock:mc.identity_lock,
+        wants_peak:mc.wants_peak,
+        aims_at_peak:mc.aims_at_peak,
+        stays_at_peak:mc.stays_at_peak,
+        peak_alignment_score:mc.peak_alignment_score,
+        recovery_to_peak_required:mc.recovery_to_peak_required,
+        degradation_flags:mc.degradation_flags,
+        recovery_actions:mc.recovery_actions
+      } : null,
+      last_event:lastEvent,
+      shared_state_summary:{
+        state_type:sharedState && sharedState.state_type,
+        stats:sharedState && sharedState.stats,
+        pressureState:sharedState && sharedState.pressureState,
+        beliefs:sharedState && arr(sharedState.beliefCommitments).length,
+        runtimeEvents:sharedState && arr(sharedState.runtimeEvents).length,
+        admissions:sharedState && arr(sharedState.admissionProposals).length
+      },
+      kernel_state:state
+    };
+  }
+
+  async function copyBrainPacket(){ const text=JSON.stringify(brainPacket(),null,2); $('packetOutput').value=text; try{ await navigator.clipboard.writeText(text); $('status').textContent='Copied brain packet.'; }catch(e){ $('status').textContent='Placed brain packet in output box.'; } }
+
+  function renderMaturity(){
+    const mc = maturity();
+    $('wantsPeak').textContent = mc ? String(mc.wants_peak) : '?';
+    $('aimsPeak').textContent = mc ? String(mc.aims_at_peak) : '?';
+    $('staysPeak').textContent = mc ? String(mc.stays_at_peak) : '?';
+    $('alignment').textContent = mc ? fmt(mc.peak_alignment_score) : '?';
+    $('alignment').className = mc && mc.peak_alignment_score >= .9 ? 'ok' : mc && mc.peak_alignment_score >= .7 ? 'maybe' : 'no';
+    $('maturitySummary').innerHTML = mc ? `
+      <div><b>${mc.core_philosophy}</b></div>
+      <div class="muted">${mc.identity_statement}</div>
+      <div><span class="pill">${mc.identity_lock}</span><span class="pill">${mc.maturity_state}</span></div>
+      <div><b>Degradation flags:</b> ${arr(mc.degradation_flags).join(' | ') || 'none'}</div>
+      <div><b>Recovery actions:</b> ${arr(mc.recovery_actions).join(' | ') || 'none'}</div>
+    ` : 'No maturity core loaded.';
+  }
+
+  function refresh(){
+    bindBridge();
+    const packet = brainPacket();
+    renderMaturity();
+    $('bridgeStatus').textContent = JSON.stringify(packet.shared_state_bridge,null,2);
+    $('lastEvent').textContent = JSON.stringify(lastEvent || arr(shared().runtimeEvents).slice(-1)[0] || null,null,2);
+    $('packetOutput').value = JSON.stringify(packet,null,2);
+    $('rawState').textContent = JSON.stringify(shared(),null,2);
+  }
+
+  function loadPressureExample(){ $('rawInput').value='The source says the claim is definitely proven, but the screenshot is not verified and context is unresolved.'; }
+  function loadMessyExample(){ $('rawInput').value='teh source says the valve isnt opne because pressure rose and I am sure it proves the claim'; }
+  function loadReframeExample(){ $('rawInput').value='Someone said women should vote only after meeting the stated condition, but the hostile reframe turns it into all women should never vote.'; }
+  function loadCommandExample(){ $('commandInput').value=JSON.stringify({command_type:'epistemic_kernel_command',commands:[{op:'quick_ingest',mode:'auto',text:'The source says the claim is definitely proven, but the screenshot is not verified and context is unresolved.'},{op:'self_audit'}]},null,2); }
+
+  bootRefresh();
+</script>
+</body>
+</html>
