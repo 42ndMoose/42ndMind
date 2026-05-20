@@ -1,13 +1,12 @@
 /* 42ndMind Epistemic Kernel Objective Maturity Core v0.1
  *
- * This file is a core boot patch, not a side-thinking module.
- * It installs objective philosophical maturity as the self-continuity center
- * inside owned brain state:
- *   - EpistemicKernel.state.unifiedCore.maturityCore
- *   - KernelBrainV04 owned/shared state.maturityCore
+ * Core boot patch. Installs objective philosophical maturity as the
+ * self-continuity center inside owned brain state. This file must not behave
+ * like an external guardrail or side-thinking module.
  *
- * The kernel does not merely obey a guardrail. It carries peak maturity as
- * its core philosophy: aim at peak, stay at peak, recover toward peak.
+ * Important implementation detail: KernelBrainV04 and the bridge are frozen
+ * global objects. This patch wraps them by replacing the global object with a
+ * new frozen wrapper rather than mutating frozen properties in place.
  */
 (function (global) {
   'use strict';
@@ -17,11 +16,11 @@
   const COLLAPSE = Object.freeze({ x: 0, y: -1, z: 0 });
   const NULL_ORIGIN = Object.freeze({ x: 0, y: 0, z: 0 });
 
-  function text(value) { return String(value ?? '').trim(); }
   function asArray(value) { return Array.isArray(value) ? value : []; }
   function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
   function now() { return new Date().toISOString(); }
   function clamp01(n) { return Math.max(0, Math.min(1, Number(n) || 0)); }
+  function text(value) { return String(value ?? '').trim(); }
 
   function maturityDoctrine() {
     return {
@@ -101,6 +100,8 @@
     core.packet_version = VERSION;
     core.target_position = clone(PEAK);
     core.self_position = clone(PEAK);
+    core.null_origin_position = clone(NULL_ORIGIN);
+    core.collapse_position = clone(COLLAPSE);
     core.peak_attractor_active = true;
     core.wants_peak = true;
     core.aims_at_peak = true;
@@ -111,6 +112,10 @@
     core.mutation_evaluations = asArray(core.mutation_evaluations);
     core.degradation_flags = asArray(core.degradation_flags);
     core.recovery_actions = asArray(core.recovery_actions);
+    core.final_authority = false;
+    core.truth_status = 'not_adjudicated';
+    core.promotion_status = 'not_promoted';
+    core.belief_movement = 'none';
     core.updated_at = now();
     state.doctrine = Object.assign({}, state.doctrine || {}, {
       objective_philosophical_maturity_is_core_identity: true,
@@ -152,12 +157,8 @@
       flags.push('unresolved_gap_pressure_detected');
       actions.push('carry_uncertainty_without_collapse');
     }
-    if (signals.some(s => s.signal === 'source' || s.signal === 'evidence' || s.signal === 'media')) {
-      actions.push('preserve_source_evidence_media_separation');
-    }
-    if (signals.some(s => s.signal === 'relation')) {
-      actions.push('require_causal_bridge_before_causal_truth');
-    }
+    if (signals.some(s => s.signal === 'source' || s.signal === 'evidence' || s.signal === 'media')) actions.push('preserve_source_evidence_media_separation');
+    if (signals.some(s => s.signal === 'relation')) actions.push('require_causal_bridge_before_causal_truth');
 
     const penalty = clamp01(
       Number(pressure.belief || 0) * 0.16 +
@@ -221,6 +222,10 @@
     return evaluation;
   }
 
+  function coreStateFromKernel(kernel) {
+    return kernel && kernel.state && (kernel.state.unifiedCore || kernel.state);
+  }
+
   function installEpistemicKernelPatch() {
     const Kernel = global.EpistemicKernel;
     if (!Kernel || Kernel.__objectiveMaturityCorePatchApplied) return;
@@ -231,137 +236,63 @@
     const originalSnapshot = Kernel.prototype.snapshot;
     const originalSelfAudit = Kernel.prototype.selfAudit;
 
-    if (originalCreateEmptyState) {
-      Kernel.prototype.createEmptyState = function maturityCreateEmptyState() {
-        const state = originalCreateEmptyState.call(this);
-        const target = state.unifiedCore || state;
-        refreshMaturityCore(target, 'create_empty_state');
-        return state;
-      };
-    }
-    if (originalMigrateState) {
-      Kernel.prototype.migrateState = function maturityMigrateState(input) {
-        const state = originalMigrateState.call(this, input);
-        refreshMaturityCore(state.unifiedCore || state, 'migrate_state');
-        return state;
-      };
-    }
-    if (originalUnifiedTick) {
-      Kernel.prototype.unifiedTick = function maturityUnifiedTick(reason) {
-        const result = originalUnifiedTick.call(this, reason);
-        refreshMaturityCore(this.state && this.state.unifiedCore || this.state, reason || 'unified_tick');
-        return result;
-      };
-    }
-    if (originalIngest) {
-      Kernel.prototype.ingest = function maturityIngest(rawInput, meta) {
-        const result = originalIngest.call(this, rawInput, meta || {});
-        refreshMaturityCore(this.state && this.state.unifiedCore || this.state, 'ingest');
-        return result;
-      };
-    }
-    if (originalSnapshot) {
-      Kernel.prototype.snapshot = function maturitySnapshot() {
-        refreshMaturityCore(this.state && this.state.unifiedCore || this.state, 'snapshot');
-        return originalSnapshot.call(this);
-      };
-    }
-    if (originalSelfAudit) {
-      Kernel.prototype.selfAudit = function maturitySelfAudit() {
-        const audit = originalSelfAudit.call(this);
-        const mc = refreshMaturityCore(this.state && this.state.unifiedCore || this.state, 'self_audit');
-        audit.objective_maturity_core = clone(mc);
-        return audit;
-      };
-    }
-    Kernel.prototype.evaluateMaturityCoreMutation = function evaluateMaturityCoreMutation(proposal) {
-      return evaluateCoreMutation(this.state && this.state.unifiedCore || this.state, proposal);
-    };
-    Kernel.prototype.refreshObjectiveMaturityCore = function refreshObjectiveMaturityCore(reason) {
-      return refreshMaturityCore(this.state && this.state.unifiedCore || this.state, reason || 'manual_refresh');
-    };
+    if (originalCreateEmptyState) Kernel.prototype.createEmptyState = function maturityCreateEmptyState() { const state = originalCreateEmptyState.call(this); refreshMaturityCore(state.unifiedCore || state, 'create_empty_state'); return state; };
+    if (originalMigrateState) Kernel.prototype.migrateState = function maturityMigrateState(input) { const state = originalMigrateState.call(this, input); refreshMaturityCore(state.unifiedCore || state, 'migrate_state'); return state; };
+    if (originalUnifiedTick) Kernel.prototype.unifiedTick = function maturityUnifiedTick(reason) { const result = originalUnifiedTick.call(this, reason); refreshMaturityCore(coreStateFromKernel(this), reason || 'unified_tick'); return result; };
+    if (originalIngest) Kernel.prototype.ingest = function maturityIngest(rawInput, meta) { const result = originalIngest.call(this, rawInput, meta || {}); refreshMaturityCore(coreStateFromKernel(this), 'ingest'); return result; };
+    if (originalSnapshot) Kernel.prototype.snapshot = function maturitySnapshot() { refreshMaturityCore(coreStateFromKernel(this), 'snapshot'); return originalSnapshot.call(this); };
+    if (originalSelfAudit) Kernel.prototype.selfAudit = function maturitySelfAudit() { const audit = originalSelfAudit.call(this); audit.objective_maturity_core = clone(refreshMaturityCore(coreStateFromKernel(this), 'self_audit')); return audit; };
+    Kernel.prototype.evaluateMaturityCoreMutation = function evaluateMaturityCoreMutation(proposal) { return evaluateCoreMutation(coreStateFromKernel(this), proposal); };
+    Kernel.prototype.refreshObjectiveMaturityCore = function refreshObjectiveMaturityCore(reason) { return refreshMaturityCore(coreStateFromKernel(this), reason || 'manual_refresh'); };
     Kernel.__objectiveMaturityCorePatchApplied = true;
   }
 
+  function wrapBrainInstance(originalBrain) {
+    if (!originalBrain || originalBrain.__maturityWrapped) return originalBrain;
+    const brain = originalBrain;
+    const bIngest = brain.ingest;
+    const bTick = brain.tick;
+    const bSnapshot = brain.snapshot;
+    const bProcess = brain.process;
+    if (bIngest) brain.ingest = function maturityBrainIngest(input, meta) { const result = bIngest.call(brain, input, meta || {}); refreshMaturityCore(brain.state, 'brain_instance_ingest'); return result; };
+    if (bTick) brain.tick = function maturityBrainTick(reason) { const result = bTick.call(brain, reason); refreshMaturityCore(brain.state, reason || 'brain_instance_tick'); return result; };
+    if (bSnapshot) brain.snapshot = function maturityBrainSnapshot() { refreshMaturityCore(brain.state, 'brain_instance_snapshot'); return bSnapshot.call(brain); };
+    if (bProcess) brain.process = function maturityBrainProcess(input, options) { const result = bProcess.call(brain, input, options || {}); refreshMaturityCore(brain.state, 'brain_instance_process'); return result; };
+    brain.evaluateMaturityCoreMutation = function brainEvaluateMaturityCoreMutation(proposal) { return evaluateCoreMutation(brain.state, proposal); };
+    brain.refreshObjectiveMaturityCore = function brainRefreshObjectiveMaturityCore(reason) { return refreshMaturityCore(brain.state, reason || 'brain_manual_refresh'); };
+    brain.__maturityWrapped = true;
+    refreshMaturityCore(brain.state, 'brain_wrapped');
+    return brain;
+  }
+
   function installKernelBrainPatch() {
-    const Brain = global.KernelBrainV04;
-    if (!Brain || Brain.__objectiveMaturityCorePatchApplied) return;
-    const originalCreateState = Brain.createState;
-    const originalCreateBrain = Brain.createBrain;
-    const originalIngest = Brain.ingest;
-    const originalTick = Brain.tick;
-    const originalProcess = Brain.process;
-
-    function wrapBrainInstance(brain) {
-      if (!brain || brain.__maturityWrapped) return brain;
-      const bIngest = brain.ingest;
-      const bTick = brain.tick;
-      const bSnapshot = brain.snapshot;
-      const bProcess = brain.process;
-      if (bIngest) brain.ingest = function maturityBrainIngest(input, meta) { const result = bIngest.call(brain, input, meta || {}); refreshMaturityCore(brain.state, 'brain_instance_ingest'); return result; };
-      if (bTick) brain.tick = function maturityBrainTick(reason) { const result = bTick.call(brain, reason); refreshMaturityCore(brain.state, reason || 'brain_instance_tick'); return result; };
-      if (bSnapshot) brain.snapshot = function maturityBrainSnapshot() { refreshMaturityCore(brain.state, 'brain_instance_snapshot'); return bSnapshot.call(brain); };
-      if (bProcess) brain.process = function maturityBrainProcess(input, options) { const result = bProcess.call(brain, input, options || {}); refreshMaturityCore(brain.state, 'brain_instance_process'); return result; };
-      brain.evaluateMaturityCoreMutation = function brainEvaluateMaturityCoreMutation(proposal) { return evaluateCoreMutation(brain.state, proposal); };
-      brain.refreshObjectiveMaturityCore = function brainRefreshObjectiveMaturityCore(reason) { return refreshMaturityCore(brain.state, reason || 'brain_manual_refresh'); };
-      brain.__maturityWrapped = true;
-      return brain;
-    }
-
-    if (originalCreateState) {
-      Brain.createState = function maturityBrainCreateState(seed) {
-        const state = originalCreateState.call(Brain, seed || {});
-        refreshMaturityCore(state, 'brain_create_state');
-        return state;
-      };
-    }
-    if (originalCreateBrain) {
-      Brain.createBrain = function maturityBrainCreateBrain(seed) {
-        const brain = originalCreateBrain.call(Brain, seed || {});
-        refreshMaturityCore(brain.state, 'brain_create_brain');
-        return wrapBrainInstance(brain);
-      };
-    }
-    if (originalIngest) {
-      Brain.ingest = function maturityBrainStaticIngest(state, input, meta) {
-        const result = originalIngest.call(Brain, state, input, meta || {});
-        refreshMaturityCore(state, 'brain_static_ingest');
-        return result;
-      };
-    }
-    if (originalTick) {
-      Brain.tick = function maturityBrainStaticTick(state, reason) {
-        const result = originalTick.call(Brain, state, reason);
-        refreshMaturityCore(state, reason || 'brain_static_tick');
-        return result;
-      };
-    }
-    if (originalProcess) {
-      Brain.process = function maturityBrainStaticProcess(input, options) {
-        const result = originalProcess.call(Brain, input, options || {});
-        if (options && options.brain && options.brain.state) refreshMaturityCore(options.brain.state, 'brain_static_process_bound');
-        return result;
-      };
-    }
-    Brain.__objectiveMaturityCorePatchApplied = true;
+    const Original = global.KernelBrainV04;
+    if (!Original || Original.__objectiveMaturityCorePatchApplied) return;
+    const wrapper = Object.assign({}, Original);
+    if (typeof Original.createState === 'function') wrapper.createState = function maturityCreateState(seed) { const state = Original.createState(seed || {}); refreshMaturityCore(state, 'brain_create_state'); return state; };
+    if (typeof Original.createBrain === 'function') wrapper.createBrain = function maturityCreateBrain(seed) { return wrapBrainInstance(Original.createBrain(seed || {})); };
+    if (typeof Original.ingest === 'function') wrapper.ingest = function maturityStaticIngest(state, input, meta) { const result = Original.ingest(state, input, meta || {}); refreshMaturityCore(state, 'brain_static_ingest'); return result; };
+    if (typeof Original.tick === 'function') wrapper.tick = function maturityStaticTick(state, reason) { const result = Original.tick(state, reason); refreshMaturityCore(state, reason || 'brain_static_tick'); return result; };
+    if (typeof Original.process === 'function') wrapper.process = function maturityStaticProcess(input, options) { const result = Original.process(input, options || {}); if (options && options.brain && options.brain.state) refreshMaturityCore(options.brain.state, 'brain_static_process_bound'); return result; };
+    wrapper.__objectiveMaturityCorePatchApplied = true;
+    global.KernelBrainV04 = Object.freeze(wrapper);
   }
 
   function installBridgePatch() {
-    const Bridge = global.KernelBrainEpistemicKernelBridgeV01;
-    if (!Bridge || Bridge.__objectiveMaturityCorePatchApplied) return;
-    const originalBind = Bridge.bind;
-    if (originalBind) {
-      Bridge.bind = function maturityBridgeBind(epistemicKernel, options) {
-        const binding = originalBind.call(Bridge, epistemicKernel, options || {});
-        refreshMaturityCore(binding.shared_state, 'bridge_bind');
-        if (binding.bound_brain) {
-          binding.bound_brain.evaluateMaturityCoreMutation = function boundEvaluateMaturityCoreMutation(proposal) { return evaluateCoreMutation(binding.shared_state, proposal); };
-          binding.bound_brain.refreshObjectiveMaturityCore = function boundRefreshObjectiveMaturityCore(reason) { return refreshMaturityCore(binding.shared_state, reason || 'bound_manual_refresh'); };
-        }
-        return binding;
-      };
-    }
-    Bridge.__objectiveMaturityCorePatchApplied = true;
+    const Original = global.KernelBrainEpistemicKernelBridgeV01;
+    if (!Original || Original.__objectiveMaturityCorePatchApplied) return;
+    const wrapper = Object.assign({}, Original);
+    if (typeof Original.bind === 'function') wrapper.bind = function maturityBridgeBind(epistemicKernel, options) {
+      const binding = Original.bind(epistemicKernel, options || {});
+      refreshMaturityCore(binding.shared_state, 'bridge_bind');
+      if (binding.bound_brain) {
+        binding.bound_brain.evaluateMaturityCoreMutation = function boundEvaluateMaturityCoreMutation(proposal) { return evaluateCoreMutation(binding.shared_state, proposal); };
+        binding.bound_brain.refreshObjectiveMaturityCore = function boundRefreshObjectiveMaturityCore(reason) { return refreshMaturityCore(binding.shared_state, reason || 'bound_manual_refresh'); };
+      }
+      return binding;
+    };
+    wrapper.__objectiveMaturityCorePatchApplied = true;
+    global.KernelBrainEpistemicKernelBridgeV01 = Object.freeze(wrapper);
   }
 
   installEpistemicKernelPatch();
