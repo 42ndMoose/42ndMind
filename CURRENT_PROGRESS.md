@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_19_KERNEL_OWNED_UNIFIED_CORE.md
 HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
+HANDOFF_2026_05_19_KERNEL_BRAIN_OWNED_ORGANISM_V0_4.md
 ```
 
 ## Current status
@@ -43,6 +43,7 @@ RAW_MESSY_LANGUAGE_INTAKE_RECEPTOR_READY
 MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY
 KERNEL_OWNED_UNIFIED_CORE_BUILT_FOR_VERIFICATION
 CORE_MIGRATION_PASS_V0_1_BUILT_FOR_VERIFICATION
+KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -59,6 +60,7 @@ RAW_INTAKE_RECEPTOR_FIRST_PASS_CONFIRMED
 SELF_EXPANSION_LOOP_FIRST_PASS_CONFIRMED
 KERNEL_OWNED_CORE_FIRST_PASS_BUILT
 CORE_MIGRATION_PASS_FIRST_PASS_BUILT
+KERNEL_BRAIN_OWNED_ORGANISM_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -67,31 +69,120 @@ The active direction is now:
 
 ```text
 Do not keep adding connector modules as if they are the brain.
-The actual thinking logic must live inside EpistemicKernel-owned state and methods.
+The actual thinking logic must live inside owned brain state and methods.
 Modules/pages should present what the brain thinks, not decide what it should think.
 ```
 
-The live kernel patch point is:
+Two live paths now point in that direction:
 
 ```text
-src/epistemic-kernel-v0-2-patches.js
+EpistemicKernel.state.unifiedCore
+KernelBrainV04.createBrain().state
 ```
 
-That file now attaches and operates:
-
-```text
-state.unifiedCore
-```
-
-directly inside `EpistemicKernel`.
-
-The live brain already loads this file:
-
-```text
-llm-brain-v0-3.html
-```
+The next migration concern is avoiding duplicated consciousness between those two surfaces.
 
 ## Most recent added layer
+
+KernelBrain v0.4 owned-organism pass:
+
+```text
+https://42ndmoose.github.io/42ndMind/kernel-brain-owned-organism-v0-4-test.html?v=brain-2
+```
+
+Expected metrics:
+
+```text
+8/8 passed
+KernelBrainV04.VERSION: 0.4.2
+createBrain owns internal state and receptors without external globals
+brain.ingest creates owned event, interpretations, meanings, pressure, and admissions
+brain.process uses same owned state instead of adapter-only coordination
+optional adapters are reports, not owners
+graph exposes one owned brain root
+admissions remain candidate-only with no canonical mutation
+no final truth or belief movement occurs
+```
+
+What it means:
+
+```text
+src/kernel-brain-v0-4.js is no longer only a thin adapter coordinator.
+KernelBrainV04 now owns compact internal state, internal receptor rows, ingest behavior, meaning nodes, claim/evidence nodes, relation edges, pressure state, admission proposals, graph, and tick summaries.
+Adapters are optional reports/views, not thought owners.
+```
+
+## KernelBrainV04 owned state fields
+
+```text
+state_type: kernel_brain_v0_4_owned_state
+version
+created_at
+updated_at
+doctrine
+tick
+receptors
+runtimeEvents
+interpretations
+meaningNodes
+claimNodes
+evidenceNodes
+relationEdges
+pressureState
+admissionProposals
+beliefCommitments
+externalReports
+graph
+eventIndex
+stats
+last_tick_summary
+```
+
+## KernelBrainV04 owned methods
+
+```text
+KernelBrainV04.createState(seed)
+KernelBrainV04.createBrain(seed)
+KernelBrainV04.ingest(state, input, meta)
+KernelBrainV04.tick(state, reason)
+KernelBrainV04.process(input, options)
+```
+
+A brain instance returned by `createBrain()` supports:
+
+```text
+brain.ingest(input, meta)
+brain.proposeAdmissions()
+brain.tick(reason)
+brain.snapshot()
+brain.process(input, options)
+```
+
+## Internal receptors owned by KernelBrainV04
+
+```text
+raw_event_receptor
+coverage_receptor
+claim_receptor
+source_anchor_receptor
+evidence_description_receptor
+media_description_receptor
+quote_context_receptor
+adversarial_reframe_receptor
+relation_receptor
+truth_pressure_receptor
+admission_receptor
+rollback_receptor
+```
+
+Each is marked:
+
+```text
+status: owned_inside_kernel_brain_v0_4
+external: false
+```
+
+## Recently added direct EpistemicKernel core migration
 
 Core Migration Pass v0.1:
 
@@ -115,70 +206,19 @@ core graph and snapshot expose one owned organism state
 no standalone module decides truth/belief/canonical admission in this path
 ```
 
-What it means:
-
-```text
-Raw intake, interpretation, relation creation, pressure application, and admission proposal now exist as EpistemicKernel methods.
-The main path is now kernel-owned:
-
-kernel.ingest(rawInput)
-  -> kernel.interpret(rawInput)
-  -> kernel.relate(event)
-  -> kernel.applyPressure()
-  -> kernel.proposeAdmissions()
-  -> kernel.unifiedTick('ingest')
-
-This is the first direct move away from connector federation into one organism.
-```
-
-## Kernel-owned methods now available
-
-```text
-ingest(rawInput, meta)
-interpret(rawInput, meta)
-relate(eventOrId)
-applyPressure()
-proposeAdmissions()
-unifiedIngestRaw(text, meta)
-unifiedTick(reason)
-unifiedCoreSnapshot()
-```
-
-## state.unifiedCore fields
-
-```text
-version
-created_at
-updated_at
-doctrine
-tick
-runtimeEvents
-interpretations
-meaningNodes
-claimNodes
-evidenceNodes
-relationEdges
-pressureState
-admissionProposals
-beliefCommitments
-audit
-graph
-eventIndex
-stats
-last_tick_summary
-```
-
 ## Current doctrine invariants
 
 Preserve:
 
 ```text
-brain owns unifiedCore
+brain owns its state
 modules are views, not thought sources
+adapters are optional external reports
+receptors are internal tables, not external registries
 one owned state
 unified tick loop
-raw input enters core before UI modules
-meaning/claim/relation/pressure/admission live inside kernel
+raw input enters brain/core before UI modules
+meaning/claim/relation/pressure/admission live inside the brain/core
 candidate interpretation is not truth
 self-expansion is candidate only
 growth means subdivision, not mass inflation
@@ -203,36 +243,14 @@ The earlier standalone modules remain as tests, views, and scaffolds.
 
 They should not be treated as the source of thought.
 
-They are secondary to:
-
-```text
-EpistemicKernel.state.unifiedCore
-EpistemicKernel.ingest()
-EpistemicKernel.interpret()
-EpistemicKernel.relate()
-EpistemicKernel.applyPressure()
-EpistemicKernel.proposeAdmissions()
-```
-
-## Recently confirmed layer
-
-Meaning admission / self-expansion loop v0.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-meaning-admission-self-expansion-loop-v0-1-test.html?v=selfexpand-1
-https://42ndmoose.github.io/42ndMind/meaning-admission-self-expansion-loop.html?v=selfexpand-1
-```
-
-User-confirmed status:
-
-```text
-passed
-Decision: MEANING_ADMISSION_SELF_EXPANSION_LOOP_READY
-```
+They are secondary to the owned brain/core state.
 
 ## Key current files
 
 ```text
+src/kernel-brain-v0-4.js
+kernel-brain-owned-organism-v0-4-test.html
+HANDOFF_2026_05_19_KERNEL_BRAIN_OWNED_ORGANISM_V0_4.md
 src/epistemic-kernel-v0-2-patches.js
 kernel-core-migration-pass-v0-1-test.html
 HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
@@ -261,45 +279,46 @@ HANDOFF_2026_05_19_CORE_MIGRATION_PASS_V0_1.md
 18. meaning admission / self-expansion loop v0.1: passed by user
 19. kernel-owned unified core v0.4 first pass: built
 20. core migration pass v0.1: built for verification
+21. KernelBrain v0.4 owned-organism pass: built for verification
 ```
 
 ## Next task
 
-Run the core migration pass browser test.
+Run the KernelBrain v0.4 owned-organism browser test.
 
-After it passes, treat `CORE_MIGRATION_PASS_V0_1_READY` as confirmed.
+After it passes, treat `KERNEL_BRAIN_V0_4_OWNED_ORGANISM_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-core migration guardrail v0.1
+KernelBrainV04 <-> EpistemicKernel bridge v0.1
 ```
 
 Purpose:
 
 ```text
-Add a test that fails if global standalone modules are treated as truth/meaning/belief/admission authorities instead of views/tests/scaffolds around EpistemicKernel.state.unifiedCore.
+Make KernelBrainV04 owned state and EpistemicKernel.state.unifiedCore interoperate cleanly without duplicating consciousness.
 ```
 
 Alternative next build:
 
 ```text
-core-owned admission acceptance gate v0.1
+core/brain authority guardrail v0.1
 ```
 
 Purpose:
 
 ```text
-Let EpistemicKernel evaluate state.unifiedCore.admissionProposals and mark some as admitted non-canonical meanings only under explicit criteria, still without truth promotion or belief movement.
+Fail if a standalone global module is treated as a truth/meaning/belief/admission authority instead of an optional report/view around the owned brain state.
 ```
 
 ## Do not do next
 
 ```text
 do not add another loose connector as the thinking layer
-do not let external modules decide meaning before the kernel sees it
+do not let external modules decide meaning before the brain sees it
 do not promote beliefs yet
 do not mutate canonical meanings silently
-do not claim this is already a complete unified brain
+do not claim the whole repo is already a complete unified brain
 do not use standalone modules as the source of thought
 ```
