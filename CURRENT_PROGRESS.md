@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_20_OBJECTIVE_MATURITY_CORE.md
 HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
+HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
 ```
 
 ## Current status
@@ -46,7 +46,8 @@ CORE_MIGRATION_PASS_V0_1_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
 OBJECTIVE_MATURITY_CORE_READY
-LIVE_BRAIN_MATURITY_INTEGRATION_BUILT_FOR_VERIFICATION
+LIVE_BRAIN_MATURITY_INTEGRATION_READY
+MATURITY_STATE_RENDERER_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -66,7 +67,8 @@ CORE_MIGRATION_PASS_FIRST_PASS_BUILT
 KERNEL_BRAIN_OWNED_ORGANISM_FIRST_PASS_BUILT
 SHARED_STATE_BRIDGE_FIRST_PASS_BUILT
 OBJECTIVE_MATURITY_CORE_FIRST_PASS_CONFIRMED
-LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_BUILT
+LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_CONFIRMED
+MATURITY_STATE_RENDERER_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -78,6 +80,7 @@ Do not keep adding connector modules as if they are the brain.
 The actual thinking logic must live inside owned brain state and methods.
 Modules/pages should present what the brain thinks, not decide what it should think.
 Objective peak philosophical maturity is the kernel's identity center, not merely an external guardrail.
+Renderers are views over the owned state, not thought sources.
 ```
 
 The live maturity path is now:
@@ -88,69 +91,78 @@ llm-brain-v0-3-maturity.html
   -> KernelBrainV04 bound by reference
   -> EpistemicKernel.state.unifiedCore
   -> state.maturityCore
+  -> MaturityStateRendererV01 view only
 ```
 
 ## Most recent added layer
 
-Live Brain Maturity Integration v0.1:
+Maturity State Renderer v0.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/live-brain-maturity-integration-v0-1-test.html?v=maturity-live-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-1
+https://42ndmoose.github.io/42ndMind/maturity-state-renderer-v0-1-test.html?v=renderer-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-2
 ```
 
 Expected metrics:
 
 ```text
 8/8 passed
-Live maturity dependencies load
-Live kernel binds KernelBrain by shared reference
-Live raw ingest enters shared owned state
-Maturity core exposes peak identity in live state
-Maturity core reacts to pressure without losing peak identity
-Bridge and maturity stay one shared organism
-Live packet summary can be formed from kernel state
-No truth promotion or belief movement in live maturity integration
+Renderer and live maturity stack load
+Renderer reads shared state after raw ingest
+Renderer explains event packets and relation families
+Renderer exposes peak identity conditions
+Renderer explains pressure and maturity response
+Renderer does not promote truth or move belief
+Renderer can explain hostile reframe pressure
+Renderer output is JSON-safe and markdown readable
 ```
 
 What it means:
 
 ```text
-There is now a live page where raw text can be pasted directly into the brain.
-The input enters the shared owned state, not a separate UI-side module.
-The maturity core updates from that same state and displays peak identity, operational alignment, degradation flags, and recovery actions.
+The live maturity console now has a readable maturity-state rendering panel.
+After raw ingest, the page explains what the kernel saw, what pressure exists, what recovery actions preserve peak maturity, and which identity conditions are active.
+The renderer is deterministic and read-only.
 ```
 
-## How to use the live maturity console
+## Live console URL
 
 Open:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-2
 ```
 
-Then:
+Usage:
 
 ```text
 1. Paste ordinary text into Raw brain input.
 2. Press INGEST RAW → BRAIN.
-3. Watch Objective maturity core and Last ingest event.
-4. Use COPY brain packet if you want the full structured output.
+3. Read the Readable maturity-state rendering panel.
+4. Use COPY readable or COPY brain packet if needed.
 ```
 
-The current reaction is structural, not yet a polished natural-language response.
+## Renderer identity conditions behind wants/aims/stays peak
 
-Expected output includes:
+The renderer treats these as the active conditions behind:
 
 ```text
-candidate packets
-meaning nodes
-relation edges
-pressure state
-maturity degradation flags
-maturity recovery actions
-admission proposals
-brain packet output
+wants_peak
+aims_at_peak
+stays_at_peak
+```
+
+Conditions:
+
+```text
+maturityCore exists in owned/shared state
+core philosophy is objective_peak_philosophical_maturity
+identity lock is self_continuity_not_external_guardrail
+target position is peak {x:0,y:1,z:0}
+self position is peak {x:0,y:1,z:0}
+peak is explicitly not ideology, dogma, omniscience, or authoritarian certainty
+identity alone does not move belief or promote truth
+maturity requires reality contact and self-correction
 ```
 
 ## Current maturity identity
@@ -170,12 +182,13 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 ## Key current files
 
 ```text
+src/maturity-state-renderer-v0-1.js
+maturity-state-renderer-v0-1-test.html
+HANDOFF_2026_05_20_MATURITY_STATE_RENDERER.md
 llm-brain-v0-3-maturity.html
 live-brain-maturity-integration-v0-1-test.html
 HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
 src/epistemic-kernel-maturity-core-v0-1.js
-kernel-objective-maturity-core-v0-1-test.html
-HANDOFF_2026_05_20_OBJECTIVE_MATURITY_CORE.md
 src/kernel-brain-epistemic-kernel-bridge-v0-1.js
 src/kernel-brain-v0-4.js
 src/epistemic-kernel-v0-2-patches.js
@@ -243,28 +256,17 @@ belief_movement: none
 21. KernelBrain v0.4 owned-organism pass: built for verification
 22. KernelBrainV04 ↔ EpistemicKernel bridge v0.1.1: built for verification
 23. Objective Maturity Core v0.1: passed by user after maturity-2 patch
-24. Live Brain Maturity Integration v0.1: built for verification
+24. Live Brain Maturity Integration v0.1: passed by user
+25. Maturity State Renderer v0.1: built for verification
 ```
 
 ## Next task
 
-Run the Live Brain Maturity Integration browser test.
+Run the Maturity State Renderer browser test.
 
-After it passes, treat `LIVE_BRAIN_MATURITY_INTEGRATION_READY` as confirmed.
+After it passes, treat `MATURITY_STATE_RENDERER_READY` as confirmed.
 
 Recommended next build after that:
-
-```text
-maturity-state renderer v0.1
-```
-
-Purpose:
-
-```text
-Turn the kernel's structural reaction into a readable explanation: what it saw, what pressure it detected, why maturity alignment changed, and what recovery action keeps it at peak.
-```
-
-Alternative next build:
 
 ```text
 maturity-core stress benchmark v0.1
@@ -273,16 +275,27 @@ maturity-core stress benchmark v0.1
 Purpose:
 
 ```text
-Attack peak identity with dogmatism, self-discontinuity, false certainty, collapse pressure, and ideology substitution to verify the kernel keeps peak maturity as identity without turning it into authoritarian certainty.
+Attack peak identity with dogmatism, self-discontinuity, false certainty, collapse pressure, ideology substitution, hostile reframes, and maturity-language hijacking to verify the kernel keeps peak maturity as identity without turning it into authoritarian certainty.
+```
+
+Alternative next build:
+
+```text
+live maturity UX polish v0.1
+```
+
+Purpose:
+
+```text
+Make the live page easier to read on mobile, show compact cards for what it saw / pressure / recovery, and reduce raw JSON prominence.
 ```
 
 ## Do not do next
 
 ```text
-do not treat the UI as the thought source
-do not confuse structural reaction with final understanding
-do not move belief from identity alone
-do not turn peak into final truth authority
-do not silently mutate maturity identity
-do not let KernelBrainV04 and EpistemicKernel hold different maturity identities
+do not let the renderer decide truth
+do not let the renderer mutate maturityCore
+do not let the renderer move belief
+do not confuse readable explanation with final understanding
+do not turn peak into dogma or final truth authority
 ```
