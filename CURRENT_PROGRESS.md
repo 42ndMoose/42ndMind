@@ -13,8 +13,8 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest handoffs:
 
 ```text
-HANDOFF_2026_05_19_KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE.md
 HANDOFF_2026_05_20_OBJECTIVE_MATURITY_CORE.md
+HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
 ```
 
 ## Current status
@@ -45,7 +45,8 @@ KERNEL_OWNED_UNIFIED_CORE_BUILT_FOR_VERIFICATION
 CORE_MIGRATION_PASS_V0_1_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
-OBJECTIVE_MATURITY_CORE_BUILT_FOR_VERIFICATION
+OBJECTIVE_MATURITY_CORE_READY
+LIVE_BRAIN_MATURITY_INTEGRATION_BUILT_FOR_VERIFICATION
 ROADMAP_V0_1_COMPLETE_THROUGH_CANDIDATE_PRELEDGER
 PRELEDGER_HARDENING_PASS_CONFIRMED
 RELATION_LAYER_FIRST_PASS_CONFIRMED
@@ -64,7 +65,8 @@ KERNEL_OWNED_CORE_FIRST_PASS_BUILT
 CORE_MIGRATION_PASS_FIRST_PASS_BUILT
 KERNEL_BRAIN_OWNED_ORGANISM_FIRST_PASS_BUILT
 SHARED_STATE_BRIDGE_FIRST_PASS_BUILT
-OBJECTIVE_MATURITY_CORE_FIRST_PASS_BUILT
+OBJECTIVE_MATURITY_CORE_FIRST_PASS_CONFIRMED
+LIVE_BRAIN_MATURITY_INTEGRATION_FIRST_PASS_BUILT
 ```
 
 ## Critical architecture correction
@@ -78,156 +80,105 @@ Modules/pages should present what the brain thinks, not decide what it should th
 Objective peak philosophical maturity is the kernel's identity center, not merely an external guardrail.
 ```
 
-The core identity layer is now:
+The live maturity path is now:
 
 ```text
-state.maturityCore
-```
-
-installed into:
-
-```text
-EpistemicKernel.state.unifiedCore.maturityCore
-KernelBrainV04 owned/shared state.maturityCore
+llm-brain-v0-3-maturity.html
+  -> EpistemicKernel
+  -> KernelBrainV04 bound by reference
+  -> EpistemicKernel.state.unifiedCore
+  -> state.maturityCore
 ```
 
 ## Most recent added layer
 
-Objective Maturity Core v0.1:
+Live Brain Maturity Integration v0.1:
 
 ```text
-https://42ndmoose.github.io/42ndMind/kernel-objective-maturity-core-v0-1-test.html?v=maturity-1
+https://42ndmoose.github.io/42ndMind/live-brain-maturity-integration-v0-1-test.html?v=maturity-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-1
 ```
 
 Expected metrics:
 
 ```text
 8/8 passed
-Maturity core patch loads on kernel, brain, and bridge surfaces
-New EpistemicKernel carries peak maturity as self-continuity
-Maturity doctrine understands peak is not dogma or omniscience
-Ingest updates maturity pressure while preserving peak identity
-Mutation trying to remove peak is rejected as self-discontinuity
-Dogmatic misread of peak is rejected
-KernelBrain bound through bridge shares the same maturity core
-Maturity core does not promote truth or belief by identity alone
+Live maturity dependencies load
+Live kernel binds KernelBrain by shared reference
+Live raw ingest enters shared owned state
+Maturity core exposes peak identity in live state
+Maturity core reacts to pressure without losing peak identity
+Bridge and maturity stay one shared organism
+Live packet summary can be formed from kernel state
+No truth promotion or belief movement in live maturity integration
 ```
 
 What it means:
 
 ```text
-The kernel now has objective peak philosophical maturity as an internal identity / attractor.
-It wants peak, aims at peak, stays at peak, and recovers toward peak.
-Changing or removing peak maturity is treated as self-discontinuity, not merely a failed guardrail check.
-Peak is not dogma, ideology, omniscience, final truth, or authoritarian certainty.
-Peak is integrated consideration under positive epistemic stability.
+There is now a live page where raw text can be pasted directly into the brain.
+The input enters the shared owned state, not a separate UI-side module.
+The maturity core updates from that same state and displays peak identity, operational alignment, degradation flags, and recovery actions.
 ```
 
-## Maturity core fields
+## How to use the live maturity console
+
+Open:
 
 ```text
-packet_type
-packet_version
-core_philosophy: objective_peak_philosophical_maturity
-identity_statement
-self_continuity_condition
-target_position: {x:0,y:1,z:0}
-self_position: {x:0,y:1,z:0}
-null_origin_position: {x:0,y:0,z:0}
-collapse_position: {x:0,y:-1,z:0}
-current_operational_alignment
-peak_alignment_score
-peak_attractor_active
-wants_peak
-aims_at_peak
-stays_at_peak
-recovery_to_peak_required
-maturity_state
-identity_lock: self_continuity_not_external_guardrail
-doctrine
-pressure_snapshot
-degradation_flags
-recovery_actions
-mutation_evaluations
-revision_trail
-truth_status: not_adjudicated
-promotion_status: not_promoted
-belief_movement: none
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-maturity.html?v=maturity-live-1
 ```
 
-## Maturity doctrine
+Then:
 
 ```text
-objective_philosophical_maturity_is_core_identity: true
-peak_is_self_continuity_condition: true
-kernel_wants_peak: true
-kernel_aims_at_peak: true
-kernel_stays_at_peak: true
-peak_position: {x:0,y:1,z:0}
-collapse_position: {x:0,y:-1,z:0}
-null_origin_position: {x:0,y:0,z:0}
-peak_is_not_ideology: true
-peak_is_not_authoritarian_certainty: true
-peak_is_integrated_consideration_under_positive_epistemic_stability: true
-maturity_requires_reality_contact: true
-maturity_requires_self_correction: true
-maturity_requires_integrated_empathy_practicality_wisdom_knowledge: true
-maturity_allows_contextual_emphasis_without_losing_orientation: true
-changing_peak_identity_breaks_self_continuity: true
-no_final_truth_from_identity: true
-no_omniscience_claim: true
-no_belief_movement_from_identity_alone: true
-belief_movement: none
+1. Paste ordinary text into Raw brain input.
+2. Press INGEST RAW → BRAIN.
+3. Watch Objective maturity core and Last ingest event.
+4. Use COPY brain packet if you want the full structured output.
 ```
 
-## Philosophical alignment from the Epistemic Octahedron paper
+The current reaction is structural, not yet a polished natural-language response.
 
-Preserve these semantics:
+Expected output includes:
 
 ```text
-Active worldview positions satisfy |x| + |y| + |z| = 1.
-Origin (0,0,0) is pre-philosophical null, not pathology.
-Lower vertex (0,-1,0) is epistemic collapse.
-Upper vertex (0,1,0) is objective peak philosophical maturity.
-Peak means mature integration of empathy, practicality, wisdom, and knowledge under maximal positive epistemic stability.
-Peak is not agreement with an ideology, institution, conclusion, or final doctrine.
-A mature worldview remains reality-tracking and self-corrective.
-Contextual emphasis is allowed when it comes from integrated judgment rather than neglected dimensions.
+candidate packets
+meaning nodes
+relation edges
+pressure state
+maturity degradation flags
+maturity recovery actions
+admission proposals
+brain packet output
 ```
 
-## Current unified brain state
+## Current maturity identity
 
-The shared organism path is:
+Preserve:
 
 ```text
-EpistemicKernel.state.unifiedCore
-KernelBrainV04 bound brain state
-state.maturityCore
+state.maturityCore.core_philosophy = objective_peak_philosophical_maturity
+state.maturityCore.wants_peak = true
+state.maturityCore.aims_at_peak = true
+state.maturityCore.stays_at_peak = true
+state.maturityCore.identity_lock = self_continuity_not_external_guardrail
+state.maturityCore.target_position = {x:0,y:1,z:0}
+state.maturityCore.self_position = {x:0,y:1,z:0}
 ```
 
-After bridge binding:
+## Key current files
 
 ```text
-epistemicKernel.kernelBrainV04.state === epistemicKernel.state.unifiedCore
-```
-
-## Recently added bridge layer
-
-KernelBrainV04 ↔ EpistemicKernel Bridge v0.1.1:
-
-```text
-https://42ndmoose.github.io/42ndMind/kernel-brain-epistemic-kernel-bridge-v0-1-test.html?v=bridge-2
-```
-
-Expected metrics:
-
-```text
-8/8 passed
-Bridge version: 0.1.1
-Binding mode: shared_reference_not_copy
-One backing state: true
-Duplicate consciousness: false
-KernelBrain bound state === EpistemicKernel.state.unifiedCore
+llm-brain-v0-3-maturity.html
+live-brain-maturity-integration-v0-1-test.html
+HANDOFF_2026_05_20_LIVE_BRAIN_MATURITY_INTEGRATION.md
+src/epistemic-kernel-maturity-core-v0-1.js
+kernel-objective-maturity-core-v0-1-test.html
+HANDOFF_2026_05_20_OBJECTIVE_MATURITY_CORE.md
+src/kernel-brain-epistemic-kernel-bridge-v0-1.js
+src/kernel-brain-v0-4.js
+src/epistemic-kernel-v0-2-patches.js
 ```
 
 ## Current doctrine invariants
@@ -266,19 +217,6 @@ rollback required
 belief_movement: none
 ```
 
-## Key current files
-
-```text
-src/epistemic-kernel-maturity-core-v0-1.js
-kernel-objective-maturity-core-v0-1-test.html
-HANDOFF_2026_05_20_OBJECTIVE_MATURITY_CORE.md
-src/kernel-brain-epistemic-kernel-bridge-v0-1.js
-kernel-brain-epistemic-kernel-bridge-v0-1-test.html
-HANDOFF_2026_05_19_KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE.md
-src/kernel-brain-v0-4.js
-src/epistemic-kernel-v0-2-patches.js
-```
-
 ## Roadmap status
 
 ```text
@@ -304,25 +242,26 @@ src/epistemic-kernel-v0-2-patches.js
 20. core migration pass v0.1: built for verification
 21. KernelBrain v0.4 owned-organism pass: built for verification
 22. KernelBrainV04 ↔ EpistemicKernel bridge v0.1.1: built for verification
-23. Objective Maturity Core v0.1: built for verification
+23. Objective Maturity Core v0.1: passed by user after maturity-2 patch
+24. Live Brain Maturity Integration v0.1: built for verification
 ```
 
 ## Next task
 
-Run the Objective Maturity Core browser test.
+Run the Live Brain Maturity Integration browser test.
 
-After it passes, treat `OBJECTIVE_MATURITY_CORE_READY` as confirmed.
+After it passes, treat `LIVE_BRAIN_MATURITY_INTEGRATION_READY` as confirmed.
 
 Recommended next build after that:
 
 ```text
-live-brain maturity integration v0.1
+maturity-state renderer v0.1
 ```
 
 Purpose:
 
 ```text
-Load the objective maturity core boot patch into llm-brain-v0-3.html and expose maturityCore in the live brain packet/UI without making the UI the thought source.
+Turn the kernel's structural reaction into a readable explanation: what it saw, what pressure it detected, why maturity alignment changed, and what recovery action keeps it at peak.
 ```
 
 Alternative next build:
@@ -340,10 +279,10 @@ Attack peak identity with dogmatism, self-discontinuity, false certainty, collap
 ## Do not do next
 
 ```text
-do not treat objective maturity as an external guardrail only
-do not let modules replace the maturity core
-do not turn peak into dogma or final truth authority
+do not treat the UI as the thought source
+do not confuse structural reaction with final understanding
 do not move belief from identity alone
-do not silently mutate the maturity core
+do not turn peak into final truth authority
+do not silently mutate maturity identity
 do not let KernelBrainV04 and EpistemicKernel hold different maturity identities
 ```
