@@ -36,6 +36,18 @@
     return `${event && event.id || 'noevent'}:${tinyHash(raw).slice(0, 14)}`;
   }
 
+  function uniqueRows(rows, keyFn) {
+    const seen = new Set();
+    const out = [];
+    asArray(rows).forEach(row => {
+      const key = keyFn(row);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      out.push(row);
+    });
+    return out;
+  }
+
   function ensurePatchState(core) {
     core.packet_version = VERSION;
     core.patch_version = VERSION;
@@ -52,6 +64,7 @@
       current_goal: 'preserve useful memory while reducing repeated raw bulk',
       appetite_score: 0,
       memory_pressure: {},
+      last_optimization_pressure: null,
       reasons: [],
       actions_taken: [],
       refuses: ['external_ui_cleanup_as_thought_source', 'delete_high_value_semantics', 'promote_truth_during_compaction'],
@@ -61,12 +74,13 @@
       promotion_status: 'not_promoted_to_final_truth',
       belief_movement: 'provisional_only'
     }, core.self_optimization_drive || {});
-    core.memory_compaction_log = asArray(core.memory_compaction_log);
+    core.memory_compaction_log = uniqueRows(asArray(core.memory_compaction_log), r => r.compaction_id || `${r.reason}|${r.compacted_at}|${r.before_count}|${r.after_count}`);
     core.optimized_memory_items = asArray(core.optimized_memory_items);
-    core.memory_reaction_log = asArray(core.memory_reaction_log);
+    core.memory_reaction_log = uniqueRows(asArray(core.memory_reaction_log), r => `${r.event_fingerprint}|${r.compaction_id || r.reaction_kind || 'reaction'}`).slice(0, 30);
     core.latest_reaction = core.latest_reaction || null;
     core.doctrine = Object.assign({}, core.doctrine || {}, {
       refresh_idempotence_required: true,
+      reaction_log_must_not_bulk_on_duplicate_refresh: true,
       memory_self_optimization_drive_lives_inside_owned_state: true,
       kernel_wants_memory_to_remain_usable: true,
       optimization_is_internal_maturity_appetite_not_external_cleanup: true,
@@ -78,18 +92,6 @@
     core.promotion_status = 'not_promoted_to_final_truth';
     core.belief_movement = 'provisional_only';
     return core;
-  }
-
-  function uniqueRows(rows, keyFn) {
-    const seen = new Set();
-    const out = [];
-    asArray(rows).forEach(row => {
-      const key = keyFn(row);
-      if (!key || seen.has(key)) return;
-      seen.add(key);
-      out.push(row);
-    });
-    return out;
   }
 
   function normalizeUserTrust(core) {
@@ -184,7 +186,7 @@
       status: 'semantic_memory_preserved_by_self_optimization'
     }));
     const log = {
-      compaction_id: rowId('compact', [reason, before.length, pressure.raw_chars, now()]),
+      compaction_id: rowId('compact', [reason, before.length, pressure.raw_chars, text(before[0] && before[0].event_id || '')]),
       compacted_at: now(),
       reason: reason || 'memory_self_optimization',
       optimizer_owner: 'kernel_internal_maturity_appetite',
@@ -197,8 +199,7 @@
       promotion_status: 'not_promoted_to_final_truth',
       belief_movement: 'provisional_only'
     };
-    core.memory_compaction_log.unshift(log);
-    core.memory_compaction_log = core.memory_compaction_log.slice(0, 30);
+    core.memory_compaction_log = uniqueRows([log].concat(asArray(core.memory_compaction_log)), r => r.compaction_id).slice(0, 30);
     return log;
   }
 
@@ -236,16 +237,16 @@
     core.provisional_beliefs = uniqueRows([belief].concat(asArray(core.provisional_beliefs)), b => b.belief_id).slice(0, 120);
   }
 
-  function updateLatestReaction(core, event, reason, pressure, compactionLog) {
+  function updateLatestReaction(core, event, reason, pressure, compactionLog, duplicateRefresh) {
     const raw = eventText(event);
     if (!raw) return;
     const reaction = {
-      reaction_id: rowId('reaction', [eventFingerprint(event), reason]),
+      reaction_id: rowId('reaction', [eventFingerprint(event), compactionLog ? compactionLog.compaction_id : 'latest_state']),
       reacted_at: now(),
       event_fingerprint: eventFingerprint(event),
       raw_preview: raw.slice(0, 220),
       reaction_kind: compactionLog ? 'ingest_plus_self_optimization' : 'ingest_or_refresh_reaction',
-      visible_response: 'belief_memory_core_updated',
+      visible_response: duplicateRefresh ? 'duplicate_refresh_ignored_no_reteach' : 'belief_memory_core_updated',
       inferred_count: asArray(core.inferred_principles).length + asArray(core.inferred_boundaries).length + asArray(core.inferred_worldview_fragments).length,
       provisional_beliefs_count: asArray(core.provisional_beliefs).length,
       challenges_count: asArray(core.belief_challenges).length,
@@ -259,8 +260,11 @@
       belief_movement: 'provisional_only'
     };
     core.latest_reaction = reaction;
-    core.memory_reaction_log.unshift(reaction);
-    core.memory_reaction_log = core.memory_reaction_log.slice(0, 30);
+    if (!duplicateRefresh || compactionLog) {
+      core.memory_reaction_log = uniqueRows([reaction].concat(asArray(core.memory_reaction_log)), r => `${r.event_fingerprint}|${r.compaction_id || r.reaction_kind || 'reaction'}`).slice(0, 30);
+    } else {
+      core.memory_reaction_log = uniqueRows(asArray(core.memory_reaction_log), r => `${r.event_fingerprint}|${r.compaction_id || r.reaction_kind || 'reaction'}`).slice(0, 30);
+    }
   }
 
   function normalizeAndOptimize(state, reason, options) {
@@ -268,10 +272,11 @@
     const event = latestEvent(state);
     const raw = eventText(event);
     const fp = eventFingerprint(event);
+    const duplicateRefresh = !!(options && options.duplicateRefresh);
     if (fp && !core.event_processing.processed_event_fingerprints.includes(fp)) {
       core.event_processing.processed_event_fingerprints.unshift(fp);
       core.event_processing.processed_event_fingerprints = core.event_processing.processed_event_fingerprints.slice(0, 80);
-    } else if (fp && options && options.duplicateRefresh) {
+    } else if (fp && duplicateRefresh) {
       core.event_processing.duplicate_refreshes_ignored = Number(core.event_processing.duplicate_refreshes_ignored || 0) + 1;
     }
     core.event_processing.last_event_fingerprint = fp || core.event_processing.last_event_fingerprint;
@@ -288,6 +293,7 @@
     let compactionLog = null;
     if (pressure.appetite_score >= 0.45 || pressure.long_raw_count > 0 || pressure.duplicate_count > 0) {
       drive.status = 'self_optimizing_memory_for_future_reasoning';
+      drive.last_optimization_pressure = clone(pressure);
       compactionLog = compactMemory(core, pressure, reason);
       drive.last_optimized_at = compactionLog.compacted_at;
       drive.actions_taken = [compactionLog.action].concat(asArray(drive.actions_taken)).slice(0, 12);
@@ -295,7 +301,7 @@
       drive.status = 'idle_memory_pressure_not_yet_high';
     }
 
-    updateLatestReaction(core, event, reason, pressure, compactionLog);
+    updateLatestReaction(core, event, reason, pressure, compactionLog, duplicateRefresh);
     core.truth_status = 'not_final';
     core.promotion_status = 'not_promoted_to_final_truth';
     core.belief_movement = 'provisional_only';
