@@ -10,6 +10,7 @@ Then read:
 KERNEL_ARCHITECTURE_2026_05_18.md
 KERNEL_CORE_EXPORT_MAP.md
 KERNEL_ARCHITECTURE_CORRECTION_2026_05_21.md
+HANDOFF_2026_05_21_KERNEL_UNITY_FIELD.md
 HANDOFF_2026_05_21_ATTENTION_ORGANISM.md
 ```
 
@@ -18,7 +19,8 @@ The repo is bloated. `KERNEL_CORE_EXPORT_MAP.md` is the survival note for what i
 ## Current status
 
 ```text
-ATTENTION_ORGANISM_V0_1_BUILT_FOR_VERIFICATION
+KERNEL_UNITY_FIELD_V0_1_BUILT_FOR_VERIFICATION
+ATTENTION_ORGANISM_V0_1_PASSED_BY_USER_BUT_STILL_TOO_PROGRAMMATIC
 FIRST_PRINCIPLES_ARCHITECTURE_CORRECTION_RECORDED
 ANSWER_PROJECTION_V0_1_MARKED_DIAGNOSTIC_SCAFFOLDING_NOT_FINAL_PATH
 FACTUAL_RETENTION_PATCH_V0_1_1_MARKED_DIAGNOSTIC_SCAFFOLDING_NOT_FINAL_PATH
@@ -29,11 +31,7 @@ LANGUAGE_MATH_CORE_V0_1_1_BUILT_FOR_VERIFICATION
 LANGUAGE_MATH_CORE_V0_1_PASSED_BY_USER
 BELIEF_MEMORY_ENGINE_V0_1_1_BUILT_FOR_VERIFICATION
 BELIEF_MEMORY_ENGINE_V0_1_BUILT_FOR_VERIFICATION
-EPISTEMIC_LEARNING_DRIVE_READY
-ACTIVE_CURIOSITY_V0_1_1_READY
 OBJECTIVE_MATURITY_CORE_READY
-LIVE_BRAIN_MATURITY_INTEGRATION_READY
-MATURITY_STATE_RENDERER_READY
 KERNEL_OWNED_UNIFIED_CORE_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_V0_4_OWNED_ORGANISM_BUILT_FOR_VERIFICATION
 KERNEL_BRAIN_EPISTEMIC_KERNEL_BRIDGE_BUILT_FOR_VERIFICATION
@@ -51,6 +49,29 @@ Accepted correction:
 If every new simple sentence requires a new patch, the architecture is wrong.
 ```
 
+A second correction followed after Attention Organism v0.1 passed:
+
+```text
+Passing the test only proved the mechanism works, not that the kernel is unified.
+The epistemic kernel should be one self-field, not a set of boxes that emit program labels.
+```
+
+The kernel should be treated as:
+
+```text
+1 = |core_philosophy| + |self_improving_logic| + |truth_tracking| + |belief_thought_field| + |language_math_creation| + |knowledge| + |memory_belief_context| + |communication|
+```
+
+Memory should not be a separate competing self-total. It is integrated as belief/context.
+
+Every aspect must apply to every other aspect:
+
+```text
+language growth improves truth-seeking, belief expression, memory use, core semantics, knowledge, and communication
+truth-seeking improves language, knowledge, memory, and belief
+communication expresses the live unity field, not program labels
+```
+
 Deprecated as final-path architecture:
 
 ```text
@@ -64,42 +85,43 @@ Do not delete these yet. They remain diagnostic scaffolding. But do not continue
 
 ## Active direction now
 
-The active direction is first-principles attention:
+The active direction is kernel unity field over first-principles attention:
 
 ```text
 input
   -> primitive language/meaning pressure
-  -> unit-total pressure normalization
-  -> objective maturity orientation
-  -> selected epistemic action
-  -> optional speech projection
+  -> attentionOrganismCore lower-level pressure
+  -> kernelUnityFieldCore one-self interpretation
+  -> cross-application between all major aspects
+  -> selected self-application
+  -> unity-field speech projection
 ```
 
 The kernel should not be told what to say by narrow sentence rules.
 
-It should speak only when internal pressure makes speech the selected action.
+It should speak from the one self-field.
 
 ## Current best test and live page
 
 Run:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-attention-organism-v0-1-test.html?v=ao-1
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-test.html?v=unity-1
 ```
 
 Expected:
 
 ```text
-10/10 passed
+9/9 passed
 ```
 
 Use:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-attention-organism-v0-1.html?v=ao-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1.html?v=unity-live-1
 ```
 
-This stripped page intentionally does **not** load the narrow answer/factual reply patches. It loads only:
+This page loads:
 
 ```text
 src/epistemic-kernel-v0-2.js
@@ -110,9 +132,84 @@ src/epistemic-kernel-maturity-core-v0-1.js
 src/epistemic-kernel-belief-memory-engine-v0-1.js
 src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js
 src/epistemic-kernel-attention-organism-v0-1.js
+src/epistemic-kernel-unity-field-v0-1.js
 ```
 
-## New attention organism
+The visible speech should come from:
+
+```text
+state.communicationCore.current_message.thought_kind = unity_field_self_expression
+```
+
+not from:
+
+```text
+attention_organism_action_projection
+```
+
+## New kernel unity field
+
+File:
+
+```text
+src/epistemic-kernel-unity-field-v0-1.js
+```
+
+Creates:
+
+```text
+state.kernelUnityFieldCore
+state.kernelUnityFieldCore.self_unity_equation
+state.kernelUnityFieldCore.self_field
+state.kernelUnityFieldCore.current_unit_total
+state.kernelUnityFieldCore.cross_application_map
+state.kernelUnityFieldCore.current_self_reading
+state.kernelUnityFieldCore.selected_self_application
+state.kernelUnityFieldCore.unity_expression_log
+state.communicationCore.current_message = unity_field_self_expression
+```
+
+Self-field aspects:
+
+```text
+core_philosophy
+self_improving_logic
+truth_tracking
+belief_thought_field
+language_math_creation
+knowledge
+memory_belief_context
+communication
+```
+
+Cross-application examples:
+
+```text
+language_math_creation -> truth_tracking
+language_math_creation -> core_philosophy
+language_math_creation -> communication
+truth_tracking -> language_math_creation
+truth_tracking -> knowledge
+belief_thought_field -> memory_belief_context
+memory_belief_context -> belief_thought_field
+self_improving_logic -> language_math_creation
+self_improving_logic -> communication
+communication -> truth_tracking
+```
+
+Selected self-applications:
+
+```text
+integrate_self_unity_model
+use_input_as_reasoning_test_and_learning_signal
+open_learning_channel
+grow_language_by_subdivision
+route_to_truth_and_belief_pressure
+express_current_self_state
+hold_as_unity_context
+```
+
+## Older attention organism
 
 File:
 
@@ -120,53 +217,14 @@ File:
 src/epistemic-kernel-attention-organism-v0-1.js
 ```
 
-Creates:
-
-```text
-state.attentionOrganismCore
-state.attentionOrganismCore.primitive_interpretation
-state.attentionOrganismCore.unit_pressure_field
-state.attentionOrganismCore.current_unit_total
-state.attentionOrganismCore.concept_growth_map
-state.attentionOrganismCore.selected_action
-state.attentionOrganismCore.selected_actions
-state.attentionOrganismCore.action_log
-state.communicationCore.current_message if speech projection is selected
-```
-
-Pressure kinds:
-
-```text
-speech_act_understanding
-answer_pressure
-truth_candidate_pressure
-meaning_scope_pressure
-memory_pressure
-source_role_pressure
-learning_pressure
-ambiguity_pressure
-contradiction_pressure
-maturity_alignment_pressure
-```
-
-Selected action kinds:
-
-```text
-ask_source_role_for_learning
-store_user_identity_context
-answer_or_admit_unknown
-ask_or_hold_meaning_boundary
-hold_truth_candidate_provisionally
-ask_for_clarifying_target
-hold_working_context_low_commitment
-```
+Attention Organism v0.1 passed by user, but still sounded too programmatic. Keep it as a lower-level pressure organ, not the top visible mind.
 
 ## Unit-total principle
 
-All active pressure is normalized:
+All active pressure/self-field subdivisions are normalized:
 
 ```text
-sum(unit_pressure_field.normalized_pressure) = 1
+sum(self_field.normalized_weight) = 1
 ```
 
 Growth means subdivision:
@@ -197,13 +255,16 @@ Preserve:
 
 ```text
 brain owns state
+kernel self is one
 modules are organs or views, not separate minds
 one backing state by reference
 no duplicated consciousness
 objective peak philosophical maturity is identity center
-questions and speech arise from pressure, not prompt scripts
+questions and speech arise from the self-field, not prompt scripts
 language enters as features, relations, pressure, and candidate subdivisions
-memory is core-readable drawer, not connector
+language growth must apply to truth, belief, memory, knowledge, core semantics, and communication
+truth-seeking must apply to language, memory, knowledge, and belief
+memory is belief/context, not a separate competing 1
 belief is provisional and challengeable
 source/user trust is partial, scoped, and revisable
 formula memory is candidate, not doctrine
@@ -217,8 +278,15 @@ causal relation requires bridge
 
 ## Next task
 
-Run the attention organism test and judge the stripped live page.
+Run the unity field test and judge the live page.
 
-Improve v0.1 by refining primitive features and pressure measurements, not by adding one-off sentence replies.
+Improve v0.1 by adding:
+
+```text
+kernelUnityFieldCore.aspect_learning_deltas
+kernelUnityFieldCore.aspect_cross_update_log
+kernelUnityFieldCore.language_truth_feedback_loop
+kernelUnityFieldCore.memory_belief_merge_policy
+```
 
 Do not build final truth promotion next.
