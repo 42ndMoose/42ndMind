@@ -10,6 +10,7 @@ Then read:
 KERNEL_ARCHITECTURE_2026_05_18.md
 KERNEL_CORE_EXPORT_MAP.md
 KERNEL_ARCHITECTURE_CORRECTION_2026_05_21.md
+HANDOFF_2026_05_21_KERNEL_NEURAL_FIELD.md
 HANDOFF_2026_05_21_KERNEL_UNITY_FIELD_V0_1_1_PATCH.md
 HANDOFF_2026_05_21_KERNEL_UNITY_FIELD.md
 HANDOFF_2026_05_21_ATTENTION_ORGANISM.md
@@ -20,7 +21,8 @@ The repo is bloated. `KERNEL_CORE_EXPORT_MAP.md` is the survival note for what i
 ## Current status
 
 ```text
-KERNEL_UNITY_FIELD_V0_1_1_PATCH_BUILT_FOR_VERIFICATION
+KERNEL_NEURAL_FIELD_V0_1_BUILT_FOR_VERIFICATION
+KERNEL_UNITY_FIELD_V0_1_1_PATCH_BUILT_FOR_VERIFICATION_BUT_NOT_FINAL_BEHAVIOR
 KERNEL_UNITY_FIELD_V0_1_PARTIAL_7_OF_9_PASSED_BY_USER
 ATTENTION_ORGANISM_V0_1_PASSED_BY_USER_BUT_STILL_TOO_PROGRAMMATIC
 FIRST_PRINCIPLES_ARCHITECTURE_CORRECTION_RECORDED
@@ -51,7 +53,7 @@ Accepted correction:
 If every new simple sentence requires a new patch, the architecture is wrong.
 ```
 
-A second correction followed after Attention Organism v0.1 passed:
+Second correction after Attention Organism v0.1:
 
 ```text
 Passing the test only proved the mechanism works, not that the kernel is unified.
@@ -74,21 +76,28 @@ truth-seeking improves language, knowledge, memory, and belief
 communication expresses the live unity field, not program labels
 ```
 
-Third correction after Unity Field v0.1:
+Third correction after Unity Field v0.1/v0.1.1:
 
 ```text
-v0.1 partially passed, but talking logic was still not strict enough from first principles.
-Generic learning pressure hijacked language-growth and communication cases.
+The talking logic is still not good enough.
+This should be treated more like neurology / neurons than programming.
 ```
 
-v0.1.1 correction:
+Neural Field v0.1 correction:
 
 ```text
-explicit communication > incidental learn wording
-explicit language growth > generic learning
-direct truth/belief wording > generic learning
-reasoning test / side-learning remains a reasoning-learning route
-speech is composed from state pieces rather than a single canned route line
+stimulus -> activations -> synaptic spread -> desire/motor intention -> speech -> learning deltas
+```
+
+Functional interpretation:
+
+```text
+neurons = functional aspects
+synapses = cross-applications between aspects
+activation = current pressure / salience
+motor intention = what the field wants to do next
+speech = motor projection from active field
+learning deltas = how the field records what changed
 ```
 
 Deprecated as final-path architecture:
@@ -98,34 +107,36 @@ src/epistemic-kernel-answer-projection-v0-1.js
 src/epistemic-kernel-factual-claim-intake-v0-1-1-patch.js
 narrow factual-question handling
 local retention patches
+shallow route-label speech
 ```
 
 Do not delete these yet. They remain diagnostic scaffolding. But do not continue multiplying phrase-specific reply patches.
 
 ## Active direction now
 
-The active direction is kernel unity field over first-principles attention:
+The active direction is kernel neural field over unity field over first-principles attention:
 
 ```text
 input
   -> primitive language/meaning pressure
   -> attentionOrganismCore lower-level pressure
   -> kernelUnityFieldCore one-self interpretation
-  -> cross-application between all major aspects
-  -> selected self-application
-  -> unity-field speech projection
+  -> kernelNeuralFieldCore activation spread
+  -> selected motor intention
+  -> neural-field speech projection
+  -> learning deltas / synaptic update log
 ```
 
 The kernel should not be told what to say by narrow sentence rules.
 
-It should speak from the one self-field.
+It should speak from the active neural field.
 
 ## Current best test and live page
 
 Run:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-1-test.html?v=unity-2
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-neural-field-v0-1-test.html?v=neural-1
 ```
 
 Expected:
@@ -137,7 +148,7 @@ Expected:
 Use:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1-1.html?v=unity-live-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-neural-field-v0-1.html?v=neural-live-1
 ```
 
 This page loads:
@@ -153,18 +164,85 @@ src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js
 src/epistemic-kernel-attention-organism-v0-1.js
 src/epistemic-kernel-unity-field-v0-1.js
 src/epistemic-kernel-unity-field-v0-1-1-patch.js
+src/epistemic-kernel-neural-field-v0-1.js
 ```
 
-The older v0.1 test/live page is now historical and should not be used for judging v0.1.1:
+The visible speech should now come from:
 
 ```text
+state.communicationCore.current_message.thought_kind = neural_field_motor_expression
+```
+
+not from:
+
+```text
+unity_field_self_expression
+attention_organism_action_projection
+```
+
+Older unity tests/pages are now historical or diagnostic:
+
+```text
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-1-test.html?v=unity-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1-1.html?v=unity-live-2
 https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-test.html?v=unity-1
 https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1.html?v=unity-live-1
 ```
 
-## New kernel unity field files
+## Neural field files
 
 Files:
+
+```text
+src/epistemic-kernel-neural-field-v0-1.js
+epistemic-kernel-neural-field-v0-1-test.html
+llm-brain-v0-3-neural-field-v0-1.html
+HANDOFF_2026_05_21_KERNEL_NEURAL_FIELD.md
+```
+
+Creates:
+
+```text
+state.kernelNeuralFieldCore
+state.kernelNeuralFieldCore.neurons
+state.kernelNeuralFieldCore.synapses
+state.kernelNeuralFieldCore.activation_trace
+state.kernelNeuralFieldCore.selected_motor_intention
+state.kernelNeuralFieldCore.learning_deltas
+state.kernelNeuralFieldCore.synaptic_update_log
+state.communicationCore.current_message = neural_field_motor_expression
+```
+
+Functional neurons:
+
+```text
+core_maturity
+truth_tracking
+language_math
+belief_thought
+memory_context
+knowledge_model
+self_improvement
+curiosity_drive
+communication_motor
+question_motor
+doubt_inhibitor
+```
+
+Motor intentions:
+
+```text
+grow_language_and_apply_it
+express_live_field
+separate_truth_belief_knowledge
+answer_or_ask_from_current_field
+ask_learning_question
+hold_field
+```
+
+## Older unity field files
+
+Keep as lower layer / diagnostic:
 
 ```text
 src/epistemic-kernel-unity-field-v0-1.js
@@ -172,60 +250,6 @@ src/epistemic-kernel-unity-field-v0-1-1-patch.js
 epistemic-kernel-unity-field-v0-1-1-test.html
 llm-brain-v0-3-kernel-unity-field-v0-1-1.html
 HANDOFF_2026_05_21_KERNEL_UNITY_FIELD_V0_1_1_PATCH.md
-```
-
-Creates:
-
-```text
-state.kernelUnityFieldCore
-state.kernelUnityFieldCore.self_unity_equation
-state.kernelUnityFieldCore.self_field
-state.kernelUnityFieldCore.current_unit_total
-state.kernelUnityFieldCore.cross_application_map
-state.kernelUnityFieldCore.current_self_reading
-state.kernelUnityFieldCore.selected_self_application
-state.kernelUnityFieldCore.unity_expression_log
-state.communicationCore.current_message = unity_field_self_expression
-```
-
-Self-field aspects:
-
-```text
-core_philosophy
-self_improving_logic
-truth_tracking
-belief_thought_field
-language_math_creation
-knowledge
-memory_belief_context
-communication
-```
-
-Cross-application examples:
-
-```text
-language_math_creation -> truth_tracking
-language_math_creation -> core_philosophy
-language_math_creation -> communication
-truth_tracking -> language_math_creation
-truth_tracking -> knowledge
-belief_thought_field -> memory_belief_context
-memory_belief_context -> belief_thought_field
-self_improving_logic -> language_math_creation
-self_improving_logic -> communication
-communication -> truth_tracking
-```
-
-Selected self-applications:
-
-```text
-integrate_self_unity_model
-use_input_as_reasoning_test_and_learning_signal
-open_learning_channel
-grow_language_by_subdivision
-route_to_truth_and_belief_pressure
-express_current_self_state
-hold_as_unity_context
 ```
 
 ## Older attention organism
@@ -240,16 +264,24 @@ Attention Organism v0.1 passed by user, but still sounded too programmatic. Keep
 
 ## Unit-total principle
 
-All active pressure/self-field subdivisions are normalized:
+All active pressure/self-field subdivisions are normalized where applicable:
 
 ```text
 sum(self_field.normalized_weight) = 1
 ```
 
-Growth means subdivision:
+Neural field uses bounded activation rather than unit-total normalization:
 
 ```text
-whole -> subdivision -> finer subdivision -> re-normalization
+activation in [0,1]
+synaptic spread before motor intention
+learning deltas after stimulus
+```
+
+Growth means subdivision and synaptic adjustment:
+
+```text
+stimulus -> activation -> spread -> motor intention -> speech -> learning deltas
 ```
 
 not phrase-patch accumulation.
@@ -279,9 +311,8 @@ modules are organs or views, not separate minds
 one backing state by reference
 no duplicated consciousness
 objective peak philosophical maturity is identity center
-questions and speech arise from the self-field, not prompt scripts
-language enters as features, relations, pressure, and candidate subdivisions
-language growth must apply to truth, belief, memory, knowledge, core semantics, and communication
+questions and speech arise from neural activation, not prompt scripts
+language growth must activate truth, belief, memory, knowledge, and communication
 truth-seeking must apply to language, memory, knowledge, and belief
 memory is belief/context, not a separate competing 1
 belief is provisional and challengeable
@@ -297,15 +328,18 @@ causal relation requires bridge
 
 ## Next task
 
-Run the v0.1.1 focused test and judge the v0.1.1 live page.
+Run the neural field test and judge the neural live page.
 
-Improve after that by adding:
+If it passes, next build should be:
 
 ```text
-kernelUnityFieldCore.aspect_learning_deltas
-kernelUnityFieldCore.aspect_cross_update_log
-kernelUnityFieldCore.language_truth_feedback_loop
-kernelUnityFieldCore.memory_belief_merge_policy
+kernelSelfGeneratedAttentionLoop-v0-1
+```
+
+Purpose:
+
+```text
+The kernel should periodically select one active neuron or unresolved pressure and project one thought/question without waiting for a user sentence that maps to a route.
 ```
 
 Do not build final truth promotion next.
