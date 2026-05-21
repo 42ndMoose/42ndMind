@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>42ndMind Factual Claim + Question Appetite v0.1 Live</title>
+  <title>42ndMind Factual Claim + Question Appetite v0.1.1 Live</title>
   <style>
     body{margin:0;background:#0f1115;color:#eef2ff;font:14px ui-monospace,Menlo,Consolas,monospace}
     header{padding:16px;background:#11141b;border-bottom:1px solid #2a3040}
@@ -22,8 +22,8 @@
 </head>
 <body>
 <header>
-  <h1>42ndMind Factual Claim + Question Appetite v0.1 Live</h1>
-  <div class="muted">External-world facts become provisional candidates. Learning questions arise from pressure, not fixed prompts.</div>
+  <h1>42ndMind Factual Claim + Question Appetite v0.1.1 Live</h1>
+  <div class="muted">External-world facts become provisional candidates. Current factual acknowledgements are retained over generic parse drift.</div>
 </header>
 <main>
   <div>
@@ -48,6 +48,7 @@
       <div class="card">
         <div><b>Language-math:</b> <span id="lmStatus">loading</span></div>
         <div><b>Factual intake:</b> <span id="factStatus">loading</span></div>
+        <div><b>Factual retention:</b> <span id="factRetentionStatus">loading</span></div>
         <div><b>Question appetite:</b> <span id="qStatus">loading</span></div>
         <div><b>Truth status:</b> <span id="truthStatus">loading</span></div>
         <div><b>Promotion:</b> <span id="promotionStatus">loading</span></div>
@@ -98,8 +99,9 @@
 <script src="src/epistemic-kernel-language-math-core-v0-1-1-patch.js?v=langmath-2"></script>
 <script src="src/epistemic-kernel-factual-claim-intake-v0-1.js?v=fact-1"></script>
 <script src="src/epistemic-kernel-question-appetite-v0-1.js?v=qapp-1"></script>
+<script src="src/epistemic-kernel-factual-claim-intake-v0-1-1-patch.js?v=fact-2"></script>
 <script>
-const STORAGE_KEY='epistemic_kernel_factual_question_v0_1_state';
+const STORAGE_KEY='epistemic_kernel_factual_question_v0_1_1_state';
 let saved=null;try{saved=localStorage.getItem(STORAGE_KEY)?JSON.parse(localStorage.getItem(STORAGE_KEY)):null}catch(e){saved=null}
 let kernel=new EpistemicKernel(saved);let binding=null;let boundBrain=null;let lastEvent=null;
 function $(id){return document.getElementById(id)}
@@ -112,14 +114,14 @@ function belief(){return shared()&&shared().beliefMemoryCore||{}}
 function esc(s){return String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
 function bind(){
   if(!boundBrain){binding=KernelBrainEpistemicKernelBridgeV01.bind(kernel);boundBrain=binding.bound_brain}
-  if(boundBrain.refreshObjectiveMaturityCore)boundBrain.refreshObjectiveMaturityCore('factual_question_live_bind');
-  if(boundBrain.refreshActiveCuriosity)boundBrain.refreshActiveCuriosity('factual_question_live_bind');
-  if(boundBrain.refreshLearningDrive)boundBrain.refreshLearningDrive('factual_question_live_bind');
-  if(boundBrain.refreshBeliefMemory)boundBrain.refreshBeliefMemory('factual_question_live_bind');
-  if(boundBrain.refreshLanguageMathCore)boundBrain.refreshLanguageMathCore('factual_question_live_bind');
+  if(boundBrain.refreshObjectiveMaturityCore)boundBrain.refreshObjectiveMaturityCore('factual_question_live_bind_v011');
+  if(boundBrain.refreshActiveCuriosity)boundBrain.refreshActiveCuriosity('factual_question_live_bind_v011');
+  if(boundBrain.refreshLearningDrive)boundBrain.refreshLearningDrive('factual_question_live_bind_v011');
+  if(boundBrain.refreshBeliefMemory)boundBrain.refreshBeliefMemory('factual_question_live_bind_v011');
+  if(boundBrain.refreshLanguageMathCore)boundBrain.refreshLanguageMathCore('factual_question_live_bind_v011');
 }
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(kernel.snapshot()))}catch(e){}}
-function sendInput(){bind();const raw=$('inputBox').value||'';if(!raw.trim()){$('status').textContent='Type or paste something first.';return}lastEvent=boundBrain.ingest(raw,{kind:'factual_question_live_input'});refreshAll('factual_question_live_input');$('status').textContent='Ingested. Current thought: '+((comm().current_message&&comm().current_message.thought_kind)||'none')+'.'}
+function sendInput(){bind();const raw=$('inputBox').value||'';if(!raw.trim()){$('status').textContent='Type or paste something first.';return}lastEvent=boundBrain.ingest(raw,{kind:'factual_question_live_input_v011'});refreshAll('factual_question_live_input_v011');$('status').textContent='Ingested. Current thought: '+((comm().current_message&&comm().current_message.thought_kind)||'none')+'.'}
 function refreshAll(reason){bind();if(boundBrain.refreshLanguageMathCore)boundBrain.refreshLanguageMathCore(reason||'refresh');save();render()}
 function resetState(){localStorage.removeItem(STORAGE_KEY);kernel=new EpistemicKernel(null);binding=null;boundBrain=null;lastEvent=null;bind();save();render();$('status').textContent='Reset.'}
 function loadFact(){$('inputBox').value='trump is the 47th president of the united states of america'}
@@ -132,17 +134,18 @@ function list(rows,fn,empty){rows=arr(rows);if(!rows.length)return `<div class="
 function renderReadable(){
   const c=lm();
   const facts=list(c.factual_claim_candidates,r=>`<div><span class="pill">${esc(r.claim_scope)}</span>${esc(r.relation_formula)}<br><span class="muted">truth: ${esc(r.truth_status)}; verification: ${r.verification_need}; intent: ${esc(r.user_intent_candidate)}</span></div>`);
+  const retention=list(c.factual_retention_log,r=>`<div><span class="pill">${esc(r.status)}</span>${esc(r.relation_formula)}<br><span class="muted">message: ${esc(r.current_message_kind)}</span></div>`);
   const pressures=list(c.truth_relevance_pressure,r=>`<div><span class="pill">${esc(r.pressure_kind)}</span>${esc(r.target_relation_formula)}<br><span class="muted">pressure: ${r.pressure}; ${esc(r.status)}</span></div>`);
   const qapps=list(learn().question_appetite,r=>`<div><span class="pill">${esc(r.status)}</span>${esc(r.raw_preview)}<br><span class="muted">top: ${esc(r.top_need&&r.top_need.need_kind)} ${r.top_need&&r.top_need.pressure}; selected: ${esc(r.selected_question_id||'none')}</span></div>`);
   const qs=list(learn().learning_priority_questions,r=>`<div><span class="pill">${esc(r.question_kind)}</span>${esc(r.question_text)}<br><span class="muted">priority: ${r.priority}; bottleneck: ${r.blocks_continuation}</span></div>`);
   const intents=list(c.intent_inference,r=>`<div><span class="pill">${esc(r.speech_act)}</span>${esc(r.relation_formula)}<br><span class="muted">intent: ${esc(r.inferred_user_intent)}; targets: ${esc(arr(r.requested_state_targets).join(', ')||'none')}</span></div>`);
   const sem=list(c.semantic_relation_claims,r=>`<div><span class="pill">${esc(r.status)}</span>${esc(r.relation_formula)}<br><span class="muted">conflict ${r.conflict_score}; general accepted: ${r.accepted_as_general_meaning}</span></div>`);
-  $('rendered').innerHTML=card('Factual claim candidates',facts)+card('Truth relevance pressure',pressures)+card('Question appetite',qapps)+card('Learning priority questions',qs)+card('Intent inference',intents)+card('Semantic relation claims',sem);
+  $('rendered').innerHTML=card('Factual claim candidates',facts)+card('Factual acknowledgement retention',retention)+card('Truth relevance pressure',pressures)+card('Question appetite',qapps)+card('Learning priority questions',qs)+card('Intent inference',intents)+card('Semantic relation claims',sem);
 }
 function render(){
   bind();const c=lm();const m=comm().current_message||{};
   $('thoughtPanel').innerHTML=`<b>${esc(m.thought_kind||'no thought')}</b><br>${esc(m.message||'No current message.')}`;
-  $('lmStatus').textContent=c.active?'active':'inactive';$('factStatus').textContent=c.factual_claim_intake_version||'none';$('qStatus').textContent=learn().question_appetite_version||'none';$('truthStatus').textContent=c.truth_status||'none';$('promotionStatus').textContent=c.promotion_status||'none';
+  $('lmStatus').textContent=c.active?'active':'inactive';$('factStatus').textContent=c.factual_claim_intake_version||'none';$('factRetentionStatus').textContent=c.factual_claim_intake_patch_version||'none';$('qStatus').textContent=learn().question_appetite_version||'none';$('truthStatus').textContent=c.truth_status||'none';$('promotionStatus').textContent=c.promotion_status||'none';
   renderReadable();$('lmPacket').textContent=JSON.stringify(c,null,2);$('commPacket').textContent=JSON.stringify(comm(),null,2);$('learnPacket').textContent=JSON.stringify(learn(),null,2);$('beliefPacket').textContent=JSON.stringify(belief(),null,2);
 }
 bind();render();
