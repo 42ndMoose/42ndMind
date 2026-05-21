@@ -13,6 +13,7 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 Newest relevant handoffs:
 
 ```text
+HANDOFF_2026_05_20_LANGUAGE_MATH_CORE_V0_1_1.md
 HANDOFF_2026_05_20_LANGUAGE_MATH_CORE.md
 HANDOFF_2026_05_20_BELIEF_MEMORY_ENGINE.md
 HANDOFF_2026_05_20_EPISTEMIC_LEARNING_DRIVE.md
@@ -27,7 +28,8 @@ Do not read older handoffs unless implementation details are needed.
 ## Current status
 
 ```text
-LANGUAGE_MATH_CORE_V0_1_BUILT_FOR_VERIFICATION
+LANGUAGE_MATH_CORE_V0_1_1_BUILT_FOR_VERIFICATION
+LANGUAGE_MATH_CORE_V0_1_PASSED_BY_USER
 BELIEF_MEMORY_ENGINE_V0_1_1_BUILT_FOR_VERIFICATION
 BELIEF_MEMORY_ENGINE_V0_1_BUILT_FOR_VERIFICATION
 EPISTEMIC_LEARNING_DRIVE_READY
@@ -80,7 +82,8 @@ Learning drive lives inside owned state and turns resolved context into truth-se
 Belief-memory lives inside owned state and lets the kernel infer, remember, partially trust, provisionally believe, challenge itself, and ask only useful truth-need questions.
 Belief-memory v0.1.1 adds internal memory self-optimization so the kernel wants memory to remain usable for future reasoning.
 Language-math core v0.1 integrates the existing objective language-math stack into owned state as languageMathCore and communicationCore.
-Questions and communication should be epistemic actions from learning appetite, truth need, semantic conflict, memory pressure, and attention, not UI prompts.
+Language-math core v0.1.1 treats conversational intent as a language-math relation, so direct questions like “are you curious?” are answered from live state instead of filed as inert context.
+Questions and communication should be epistemic actions from learning appetite, truth need, semantic conflict, memory pressure, conversational intent, and attention, not UI prompts.
 ```
 
 The live kernel path is now:
@@ -98,41 +101,39 @@ EpistemicKernel
   -> renderers / live pages as views only
 ```
 
-## Most recent added layer
+## Most recent added patch
 
-Language-Math Core v0.1:
+Language-Math Core v0.1.1 conversational intent patch:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-test.html?v=langmath-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1.html?v=langmath-live-1
+https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-1-test.html?v=langmath-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1-1.html?v=langmath-live-2
 ```
 
 Expected metrics:
 
 ```text
 10/10 passed
-module loads and patches kernel, brain, and bridge
-binding creates languageMathCore and communicationCore inside shared state
-existing objective language-math dependencies and formula memory are visible
-semantic remapping claim is detected as relation formula
-semantic inconsistency creates scoped trust hold, not total user distrust
-communicationCore projects one live thought challenging the claim
-reply can be carried as benefit-of-doubt back-of-head context
-ordinary language still routes through parser toward candidate formula concepts
-candidate admission requests do not silently mutate canonical meaning
-no final truth promotion and maturity identity preserved
+v0.1.1 patch loads without creating connector brain
+binding keeps languageMathCore and communicationCore inside shared state
+direct curiosity question is classified as request_self_state(curiosity)
+kernel answers direct question from live state instead of generic context
+self-state answer records live state snapshot
+ordinary semantic conflict still works after conversational intent patch
+benefit-of-doubt reply still carries as back-of-head context
+communication answers belief and memory self-state questions
+no final truth promotion occurs in conversational intent patch
+objective maturity remains identity center
 ```
 
-What it means:
+What it fixes:
 
 ```text
-The existing objective language-math kernel is now wrapped into live owned state.
-This is not a new replacement formalization layer.
-This is not a connector that owns thought.
-languageMathCore reads formula memory, parser output, concept admission pressure, and semantic relation claims.
-communicationCore projects one current thought/question from live state pressure.
-The kernel can challenge claims like “chicken means stretch” without totally distrusting the user.
-The kernel can hold a user explanation as benefit-of-doubt / back-of-head context without objective truth promotion.
+“are you curious? can you answer me?” previously became heard_context_no_major_formalization.
+That was wrong because the first-principled reading is user_utterance -> request_self_state(curiosity_state, communication_capability).
+v0.1.1 adds intent_inference and self_state_answers inside languageMathCore.
+It answers from curiosityCore, learningDrive, beliefMemoryCore, languageMathCore, and maturityCore.
+This is not a chatbot connector. It is an intent-relation correction inside languageMathCore.
 ```
 
 ## Existing objective language-math stack location
@@ -188,6 +189,8 @@ back_of_head_context
 candidate_admission_requests
 communication_pressure
 live_thought
+intent_inference
+self_state_answers
 integration_log
 truth_status: not_final
 promotion_status: not_promoted_to_final_truth
@@ -218,6 +221,13 @@ semantic_conflict_adjusts_scoped_trust_not_total_user_trust: true
 benefit_of_doubt_context_is_allowed_during_conversation: true
 back_of_head_context_is_live_attention_not_final_truth: true
 communication_is_projection_of_state_pressure_not_scripted_chat: true
+conversational_intent_is_language_math_relation: true
+direct_questions_to_kernel_are_not_inert_context: true
+self_state_questions_answer_from_live_state: true
+intent_first_before_generic_context_fallback: true
+answer_is_projection_of_state_not_scripted_persona: true
+can_answer_yes_no_maybe_uncertain_from_state: true
+communication_attention_is_not_external_connector: true
 formula_memory_remains_candidate_not_doctrine: true
 no_silent_canonical_mutation: true
 no_repo_commit_without_review: true
@@ -230,7 +240,7 @@ belief_movement: provisional_only
 The active language-math live page is:
 
 ```text
-llm-brain-v0-3-language-math-v0-1.html?v=langmath-live-1
+llm-brain-v0-3-language-math-v0-1-1.html?v=langmath-live-2
 ```
 
 It intentionally uses:
@@ -245,6 +255,8 @@ It renders:
 
 ```text
 Kernel says
+Intent inference
+Self-state answers
 Formula memory
 Semantic relation claims
 Scoped trust adjustments
@@ -276,9 +288,13 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 
 ```text
 src/epistemic-kernel-language-math-core-v0-1.js
+src/epistemic-kernel-language-math-core-v0-1-1-patch.js
 epistemic-language-math-core-v0-1-test.html
+epistemic-language-math-core-v0-1-1-test.html
 llm-brain-v0-3-language-math-v0-1.html
+llm-brain-v0-3-language-math-v0-1-1.html
 HANDOFF_2026_05_20_LANGUAGE_MATH_CORE.md
+HANDOFF_2026_05_20_LANGUAGE_MATH_CORE_V0_1_1.md
 src/epistemic-kernel-belief-memory-engine-v0-1.js
 src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js
 epistemic-belief-memory-engine-v0-1-test.html
@@ -315,6 +331,7 @@ kernel wants peak, aims at peak, stays at peak
 active curiosity comes from active logic, not UI
 questions come from learning appetite and truth need, not prompt queue only
 communication projects live state pressure, not a script
+conversational intent is part of language-math relation inference
 user answers are context, not automatic truth
 answered spans retire from current curiosity
 memory is core-readable drawer, not connector
@@ -375,15 +392,16 @@ older candidate-only language-math layers may still use belief_movement: none
 27. Epistemic Learning Drive v0.1: ready
 28. Belief-Memory Engine v0.1: built for verification
 29. Belief-Memory Engine v0.1.1 self-optimization patch: built for verification
-30. Language-Math Core v0.1 live integration: built for verification
+30. Language-Math Core v0.1 live integration: passed by user
+31. Language-Math Core v0.1.1 conversational intent patch: built for verification
 ```
 
 ## Next task
 
-Run the Language-Math Core browser test:
+Run the Language-Math Core v0.1.1 browser test:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-test.html?v=langmath-1
+https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-1-test.html?v=langmath-2
 ```
 
 Expected:
@@ -395,19 +413,19 @@ Expected:
 Then open the live page:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1.html?v=langmath-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1-1.html?v=langmath-live-2
 ```
 
 Recommended next build after test passes:
 
 ```text
-communication attention v0.1
+unified attention arbitration v0.1
 ```
 
 Purpose:
 
 ```text
-Unify communicationCore with curiosityCore, learningDrive, beliefMemoryCore, and languageMathCore so the kernel chooses one thing to say from all live pressures, not just language-math pressure.
+Let one visible thought be selected from curiosity, learning, belief-memory, language-math, semantic conflict, and conversation intent pressure under one priority discipline.
 ```
 
 Alternative next build:
@@ -419,7 +437,7 @@ semantic prior / lexicon admission review v0.1
 Purpose:
 
 ```text
-Make semantic conflict checks less toy-like by routing unknown and known word claims through a reviewable lexicon/formula-admission path.
+Replace the tiny v0.1 semantic prior with a reviewable lexicon/formula-admission path while preserving candidate-only status and rollback.
 ```
 
 ## Do not do next
@@ -433,5 +451,6 @@ do not move belief outside beliefMemoryCore or languageMathCore without explicit
 do not let UI decide what the kernel wants to learn, believe, or say
 do not split the live UI into multiple confusing answer boxes
 do not turn curiosity into a shallow prompt queue again
+do not add a separate chatbot connector
 do not replace the existing objective language-math stack with a new fake formalization layer
 ```
