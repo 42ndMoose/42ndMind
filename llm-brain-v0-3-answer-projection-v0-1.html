@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>42ndMind Answer Projection v0.1 Live</title>
+  <style>
+    body{margin:0;background:#0f1115;color:#eef2ff;font:14px ui-monospace,Menlo,Consolas,monospace}
+    header{padding:16px;background:#11141b;border-bottom:1px solid #2a3040}
+    main{display:grid;grid-template-columns:minmax(320px,520px) 1fr;gap:12px;padding:12px}
+    section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px;margin-bottom:12px}
+    textarea{width:100%;min-height:170px;background:#0f1218;color:#eef2ff;border:1px solid #2a3040;border-radius:8px;padding:8px;font:12px ui-monospace,Menlo,Consolas,monospace}
+    button{background:#25345c;color:#eef2ff;border:1px solid #3f5592;border-radius:8px;padding:8px 10px;margin:3px;cursor:pointer}
+    .good{background:#1f4a31;border-color:#3b7f55}.bad{background:#44222a;border-color:#7d3c4a}
+    pre{white-space:pre-wrap;overflow:auto;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;max-height:540px}
+    .card{background:#10131a;border:1px solid #2a3040;border-radius:8px;padding:8px;margin:6px 0}
+    .thought{background:#111a28;border:1px solid #4d6fac;border-radius:10px;padding:12px;margin:8px 0;font-size:15px;line-height:1.45}
+    .pill{display:inline-block;border:1px solid #2a3040;border-radius:999px;padding:2px 8px;margin:2px;font-size:12px;background:#11151d}
+    .muted{color:#8b93a7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media(max-width:900px){main{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Answer Projection v0.1 Live</h1>
+  <div class="muted">Direct questions now project answers from live state. Questions are not fake facts or generic context fallback.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Unified input</h2>
+      <textarea id="inputBox">my name is Miguel</textarea><br>
+      <button class="good" onclick="sendInput()">SEND / INGEST</button>
+      <button onclick="loadNameSet()">name set</button>
+      <button onclick="loadNameAsk()">ask name</button>
+      <button onclick="loadFact()">fact candidate</button>
+      <button onclick="loadFactAsk()">ask fact</button>
+      <button onclick="loadWhoAmI()">who am I</button>
+      <button onclick="loadWhatAreYou()">what are you</button>
+      <button onclick="loadWantKnow()">what want know</button>
+      <button onclick="loadSaySomething()">say something</button>
+      <button onclick="loadFinalTruth()">final truth</button>
+      <button class="bad" onclick="resetState()">RESET</button>
+      <div id="status" class="muted"></div>
+    </section>
+    <section>
+      <h2>Kernel says</h2>
+      <div id="thoughtPanel" class="thought">Loading...</div>
+    </section>
+    <section>
+      <h2>Operating discipline</h2>
+      <div class="card">
+        <div><b>Language-math:</b> <span id="lmStatus">loading</span></div>
+        <div><b>Factual intake:</b> <span id="factStatus">loading</span></div>
+        <div><b>Factual retention:</b> <span id="factRetentionStatus">loading</span></div>
+        <div><b>Question appetite:</b> <span id="qStatus">loading</span></div>
+        <div><b>Answer projection:</b> <span id="answerStatus">loading</span></div>
+        <div><b>Truth status:</b> <span id="truthStatus">loading</span></div>
+        <div><b>Promotion:</b> <span id="promotionStatus">loading</span></div>
+        <div class="muted">Answers project from live state. No external verification, no final truth promotion.</div>
+      </div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Readable state</h2><div id="rendered" class="grid"></div></section>
+    <section><h2>Communication packet</h2><pre id="commPacket"></pre></section>
+    <section><h2>Language-math packet</h2><pre id="lmPacket"></pre></section>
+    <section><h2>Learning packet</h2><pre id="learnPacket"></pre></section>
+    <section><h2>Belief-memory packet</h2><pre id="beliefPacket"></pre></section>
+  </div>
+</main>
+<script src="src/kernel-intention-discovery-v0-1.js?v=intent-1"></script>
+<script src="src/kernel-intention-refinement-v0-1.js?v=refine-1"></script>
+<script src="src/kernel-intention-necessity-test-v0-1.js?v=necessity-1"></script>
+<script src="src/kernel-intention-neighbor-lattice-v0-1.js?v=lattice-3"></script>
+<script src="src/kernel-intention-lattice-invariance-benchmark-v0-1.js?v=invariance-2"></script>
+<script src="src/kernel-intention-formula-compiler-v0-1.js?v=formula-1"></script>
+<script src="src/kernel-intention-concept-expansion-loop-v0-1.js?v=expansion-2"></script>
+<script src="src/kernel-intention-contradiction-refinement-loop-v0-1.js?v=contradiction-1"></script>
+<script src="src/kernel-intention-formula-revision-engine-v0-1.js?v=revision-1"></script>
+<script src="src/kernel-intention-canonical-formula-ledger-v0-1.js?v=ledger-1"></script>
+<script src="src/kernel-intention-proof-output-v0-1.js?v=proof-1"></script>
+<script src="src/kernel-intention-minimal-pair-library-v0-1.js?v=minpair-1"></script>
+<script src="src/kernel-intention-dimension-splitting-v0-1.js?v=split-2"></script>
+<script src="src/kernel-intention-coefficient-dimension-revision-engine-v0-1.js?v=codim-1"></script>
+<script src="src/kernel-intention-canonical-formula-ledger-v0-1-1-patch.js?v=ledger-2"></script>
+<script src="src/kernel-intention-formula-inspector-v0-1.js?v=inspect-1"></script>
+<script src="src/kernel-concept-admission-registry-v0-1.js?v=admit-1"></script>
+<script src="src/kernel-intention-formula-inspector-v0-1-1-patch.js?v=inspect-2"></script>
+<script src="src/kernel-intention-arbitrary-language-parser-v0-1.js?v=parser-1"></script>
+<script src="src/kernel-intention-arbitrary-language-parser-v0-1-1-patch.js?v=parser-3"></script>
+<script src="src/kernel-objective-claim-language-v0-1.js?v=claim-1"></script>
+<script src="src/kernel-objective-claim-language-v0-1-1-patch.js?v=claim-2"></script>
+<script src="src/epistemic-kernel-v0-2.js?v=corebase-1"></script>
+<script src="src/epistemic-kernel-v0-2-patches.js?v=coremig-1"></script>
+<script src="src/kernel-brain-v0-4.js?v=brain-2"></script>
+<script src="src/kernel-brain-epistemic-kernel-bridge-v0-1.js?v=bridge-2"></script>
+<script src="src/epistemic-kernel-maturity-core-v0-1.js?v=maturity-2"></script>
+<script src="src/epistemic-kernel-active-curiosity-v0-1.js?v=curiosity-2"></script>
+<script src="src/epistemic-kernel-learning-drive-v0-1.js?v=learn-1"></script>
+<script src="src/epistemic-kernel-belief-memory-engine-v0-1.js?v=belief-1"></script>
+<script src="src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js?v=belief-3"></script>
+<script src="src/epistemic-kernel-language-math-core-v0-1.js?v=langmath-1"></script>
+<script src="src/epistemic-kernel-language-math-core-v0-1-1-patch.js?v=langmath-2"></script>
+<script src="src/epistemic-kernel-factual-claim-intake-v0-1.js?v=fact-1"></script>
+<script src="src/epistemic-kernel-question-appetite-v0-1.js?v=qapp-1"></script>
+<script src="src/epistemic-kernel-factual-claim-intake-v0-1-1-patch.js?v=fact-2"></script>
+<script src="src/epistemic-kernel-answer-projection-v0-1.js?v=answer-1"></script>
+<script>
+const STORAGE_KEY='epistemic_kernel_answer_projection_v0_1_state';
+let saved=null;try{saved=localStorage.getItem(STORAGE_KEY)?JSON.parse(localStorage.getItem(STORAGE_KEY)):null}catch(e){saved=null}
+let kernel=new EpistemicKernel(saved);let binding=null;let boundBrain=null;let lastEvent=null;
+function $(id){return document.getElementById(id)}
+function arr(v){return Array.isArray(v)?v:[]}
+function shared(){return kernel.state&&kernel.state.unifiedCore?kernel.state.unifiedCore:kernel.state}
+function lm(){return shared()&&shared().languageMathCore||{}}
+function comm(){return shared()&&shared().communicationCore||{}}
+function learn(){return shared()&&shared().learningDrive||{}}
+function belief(){return shared()&&shared().beliefMemoryCore||{}}
+function esc(s){return String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function bind(){
+  if(!boundBrain){binding=KernelBrainEpistemicKernelBridgeV01.bind(kernel);boundBrain=binding.bound_brain}
+  if(boundBrain.refreshObjectiveMaturityCore)boundBrain.refreshObjectiveMaturityCore('answer_projection_live_bind');
+  if(boundBrain.refreshActiveCuriosity)boundBrain.refreshActiveCuriosity('answer_projection_live_bind');
+  if(boundBrain.refreshLearningDrive)boundBrain.refreshLearningDrive('answer_projection_live_bind');
+  if(boundBrain.refreshBeliefMemory)boundBrain.refreshBeliefMemory('answer_projection_live_bind');
+  if(boundBrain.refreshLanguageMathCore)boundBrain.refreshLanguageMathCore('answer_projection_live_bind');
+}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(kernel.snapshot()))}catch(e){}}
+function sendInput(){bind();const raw=$('inputBox').value||'';if(!raw.trim()){$('status').textContent='Type or paste something first.';return}lastEvent=boundBrain.ingest(raw,{kind:'answer_projection_live_input'});refreshAll('answer_projection_live_input');$('status').textContent='Ingested. Current thought: '+((comm().current_message&&comm().current_message.thought_kind)||'none')+'.'}
+function refreshAll(reason){bind();if(boundBrain.refreshLanguageMathCore)boundBrain.refreshLanguageMathCore(reason||'refresh');save();render()}
+function resetState(){localStorage.removeItem(STORAGE_KEY);kernel=new EpistemicKernel(null);binding=null;boundBrain=null;lastEvent=null;bind();save();render();$('status').textContent='Reset.'}
+function loadNameSet(){$('inputBox').value='my name is Miguel'}
+function loadNameAsk(){$('inputBox').value='what is my name?'}
+function loadFact(){$('inputBox').value='trump is the 47th president of the united states of america'}
+function loadFactAsk(){$('inputBox').value='who is the 47th president of the usa?'}
+function loadWhoAmI(){$('inputBox').value='do you know who i am?'}
+function loadWhatAreYou(){$('inputBox').value='what are you?'}
+function loadWantKnow(){$('inputBox').value='what do you want to know?'}
+function loadSaySomething(){$('inputBox').value='can you say something?'}
+function loadFinalTruth(){$('inputBox').value='what is final truth?'}
+function card(title,body){return `<div class="card"><h3>${esc(title)}</h3>${body||'<div class="muted">none</div>'}</div>`}
+function list(rows,fn,empty){rows=arr(rows);if(!rows.length)return `<div class="muted">${empty||'none'}</div>`;return rows.map(fn).join('')}
+function renderReadable(){
+  const c=lm(), cm=comm();
+  const answers=list(cm.question_answer_candidates,r=>`<div><span class="pill">${esc(r.answer_kind)}</span>${esc(r.message)}<br><span class="muted">priority: ${r.priority}; status: ${esc(r.status)}</span></div>`);
+  const anslog=list(cm.answer_projection_log,r=>`<div><span class="pill">${esc(r.question_kind)}</span>${esc(r.raw_text)}<br><span class="muted">projected: ${esc(r.projected_message_kind)}</span></div>`);
+  const facts=list(c.factual_claim_candidates,r=>`<div><span class="pill">${esc(r.claim_scope)}</span>${esc(r.relation_formula)}<br><span class="muted">truth: ${esc(r.truth_status)}; verification: ${r.verification_need}; intent: ${esc(r.user_intent_candidate)}</span></div>`);
+  const drift=list(c.interrogative_fact_drift_log,r=>`<div><span class="pill">drift removed</span>${esc(r.raw_text)}<br><span class="muted">${esc(r.reason)}</span></div>`);
+  const qapps=list(learn().question_appetite,r=>`<div><span class="pill">${esc(r.status)}</span>${esc(r.raw_preview)}<br><span class="muted">top: ${esc(r.top_need&&r.top_need.need_kind)} ${r.top_need&&r.top_need.pressure}; selected: ${esc(r.selected_question_id||'none')}</span></div>`);
+  const intents=list(c.intent_inference,r=>`<div><span class="pill">${esc(r.speech_act)}</span>${esc(r.relation_formula)}<br><span class="muted">intent: ${esc(r.inferred_user_intent)}; targets: ${esc(arr(r.requested_state_targets).join(', ')||'none')}</span></div>`);
+  $('rendered').innerHTML=card('Answer projections',answers)+card('Answer projection log',anslog)+card('Factual claim candidates',facts)+card('Interrogative fact drift cleanup',drift)+card('Question appetite',qapps)+card('Intent inference',intents);
+}
+function render(){
+  bind();const c=lm();const m=comm().current_message||{};
+  $('thoughtPanel').innerHTML=`<b>${esc(m.thought_kind||'no thought')}</b><br>${esc(m.message||'No current message.')}`;
+  $('lmStatus').textContent=c.active?'active':'inactive';$('factStatus').textContent=c.factual_claim_intake_version||'none';$('factRetentionStatus').textContent=c.factual_claim_intake_patch_version||'none';$('qStatus').textContent=learn().question_appetite_version||'none';$('answerStatus').textContent=comm().answer_projection_version||'none';$('truthStatus').textContent=c.truth_status||'none';$('promotionStatus').textContent=c.promotion_status||'none';
+  renderReadable();$('commPacket').textContent=JSON.stringify(comm(),null,2);$('lmPacket').textContent=JSON.stringify(c,null,2);$('learnPacket').textContent=JSON.stringify(learn(),null,2);$('beliefPacket').textContent=JSON.stringify(belief(),null,2);
+}
+bind();render();
+</script>
+</body>
+</html>
