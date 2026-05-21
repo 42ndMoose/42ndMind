@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Semantic Basis Core Test</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; background:#101217; color:#eef2ff; }
+    h1 { font-family: system-ui, sans-serif; }
+    pre { background:#0b0d12; border:1px solid #2a3040; border-radius:10px; padding:12px; white-space:pre-wrap; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; }
+  </style>
+</head>
+<body>
+<h1>42ndMind Semantic Basis Core Test</h1>
+<p>This test proves only one thing: semantic growth must reuse a shared basis rather than endlessly inventing isolated local labels.</p>
+<h2 id="summary">Running...</h2>
+<pre id="out"></pre>
+<script src="../src/semantic-basis-core.js"></script>
+<script>
+const tests = [];
+function add(name, fn) { tests.push({ name, fn }); }
+function assert(cond, msg) { if (!cond) throw new Error(msg); }
+function l1(rows) { return Number(rows.reduce((s, r) => s + Math.abs(Number(r.weight) || 0), 0).toFixed(6)); }
+
+add('module loads', () => {
+  assert(window.FortySecondMindSemanticBasisCore, 'semantic basis module missing');
+  assert(FortySecondMindSemanticBasisCore.VERSION === '0.1.0', 'wrong version');
+});
+
+add('meaning fields preserve unit total', () => {
+  const core = FortySecondMindSemanticBasisCore.sampleCore();
+  Object.values(core.meanings).forEach(meaning => {
+    assert(meaning.unit_total === 1, `${meaning.term} unit_total not 1`);
+    assert(Math.abs(l1(meaning.dimensions) - 1) < 0.00001, `${meaning.term} dimensions not unit-total`);
+  });
+});
+
+add('related meanings share reusable dimensions', () => {
+  const core = FortySecondMindSemanticBasisCore.sampleCore();
+  const relation = FortySecondMindSemanticBasisCore.compareMeanings(core.meanings.wisdom, core.meanings.knowledge);
+  assert(relation.shared_score > 0, 'wisdom and knowledge should share some dimensions');
+  assert(relation.shared_dimensions.some(d => d.dimension === 'reality_contact'), 'shared reality_contact missing');
+  assert(relation.shared_dimensions.some(d => d.dimension === 'self_correction'), 'shared self_correction missing');
+});
+
+add('opposed meanings contrast on same basis instead of disconnecting', () => {
+  const core = FortySecondMindSemanticBasisCore.sampleCore();
+  const relation = FortySecondMindSemanticBasisCore.compareMeanings(core.meanings.wisdom, core.meanings.collapse);
+  assert(relation.contrast_score > 0, 'wisdom and collapse should contrast');
+  assert(relation.contrast_dimensions.some(d => d.dimension === 'self_correction'), 'self_correction contrast missing');
+  assert(relation.disconnected === false, 'opposition should not be disconnected');
+});
+
+add('new isolated subdivision is rejected', () => {
+  const core = FortySecondMindSemanticBasisCore.sampleCore();
+  const result = FortySecondMindSemanticBasisCore.admitCandidate(core, 'random_island', [
+    ['bloop_private_label', 0.25],
+    ['zarg_private_label', 0.25],
+    ['plim_private_label', 0.25],
+    ['nork_private_label', 0.25]
+  ]);
+  assert(result.admitted === false, 'isolated subdivision should be rejected');
+  assert(result.evaluation.admission_recommendation === 'reject_disconnected_subdivision', 'wrong rejection reason');
+});
+
+add('basis-reusing candidate is admitted', () => {
+  const core = FortySecondMindSemanticBasisCore.sampleCore();
+  const result = FortySecondMindSemanticBasisCore.admitCandidate(core, 'discernment', [
+    ['integrated_judgment', 0.28],
+    ['self_correction', 0.22],
+    ['reality_contact', 0.18],
+    ['information_grasp', 0.14],
+    ['false_certainty_resistance', 0.18]
+  ]);
+  assert(result.admitted === true, 'basis-reusing candidate should be admitted');
+  assert(core.meanings.discernment, 'discernment meaning missing after admission');
+});
+
+add('reused dimensions gain role across multiple meanings', () => {
+  const core = FortySecondMindSemanticBasisCore.sampleCore();
+  const role = FortySecondMindSemanticBasisCore.findDimensionRole(core, 'reality_contact');
+  assert(role.reusable === true, 'reality_contact should be reusable');
+  assert(role.use_count >= 4, 'reality_contact should appear across multiple meanings');
+});
+
+add('A/B overlap proves reusable basis relation', () => {
+  const core = FortySecondMindSemanticBasisCore.createCore({ basis_dimensions:['a','b','c','d','e','f'] });
+  FortySecondMindSemanticBasisCore.addMeaning(core, 'A', [['b',0.25],['c',0.25],['d',0.25],['e',0.25]]);
+  FortySecondMindSemanticBasisCore.addMeaning(core, 'B', [['a',0.25],['d',0.25],['e',0.25],['f',0.25]]);
+  const relation = FortySecondMindSemanticBasisCore.compareMeanings(core.meanings.a, core.meanings.b);
+  assert(relation.shared_score === 0.5, `expected shared score 0.5, got ${relation.shared_score}`);
+  assert(relation.shared_dimensions.some(d => d.dimension === 'd'), 'shared d missing');
+  assert(relation.shared_dimensions.some(d => d.dimension === 'e'), 'shared e missing');
+});
+
+add('A/F disconnected pattern is detected', () => {
+  const core = FortySecondMindSemanticBasisCore.createCore({ basis_dimensions:['b','c','d','e','g','h','i','j'] });
+  FortySecondMindSemanticBasisCore.addMeaning(core, 'A', [['b',0.25],['c',0.25],['d',0.25],['e',0.25]]);
+  FortySecondMindSemanticBasisCore.addMeaning(core, 'F', [['g',0.25],['h',0.25],['i',0.25],['j',0.25]]);
+  const relation = FortySecondMindSemanticBasisCore.compareMeanings(core.meanings.a, core.meanings.f);
+  assert(relation.disconnected === true, 'A/F should be disconnected');
+});
+
+add('module has no speech surface', () => {
+  assert(typeof FortySecondMindSemanticBasisCore.speak === 'undefined', 'semantic basis core must not speak');
+  assert(typeof FortySecondMindSemanticBasisCore.projectSpeech === 'undefined', 'semantic basis core must not project speech');
+});
+
+const results = tests.map(t => {
+  try { t.fn(); return { name: t.name, passed: true }; }
+  catch (e) { return { name: t.name, passed: false, error: e.message }; }
+});
+const passed = results.filter(r => r.passed).length;
+document.getElementById('summary').className = passed === results.length ? 'ok' : 'bad';
+document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_semantic_basis_core_test_report', results }, null, 2);
+</script>
+</body>
+</html>
