@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>42ndMind Attention Organism v0.1 Live</title>
+  <style>
+    body{margin:0;background:#0f1115;color:#eef2ff;font:14px ui-monospace,Menlo,Consolas,monospace}
+    header{padding:16px;background:#11141b;border-bottom:1px solid #2a3040}
+    main{display:grid;grid-template-columns:minmax(320px,520px) 1fr;gap:12px;padding:12px}
+    section{background:#171a21;border:1px solid #2a3040;border-radius:10px;padding:12px;margin-bottom:12px}
+    textarea{width:100%;min-height:170px;background:#0f1218;color:#eef2ff;border:1px solid #2a3040;border-radius:8px;padding:8px;font:12px ui-monospace,Menlo,Consolas,monospace}
+    button{background:#25345c;color:#eef2ff;border:1px solid #3f5592;border-radius:8px;padding:8px 10px;margin:3px;cursor:pointer}
+    .good{background:#1f4a31;border-color:#3b7f55}.bad{background:#44222a;border-color:#7d3c4a}
+    pre{white-space:pre-wrap;overflow:auto;background:#0d1016;border:1px solid #2a3040;border-radius:10px;padding:10px;max-height:560px}
+    .card{background:#10131a;border:1px solid #2a3040;border-radius:8px;padding:8px;margin:6px 0}
+    .thought{background:#111a28;border:1px solid #4d6fac;border-radius:10px;padding:12px;margin:8px 0;font-size:15px;line-height:1.45}
+    .pill{display:inline-block;border:1px solid #2a3040;border-radius:999px;padding:2px 8px;margin:2px;font-size:12px;background:#11151d}
+    .bar{height:8px;background:#2b3550;border-radius:999px;overflow:hidden;margin:4px 0}.fill{height:8px;background:#7fa3ff}
+    .muted{color:#8b93a7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media(max-width:900px){main{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>42ndMind Attention Organism v0.1 Live</h1>
+  <div class="muted">First-principles pressure organism. No narrow answer/factual patches loaded here.</div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Unified input</h2>
+      <textarea id="inputBox">you can ask me anything. i can give you answers one small info at a time.</textarea><br>
+      <button class="good" onclick="sendInput()">SEND / INGEST</button>
+      <button onclick="loadTeach()">learning offer</button>
+      <button onclick="loadName()">name</button>
+      <button onclick="loadQuestion()">question</button>
+      <button onclick="loadDefinition()">definition</button>
+      <button onclick="loadClaim()">claim</button>
+      <button onclick="loadUnknown()">unknown words</button>
+      <button class="bad" onclick="resetState()">RESET</button>
+      <div id="status" class="muted"></div>
+    </section>
+    <section>
+      <h2>Kernel says</h2>
+      <div id="thoughtPanel" class="thought">Loading...</div>
+    </section>
+    <section>
+      <h2>Operating discipline</h2>
+      <div class="card">
+        <div><b>Attention organism:</b> <span id="aoStatus">loading</span></div>
+        <div><b>Unit total:</b> <span id="unitTotal">loading</span></div>
+        <div><b>Selected action:</b> <span id="selectedAction">loading</span></div>
+        <div><b>Truth status:</b> <span id="truthStatus">loading</span></div>
+        <div><b>Promotion:</b> <span id="promotionStatus">loading</span></div>
+        <div class="muted">Speech is optional action projection from normalized pressure.</div>
+      </div>
+    </section>
+  </div>
+  <div>
+    <section><h2>Readable state</h2><div id="rendered" class="grid"></div></section>
+    <section><h2>Attention organism packet</h2><pre id="aoPacket"></pre></section>
+    <section><h2>Communication packet</h2><pre id="commPacket"></pre></section>
+    <section><h2>Belief-memory packet</h2><pre id="beliefPacket"></pre></section>
+  </div>
+</main>
+<script src="src/epistemic-kernel-v0-2.js?v=corebase-1"></script>
+<script src="src/epistemic-kernel-v0-2-patches.js?v=coremig-1"></script>
+<script src="src/kernel-brain-v0-4.js?v=brain-2"></script>
+<script src="src/kernel-brain-epistemic-kernel-bridge-v0-1.js?v=bridge-2"></script>
+<script src="src/epistemic-kernel-maturity-core-v0-1.js?v=maturity-2"></script>
+<script src="src/epistemic-kernel-belief-memory-engine-v0-1.js?v=belief-1"></script>
+<script src="src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js?v=belief-3"></script>
+<script src="src/epistemic-kernel-attention-organism-v0-1.js?v=ao-1"></script>
+<script>
+const STORAGE_KEY='epistemic_kernel_attention_organism_v0_1_state';
+let saved=null;try{saved=localStorage.getItem(STORAGE_KEY)?JSON.parse(localStorage.getItem(STORAGE_KEY)):null}catch(e){saved=null}
+let kernel=new EpistemicKernel(saved);let binding=null;let boundBrain=null;let lastEvent=null;
+function $(id){return document.getElementById(id)}
+function arr(v){return Array.isArray(v)?v:[]}
+function shared(){return kernel.state&&kernel.state.unifiedCore?kernel.state.unifiedCore:kernel.state}
+function ao(){return shared()&&shared().attentionOrganismCore||{}}
+function comm(){return shared()&&shared().communicationCore||{}}
+function belief(){return shared()&&shared().beliefMemoryCore||{}}
+function esc(s){return String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function bind(){
+  if(!boundBrain){binding=KernelBrainEpistemicKernelBridgeV01.bind(kernel);boundBrain=binding.bound_brain}
+  if(boundBrain.refreshObjectiveMaturityCore)boundBrain.refreshObjectiveMaturityCore('attention_organism_live_bind');
+  if(boundBrain.refreshBeliefMemory)boundBrain.refreshBeliefMemory('attention_organism_live_bind');
+  if(boundBrain.refreshAttentionOrganism)boundBrain.refreshAttentionOrganism('attention_organism_live_bind');
+}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(kernel.snapshot()))}catch(e){}}
+function sendInput(){bind();const raw=$('inputBox').value||'';if(!raw.trim()){$('status').textContent='Type or paste something first.';return}lastEvent=boundBrain.ingest(raw,{kind:'attention_organism_live_input'});refreshAll('attention_organism_live_input');$('status').textContent='Ingested. Action: '+((ao().selected_action&&ao().selected_action.action_kind)||'none')+'.'}
+function refreshAll(reason){bind();if(boundBrain.refreshAttentionOrganism)boundBrain.refreshAttentionOrganism(reason||'refresh');save();render()}
+function resetState(){localStorage.removeItem(STORAGE_KEY);kernel=new EpistemicKernel(null);binding=null;boundBrain=null;lastEvent=null;bind();save();render();$('status').textContent='Reset.'}
+function loadTeach(){$('inputBox').value='you can ask me anything. i can give you answers one small info at a time.'}
+function loadName(){$('inputBox').value='my name is Miguel'}
+function loadQuestion(){$('inputBox').value='who is the 47th president of the usa?'}
+function loadDefinition(){$('inputBox').value='spakltktkk means spectacular'}
+function loadClaim(){$('inputBox').value='trump is the 47th president of the united states of america'}
+function loadUnknown(){$('inputBox').value='spakltktkk blarvon mizzled the floon'}
+function card(title,body){return `<div class="card"><h3>${esc(title)}</h3>${body||'<div class="muted">none</div>'}</div>`}
+function list(rows,fn,empty){rows=arr(rows);if(!rows.length)return `<div class="muted">${empty||'none'}</div>`;return rows.map(fn).join('')}
+function pressureBody(){return list(ao().unit_pressure_field,r=>`<div><span class="pill">${esc(r.pressure_kind)}</span>${r.normalized_pressure}<div class="bar"><div class="fill" style="width:${Math.round(Number(r.normalized_pressure||0)*100)}%"></div></div><span class="muted">raw ${r.raw_pressure}; ${esc(r.reason)}</span></div>`)}
+function interpretationBody(){const i=arr(ao().primitive_interpretation)[0];if(!i)return '<div class="muted">none</div>';return `<div><b>Raw:</b> ${esc(i.raw_text)}</div><div><b>Unknown ratio:</b> ${i.unknown_ratio}</div><div><b>Unknown tokens:</b> ${esc(arr(i.unknown_tokens).join(', ')||'none')}</div><pre>${esc(JSON.stringify(i.features,null,2))}</pre>`}
+function actionBody(){const a=ao().selected_action;if(!a)return '<div class="muted">none</div>';return `<div><span class="pill">${esc(a.action_kind)}</span></div><div>${esc(a.reason)}</div><pre>${esc(JSON.stringify(a.selected_from_unit_pressure,null,2))}</pre>`}
+function growthBody(){return list(ao().concept_growth_map.slice(0,12),b=>`<div><span class="pill">${esc(b.branch_kind)}</span>${esc(b.seed)}<br><span class="muted">${esc(b.reason)}</span></div>`)}
+function renderReadable(){
+  $('rendered').innerHTML=card('Selected action',actionBody())+card('Unit pressure field',pressureBody())+card('Primitive interpretation',interpretationBody())+card('Concept growth map',growthBody());
+}
+function render(){
+  bind();const a=ao();const m=comm().current_message||{};
+  $('thoughtPanel').innerHTML=`<b>${esc(m.thought_kind||'no thought')}</b><br>${esc(m.message||'No current message.')}`;
+  $('aoStatus').textContent=a.packet_version||'none';$('unitTotal').textContent=a.current_unit_total||'none';$('selectedAction').textContent=a.selected_action&&a.selected_action.action_kind||'none';$('truthStatus').textContent=a.truth_status||'none';$('promotionStatus').textContent=a.promotion_status||'none';
+  renderReadable();$('aoPacket').textContent=JSON.stringify(a,null,2);$('commPacket').textContent=JSON.stringify(comm(),null,2);$('beliefPacket').textContent=JSON.stringify(belief(),null,2);
+}
+bind();render();
+</script>
+</body>
+</html>
