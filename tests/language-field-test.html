@@ -1,0 +1,14 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Language field test</title></head><body><pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/language-field.js"></script>
+<script>
+const state = FortySecondMindBrainState.createBrainState();
+FortySecondMindLanguageField.ensure(state);
+const checks = state.language.unit_total_checks;
+const rows = [];
+rows.push((checks.length >= 5 ? 'PASS ' : 'FAIL ') + 'seed fields exist');
+rows.push((checks.every(c => c.ok) ? 'PASS ' : 'FAIL ') + 'all seed fields unit-total');
+rows.push((!state.communication ? 'PASS ' : 'FAIL ') + 'language field does not create speech');
+document.getElementById('out').textContent = rows.join('\n');
+</script></body></html>
