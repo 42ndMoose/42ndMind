@@ -10,6 +10,7 @@ Then read:
 KERNEL_ARCHITECTURE_2026_05_18.md
 KERNEL_CORE_EXPORT_MAP.md
 KERNEL_ARCHITECTURE_CORRECTION_2026_05_21.md
+HANDOFF_2026_05_21_KERNEL_UNITY_FIELD_V0_1_1_PATCH.md
 HANDOFF_2026_05_21_KERNEL_UNITY_FIELD.md
 HANDOFF_2026_05_21_ATTENTION_ORGANISM.md
 ```
@@ -19,7 +20,8 @@ The repo is bloated. `KERNEL_CORE_EXPORT_MAP.md` is the survival note for what i
 ## Current status
 
 ```text
-KERNEL_UNITY_FIELD_V0_1_BUILT_FOR_VERIFICATION
+KERNEL_UNITY_FIELD_V0_1_1_PATCH_BUILT_FOR_VERIFICATION
+KERNEL_UNITY_FIELD_V0_1_PARTIAL_7_OF_9_PASSED_BY_USER
 ATTENTION_ORGANISM_V0_1_PASSED_BY_USER_BUT_STILL_TOO_PROGRAMMATIC
 FIRST_PRINCIPLES_ARCHITECTURE_CORRECTION_RECORDED
 ANSWER_PROJECTION_V0_1_MARKED_DIAGNOSTIC_SCAFFOLDING_NOT_FINAL_PATH
@@ -72,6 +74,23 @@ truth-seeking improves language, knowledge, memory, and belief
 communication expresses the live unity field, not program labels
 ```
 
+Third correction after Unity Field v0.1:
+
+```text
+v0.1 partially passed, but talking logic was still not strict enough from first principles.
+Generic learning pressure hijacked language-growth and communication cases.
+```
+
+v0.1.1 correction:
+
+```text
+explicit communication > incidental learn wording
+explicit language growth > generic learning
+direct truth/belief wording > generic learning
+reasoning test / side-learning remains a reasoning-learning route
+speech is composed from state pieces rather than a single canned route line
+```
+
 Deprecated as final-path architecture:
 
 ```text
@@ -106,19 +125,19 @@ It should speak from the one self-field.
 Run:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-test.html?v=unity-1
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-1-test.html?v=unity-2
 ```
 
 Expected:
 
 ```text
-9/9 passed
+5/5 passed
 ```
 
 Use:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1.html?v=unity-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1-1.html?v=unity-live-2
 ```
 
 This page loads:
@@ -133,26 +152,26 @@ src/epistemic-kernel-belief-memory-engine-v0-1.js
 src/epistemic-kernel-belief-memory-engine-v0-1-1-patch.js
 src/epistemic-kernel-attention-organism-v0-1.js
 src/epistemic-kernel-unity-field-v0-1.js
+src/epistemic-kernel-unity-field-v0-1-1-patch.js
 ```
 
-The visible speech should come from:
+The older v0.1 test/live page is now historical and should not be used for judging v0.1.1:
 
 ```text
-state.communicationCore.current_message.thought_kind = unity_field_self_expression
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-test.html?v=unity-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1.html?v=unity-live-1
 ```
 
-not from:
+## New kernel unity field files
 
-```text
-attention_organism_action_projection
-```
-
-## New kernel unity field
-
-File:
+Files:
 
 ```text
 src/epistemic-kernel-unity-field-v0-1.js
+src/epistemic-kernel-unity-field-v0-1-1-patch.js
+epistemic-kernel-unity-field-v0-1-1-test.html
+llm-brain-v0-3-kernel-unity-field-v0-1-1.html
+HANDOFF_2026_05_21_KERNEL_UNITY_FIELD_V0_1_1_PATCH.md
 ```
 
 Creates:
@@ -278,9 +297,9 @@ causal relation requires bridge
 
 ## Next task
 
-Run the unity field test and judge the live page.
+Run the v0.1.1 focused test and judge the v0.1.1 live page.
 
-Improve v0.1 by adding:
+Improve after that by adding:
 
 ```text
 kernelUnityFieldCore.aspect_learning_deltas
