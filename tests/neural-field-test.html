@@ -1,0 +1,13 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Neural field test</title></head><body><pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/neural-field.js"></script>
+<script>
+const state = FortySecondMindBrainState.createBrainState();
+FortySecondMindNeuralField.ensure(state);
+FortySecondMindNeuralField.activate(state, { language_math: 0.3, truth_tracking: 0.2 });
+const rows = [];
+rows.push((state.neural.neurons.language_math > 0 ? 'PASS ' : 'FAIL ') + 'language_math activated');
+rows.push((state.neural.selected_motor_intention ? 'PASS ' : 'FAIL ') + 'motor intention selected');
+document.getElementById('out').textContent = rows.join('\n');
+</script></body></html>

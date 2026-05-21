@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Clean Kernel</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; max-width: 960px; }
+    textarea { width: 100%; min-height: 90px; }
+    pre { background: #f5f5f5; padding: 12px; overflow: auto; }
+    button { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>42ndMind Clean Kernel</h1>
+  <p>Minimal live UI. It displays state; it does not pretend the UI is thought.</p>
+  <textarea id="input" placeholder="Enter one input"></textarea>
+  <p><button id="run">Ingest</button></p>
+  <h2>Communication motor output</h2>
+  <pre id="output">No output yet.</pre>
+  <h2>State snapshot</h2>
+  <pre id="state"></pre>
+
+  <script src="../src/brain-state.js"></script>
+  <script src="../src/maturity-core.js"></script>
+  <script src="../src/language-field.js"></script>
+  <script src="../src/neural-field.js"></script>
+  <script src="../src/belief-memory-field.js"></script>
+  <script src="../src/truth-field.js"></script>
+  <script src="../src/communication-motor.js"></script>
+  <script src="../src/autoplasticity.js"></script>
+  <script src="../src/kernel.js"></script>
+  <script>
+    const kernel = FortySecondMindKernel.createKernel();
+    const out = document.getElementById('output');
+    const snap = document.getElementById('state');
+    snap.textContent = JSON.stringify(kernel.snapshot(), null, 2);
+    document.getElementById('run').onclick = () => {
+      const result = kernel.ingest(document.getElementById('input').value, { source: 'live-kernel-ui' });
+      out.textContent = result.output ? result.output.text : 'No speech selected.';
+      snap.textContent = JSON.stringify(kernel.snapshot(), null, 2);
+    };
+  </script>
+</body>
+</html>
