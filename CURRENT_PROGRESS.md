@@ -10,6 +10,7 @@ Then read:
 KERNEL_ARCHITECTURE_2026_05_18.md
 KERNEL_CORE_EXPORT_MAP.md
 KERNEL_ARCHITECTURE_CORRECTION_2026_05_21.md
+HANDOFF_2026_05_21_KERNEL_LANGUAGE_FIELD.md
 HANDOFF_2026_05_21_KERNEL_NEURAL_FIELD.md
 HANDOFF_2026_05_21_KERNEL_UNITY_FIELD_V0_1_1_PATCH.md
 HANDOFF_2026_05_21_KERNEL_UNITY_FIELD.md
@@ -21,7 +22,8 @@ The repo is bloated. `KERNEL_CORE_EXPORT_MAP.md` is the survival note for what i
 ## Current status
 
 ```text
-KERNEL_NEURAL_FIELD_V0_1_BUILT_FOR_VERIFICATION
+KERNEL_LANGUAGE_FIELD_V0_1_BUILT_FOR_VERIFICATION
+KERNEL_NEURAL_FIELD_V0_1_PASSED_BY_USER
 KERNEL_UNITY_FIELD_V0_1_1_PATCH_BUILT_FOR_VERIFICATION_BUT_NOT_FINAL_BEHAVIOR
 KERNEL_UNITY_FIELD_V0_1_PARTIAL_7_OF_9_PASSED_BY_USER
 ATTENTION_ORGANISM_V0_1_PASSED_BY_USER_BUT_STILL_TOO_PROGRAMMATIC
@@ -89,6 +91,25 @@ Neural Field v0.1 correction:
 stimulus -> activations -> synaptic spread -> desire/motor intention -> speech -> learning deltas
 ```
 
+Fourth correction after inspecting the old language-math pipeline:
+
+```text
+The old language-math pipeline was mathematically disciplined but mostly static.
+It wrapped formula memory and parser/admission logic, but did not make language itself mature live.
+```
+
+Language Field v0.1 correction:
+
+```text
+term enters
+  -> create / update unit-total semantic field
+  -> preserve Σ|dimension.weight| = 1
+  -> relate active terms
+  -> feed neural targets
+  -> produce language learning deltas
+  -> affect truth, belief, memory, knowledge, and communication
+```
+
 Functional interpretation:
 
 ```text
@@ -98,6 +119,8 @@ activation = current pressure / salience
 motor intention = what the field wants to do next
 speech = motor projection from active field
 learning deltas = how the field records what changed
+term field = scoped meaning total where Σ|dimension.weight| = 1
+language-neural link = how meaning growth changes neural targets
 ```
 
 Deprecated as final-path architecture:
@@ -108,13 +131,14 @@ src/epistemic-kernel-factual-claim-intake-v0-1-1-patch.js
 narrow factual-question handling
 local retention patches
 shallow route-label speech
+static parser-only language growth
 ```
 
 Do not delete these yet. They remain diagnostic scaffolding. But do not continue multiplying phrase-specific reply patches.
 
 ## Active direction now
 
-The active direction is kernel neural field over unity field over first-principles attention:
+The active direction is language field + neural field inside one brain:
 
 ```text
 input
@@ -122,33 +146,35 @@ input
   -> attentionOrganismCore lower-level pressure
   -> kernelUnityFieldCore one-self interpretation
   -> kernelNeuralFieldCore activation spread
-  -> selected motor intention
-  -> neural-field speech projection
-  -> learning deltas / synaptic update log
+  -> kernelLanguageFieldCore unit-total term-field maturation
+  -> language-neural feedback
+  -> learning deltas / semantic relations / motor speech
 ```
+
+Language and neural are distinct functional organs, but they are completely unified inside one owned brain state.
 
 The kernel should not be told what to say by narrow sentence rules.
 
-It should speak from the active neural field.
+It should speak from active neural/language maturation pressure.
 
 ## Current best test and live page
 
 Run:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-kernel-neural-field-v0-1-test.html?v=neural-1
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-language-field-v0-1-test.html?v=langfield-1
 ```
 
 Expected:
 
 ```text
-5/5 passed
+7/7 passed
 ```
 
 Use:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-neural-field-v0-1.html?v=neural-live-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-field-v0-1.html?v=langfield-live-1
 ```
 
 This page loads:
@@ -165,28 +191,80 @@ src/epistemic-kernel-attention-organism-v0-1.js
 src/epistemic-kernel-unity-field-v0-1.js
 src/epistemic-kernel-unity-field-v0-1-1-patch.js
 src/epistemic-kernel-neural-field-v0-1.js
+src/epistemic-kernel-language-field-v0-1.js
 ```
 
 The visible speech should now come from:
 
 ```text
-state.communicationCore.current_message.thought_kind = neural_field_motor_expression
+state.communicationCore.current_message.thought_kind = language_field_maturation_expression
 ```
 
-not from:
+when pressure-bearing root language terms are active.
+
+Older neural page remains useful for neural-only inspection:
 
 ```text
-unity_field_self_expression
-attention_organism_action_projection
+https://42ndmoose.github.io/42ndMind/epistemic-kernel-neural-field-v0-1-test.html?v=neural-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-neural-field-v0-1.html?v=neural-live-1
 ```
 
-Older unity tests/pages are now historical or diagnostic:
+## Language field files
+
+Files:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-1-test.html?v=unity-2
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1-1.html?v=unity-live-2
-https://42ndmoose.github.io/42ndMind/epistemic-kernel-unity-field-v0-1-test.html?v=unity-1
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-kernel-unity-field-v0-1.html?v=unity-live-1
+src/epistemic-kernel-language-field-v0-1.js
+epistemic-kernel-language-field-v0-1-test.html
+llm-brain-v0-3-language-field-v0-1.html
+HANDOFF_2026_05_21_KERNEL_LANGUAGE_FIELD.md
+```
+
+Creates:
+
+```text
+state.kernelLanguageFieldCore
+state.kernelLanguageFieldCore.term_fields
+state.kernelLanguageFieldCore.semantic_relation_graph
+state.kernelLanguageFieldCore.unit_total_checks
+state.kernelLanguageFieldCore.language_neural_links
+state.kernelLanguageFieldCore.language_learning_deltas
+state.kernelLanguageFieldCore.maturation_log
+state.kernelLanguageFieldCore.current_language_reading
+state.kernelNeuralFieldCore.language_field_feedback
+state.kernelNeuralFieldCore.learning_deltas from language feedback
+state.communicationCore.current_message = language_field_maturation_expression
+```
+
+Seeded root term fields:
+
+```text
+one
+language
+meaning
+intention
+desire
+belief
+truth
+knowledge
+memory
+communication
+opinion
+suspicion
+speculation
+```
+
+Each term field has:
+
+```text
+unit_total: 1
+dimensions normalized so Σ|dimension.weight| = 1
+neighbor_terms
+neural_targets
+maturity_score
+truth_status: not_final
+promotion_status: not_promoted_to_final_truth
+belief_movement: provisional_only
 ```
 
 ## Neural field files
@@ -264,10 +342,11 @@ Attention Organism v0.1 passed by user, but still sounded too programmatic. Keep
 
 ## Unit-total principle
 
-All active pressure/self-field subdivisions are normalized where applicable:
+Language field term meanings must preserve:
 
 ```text
-sum(self_field.normalized_weight) = 1
+term_field.unit_total = 1
+Σ|dimension.weight| = 1
 ```
 
 Neural field uses bounded activation rather than unit-total normalization:
@@ -278,10 +357,10 @@ synaptic spread before motor intention
 learning deltas after stimulus
 ```
 
-Growth means subdivision and synaptic adjustment:
+Growth means subdivision, neural feedback, and synaptic adjustment:
 
 ```text
-stimulus -> activation -> spread -> motor intention -> speech -> learning deltas
+stimulus -> term-field activation -> semantic relation -> neural feedback -> learning deltas -> motor speech
 ```
 
 not phrase-patch accumulation.
@@ -311,7 +390,8 @@ modules are organs or views, not separate minds
 one backing state by reference
 no duplicated consciousness
 objective peak philosophical maturity is identity center
-questions and speech arise from neural activation, not prompt scripts
+language and neural are distinct organs but one brain
+questions and speech arise from neural/language activation, not prompt scripts
 language growth must activate truth, belief, memory, knowledge, and communication
 truth-seeking must apply to language, memory, knowledge, and belief
 memory is belief/context, not a separate competing 1
@@ -328,18 +408,18 @@ causal relation requires bridge
 
 ## Next task
 
-Run the neural field test and judge the neural live page.
+Run the language field test and judge the language live page.
 
 If it passes, next build should be:
 
 ```text
-kernelSelfGeneratedAttentionLoop-v0-1
+kernelLanguageFieldSelfMaturation-v0-1
 ```
 
 Purpose:
 
 ```text
-The kernel should periodically select one active neuron or unresolved pressure and project one thought/question without waiting for a user sentence that maps to a route.
+When term fields are repeatedly activated or contradicted, the kernel should adjust dimension weights and neighbor distances based on aftereffects in truth, belief, memory, knowledge, neural activation, and communication.
 ```
 
 Do not build final truth promotion next.
