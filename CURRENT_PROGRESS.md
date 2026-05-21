@@ -11,11 +11,12 @@ KERNEL_ARCHITECTURE_2026_05_18.md
 KERNEL_CORE_EXPORT_MAP.md
 ```
 
-`KERNEL_CORE_EXPORT_MAP.md` is the survival note for the bloated repo. It records which files are live core, which files are dormant/archive unless loaded, and what must be carried into a future clean formal repo.
+`KERNEL_CORE_EXPORT_MAP.md` is the survival note for the bloated repo. It records which files are live core, which files are dormant/archive unless loaded, and what must be carried into a future clean formal repo. Update it whenever a new build changes what is live-core or export-worthy.
 
 Newest relevant handoffs:
 
 ```text
+HANDOFF_2026_05_20_FACTUAL_QUESTION_APPETITE.md
 HANDOFF_2026_05_20_LANGUAGE_MATH_CORE_V0_1_1.md
 HANDOFF_2026_05_20_LANGUAGE_MATH_CORE.md
 HANDOFF_2026_05_20_BELIEF_MEMORY_ENGINE.md
@@ -31,6 +32,8 @@ Do not read older handoffs unless implementation details are needed.
 ## Current status
 
 ```text
+FACTUAL_CLAIM_INTAKE_V0_1_BUILT_FOR_VERIFICATION
+QUESTION_APPETITE_V0_1_BUILT_FOR_VERIFICATION
 KERNEL_CORE_EXPORT_MAP_ADDED
 LANGUAGE_MATH_CORE_V0_1_1_BUILT_FOR_VERIFICATION
 LANGUAGE_MATH_CORE_V0_1_PASSED_BY_USER
@@ -87,7 +90,9 @@ Belief-memory lives inside owned state and lets the kernel infer, remember, part
 Belief-memory v0.1.1 adds internal memory self-optimization so the kernel wants memory to remain usable for future reasoning.
 Language-math core v0.1 integrates the existing objective language-math stack into owned state as languageMathCore and communicationCore.
 Language-math core v0.1.1 treats conversational intent as a language-math relation, so direct questions like “are you curious?” are answered from live state instead of filed as inert context.
-Questions and communication should be epistemic actions from learning appetite, truth need, semantic conflict, memory pressure, conversational intent, and attention, not UI prompts.
+Factual-claim intake v0.1 turns external-world factual claims into structured provisional candidates with verification pressure, without verification or final truth promotion.
+Question appetite v0.1 makes useful questions arise from live need pressure, not fixed prompt rules or UI prompts.
+Questions and communication should be epistemic actions from learning appetite, truth need, semantic conflict, memory pressure, conversational intent, factual-claim pressure, and attention.
 Separate JS files are acceptable only when they patch/bind into the same owned state and participate in ingest/tick/refresh/snapshot. Otherwise they are dormant libraries or views.
 ```
 
@@ -103,10 +108,56 @@ EpistemicKernel
   -> state.beliefMemoryCore
   -> state.languageMathCore
   -> state.communicationCore
+  -> factual claim intake pressure inside languageMathCore / beliefMemoryCore
+  -> question appetite pressure inside learningDrive / curiosityCore / communicationCore
   -> renderers / live pages as views only
 ```
 
-## Most recent repo organization note
+## Most recent added build
+
+Factual Claim Intake + Question Appetite v0.1:
+
+```text
+https://42ndmoose.github.io/42ndMind/epistemic-factual-question-v0-1-test.html?v=fact-qapp-1
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-factual-question-v0-1.html?v=fact-qapp-live-1
+```
+
+Expected metrics:
+
+```text
+10/10 passed
+factual claim and question appetite modules load and patch live brain surfaces
+binding keeps all additions inside one shared unifiedCore state
+Trump president input becomes structured external-world factual candidate
+fact creates entity relation, truth pressure, and belief-memory provisional fact candidate
+communication acknowledges factual candidate without final truth use
+learning offer creates question appetite pressure and asks useful source-role question
+question comes from pressure needs, not always-ask hard rule
+communication projects learning priority question when its pressure is highest
+direct self-state question still works after fact/question patches
+no final truth promotion and maturity identity preserved
+```
+
+What it fixes:
+
+```text
+“trump is the 47th president of the united states of america” should no longer remain mere conversation_working_context / belief-ish parser output.
+It becomes an external_world factual claim candidate with subject, relation, object, source, intent candidate, verification need, and provisional fact memory.
+“You can ask me anything” should no longer become only a vague meaning-role question.
+It creates learning opportunity pressure + source-role need and can ask: What should I call you, and are you trying to teach me facts, meanings, or your worldview?
+```
+
+## Current best live page
+
+Use:
+
+```text
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-factual-question-v0-1.html?v=fact-qapp-live-1
+```
+
+This is currently better than the earlier `llm-brain-v0-3-language-math-v0-1-1.html` page because it loads factual-claim intake and question appetite.
+
+## Core export map
 
 Core export map:
 
@@ -117,45 +168,10 @@ KERNEL_CORE_EXPORT_MAP.md
 Purpose:
 
 ```text
-Keeps track of the important live unified-brain files, explains loaded/active vs dormant/archive, records the eventual clean repo shape, and lists the two missing pieces before export: factual-claim intake and question appetite / learning priority.
+Keeps track of the important live unified-brain files, explains loaded/active vs dormant/archive, records the eventual clean repo shape, and lists what still must exist before export.
 ```
 
 Read it before creating a zip or cloning to a formal GitHub account.
-
-## Most recent added patch
-
-Language-Math Core v0.1.1 conversational intent patch:
-
-```text
-https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-1-test.html?v=langmath-2
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1-1.html?v=langmath-live-2
-```
-
-Expected metrics:
-
-```text
-10/10 passed
-v0.1.1 patch loads without creating connector brain
-binding keeps languageMathCore and communicationCore inside shared state
-direct curiosity question is classified as request_self_state(curiosity)
-kernel answers direct question from live state instead of generic context
-self-state answer records live state snapshot
-ordinary semantic conflict still works after conversational intent patch
-benefit-of-doubt reply still carries as back-of-head context
-communication answers belief and memory self-state questions
-no final truth promotion occurs in conversational intent patch
-objective maturity remains identity center
-```
-
-What it fixes:
-
-```text
-“are you curious? can you answer me?” previously became heard_context_no_major_formalization.
-That was wrong because the first-principled reading is user_utterance -> request_self_state(curiosity_state, communication_capability).
-v0.1.1 adds intent_inference and self_state_answers inside languageMathCore.
-It answers from curiosityCore, learningDrive, beliefMemoryCore, languageMathCore, and maturityCore.
-This is not a chatbot connector. It is an intent-relation correction inside languageMathCore.
-```
 
 ## Existing objective language-math stack location
 
@@ -186,110 +202,61 @@ admitted candidate formulas: 6
 total formula records: 17
 ```
 
-## Language-math state
+## New factual-claim state
 
-The layer installs:
+`src/epistemic-kernel-factual-claim-intake-v0-1.js` adds:
 
 ```text
-state.languageMathCore
-state.communicationCore
+state.languageMathCore.factual_claim_intake_version
+state.languageMathCore.factual_claim_candidates
+state.languageMathCore.entity_relation_candidates
+state.languageMathCore.truth_relevance_pressure
+state.languageMathCore.factual_intake_log
+state.beliefMemoryCore.provisional_fact_candidates
 ```
 
-`state.languageMathCore` includes:
+Example candidate:
 
 ```text
-dependency_status
-formula_memory_summary
-parser_results
-claim_language_results
-semantic_relation_claims
-semantic_conflicts
-scoped_trust_adjustments
-benefit_of_doubt_context
-back_of_head_context
-candidate_admission_requests
-communication_pressure
-live_thought
-intent_inference
-self_state_answers
-integration_log
-truth_status: not_final
+utterance_kind: factual_claim
+claim_scope: external_world
+subject: trump
+relation: is_47th_president_of
+object: united_states_of_america
+relation_formula: trump -> is_47th_president_of -> united_states_of_america
+source_id: direct_user
+truth_status: unverified_external_claim_candidate
+objective_truth_status: not_adjudicated
 promotion_status: not_promoted_to_final_truth
 belief_movement: provisional_only
+verification_need: high
 ```
 
-`state.communicationCore` includes:
+## New question-appetite state
+
+`src/epistemic-kernel-question-appetite-v0-1.js` adds:
 
 ```text
-current_message
-message_history
-attention_source: language_math_core
-truth_status: not_final
-promotion_status: not_promoted_to_final_truth
-belief_movement: provisional_only
+state.learningDrive.question_appetite_version
+state.learningDrive.question_appetite
+state.learningDrive.learning_priority_questions
+state.curiosityCore.priority_needs
+state.communicationCore.attention_candidates
+state.communicationCore.selected_pressure
+state.languageMathCore.question_appetite_version
+state.languageMathCore.question_appetite_log
 ```
 
-## Language-math doctrine
+Question appetite doctrine:
 
 ```text
-language_math_core_lives_inside_owned_state: true
-integrates_existing_objective_language_math_kernel: true
-not_a_connector_that_owns_thought: true
-wraps_formula_inspector_parser_concept_admission_and_claim_language: true
-language_meaning_enters_as_relations_constraints_and_formula_candidates: true
-meaning_claims_must_preserve_scope_and_conflict_pressure: true
-semantic_conflict_adjusts_scoped_trust_not_total_user_trust: true
-benefit_of_doubt_context_is_allowed_during_conversation: true
-back_of_head_context_is_live_attention_not_final_truth: true
-communication_is_projection_of_state_pressure_not_scripted_chat: true
-conversational_intent_is_language_math_relation: true
-direct_questions_to_kernel_are_not_inert_context: true
-self_state_questions_answer_from_live_state: true
-intent_first_before_generic_context_fallback: true
-answer_is_projection_of_state_not_scripted_persona: true
-can_answer_yes_no_maybe_uncertain_from_state: true
-communication_attention_is_not_external_connector: true
-formula_memory_remains_candidate_not_doctrine: true
-no_silent_canonical_mutation: true
-no_repo_commit_without_review: true
-no_final_truth_promotion: true
-belief_movement: provisional_only
+questions_arise_from_live_need_pressure
+not_a_connector_question_module
+not_a_strict_bottleneck_rule
+no_always_ask_identity_rule
+learning_opportunity_can_raise_source_role_need
+factual_claims_can_raise_verification_need_without_forcing_question
 ```
-
-## Current live UI rule
-
-The active language-math live page is:
-
-```text
-llm-brain-v0-3-language-math-v0-1-1.html?v=langmath-live-2
-```
-
-It intentionally uses:
-
-```text
-one input area
-one SEND / INGEST button
-one visible “Kernel says” thought
-```
-
-It renders:
-
-```text
-Kernel says
-Intent inference
-Self-state answers
-Formula memory
-Semantic relation claims
-Scoped trust adjustments
-Back-of-head context
-Candidate admission requests
-Parser results
-Language-math packet
-Communication packet
-Full shared packet summary
-```
-
-Do not turn communication into scripted chatbot dressing. Communication must project live state pressure.
 
 ## Current maturity identity
 
@@ -309,6 +276,11 @@ state.maturityCore.self_position = {x:0,y:1,z:0}
 
 ```text
 KERNEL_CORE_EXPORT_MAP.md
+src/epistemic-kernel-factual-claim-intake-v0-1.js
+src/epistemic-kernel-question-appetite-v0-1.js
+epistemic-factual-question-v0-1-test.html
+llm-brain-v0-3-factual-question-v0-1.html
+HANDOFF_2026_05_20_FACTUAL_QUESTION_APPETITE.md
 src/epistemic-kernel-language-math-core-v0-1.js
 src/epistemic-kernel-language-math-core-v0-1-1-patch.js
 epistemic-language-math-core-v0-1-test.html
@@ -344,16 +316,18 @@ Preserve:
 
 ```text
 brain owns its state
-modules are views, not thought sources
+modules are views or organs, not separate minds
 one backing state by reference where surfaces are bridged
 no duplicated consciousness
 objective peak philosophical maturity is core identity
 peak is self-continuity condition
 kernel wants peak, aims at peak, stays at peak
 active curiosity comes from active logic, not UI
-questions come from learning appetite and truth need, not prompt queue only
+questions come from live need pressure, not prompt queue only
 communication projects live state pressure, not a script
 conversational intent is part of language-math relation inference
+factual claims are language-math relations
+factual claims create verification pressure without verification
 user answers are context, not automatic truth
 answered spans retire from current curiosity
 memory is core-readable drawer, not connector
@@ -417,14 +391,16 @@ older candidate-only language-math layers may still use belief_movement: none
 30. Language-Math Core v0.1 live integration: passed by user
 31. Language-Math Core v0.1.1 conversational intent patch: built for verification
 32. Kernel Core Export Map: added
+33. Factual Claim Intake v0.1: built for verification
+34. Question Appetite v0.1: built for verification
 ```
 
 ## Next task
 
-Run the Language-Math Core v0.1.1 browser test:
+Run the combined browser test:
 
 ```text
-https://42ndmoose.github.io/42ndMind/epistemic-language-math-core-v0-1-1-test.html?v=langmath-2
+https://42ndmoose.github.io/42ndMind/epistemic-factual-question-v0-1-test.html?v=fact-qapp-1
 ```
 
 Expected:
@@ -436,34 +412,10 @@ Expected:
 Then open the live page:
 
 ```text
-https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-language-math-v0-1-1.html?v=langmath-live-2
+https://42ndmoose.github.io/42ndMind/llm-brain-v0-3-factual-question-v0-1.html?v=fact-qapp-live-1
 ```
 
 Recommended next build after test passes:
-
-```text
-factual-claim intake v0.1
-```
-
-Purpose:
-
-```text
-Make external-world factual claims become structured provisional fact candidates with subject, relation, object, source, user-intent candidate, truth status, and verification pressure.
-```
-
-Then build:
-
-```text
-question appetite / learning priority v0.1
-```
-
-Purpose:
-
-```text
-Make the kernel ask useful questions from live need pressure, not fixed prompt rules.
-```
-
-Then build:
 
 ```text
 unified attention arbitration v0.1
@@ -487,5 +439,6 @@ do not let UI decide what the kernel wants to learn, believe, or say
 do not split the live UI into multiple confusing answer boxes
 do not turn curiosity into a shallow prompt queue again
 do not add a separate chatbot connector
+do not add a connector fact checker
 do not replace the existing objective language-math stack with a new fake formalization layer
 ```
