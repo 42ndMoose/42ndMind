@@ -76,17 +76,19 @@
   function claimSupportSummary(truth, claimId) {
     const evidence = arr(truth.evidence_records).filter(item => item.target_claim_id === claimId);
     const support = evidence.filter(item => item.stance === 'support');
-    const counter = evidence.filter(item => item.stance === 'counter');
+    const counterEvidence = evidence.filter(item => item.stance === 'counter');
+    const counterclaims = arr(truth.counterclaim_records).filter(item => item.target_claim_id === claimId);
     const supportSources = uniq(support.map(item => item.source_id));
-    const counterSources = uniq(counter.map(item => item.source_id));
+    const counterSources = uniq(counterEvidence.map(item => item.source_id).concat(counterclaims.map(item => item.source_id)));
     return {
       support_count: support.length,
-      counter_count: counter.length,
+      counter_count: counterEvidence.length + counterclaims.length,
       independent_support_sources: supportSources,
       independent_counter_sources: counterSources,
       source_independence_score: clamp01(supportSources.length / 3),
+      counter_source_independence_score: clamp01(counterSources.length / 3),
       support_weight: round(support.reduce((sum, item) => sum + item.weight, 0)),
-      counter_weight: round(counter.reduce((sum, item) => sum + item.weight, 0))
+      counter_weight: round(counterEvidence.reduce((sum, item) => sum + item.weight, 0) + counterclaims.reduce((sum, item) => sum + item.weight, 0))
     };
   }
 
@@ -99,6 +101,7 @@
     claim.independent_support_sources = summary.independent_support_sources;
     claim.independent_counter_sources = summary.independent_counter_sources;
     claim.source_independence_score = summary.source_independence_score;
+    claim.counter_source_independence_score = summary.counter_source_independence_score;
     claim.support_pressure = clamp01(summary.support_weight);
     claim.counter_pressure = clamp01(summary.counter_weight);
     claim.contradiction_pressure = clamp01(arr(truth.contradiction_links).filter(link => link.target_claim_id === claimId).reduce((sum, link) => sum + link.weight, 0));
@@ -133,6 +136,7 @@
       independent_support_sources: [],
       independent_counter_sources: [],
       source_independence_score: 0,
+      counter_source_independence_score: 0,
       support_pressure: 0,
       counter_pressure: 0,
       contradiction_pressure: 0,
