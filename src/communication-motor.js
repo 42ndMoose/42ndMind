@@ -24,6 +24,9 @@
     if (arr(focus.admitted).length || arr(focus.rejected).length) {
       action = 'report_semantic_growth_state';
       output = 'Semantic growth updated owned state: admitted ' + arr(focus.admitted_terms).join(', ') + '; rejected ' + arr(focus.rejected_terms).join(', ') + '.';
+    } else if (arr(focus.activated).length) {
+      action = 'report_semantic_reactivation_state';
+      output = 'Known semantic meaning reactivated: ' + arr(focus.activated_terms).join(', ') + '.';
     } else if (event && /\?\s*$/.test(event.text || '')) {
       action = 'answer_or_admit_unknown';
       output = 'I register a question. I should answer from owned state or admit what is still unknown.';
