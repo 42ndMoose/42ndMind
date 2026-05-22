@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Shared substrate test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/maturity-core.js"></script>
+<script src="../src/shared-substrate.js"></script>
+<script src="../src/semantic-basis-core.js"></script>
+<script src="../src/language-field.js"></script>
+<script src="../src/neural-field.js"></script>
+<script src="../src/belief-memory-field.js"></script>
+<script src="../src/truth-field.js"></script>
+<script src="../src/communication-motor.js"></script>
+<script src="../src/autoplasticity.js"></script>
+<script src="../src/kernel.js"></script>
+<script>
+const rows = [];
+function ok(name, condition) { rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn) { return Array.isArray(list) && list.some(fn); }
+const kernel = FortySecondMindKernel.createKernel();
+kernel.ingest('Discernment means careful judgment that stays open to correction and grounded in reality.', { source: 'shared-substrate-test' });
+const s = kernel.snapshot();
+const substrate = s.sharedSubstrate;
+ok('shared substrate exists', !!substrate);
+ok('semantic focus has substrate ids', Array.isArray(s.semanticFocus.shared_substrate_activation_ids) && s.semanticFocus.shared_substrate_activation_ids.length > 0);
+ok('discernment admitted', s.semanticFocus.admitted_terms.includes('discernment'));
+ok('discernment activation exists', has(substrate.activations, a => a.term === 'discernment'));
+ok('activations are unit total', substrate.activations.every(a => Math.abs(a.l1_total - 1) < 0.00001));
+ok('language linked', has(substrate.organ_links, l => l.organ === 'language'));
+ok('neural linked', has(substrate.organ_links, l => l.organ === 'neural'));
+ok('truth linked', has(substrate.organ_links, l => l.organ === 'truth'));
+ok('belief-memory linked', has(substrate.organ_links, l => l.organ === 'belief_memory'));
+ok('communication linked', has(substrate.organ_links, l => l.organ === 'communication'));
+document.getElementById('out').textContent = rows.join('\n') + '\n\n' + JSON.stringify({ semanticFocus: s.semanticFocus, sharedSubstrate: s.sharedSubstrate }, null, 2);
+</script></body></html>
