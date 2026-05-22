@@ -29,6 +29,9 @@ LANGUAGE_MEMORY_FEEDBACK_TEST_ADDED
 LANGUAGE_MEMORY_FEEDBACK_TEST_PASSED_BY_USER
 GROWTH_EXPORT_LAYER_ADDED
 GROWTH_EXPORT_TEST_ADDED
+GROWTH_BREATHER_ADDED
+GROWTH_BREATHER_TEST_ADDED
+GROWTH_BREATHING_LAB_ADDED
 ```
 
 ## Current goal
@@ -79,6 +82,7 @@ tests/language-semantic-receptor-test.html
 tests/shared-substrate-test.html
 tests/truth-substrate-test.html
 tests/language-memory-feedback-test.html
+tests/growth-export-test.html
 ```
 
 User reported:
@@ -90,6 +94,7 @@ language-semantic-receptor-test.html passed
 shared-substrate-test.html passed 10/10
 truth-substrate-test.html passed 15/15
 language-memory-feedback-test.html passed 12/12
+growth-export-test.html passed 16/16
 ```
 
 Meaning:
@@ -101,6 +106,7 @@ Language can act as a two-way receptor for simple definitional English.
 Shared substrate now exists as an explicit unit-total activation layer touched by language, neural, belief-memory, truth, autoplasticity, and communication.
 Truth field can register claim/support/counterclaim packets, link them to shared substrate activations, raise support/counter/contradiction/unresolved pressure, and keep final truth promotion disabled.
 Language can reactivate known terms with belief-memory context pressure without treating memory as truth.
+Growth export can package before/after state, checksums, test records, substrate activation IDs, localStorage save, and commit-ready artifact text without writing to GitHub.
 ```
 
 This still does not prove full natural-language understanding.
@@ -108,45 +114,45 @@ This still does not prove full natural-language understanding.
 ## Current verification targets
 
 ```text
-Belief-memory consolidation through shared substrate.
+Breathing growth loop for repeated local value search.
 Autoplasticity over weak internal mappings.
-Growth export for reviewable persistence.
 ```
 
 Files:
 
 ```text
-src/belief-memory-field.js
-src/language-field.js
-src/shared-substrate.js
-src/kernel.js
+src/growth-breather.js
 src/growth-export.js
-docs/ARCHITECTURE.md
-tests/belief-memory-substrate-test.html
-tests/language-memory-feedback-test.html
-tests/growth-export-test.html
+ui/growth-breathing-lab.html
+tests/growth-breather-test.html
 ```
 
 Purpose:
 
 ```text
-Store claim/evidence/counterclaim context as belief-memory context without letting memory become truth.
-Link belief-memory items to truth claim IDs, source IDs, shared substrate activation IDs, and current pressure state.
-Let language reactivate known semantic terms with memory context pressure when past belief-memory context exists.
-Export provisional growth candidates with before/after state, checksums, test records, substrate activation IDs, localStorage support, and commit-ready artifact text.
-Growth export does not execute arbitrary code and does not write to GitHub by itself.
+Run repeated provisional growth steps over a unit-total semantic mapping.
+Keep the best state instead of creating duplicate exports every button press.
+Export only the best candidate for human review.
+Do not auto-commit.
+Do not execute arbitrary code.
 ```
 
-Current growth export test:
+Current breathing growth test:
 
 ```text
-tests/growth-export-test.html
+tests/growth-breather-test.html
 ```
 
 Expected result:
 
 ```text
-16/16 passed
+14/14 passed
+```
+
+Current breathing growth lab:
+
+```text
+ui/growth-breathing-lab.html
 ```
 
 Boundary:
