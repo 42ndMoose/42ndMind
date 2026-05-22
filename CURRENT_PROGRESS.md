@@ -1,6 +1,6 @@
 # 42ndMind Current Progress
 
-Last updated: 2026-05-21.
+Last updated: 2026-05-22.
 
 Status:
 
@@ -15,8 +15,10 @@ SEMANTIC_BASIS_WIRED_INTO_OWNED_BRAIN_STATE
 SEMANTIC_GROWTH_PROOF_PASSED_BY_USER
 CROSS_ORGAN_SEMANTIC_CIRCULATION_BUILT_FOR_VERIFICATION
 LANGUAGE_SEMANTIC_RECEPTOR_BUILT_FOR_VERIFICATION
+LANGUAGE_SEMANTIC_RECEPTOR_PASSED_BY_USER
 SHARED_SUBSTRATE_ADDED_TO_MAIN
 SHARED_SUBSTRATE_TEST_ADDED
+SHARED_SUBSTRATE_TEST_PASSED_BY_USER
 ```
 
 ## Current goal
@@ -62,6 +64,8 @@ Files:
 src/semantic-basis-core.js
 tests/semantic-basis-core-test.html
 tests/semantic-growth-proof.html
+tests/language-semantic-receptor-test.html
+tests/shared-substrate-test.html
 ```
 
 User reported:
@@ -70,6 +74,7 @@ User reported:
 semantic-basis-core-test.html passed
 semantic-growth-proof.html passed
 language-semantic-receptor-test.html passed
+shared-substrate-test.html passed 10/10
 ```
 
 Meaning:
@@ -78,40 +83,28 @@ Meaning:
 The core can enforce reusable semantic basis logic.
 The owned kernel state can admit basis-reusing meanings, reject fake isolated expansion, log both outcomes, and pass semantic pressure into the neural field.
 Language can act as a two-way receptor for simple definitional English.
+Shared substrate now exists as an explicit unit-total activation layer touched by language, neural, belief-memory, truth, autoplasticity, and communication.
 ```
 
 This still does not prove full natural-language understanding.
 
-## Current verification target
-
-Files:
+## Next verification target
 
 ```text
-src/shared-substrate.js
-src/kernel.js
-ui/live-kernel.html
-tests/kernel-smoke-test.html
-tests/shared-substrate-test.html
+Substrate-backed truth tracking.
 ```
 
 Purpose:
 
 ```text
-Make shared substrate explicit instead of implicit.
-Show semantic events producing unit-total substrate activations.
-Show language, neural, belief-memory, truth, autoplasticity, and communication recording against the same activation set.
-Keep communication as motor output only.
-Do not add recall-command behavior, objective-truth shortcuts, or synonym-list demo behavior from the agent patch.
+Track claims, counterclaims, support, contradiction, source independence, unresolved gaps, and belief pressure through the shared substrate without final truth promotion.
 ```
 
-Current shared substrate test:
+Boundary:
 
 ```text
-tests/shared-substrate-test.html
-```
-
-Expected result:
-
-```text
-10/10 passed
+Do not add objective_truth shortcuts.
+Do not add recall-command behavior.
+Do not add synonym-list demo behavior.
+Do not let communication motor directly decide truth or memory.
 ```
