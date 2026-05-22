@@ -20,6 +20,7 @@
   function normalizeSigned(dimensions) {
     const rows = arr(dimensions).map(row => {
       if (Array.isArray(row)) return { dimension: id(row[0]), weight: Number(row[1]) || 0 };
+      if (typeof row === 'string') return { dimension: id(row), weight: 1 };
       return { dimension: id(row.dimension), weight: Number(row.weight) || 0 };
     }).filter(row => row.dimension && row.weight !== 0);
 
@@ -102,6 +103,17 @@
         term: activation.term,
         dimensions: activation.dimensions,
         status: 'reactivated_in_shared_substrate'
+      }));
+    });
+    arr(focus.memory_feedback).forEach(feedback => {
+      const dimensions = arr(feedback.dimensions).length ? arr(feedback.dimensions).map(d => [d, 1]) : [['memory_context_pressure', 1]];
+      activations.push(activate(state, {
+        source_event: event && event.id,
+        source_organ: 'language_field',
+        kind: 'language_memory_context_pressure',
+        term: feedback.term,
+        dimensions,
+        status: 'memory_context_pressure_not_truth'
       }));
     });
     arr(focus.receptor_hits).forEach(hit => {
