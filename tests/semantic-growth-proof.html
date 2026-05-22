@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Semantic Growth Proof</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; background:#101217; color:#eef2ff; }
+    h1, h2 { font-family: system-ui, sans-serif; }
+    pre { background:#0b0d12; border:1px solid #2a3040; border-radius:10px; padding:12px; white-space:pre-wrap; overflow:auto; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; }
+  </style>
+</head>
+<body>
+<h1>42ndMind Semantic Growth Proof</h1>
+<p>This page proves an early but real result: the owned kernel state can admit basis-reusing meanings and reject fake isolated expansion.</p>
+<h2 id="summary">Running...</h2>
+<pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/maturity-core.js"></script>
+<script src="../src/semantic-basis-core.js"></script>
+<script src="../src/language-field.js"></script>
+<script src="../src/neural-field.js"></script>
+<script src="../src/belief-memory-field.js"></script>
+<script src="../src/truth-field.js"></script>
+<script src="../src/communication-motor.js"></script>
+<script src="../src/autoplasticity.js"></script>
+<script src="../src/kernel.js"></script>
+<script>
+function assert(cond, msg) { if (!cond) throw new Error(msg); }
+function compactCore(core) {
+  return {
+    basis_dimension_count: Object.keys(core.basis_dimensions).length,
+    meaning_count: Object.keys(core.meanings).length,
+    admitted_terms: core.admission_log.map(r => r.term),
+    rejected_terms: core.rejection_log.map(r => r.term),
+    relation_count: core.relation_graph.length,
+    reusable_dimensions: Object.values(core.basis_dimensions).filter(d => d.use_count >= 2).map(d => ({ dimension:d.dimension, use_count:d.use_count, terms:d.terms }))
+  };
+}
+
+const report = {
+  packet_type: '42ndMind_semantic_growth_proof_v0_1',
+  claim_tested: 'owned kernel state can constrain meaning growth by reusable semantic relation instead of fake expansion',
+  steps: [],
+  checks: []
+};
+
+try {
+  const kernel = FortySecondMindKernel.createKernel();
+  report.steps.push({ step:'initial_kernel_created', semantic_basis_exists: !!kernel.state.semanticBasis, initial: compactCore(kernel.state.semanticBasis) });
+
+  const event = kernel.ingest('Evaluate two meaning-growth proposals.', {
+    source: 'semantic-growth-proof',
+    meaning_proposals: [
+      {
+        term: 'discernment',
+        dimensions: [
+          ['integrated_judgment', 0.28],
+          ['self_correction', 0.22],
+          ['reality_contact', 0.18],
+          ['information_grasp', 0.14],
+          ['false_certainty_resistance', 0.18]
+        ],
+        meta: { expected: 'admit_basis_reusing_meaning' }
+      },
+      {
+        term: 'private_island',
+        dimensions: [
+          ['private_alpha_label', 0.25],
+          ['private_beta_label', 0.25],
+          ['private_gamma_label', 0.25],
+          ['private_delta_label', 0.25]
+        ],
+        meta: { expected: 'reject_disconnected_fake_expansion' }
+      }
+    ]
+  });
+
+  const after = compactCore(kernel.state.semanticBasis);
+  const admitted = event.semanticBasisResult.results.filter(r => r.admitted).map(r => r.meaning.term);
+  const rejected = event.semanticBasisResult.results.filter(r => !r.admitted).map(r => r.evaluation.term);
+  const discernmentRelation = kernel.state.semanticBasis.relation_graph.filter(r => r.a === 'discernment' || r.b === 'discernment')
+    .sort((a,b) => (b.shared_score + b.contrast_score) - (a.shared_score + a.contrast_score))[0];
+
+  report.steps.push({ step:'proposals_evaluated_by_kernel_ingest', semanticBasisResult: event.semanticBasisResult });
+  report.steps.push({ step:'after_growth_attempt', after, discernment_best_relation: discernmentRelation, neural_selected_motor_intention: kernel.state.neural.selected_motor_intention });
+
+  const checks = [
+    ['semantic basis is owned by brain state', !!kernel.state.semanticBasis],
+    ['one proposal admitted', admitted.length === 1],
+    ['discernment admitted', admitted.includes('discernment')],
+    ['one proposal rejected', rejected.length === 1],
+    ['private_island rejected', rejected.includes('private_island')],
+    ['rejection logged in owned state', kernel.state.semanticBasis.rejection_log.some(r => r.term === 'private_island')],
+    ['admission logged in owned state', kernel.state.semanticBasis.admission_log.some(r => r.term === 'discernment')],
+    ['discernment has relation to existing basis', !!discernmentRelation && (discernmentRelation.shared_score + discernmentRelation.contrast_score) > 0],
+    ['reusable basis dimensions exist after growth', after.reusable_dimensions.length >= 5],
+    ['semantic proposal pressure reached neural field', kernel.state.neural.activation_trace[0].pressure.language_math > 0.25]
+  ];
+  checks.forEach(([name, passed]) => { report.checks.push({ name, passed }); assert(passed, name); });
+  report.ok = true;
+} catch (e) {
+  report.ok = false;
+  report.error = e.message;
+}
+
+const passed = report.checks.filter(c => c.passed).length;
+document.getElementById('summary').className = report.ok ? 'ok' : 'bad';
+document.getElementById('summary').textContent = report.ok ? `${passed}/${report.checks.length} passed` : `FAILED: ${report.error}`;
+document.getElementById('out').textContent = JSON.stringify(report, null, 2);
+</script>
+</body>
+</html>
