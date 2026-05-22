@@ -43,9 +43,11 @@
       generated_semantic_proposals: [],
       active_semantic_terms: [],
       receptor_hits: [],
+      semantic_memory_feedback: [],
       unit_total_checks: [],
       updated_at: now()
     };
+    if (!state.language.semantic_memory_feedback) state.language.semantic_memory_feedback = [];
     Object.keys(SEEDS).forEach(term => { if (!state.language.term_fields[term]) state.language.term_fields[term] = makeField(term, SEEDS[term]); });
     state.language.unit_total_checks = Object.values(state.language.term_fields).map(f => ({ term: f.term, ok: Math.abs(f.l1_total - 1) < 0.00001, l1_total: f.l1_total }));
     state.language.updated_at = now();
@@ -85,6 +87,38 @@
     }));
   }
 
+  function memoryFeedbackForActivations(state, activations, raw) {
+    const memory = state.beliefMemory || {};
+    const value = String(raw || '').toLowerCase();
+    const feedback = [];
+    arr(activations).forEach(activation => {
+      const term = id(activation.term);
+      const dims = arr(activation.dimensions).map(d => d.dimension).filter(Boolean);
+      const matchingSemanticLinks = arr(memory.semantic_memory_links).filter(item => item.term === term);
+      const matchingTruthContexts = arr(memory.truth_context_items).filter(item => {
+        const text = String(item.text || '').toLowerCase();
+        return text.includes(term) || value.includes(term);
+      });
+      const matchingPressureSnapshots = arr(memory.truth_pressure_snapshots).filter(item => matchingTruthContexts.some(ctx => ctx.target_claim_id === item.claim_id || ctx.claim_id === item.claim_id));
+      const contextCount = matchingSemanticLinks.length + matchingTruthContexts.length + matchingPressureSnapshots.length;
+      if (contextCount > 0) {
+        feedback.push({
+          term,
+          dimensions: dims,
+          context_count: contextCount,
+          semantic_link_count: matchingSemanticLinks.length,
+          truth_context_count: matchingTruthContexts.length,
+          pressure_snapshot_count: matchingPressureSnapshots.length,
+          shared_substrate_activation_ids: matchingTruthContexts.map(item => item.shared_substrate_activation_id).filter(Boolean).slice(0, 12),
+          source: 'belief_memory_context_pressure_not_truth',
+          truth_status: 'memory_context_not_truth',
+          belief_status: 'context_not_belief_commitment'
+        });
+      }
+    });
+    return feedback;
+  }
+
   function proposeFromText(state, event) {
     const field = ensure(state);
     const raw = String(event && event.text || '');
@@ -100,13 +134,16 @@
       field.generated_semantic_proposals.unshift({ term, dimensions: inference.dimensions, receptor_hits: inference.hits, source_event: event && event.id, at: now() });
     }
     const activations = knownTermActivations(state, raw);
+    const memoryFeedback = memoryFeedbackForActivations(state, activations, raw);
     activations.forEach(a => field.active_semantic_terms.unshift({ term: a.term, dimensions: a.dimensions.map(d => d.dimension), source_event: event && event.id, at: now() }));
+    memoryFeedback.forEach(item => field.semantic_memory_feedback.unshift(Object.assign({ source_event: event && event.id, at: now() }, item)));
     inference.hits.forEach(hit => field.receptor_hits.unshift({ dimension: hit.dimension, source_event: event && event.id, at: now() }));
     field.generated_semantic_proposals = arr(field.generated_semantic_proposals).slice(0, 80);
     field.active_semantic_terms = arr(field.active_semantic_terms).slice(0, 80);
+    field.semantic_memory_feedback = arr(field.semantic_memory_feedback).slice(0, 80);
     field.receptor_hits = arr(field.receptor_hits).slice(0, 80);
     field.updated_at = now();
-    return { proposals, activations, receptor_hits: inference.hits, definition_term: term };
+    return { proposals, activations, receptor_hits: inference.hits, memory_feedback: memoryFeedback, definition_term: term };
   }
 
   function ingest(state, event, semanticBasisResult) {
@@ -132,6 +169,9 @@
     arr(focus.activated).forEach(activation => {
       field.learning_deltas.unshift({ term: activation.term, delta: 0.02, reason: 'known_term_reactivated_shared_basis', at: now() });
     });
+    arr(focus.memory_feedback).forEach(feedback => {
+      field.learning_deltas.unshift({ term: feedback.term, delta: 0.015, reason: 'known_term_reactivated_with_memory_context', truth_status: 'memory_context_not_truth', at: now() });
+    });
     arr(focus.rejected).forEach(rejection => {
       field.rejected_semantic_noise.unshift({ term: rejection.term, reason: rejection.reason, source_event: focus.source_event, at: now() });
     });
@@ -139,10 +179,11 @@
     field.semantic_basis_links = arr(field.semantic_basis_links).slice(0, 80);
     field.rejected_semantic_noise = arr(field.rejected_semantic_noise).slice(0, 80);
     field.learning_deltas = arr(field.learning_deltas).slice(0, 80);
+    field.semantic_memory_feedback = arr(field.semantic_memory_feedback).slice(0, 80);
     field.unit_total_checks = Object.values(field.term_fields).map(f => ({ term: f.term, ok: Math.abs(f.l1_total - 1) < 0.00001, l1_total: f.l1_total }));
     field.updated_at = now();
     return field;
   }
 
-  global.FortySecondMindLanguageField = Object.freeze({ SEEDS, RECEPTOR_PATTERNS, makeField, ensure, inferDimensionsFromText, extractDefinitionTerm, knownTermActivations, proposeFromText, ingest });
+  global.FortySecondMindLanguageField = Object.freeze({ SEEDS, RECEPTOR_PATTERNS, makeField, ensure, inferDimensionsFromText, extractDefinitionTerm, knownTermActivations, memoryFeedbackForActivations, proposeFromText, ingest });
 })(typeof window !== 'undefined' ? window : globalThis);
