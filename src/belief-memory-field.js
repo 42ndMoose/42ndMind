@@ -6,9 +6,20 @@
 
   function now() { return global.FortySecondMindBrainState.now(); }
   function arr(v) { return global.FortySecondMindBrainState.arr(v); }
+  function dimNames(rows) { return arr(rows).map(d => typeof d === 'string' ? d : d.dimension).filter(Boolean); }
 
   function ensure(state) {
-    if (!state.beliefMemory) state.beliefMemory = { memory_items: [], provisional_beliefs: [], belief_challenges: [], open_truth_requirements: [], semantic_memory_links: [], rejected_noise_memory: [], updated_at: now() };
+    if (!state.beliefMemory) state.beliefMemory = {
+      memory_items: [],
+      provisional_beliefs: [],
+      belief_challenges: [],
+      open_truth_requirements: [],
+      semantic_memory_links: [],
+      semantic_reactivations: [],
+      rejected_noise_memory: [],
+      updated_at: now()
+    };
+    if (!state.beliefMemory.semantic_reactivations) state.beliefMemory.semantic_reactivations = [];
     return state.beliefMemory;
   }
 
@@ -22,7 +33,7 @@
       field.semantic_memory_links.unshift({
         kind: 'admitted_semantic_meaning',
         term: meaning.term,
-        dimensions: arr(meaning.dimensions).map(d => d.dimension),
+        dimensions: dimNames(meaning.dimensions),
         source_event: focus.source_event,
         truth_status: 'meaning_candidate_not_truth',
         belief_movement: 'context_link_only',
@@ -34,6 +45,17 @@
         status: 'provisional_semantic_context',
         truth_status: 'not_final',
         belief_movement: 'none',
+        at: now()
+      });
+    });
+    arr(focus.activated).forEach(activation => {
+      field.semantic_reactivations.unshift({
+        kind: 'known_meaning_reactivated_from_language',
+        term: activation.term,
+        dimensions: dimNames(activation.dimensions),
+        source_event: focus.source_event,
+        truth_status: 'not_final',
+        belief_movement: 'context_reactivation_only',
         at: now()
       });
     });
@@ -51,6 +73,7 @@
     field.memory_items = arr(field.memory_items).slice(0, 120);
     field.provisional_beliefs = arr(field.provisional_beliefs).slice(0, 120);
     field.semantic_memory_links = arr(field.semantic_memory_links).slice(0, 120);
+    field.semantic_reactivations = arr(field.semantic_reactivations).slice(0, 120);
     field.rejected_noise_memory = arr(field.rejected_noise_memory).slice(0, 120);
     field.updated_at = now();
     return field;
