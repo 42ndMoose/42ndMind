@@ -27,6 +27,8 @@ BELIEF_MEMORY_SUBSTRATE_TEST_ADDED
 LANGUAGE_MEMORY_FEEDBACK_ADDED
 LANGUAGE_MEMORY_FEEDBACK_TEST_ADDED
 LANGUAGE_MEMORY_FEEDBACK_TEST_PASSED_BY_USER
+GROWTH_EXPORT_LAYER_ADDED
+GROWTH_EXPORT_TEST_ADDED
 ```
 
 ## Current goal
@@ -44,6 +46,7 @@ input
   -> truth field
   -> belief/memory field
   -> autoplasticity pressure
+  -> growth export
   -> communication motor
 ```
 
@@ -107,6 +110,7 @@ This still does not prove full natural-language understanding.
 ```text
 Belief-memory consolidation through shared substrate.
 Autoplasticity over weak internal mappings.
+Growth export for reviewable persistence.
 ```
 
 Files:
@@ -116,9 +120,11 @@ src/belief-memory-field.js
 src/language-field.js
 src/shared-substrate.js
 src/kernel.js
+src/growth-export.js
 docs/ARCHITECTURE.md
 tests/belief-memory-substrate-test.html
 tests/language-memory-feedback-test.html
+tests/growth-export-test.html
 ```
 
 Purpose:
@@ -127,7 +133,20 @@ Purpose:
 Store claim/evidence/counterclaim context as belief-memory context without letting memory become truth.
 Link belief-memory items to truth claim IDs, source IDs, shared substrate activation IDs, and current pressure state.
 Let language reactivate known semantic terms with memory context pressure when past belief-memory context exists.
-Memory feedback is not truth, not final meaning, and not a command-response recall path.
+Export provisional growth candidates with before/after state, checksums, test records, substrate activation IDs, localStorage support, and commit-ready artifact text.
+Growth export does not execute arbitrary code and does not write to GitHub by itself.
+```
+
+Current growth export test:
+
+```text
+tests/growth-export-test.html
+```
+
+Expected result:
+
+```text
+16/16 passed
 ```
 
 Boundary:
@@ -137,4 +156,5 @@ Do not add objective_truth shortcuts.
 Do not add recall-command behavior.
 Do not add synonym-list demo behavior.
 Do not let communication motor directly decide truth or memory.
+Do not let static pages directly write to GitHub.
 ```
