@@ -1,6 +1,6 @@
-# 42ndMind Clean Kernel
+# 42ndMind Kernel
 
-This branch is the clean migration reset after the prototype-lab purge.
+This branch is the migration reset after the prototype-lab purge.
 
 The old repository state remains recoverable through Git history and local ZIP backups. This branch intentionally does not preserve old live pages, route-specific patches, toy speech modules, or one-off tests.
 
