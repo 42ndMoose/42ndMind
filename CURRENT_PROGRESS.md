@@ -26,6 +26,7 @@ BELIEF_MEMORY_SUBSTRATE_CONSOLIDATION_ADDED
 BELIEF_MEMORY_SUBSTRATE_TEST_ADDED
 LANGUAGE_MEMORY_FEEDBACK_ADDED
 LANGUAGE_MEMORY_FEEDBACK_TEST_ADDED
+LANGUAGE_MEMORY_FEEDBACK_TEST_PASSED_BY_USER
 ```
 
 ## Current goal
@@ -74,6 +75,7 @@ tests/semantic-growth-proof.html
 tests/language-semantic-receptor-test.html
 tests/shared-substrate-test.html
 tests/truth-substrate-test.html
+tests/language-memory-feedback-test.html
 ```
 
 User reported:
@@ -84,6 +86,7 @@ semantic-growth-proof.html passed
 language-semantic-receptor-test.html passed
 shared-substrate-test.html passed 10/10
 truth-substrate-test.html passed 15/15
+language-memory-feedback-test.html passed 12/12
 ```
 
 Meaning:
@@ -94,6 +97,7 @@ The owned kernel state can admit basis-reusing meanings, reject fake isolated ex
 Language can act as a two-way receptor for simple definitional English.
 Shared substrate now exists as an explicit unit-total activation layer touched by language, neural, belief-memory, truth, autoplasticity, and communication.
 Truth field can register claim/support/counterclaim packets, link them to shared substrate activations, raise support/counter/contradiction/unresolved pressure, and keep final truth promotion disabled.
+Language can reactivate known terms with belief-memory context pressure without treating memory as truth.
 ```
 
 This still does not prove full natural-language understanding.
@@ -102,7 +106,7 @@ This still does not prove full natural-language understanding.
 
 ```text
 Belief-memory consolidation through shared substrate.
-Language-memory feedback through shared substrate.
+Autoplasticity over weak internal mappings.
 ```
 
 Files:
@@ -124,16 +128,6 @@ Store claim/evidence/counterclaim context as belief-memory context without letti
 Link belief-memory items to truth claim IDs, source IDs, shared substrate activation IDs, and current pressure state.
 Let language reactivate known semantic terms with memory context pressure when past belief-memory context exists.
 Memory feedback is not truth, not final meaning, and not a command-response recall path.
-```
-
-Current tests:
-
-```text
-tests/belief-memory-substrate-test.html
-Expected: 16/16 passed
-
-tests/language-memory-feedback-test.html
-Expected: 12/12 passed
 ```
 
 Boundary:
