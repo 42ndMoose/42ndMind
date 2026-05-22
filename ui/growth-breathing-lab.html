@@ -29,10 +29,17 @@
     <button id="stop">Stop</button>
     <button id="exportBest">Export best candidate</button>
     <button id="downloadJson">Download best JSON</button>
+    <button id="copyReview">Copy review packet</button>
     <span id="status" class="muted">Idle.</span>
     <p>Best score</p>
     <meter id="scoreMeter" min="0" max="1" value="0"></meter>
     <pre id="scoreText">No run yet.</pre>
+  </div>
+
+  <div class="card">
+    <h2>Compact review packet</h2>
+    <p class="muted">Paste this small packet into chat if you want review. It avoids the full state dump.</p>
+    <pre id="reviewPacket">No run yet.</pre>
   </div>
 
   <div class="grid">
@@ -56,19 +63,19 @@
     <pre id="steps">No steps yet.</pre>
   </div>
 
-  <script src="../src/brain-state.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/maturity-core.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/shared-substrate.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/semantic-basis-core.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/language-field.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/neural-field.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/truth-field.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/belief-memory-field.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/communication-motor.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/autoplasticity.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/growth-export.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/growth-breather.js?v=growth-breathing-lab-20260522-1"></script>
-  <script src="../src/kernel.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/brain-state.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/maturity-core.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/shared-substrate.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/semantic-basis-core.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/language-field.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/neural-field.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/truth-field.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/belief-memory-field.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/communication-motor.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/autoplasticity.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/growth-export.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/growth-breather.js?v=growth-breathing-lab-20260522-2"></script>
+  <script src="../src/kernel.js?v=growth-breathing-lab-20260522-2"></script>
   <script>
     const kernel = FortySecondMindKernel.createKernel();
     FortySecondMindGrowthExport.ensure(kernel.state);
@@ -77,6 +84,7 @@
     let activeRun = null;
     let timer = null;
     let latestArtifact = null;
+    let latestReviewPacket = null;
 
     const statusEl = document.getElementById('status');
     const scoreMeter = document.getElementById('scoreMeter');
@@ -85,10 +93,35 @@
     const bestState = document.getElementById('bestState');
     const artifact = document.getElementById('artifact');
     const steps = document.getElementById('steps');
+    const reviewPacketEl = document.getElementById('reviewPacket');
 
     function setStatus(text, ok) {
       statusEl.className = ok === true ? 'ok' : ok === false ? 'bad' : 'muted';
       statusEl.textContent = text;
+    }
+
+    function dimsOnly(state) {
+      return (state && state.dimensions || []).map(row => row.dimension + ':' + Number(row.weight).toFixed(6));
+    }
+
+    function buildReviewPacket(run, artifactObj) {
+      if (!run) return null;
+      const recentSteps = (kernel.snapshot().growthBreather.steps || []).filter(step => step.run_id === run.id).slice(0, 8);
+      return {
+        packet_type: '42ndMind_growth_breathing_review_packet_v0_1',
+        run_id: run.id,
+        term: run.term,
+        iteration: run.iteration,
+        best_score: run.best_score,
+        current_score: FortySecondMindGrowthBreather.scoreAgainstTarget(run.current_state, run.target_state),
+        initial_dimensions: dimsOnly(run.initial_state),
+        target_dimensions: dimsOnly(run.target_state),
+        best_dimensions: dimsOnly(run.best_state),
+        best_l1_total: run.best_state && run.best_state.l1_total,
+        recent_steps: recentSteps.map(step => ({ iteration: step.iteration, score: step.score, improved: step.improved, unit_total_ok: step.unit_total_ok })),
+        export_status: artifactObj ? { commit_ready: artifactObj.commit_ready, promotion_status: artifactObj.promotion_status, target_path: artifactObj.target_path } : null,
+        interpretation_warning: 'This shows convergence toward a fixed target, not autonomous discovery of a new target.'
+      };
     }
 
     function refresh() {
@@ -99,11 +132,15 @@
         scoreText.textContent = 'No run yet.';
         currentState.textContent = 'No run yet.';
         bestState.textContent = 'No run yet.';
+        reviewPacketEl.textContent = 'No run yet.';
+        latestReviewPacket = null;
       } else {
         scoreMeter.value = run.best_score;
         scoreText.textContent = 'Run: ' + run.id + '\nIteration: ' + run.iteration + '\nBest score: ' + run.best_score;
         currentState.textContent = JSON.stringify(run.current_state, null, 2);
         bestState.textContent = JSON.stringify(run.best_state, null, 2);
+        latestReviewPacket = buildReviewPacket(run, latestArtifact);
+        reviewPacketEl.textContent = JSON.stringify(latestReviewPacket, null, 2);
       }
       steps.textContent = JSON.stringify((s.growthBreather && s.growthBreather.steps || []).slice(0, 12), null, 2);
       if (latestArtifact) artifact.textContent = latestArtifact.file_content;
@@ -170,6 +207,17 @@
     document.getElementById('downloadJson').onclick = () => {
       if (!latestArtifact) exportBest();
       if (latestArtifact) download('discernment-breathing-growth-v0-1.json', latestArtifact.file_content);
+    };
+    document.getElementById('copyReview').onclick = async () => {
+      if (!latestReviewPacket) refresh();
+      if (!latestReviewPacket) return setStatus('No review packet yet.', false);
+      const text = JSON.stringify(latestReviewPacket, null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus('Review packet copied.', true);
+      } catch (err) {
+        setStatus('Clipboard blocked. Manually copy the review packet.', false);
+      }
     };
 
     refresh();
