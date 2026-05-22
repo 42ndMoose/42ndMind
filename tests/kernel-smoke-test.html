@@ -2,6 +2,8 @@
 <html><head><meta charset="utf-8"><title>Kernel smoke test</title></head><body><pre id="out"></pre>
 <script src="../src/brain-state.js"></script>
 <script src="../src/maturity-core.js"></script>
+<script src="../src/shared-substrate.js"></script>
+<script src="../src/semantic-basis-core.js"></script>
 <script src="../src/language-field.js"></script>
 <script src="../src/neural-field.js"></script>
 <script src="../src/belief-memory-field.js"></script>
@@ -17,6 +19,7 @@ const r = kernel.ingest('truth needs evidence?', { source: 'smoke-test' });
 ok('kernel exists', !!kernel.state);
 ok('maturity peak preserved', kernel.state.maturity.self_position.y === 1);
 ok('one owned state has organs', !!kernel.state.language && !!kernel.state.neural && !!kernel.state.truth && !!kernel.state.communication);
+ok('shared substrate exists', !!kernel.state.sharedSubstrate);
 ok('communication motor owns output', r.output && r.output.source === 'communication_motor');
 ok('no final truth promotion', kernel.state.truth.final_truth_promotion === false);
 document.getElementById('out').textContent = results.join('\n');
