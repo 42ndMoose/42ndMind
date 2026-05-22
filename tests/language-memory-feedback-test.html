@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Language memory feedback test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/maturity-core.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/shared-substrate.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/semantic-basis-core.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/language-field.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/neural-field.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/truth-field.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/belief-memory-field.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/communication-motor.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/autoplasticity.js?v=language-memory-feedback-20260522-1"></script>
+<script src="../src/kernel.js?v=language-memory-feedback-20260522-1"></script>
+<script>
+const TEST_BUILD = 'language-memory-feedback-test-v0-1';
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn){ return Array.isArray(list) && list.some(fn); }
+const kernel = FortySecondMindKernel.createKernel();
+const learn = kernel.ingest('Discernment means careful judgment that stays open to correction and grounded in reality before believing every claim.', { source: 'language-memory-feedback-test' });
+kernel.ingest('Register a truth context about discernment.', { source: 'source_A', truth_packets: [
+  { kind:'claim', claim_id:'discernment_claim', text:'Discernment should slow belief when a claim lacks evidence.', source_id:'source_A' }
+]});
+kernel.ingest('Register support for the discernment context.', { source: 'source_B', truth_packets: [
+  { kind:'evidence', target_claim_id:'discernment_claim', stance:'support', text:'Discernment uses evidence and correction pressure.', source_id:'source_B', weight:0.4 }
+]});
+const use = kernel.ingest('Use discernment before accepting this claim.', { source: 'language-memory-feedback-test' });
+const s = kernel.snapshot();
+const language = s.language;
+const memory = s.beliefMemory;
+const substrate = s.sharedSubstrate;
+const truth = s.truth;
+const feedback = use.languageReceptorResult.memory_feedback.find(item => item.term === 'discernment');
+ok('discernment was admitted as semantic basis meaning', learn.semanticBasisResult.admitted_count === 1 && !!s.semanticBasis.meanings.discernment);
+ok('belief-memory stored discernment truth context', has(memory.truth_context_items, item => item.kind === 'truth_claim_context' && item.claim_id === 'discernment_claim' && String(item.text).toLowerCase().includes('discernment')));
+ok('later use reactivated discernment', has(use.languageReceptorResult.activations, item => item.term === 'discernment'));
+ok('language produced memory feedback for discernment', !!feedback);
+ok('memory feedback is context not truth', !!feedback && feedback.truth_status === 'memory_context_not_truth' && feedback.belief_status === 'context_not_belief_commitment');
+ok('semantic focus carries memory feedback term', has(s.semanticFocus.memory_feedback_terms, term => term === 'discernment'));
+ok('language recorded semantic memory feedback', has(language.semantic_memory_feedback, item => item.term === 'discernment' && item.truth_status === 'memory_context_not_truth'));
+ok('language learning delta records memory-context reactivation', has(language.learning_deltas, item => item.term === 'discernment' && item.reason === 'known_term_reactivated_with_memory_context'));
+ok('shared substrate has language memory context activation', has(substrate.activations, item => item.kind === 'language_memory_context_pressure' && item.term === 'discernment'));
+ok('memory feedback activation is unit total', substrate.activations.filter(item => item.kind === 'language_memory_context_pressure' && item.term === 'discernment').every(item => Math.abs(item.l1_total - 1) < 0.00001));
+ok('language organ linked to memory feedback substrate activation', has(substrate.organ_links, link => link.organ === 'language' && link.terms.includes('discernment') && link.activation_ids.length > 0));
+ok('truth final promotion remains false', truth.final_truth_promotion === false && truth.claim_records.every(claim => claim.final_truth_promotion === false));
+document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ languageReceptorResult: use.languageReceptorResult, semanticFocus: s.semanticFocus, language, beliefMemory: memory, truth, sharedSubstrate: substrate }, null, 2);
+</script></body></html>
