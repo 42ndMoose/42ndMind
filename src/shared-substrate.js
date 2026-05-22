@@ -129,14 +129,25 @@
     return activations;
   }
 
+  function eventActivations(substrate, event) {
+    const eventId = event && event.id || null;
+    if (!eventId) return [];
+    return arr(substrate.activations).filter(activation => activation.source_event === eventId);
+  }
+
   function recordOrganLink(state, organ, event, relation) {
     const substrate = ensure(state);
+    const focusIds = arr(state.semanticFocus && state.semanticFocus.shared_substrate_activation_ids);
+    const focusTerms = arr(state.semanticFocus && state.semanticFocus.shared_substrate_terms);
+    const localActivations = eventActivations(substrate, event);
+    const activationIds = focusIds.length ? focusIds : localActivations.map(item => item.id);
+    const terms = focusTerms.length ? focusTerms : localActivations.map(item => item.term);
     const link = {
       organ: String(organ || 'unknown_organ'),
       source_event: event && event.id || null,
       relation: relation || 'used_shared_substrate',
-      activation_ids: arr(state.semanticFocus && state.semanticFocus.shared_substrate_activation_ids),
-      terms: arr(state.semanticFocus && state.semanticFocus.shared_substrate_terms),
+      activation_ids: activationIds,
+      terms,
       at: now()
     };
     substrate.organ_links.unshift(link);
