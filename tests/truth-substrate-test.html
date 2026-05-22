@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Truth substrate test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/maturity-core.js"></script>
+<script src="../src/shared-substrate.js"></script>
+<script src="../src/semantic-basis-core.js"></script>
+<script src="../src/language-field.js"></script>
+<script src="../src/neural-field.js"></script>
+<script src="../src/belief-memory-field.js"></script>
+<script src="../src/truth-field.js"></script>
+<script src="../src/communication-motor.js"></script>
+<script src="../src/autoplasticity.js"></script>
+<script src="../src/kernel.js"></script>
+<script>
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn){ return Array.isArray(list) && list.some(fn); }
+const kernel = FortySecondMindKernel.createKernel();
+kernel.ingest('Register claim A.', { source: 'source_A', truth_packets: [
+  { kind:'claim', claim_id:'claim_a', text:'Claim A says the policy increases verification pressure.', source_id:'source_A' }
+]});
+kernel.ingest('Register support for claim A.', { source: 'source_B', truth_packets: [
+  { kind:'evidence', target_claim_id:'claim_a', stance:'support', text:'Independent support for claim A.', source_id:'source_B', weight:0.4 }
+]});
+kernel.ingest('Register counterclaim against claim A.', { source: 'source_C', truth_packets: [
+  { kind:'counterclaim', target_claim_id:'claim_a', claim_id:'counter_a', text:'Counterclaim says claim A is incomplete.', source_id:'source_C', weight:0.55 }
+]});
+const s = kernel.snapshot();
+const truth = s.truth;
+const substrate = s.sharedSubstrate;
+const claim = truth.claim_records.find(c => c.id === 'claim_a');
+ok('claim record exists', !!claim);
+ok('claim is unit total', !!claim && Math.abs(claim.l1_total - 1) < 0.00001);
+ok('claim linked to substrate', !!claim && !!claim.shared_substrate_activation_id);
+ok('support evidence recorded', has(truth.evidence_records, e => e.target_claim_id === 'claim_a' && e.stance === 'support'));
+ok('counterclaim recorded', has(truth.counterclaim_records, c => c.target_claim_id === 'claim_a'));
+ok('contradiction link recorded', has(truth.contradiction_links, c => c.target_claim_id === 'claim_a'));
+ok('unresolved gap visible', has(truth.unresolved_gaps, g => g.target_claim_id === 'claim_a'));
+ok('claim support pressure increased', !!claim && claim.support_pressure > 0);
+ok('claim counter pressure increased', !!claim && claim.counter_pressure > 0);
+ok('claim contradiction pressure increased', !!claim && claim.contradiction_pressure > 0);
+ok('global contradiction pressure increased', truth.pressure.contradiction > 0);
+ok('final truth promotion remains false', truth.final_truth_promotion === false && (!claim || claim.final_truth_promotion === false));
+ok('substrate has truth claim activation', has(substrate.activations, a => a.kind === 'truth_claim_candidate' && a.term === 'claim_a'));
+ok('substrate has counterclaim activation', has(substrate.activations, a => a.kind === 'truth_counterclaim' && a.term === 'counter_a'));
+ok('truth organ linked to substrate', has(substrate.organ_links, l => l.organ === 'truth'));
+document.getElementById('out').textContent = rows.join('\n') + '\n\n' + JSON.stringify({ truth, sharedSubstrate: substrate }, null, 2);
+</script></body></html>
