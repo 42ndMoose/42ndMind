@@ -24,6 +24,8 @@ TRUTH_SUBSTRATE_TEST_ADDED
 TRUTH_SUBSTRATE_TEST_PASSED_BY_USER
 BELIEF_MEMORY_SUBSTRATE_CONSOLIDATION_ADDED
 BELIEF_MEMORY_SUBSTRATE_TEST_ADDED
+LANGUAGE_MEMORY_FEEDBACK_ADDED
+LANGUAGE_MEMORY_FEEDBACK_TEST_ADDED
 ```
 
 ## Current goal
@@ -96,19 +98,23 @@ Truth field can register claim/support/counterclaim packets, link them to shared
 
 This still does not prove full natural-language understanding.
 
-## Current verification target
+## Current verification targets
 
 ```text
 Belief-memory consolidation through shared substrate.
+Language-memory feedback through shared substrate.
 ```
 
 Files:
 
 ```text
 src/belief-memory-field.js
+src/language-field.js
+src/shared-substrate.js
 src/kernel.js
 docs/ARCHITECTURE.md
 tests/belief-memory-substrate-test.html
+tests/language-memory-feedback-test.html
 ```
 
 Purpose:
@@ -116,19 +122,18 @@ Purpose:
 ```text
 Store claim/evidence/counterclaim context as belief-memory context without letting memory become truth.
 Link belief-memory items to truth claim IDs, source IDs, shared substrate activation IDs, and current pressure state.
-Run truth before belief-memory consolidation so memory stores current pressure context instead of stale context.
+Let language reactivate known semantic terms with memory context pressure when past belief-memory context exists.
+Memory feedback is not truth, not final meaning, and not a command-response recall path.
 ```
 
-Current belief-memory substrate test:
+Current tests:
 
 ```text
 tests/belief-memory-substrate-test.html
-```
+Expected: 16/16 passed
 
-Expected result:
-
-```text
-16/16 passed
+tests/language-memory-feedback-test.html
+Expected: 12/12 passed
 ```
 
 Boundary:
