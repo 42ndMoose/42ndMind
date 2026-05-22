@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Cross-Organ Semantic Circulation Test</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; background:#101217; color:#eef2ff; }
+    h1, h2 { font-family: system-ui, sans-serif; }
+    pre { background:#0b0d12; border:1px solid #2a3040; border-radius:10px; padding:12px; white-space:pre-wrap; overflow:auto; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; }
+  </style>
+</head>
+<body>
+<h1>42ndMind Cross-Organ Semantic Circulation Test</h1>
+<p>Fails unless one semantic event circulates through the owned brain state, language, belief-memory, truth, neural pressure, and communication motor.</p>
+<h2 id="summary">Running...</h2>
+<pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/maturity-core.js"></script>
+<script src="../src/semantic-basis-core.js"></script>
+<script src="../src/language-field.js"></script>
+<script src="../src/neural-field.js"></script>
+<script src="../src/belief-memory-field.js"></script>
+<script src="../src/truth-field.js"></script>
+<script src="../src/communication-motor.js"></script>
+<script src="../src/autoplasticity.js"></script>
+<script src="../src/kernel.js"></script>
+<script>
+const results = [];
+function check(name, condition, details) { results.push({ name, passed: !!condition, details }); if (!condition) throw new Error(name); }
+function has(arr, fn) { return Array.isArray(arr) && arr.some(fn); }
+let snapshot = null;
+try {
+  const kernel = FortySecondMindKernel.createKernel();
+  const event = kernel.ingest('Admit a meaning and reject isolated noise without making another mind.', {
+    source: 'cross-organ-semantic-circulation-test',
+    meaning_proposals: [
+      {
+        term: 'discernment',
+        dimensions: [
+          ['integrated_judgment', 0.28],
+          ['self_correction', 0.22],
+          ['reality_contact', 0.18],
+          ['information_grasp', 0.14],
+          ['false_certainty_resistance', 0.18]
+        ]
+      },
+      {
+        term: 'private_island',
+        dimensions: [
+          ['private_alpha_label', 0.25],
+          ['private_beta_label', 0.25],
+          ['private_gamma_label', 0.25],
+          ['private_delta_label', 0.25]
+        ]
+      }
+    ]
+  });
+  snapshot = kernel.snapshot();
+
+  check('semantic focus exists in owned state', !!snapshot.semanticFocus, snapshot.semanticFocus);
+  check('semantic basis admitted discernment', snapshot.semanticFocus.admitted_terms.includes('discernment'), snapshot.semanticFocus);
+  check('semantic basis rejected private_island', snapshot.semanticFocus.rejected_terms.includes('private_island'), snapshot.semanticFocus);
+
+  check('language field linked admitted term', !!snapshot.language.term_fields.discernment && snapshot.language.term_fields.discernment.status === 'linked_from_semantic_basis', snapshot.language.term_fields.discernment);
+  check('language field recorded rejected noise', has(snapshot.language.rejected_semantic_noise, r => r.term === 'private_island'), snapshot.language.rejected_semantic_noise);
+  check('language learning delta came from semantic admission', has(snapshot.language.learning_deltas, d => d.term === 'discernment' && d.reason === 'basis_reusing_meaning_admitted'), snapshot.language.learning_deltas);
+
+  check('belief-memory linked admitted meaning', has(snapshot.beliefMemory.semantic_memory_links, m => m.term === 'discernment'), snapshot.beliefMemory.semantic_memory_links);
+  check('belief-memory stored rejected semantic noise', has(snapshot.beliefMemory.rejected_noise_memory, m => m.term === 'private_island'), snapshot.beliefMemory.rejected_noise_memory);
+
+  check('truth field created semantic requirement', has(snapshot.truth.semantic_requirements, r => r.term === 'discernment'), snapshot.truth.semantic_requirements);
+  check('truth field recorded rejected noise separately', has(snapshot.truth.rejected_noise, r => r.term === 'private_island'), snapshot.truth.rejected_noise);
+  check('truth semantic precision pressure increased', snapshot.truth.pressure.semantic_precision_need > 0, snapshot.truth.pressure);
+
+  check('neural field received semantic pressure', snapshot.neural.activation_trace[0].pressure.language_math > 0.25 && snapshot.neural.activation_trace[0].pressure.belief_memory > 0.02, snapshot.neural.activation_trace[0]);
+  check('communication motor selected semantic growth action', snapshot.communication.selected_action.action === 'report_semantic_growth_state', snapshot.communication.selected_action);
+  check('communication motor output references admitted and rejected terms', snapshot.communication.current_output.text.includes('discernment') && snapshot.communication.current_output.text.includes('private_island'), snapshot.communication.current_output);
+
+} catch (e) {
+  results.push({ name: 'fatal', passed: false, error: e.message });
+}
+const passed = results.filter(r => r.passed).length;
+const ok = passed === results.length;
+document.getElementById('summary').className = ok ? 'ok' : 'bad';
+document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+document.getElementById('out').textContent = JSON.stringify({ packet_type:'42ndMind_cross_organ_semantic_circulation_test_report', results, snapshot }, null, 2);
+</script>
+</body>
+</html>
