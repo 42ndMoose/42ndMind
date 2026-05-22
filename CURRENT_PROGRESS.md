@@ -21,6 +21,7 @@ SHARED_SUBSTRATE_TEST_ADDED
 SHARED_SUBSTRATE_TEST_PASSED_BY_USER
 TRUTH_SUBSTRATE_TRACKING_ADDED
 TRUTH_SUBSTRATE_TEST_ADDED
+TRUTH_SUBSTRATE_TEST_PASSED_BY_USER
 ```
 
 ## Current goal
@@ -68,6 +69,7 @@ tests/semantic-basis-core-test.html
 tests/semantic-growth-proof.html
 tests/language-semantic-receptor-test.html
 tests/shared-substrate-test.html
+tests/truth-substrate-test.html
 ```
 
 User reported:
@@ -77,6 +79,7 @@ semantic-basis-core-test.html passed
 semantic-growth-proof.html passed
 language-semantic-receptor-test.html passed
 shared-substrate-test.html passed 10/10
+truth-substrate-test.html passed 15/15
 ```
 
 Meaning:
@@ -86,39 +89,22 @@ The core can enforce reusable semantic basis logic.
 The owned kernel state can admit basis-reusing meanings, reject fake isolated expansion, log both outcomes, and pass semantic pressure into the neural field.
 Language can act as a two-way receptor for simple definitional English.
 Shared substrate now exists as an explicit unit-total activation layer touched by language, neural, belief-memory, truth, autoplasticity, and communication.
+Truth field can register claim/support/counterclaim packets, link them to shared substrate activations, raise support/counter/contradiction/unresolved pressure, and keep final truth promotion disabled.
 ```
 
 This still does not prove full natural-language understanding.
 
-## Current verification target
+## Next verification target
 
 ```text
-Substrate-backed truth tracking.
-```
-
-Files:
-
-```text
-src/truth-field.js
-tests/truth-substrate-test.html
+Belief-memory consolidation through shared substrate.
 ```
 
 Purpose:
 
 ```text
-Track claims, counterclaims, support, contradiction, source independence, unresolved gaps, and belief pressure through the shared substrate without final truth promotion.
-```
-
-Current truth substrate test:
-
-```text
-tests/truth-substrate-test.html
-```
-
-Expected result:
-
-```text
-15/15 passed
+Store claim/evidence/counterclaim context as belief-memory context without letting memory become truth.
+Link belief-memory items to truth claim IDs, source IDs, shared substrate activation IDs, and current pressure state.
 ```
 
 Boundary:
