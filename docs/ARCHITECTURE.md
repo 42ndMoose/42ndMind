@@ -27,14 +27,16 @@ The shared substrate is the common activation layer. Organs do not keep private 
 3. maturity-core preserves objective peak orientation
 4. language-field proposes or reactivates semantic meaning
 5. semantic-basis admits, rejects, or relates meaning candidates
-6. shared-substrate turns the semantic focus into unit-total activations
+6. shared-substrate turns semantic focus into unit-total activations
 7. language-field links admitted/reactivated meanings
-8. neural-field receives pressure from the shared activation state
-9. belief-memory-field stores source-bound context and provisional belief links
-10. truth-field records requirements, contradiction pressure, and verification pressure
+8. neural-field receives pressure from shared activation state
+9. truth-field records claim/support/counter/contradiction/unresolved pressure
+10. belief-memory-field stores source-bound context and provisional belief links from truth state
 11. autoplasticity observes weak patterns and unit-total failures
 12. communication-motor selects zero or one visible output
 ```
+
+Truth runs before belief-memory consolidation so memory can store the current truth-pressure context. This does not make memory truth. Memory stores context, source traces, claim IDs, substrate activation IDs, and pressure snapshots.
 
 ## Shared substrate rule
 
@@ -49,3 +51,7 @@ Only `communication-motor.js` may create visible speech. Other organs may emit p
 No final truth promotion exists in this kernel version.
 
 Truth pressure, belief pressure, source pressure, evidence description, contradiction, and verification need remain separate.
+
+## Belief-memory rule
+
+Belief-memory stores context and provisional pressure snapshots. It may remember that a claim exists, that evidence supports it, that a counterclaim pressures it, and that unresolved gaps remain. It must not turn any of those memories into final truth.
