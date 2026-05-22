@@ -12,7 +12,8 @@ NO_OLD_LIVE_PAGES_PORTED
 NO_TOY_SPEECH_PORTED
 SEMANTIC_BASIS_CORE_PASSED_BY_USER
 SEMANTIC_BASIS_WIRED_INTO_OWNED_BRAIN_STATE
-SEMANTIC_GROWTH_PROOF_BUILT_FOR_VERIFICATION
+SEMANTIC_GROWTH_PROOF_PASSED_BY_USER
+CROSS_ORGAN_SEMANTIC_CIRCULATION_BUILT_FOR_VERIFICATION
 ```
 
 ## Current goal
@@ -56,43 +57,49 @@ Files:
 ```text
 src/semantic-basis-core.js
 tests/semantic-basis-core-test.html
-```
-
-Purpose:
-
-```text
-Prove the smallest useful semantic primitive:
-meaning fields must reuse a shared basis rather than endlessly inventing isolated local labels.
+tests/semantic-growth-proof.html
 ```
 
 User reported:
 
 ```text
 semantic-basis-core-test.html passed
+semantic-growth-proof.html passed
 ```
 
-This did not prove English understanding. It proved that the clean core can enforce reusable semantic basis logic without speech projection.
+Meaning:
+
+```text
+The clean core can enforce reusable semantic basis logic.
+The owned kernel state can admit basis-reusing meanings, reject fake isolated expansion, log both outcomes, and pass semantic pressure into the neural field.
+```
+
+This still does not prove full natural-language understanding.
 
 ## Current verification target
 
 Files:
 
 ```text
-src/brain-state.js
 src/kernel.js
-tests/semantic-growth-proof.html
+src/language-field.js
+src/belief-memory-field.js
+src/truth-field.js
+src/communication-motor.js
+tests/cross-organ-semantic-circulation-test.html
 ```
 
 Purpose:
 
 ```text
-Show real early growth behavior inside the owned kernel state:
-- semanticBasis exists as part of state
-- kernel ingest can evaluate meaning proposals
-- basis-reusing proposal is admitted
-- disconnected fake expansion is rejected
-- admission/rejection is logged in owned state
-- semantic basis pressure reaches the neural field
+Stop one-way modules.
+Show one semantic event circulating through the shared brain state:
+- semanticBasis admits/rejects meaning growth
+- language field links admitted meaning and records rejected semantic noise
+- belief-memory stores admitted meaning as context and rejected noise as non-belief
+- truth field creates semantic requirements and precision pressure
+- neural field receives semantic pressure
+- communication motor selects a semantic-growth report from unified state
 ```
 
-This is still not full natural-language understanding. It is the next proof that semantic growth can be constrained inside the unified state instead of remaining an isolated test module.
+This is the first proof target for cross-organ semantic circulation. It is still deterministic and early, but it is no longer a detached one-way semantic module.
