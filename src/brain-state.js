@@ -1,10 +1,10 @@
-/* 42ndMind Clean Brain State
- * One owned state. No duplicated consciousness.
+/* 42ndMind Brain State
+ * One owned state.
  */
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.1-clean-reset';
+  const VERSION = '0.1.2-substrate';
 
   function now() { return new Date().toISOString(); }
   function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
@@ -32,12 +32,13 @@
         one_brain: true,
         brain_owns_state: true,
         organs_are_not_separate_minds: true,
-        no_duplicated_consciousness: true,
+        shared_substrate_required: true,
         communication_is_motor_output: true,
         no_final_truth_promotion: true
       },
       events: [],
       maturity: null,
+      sharedSubstrate: null,
       semanticBasis: null,
       neural: null,
       language: null,
