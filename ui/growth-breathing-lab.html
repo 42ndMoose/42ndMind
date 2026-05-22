@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Breathing Growth Lab</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; margin: 24px; max-width: 1120px; line-height: 1.45; }
+    button { padding: 8px 12px; margin: 4px 4px 4px 0; cursor: pointer; }
+    pre { background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .ok { color: #168a38; font-weight: 700; }
+    .bad { color: #b00020; font-weight: 700; }
+    .muted { opacity: .72; }
+    meter { width: 100%; height: 18px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>42ndMind Breathing Growth Lab</h1>
+  <p>This page runs a local repeated growth loop. It adjusts a provisional semantic mapping over time, preserves unit-total, keeps the best state, and exports the best state for human review. It does not write to GitHub.</p>
+
+  <div class="card">
+    <button id="start">Start new run</button>
+    <button id="step">Step once</button>
+    <button id="auto">Start auto-breathing</button>
+    <button id="stop">Stop</button>
+    <button id="exportBest">Export best candidate</button>
+    <button id="downloadJson">Download best JSON</button>
+    <span id="status" class="muted">Idle.</span>
+    <p>Best score</p>
+    <meter id="scoreMeter" min="0" max="1" value="0"></meter>
+    <pre id="scoreText">No run yet.</pre>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Current breathing state</h2>
+      <pre id="currentState">No run yet.</pre>
+    </div>
+    <div class="card">
+      <h2>Best provisional state</h2>
+      <pre id="bestState">No run yet.</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Exported artifact</h2>
+    <pre id="artifact">No artifact yet.</pre>
+  </div>
+
+  <div class="card">
+    <h2>Recent growth steps</h2>
+    <pre id="steps">No steps yet.</pre>
+  </div>
+
+  <script src="../src/brain-state.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/maturity-core.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/shared-substrate.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/semantic-basis-core.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/language-field.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/neural-field.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/truth-field.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/belief-memory-field.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/communication-motor.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/autoplasticity.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/growth-export.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/growth-breather.js?v=growth-breathing-lab-20260522-1"></script>
+  <script src="../src/kernel.js?v=growth-breathing-lab-20260522-1"></script>
+  <script>
+    const kernel = FortySecondMindKernel.createKernel();
+    FortySecondMindGrowthExport.ensure(kernel.state);
+    FortySecondMindGrowthBreather.ensure(kernel.state);
+
+    let activeRun = null;
+    let timer = null;
+    let latestArtifact = null;
+
+    const statusEl = document.getElementById('status');
+    const scoreMeter = document.getElementById('scoreMeter');
+    const scoreText = document.getElementById('scoreText');
+    const currentState = document.getElementById('currentState');
+    const bestState = document.getElementById('bestState');
+    const artifact = document.getElementById('artifact');
+    const steps = document.getElementById('steps');
+
+    function setStatus(text, ok) {
+      statusEl.className = ok === true ? 'ok' : ok === false ? 'bad' : 'muted';
+      statusEl.textContent = text;
+    }
+
+    function refresh() {
+      const s = kernel.snapshot();
+      const run = activeRun ? s.growthBreather.runs.find(r => r.id === activeRun.id) : null;
+      if (!run) {
+        scoreMeter.value = 0;
+        scoreText.textContent = 'No run yet.';
+        currentState.textContent = 'No run yet.';
+        bestState.textContent = 'No run yet.';
+      } else {
+        scoreMeter.value = run.best_score;
+        scoreText.textContent = 'Run: ' + run.id + '\nIteration: ' + run.iteration + '\nBest score: ' + run.best_score;
+        currentState.textContent = JSON.stringify(run.current_state, null, 2);
+        bestState.textContent = JSON.stringify(run.best_state, null, 2);
+      }
+      steps.textContent = JSON.stringify((s.growthBreather && s.growthBreather.steps || []).slice(0, 12), null, 2);
+      if (latestArtifact) artifact.textContent = latestArtifact.file_content;
+    }
+
+    function startRun() {
+      stopAuto();
+      activeRun = FortySecondMindGrowthBreather.startRun(kernel.state, {
+        term: 'discernment',
+        learning_rate: 0.18,
+        breath_amplitude: 0.012,
+        source_event: 'growth_breathing_lab'
+      });
+      latestArtifact = null;
+      artifact.textContent = 'No artifact yet.';
+      setStatus('Started new breathing run.', true);
+      refresh();
+    }
+
+    function stepOnce() {
+      if (!activeRun) startRun();
+      const step = FortySecondMindGrowthBreather.stepRun(kernel.state, activeRun.id);
+      setStatus(step && step.improved ? 'Step improved best state.' : 'Step ran. Best state unchanged.', true);
+      refresh();
+    }
+
+    function startAuto() {
+      if (!activeRun) startRun();
+      stopAuto();
+      timer = setInterval(stepOnce, 350);
+      setStatus('Auto-breathing running.', true);
+    }
+
+    function stopAuto() {
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
+    function exportBest() {
+      if (!activeRun) startRun();
+      const exported = FortySecondMindGrowthBreather.exportBest(kernel.state, activeRun.id);
+      latestArtifact = exported && exported.artifact;
+      setStatus(latestArtifact && latestArtifact.commit_ready ? 'Best state exported for human review.' : 'Export blocked.', !!(latestArtifact && latestArtifact.commit_ready));
+      refresh();
+    }
+
+    function download(filename, text) {
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('start').onclick = startRun;
+    document.getElementById('step').onclick = stepOnce;
+    document.getElementById('auto').onclick = startAuto;
+    document.getElementById('stop').onclick = () => { stopAuto(); setStatus('Stopped.', null); };
+    document.getElementById('exportBest').onclick = exportBest;
+    document.getElementById('downloadJson').onclick = () => {
+      if (!latestArtifact) exportBest();
+      if (latestArtifact) download('discernment-breathing-growth-v0-1.json', latestArtifact.file_content);
+    };
+
+    refresh();
+  </script>
+</body>
+</html>
