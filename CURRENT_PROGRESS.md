@@ -15,6 +15,8 @@ SEMANTIC_BASIS_WIRED_INTO_OWNED_BRAIN_STATE
 SEMANTIC_GROWTH_PROOF_PASSED_BY_USER
 CROSS_ORGAN_SEMANTIC_CIRCULATION_BUILT_FOR_VERIFICATION
 LANGUAGE_SEMANTIC_RECEPTOR_BUILT_FOR_VERIFICATION
+SHARED_SUBSTRATE_ADDED_TO_MAIN
+SHARED_SUBSTRATE_TEST_ADDED
 ```
 
 ## Current goal
@@ -25,7 +27,8 @@ Build the migrated kernel from first principles:
 input
   -> owned brain state
   -> maturity orientation
-  -> shared semantic basis
+  -> shared substrate activation layer
+  -> semantic basis
   -> language field as input/output meaning interface
   -> neural field
   -> belief/memory field
@@ -66,6 +69,7 @@ User reported:
 ```text
 semantic-basis-core-test.html passed
 semantic-growth-proof.html passed
+language-semantic-receptor-test.html passed
 ```
 
 Meaning:
@@ -73,44 +77,41 @@ Meaning:
 ```text
 The core can enforce reusable semantic basis logic.
 The owned kernel state can admit basis-reusing meanings, reject fake isolated expansion, log both outcomes, and pass semantic pressure into the neural field.
+Language can act as a two-way receptor for simple definitional English.
 ```
 
 This still does not prove full natural-language understanding.
 
-## Current verification targets
+## Current verification target
 
 Files:
 
 ```text
+src/shared-substrate.js
 src/kernel.js
-src/language-field.js
-src/belief-memory-field.js
-src/truth-field.js
-src/communication-motor.js
-tests/cross-organ-semantic-circulation-test.html
-tests/language-semantic-receptor-test.html
+ui/live-kernel.html
+tests/kernel-smoke-test.html
+tests/shared-substrate-test.html
 ```
 
 Purpose:
 
 ```text
-Stop one-way modules.
-Show one semantic event circulating through the shared brain state.
-Show language acting as a two-way receptor:
-- raw English can generate a semantic-basis proposal
-- admitted meaning updates the shared basis
-- later English use of the learned word reactivates the same shared dimensions
-- language, truth, belief-memory, neural pressure, and communication all use the same shared semantic focus
+Make shared substrate explicit instead of implicit.
+Show semantic events producing unit-total substrate activations.
+Show language, neural, belief-memory, truth, autoplasticity, and communication recording against the same activation set.
+Keep communication as motor output only.
+Do not add recall-command behavior, objective-truth shortcuts, or synonym-list demo behavior from the agent patch.
 ```
 
-Current language receptor test:
+Current shared substrate test:
 
 ```text
-tests/language-semantic-receptor-test.html
+tests/shared-substrate-test.html
 ```
 
 Expected result:
 
 ```text
-16/16 passed
+10/10 passed
 ```
