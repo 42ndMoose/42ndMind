@@ -4,7 +4,7 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.0-clean-reset';
+  const VERSION = '0.1.1-clean-reset';
 
   function now() { return new Date().toISOString(); }
   function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
@@ -38,6 +38,7 @@
       },
       events: [],
       maturity: null,
+      semanticBasis: null,
       neural: null,
       language: null,
       beliefMemory: null,
