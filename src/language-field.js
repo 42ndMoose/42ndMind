@@ -1,5 +1,5 @@
 /* 42ndMind Language Field
- * Internal organ only. It does not speak.
+ * Internal word/sentence interface to the shared semantic basis. It does not speak.
  */
 (function (global) {
   'use strict';
@@ -17,17 +17,96 @@
     communication: [['state_expression', 0.24], ['listener_bridge', 0.20], ['truth_discipline', 0.20], ['question_projection', 0.16], ['meaning_precision', 0.20]]
   };
 
+  const RECEPTOR_PATTERNS = [
+    { dimension: 'integrated_judgment', weight: 0.24, patterns: [/careful judgment/, /judging carefully/, /sound judgment/, /weigh(?:s|ing)?[^.]{0,24}together/, /discern(?:s|ing)?[^.]{0,24}difference/] },
+    { dimension: 'self_correction', weight: 0.22, patterns: [/open to correction/, /can be corrected/, /self[- ]?correct/, /willing to revise/, /revis(?:e|ion)/] },
+    { dimension: 'reality_contact', weight: 0.22, patterns: [/grounded in reality/, /reality[- ]?contact/, /real[- ]world/, /contact with reality/, /grounded in what is real/] },
+    { dimension: 'false_certainty_resistance', weight: 0.18, patterns: [/not believing every claim/, /avoid(?:s|ing)? false certainty/, /resist(?:s|ing)? false certainty/, /not rush(?:ing)? to believe/, /does not close the question/] },
+    { dimension: 'information_grasp', weight: 0.14, patterns: [/evidence/, /facts?/, /information/, /what is known/, /technical grasp/] },
+    { dimension: 'person_concern', weight: 0.14, patterns: [/care for people/, /human concern/, /concern for persons/, /empathy/, /compassion/] },
+    { dimension: 'constraint_contact', weight: 0.14, patterns: [/constraint/, /practical/, /what can actually be done/, /real[- ]world limit/, /functional demand/] },
+    { dimension: 'contextual_flexibility', weight: 0.12, patterns: [/context/, /depends on the situation/, /case by case/, /flexib(?:le|ility)/] }
+  ];
+
   function makeField(term, dims) {
     const dimensions = normalize((dims || [['underdefined_reference', 1]]).map(d => ({ dimension: d[0], weight: d[1] })));
     return { term: id(term), unit_total: 1, dimensions, l1_total: global.FortySecondMindBrainState.l1Total(dimensions), status: 'candidate_meaning_field', updated_at: now() };
   }
 
   function ensure(state) {
-    if (!state.language) state.language = { term_fields: {}, semantic_relations: [], learning_deltas: [], semantic_basis_links: [], rejected_semantic_noise: [], unit_total_checks: [], updated_at: now() };
+    if (!state.language) state.language = {
+      term_fields: {},
+      semantic_relations: [],
+      learning_deltas: [],
+      semantic_basis_links: [],
+      rejected_semantic_noise: [],
+      generated_semantic_proposals: [],
+      active_semantic_terms: [],
+      receptor_hits: [],
+      unit_total_checks: [],
+      updated_at: now()
+    };
     Object.keys(SEEDS).forEach(term => { if (!state.language.term_fields[term]) state.language.term_fields[term] = makeField(term, SEEDS[term]); });
     state.language.unit_total_checks = Object.values(state.language.term_fields).map(f => ({ term: f.term, ok: Math.abs(f.l1_total - 1) < 0.00001, l1_total: f.l1_total }));
     state.language.updated_at = now();
     return state.language;
+  }
+
+  function extractDefinitionTerm(raw) {
+    const value = String(raw || '').trim();
+    const match = value.match(/^\s*([A-Za-z][A-Za-z\s_-]{1,42}?)\s+(means|mean|is|refers to|involves|requires)\b/i);
+    if (!match) return null;
+    const candidate = match[1].trim().replace(/^(a|an|the)\s+/i, '');
+    const words = candidate.split(/\s+/).filter(Boolean);
+    return words.length <= 4 ? id(candidate) : null;
+  }
+
+  function inferDimensionsFromText(raw) {
+    const value = String(raw || '').toLowerCase();
+    const hits = [];
+    RECEPTOR_PATTERNS.forEach(rule => {
+      const matched = rule.patterns.some(pattern => pattern.test(value));
+      if (matched) hits.push({ dimension: rule.dimension, weight: rule.weight, source: 'language_receptor_pattern' });
+    });
+    if (!hits.length) return { dimensions: [], hits: [] };
+    const merged = {};
+    hits.forEach(hit => { merged[hit.dimension] = (merged[hit.dimension] || 0) + hit.weight; });
+    const dimensions = normalize(Object.keys(merged).map(dimension => [dimension, merged[dimension]]));
+    return { dimensions, hits };
+  }
+
+  function knownTermActivations(state, raw) {
+    const value = String(raw || '').toLowerCase();
+    const meanings = state.semanticBasis && state.semanticBasis.meanings || {};
+    return Object.keys(meanings).filter(term => new RegExp('\\b' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i').test(value)).map(term => ({
+      term,
+      dimensions: arr(meanings[term].dimensions),
+      source: 'known_semantic_term_reactivated'
+    }));
+  }
+
+  function proposeFromText(state, event) {
+    const field = ensure(state);
+    const raw = String(event && event.text || '');
+    const term = extractDefinitionTerm(raw);
+    const inference = inferDimensionsFromText(raw);
+    const proposals = [];
+    if (term && inference.dimensions.length >= 2) {
+      proposals.push({
+        term,
+        dimensions: inference.dimensions,
+        meta: { source: 'language_semantic_receptor', source_event: event && event.id, receptor_hits: inference.hits }
+      });
+      field.generated_semantic_proposals.unshift({ term, dimensions: inference.dimensions, receptor_hits: inference.hits, source_event: event && event.id, at: now() });
+    }
+    const activations = knownTermActivations(state, raw);
+    activations.forEach(a => field.active_semantic_terms.unshift({ term: a.term, dimensions: a.dimensions.map(d => d.dimension), source_event: event && event.id, at: now() }));
+    inference.hits.forEach(hit => field.receptor_hits.unshift({ dimension: hit.dimension, source_event: event && event.id, at: now() }));
+    field.generated_semantic_proposals = arr(field.generated_semantic_proposals).slice(0, 80);
+    field.active_semantic_terms = arr(field.active_semantic_terms).slice(0, 80);
+    field.receptor_hits = arr(field.receptor_hits).slice(0, 80);
+    field.updated_at = now();
+    return { proposals, activations, receptor_hits: inference.hits, definition_term: term };
   }
 
   function ingest(state, event, semanticBasisResult) {
@@ -50,6 +129,9 @@
       field.semantic_basis_links.unshift({ term: meaning.term, dimensions: arr(meaning.dimensions).map(d => d.dimension), source_event: focus.source_event, at: now() });
       field.learning_deltas.unshift({ term: meaning.term, delta: 0.05, reason: 'basis_reusing_meaning_admitted', at: now() });
     });
+    arr(focus.activated).forEach(activation => {
+      field.learning_deltas.unshift({ term: activation.term, delta: 0.02, reason: 'known_term_reactivated_shared_basis', at: now() });
+    });
     arr(focus.rejected).forEach(rejection => {
       field.rejected_semantic_noise.unshift({ term: rejection.term, reason: rejection.reason, source_event: focus.source_event, at: now() });
     });
@@ -62,5 +144,5 @@
     return field;
   }
 
-  global.FortySecondMindLanguageField = Object.freeze({ SEEDS, makeField, ensure, ingest });
+  global.FortySecondMindLanguageField = Object.freeze({ SEEDS, RECEPTOR_PATTERNS, makeField, ensure, inferDimensionsFromText, extractDefinitionTerm, knownTermActivations, proposeFromText, ingest });
 })(typeof window !== 'undefined' ? window : globalThis);
