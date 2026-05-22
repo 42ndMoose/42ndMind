@@ -19,6 +19,8 @@ LANGUAGE_SEMANTIC_RECEPTOR_PASSED_BY_USER
 SHARED_SUBSTRATE_ADDED_TO_MAIN
 SHARED_SUBSTRATE_TEST_ADDED
 SHARED_SUBSTRATE_TEST_PASSED_BY_USER
+TRUTH_SUBSTRATE_TRACKING_ADDED
+TRUTH_SUBSTRATE_TEST_ADDED
 ```
 
 ## Current goal
@@ -88,16 +90,35 @@ Shared substrate now exists as an explicit unit-total activation layer touched b
 
 This still does not prove full natural-language understanding.
 
-## Next verification target
+## Current verification target
 
 ```text
 Substrate-backed truth tracking.
+```
+
+Files:
+
+```text
+src/truth-field.js
+tests/truth-substrate-test.html
 ```
 
 Purpose:
 
 ```text
 Track claims, counterclaims, support, contradiction, source independence, unresolved gaps, and belief pressure through the shared substrate without final truth promotion.
+```
+
+Current truth substrate test:
+
+```text
+tests/truth-substrate-test.html
+```
+
+Expected result:
+
+```text
+15/15 passed
 ```
 
 Boundary:
