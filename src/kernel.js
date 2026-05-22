@@ -35,10 +35,10 @@
         if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.recordOrganLink(state, 'language', event, 'read_write_semantic_focus');
         global.FortySecondMindNeuralField.activate(state, pressureFromEvent(event, semanticBasisResult, languageReceptorResult));
         if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.recordOrganLink(state, 'neural', event, 'received_shared_activation_pressure');
-        global.FortySecondMindBeliefMemoryField.ingest(state, event, semanticBasisResult);
-        if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.recordOrganLink(state, 'belief_memory', event, 'contextualized_shared_activation');
         global.FortySecondMindTruthField.ingest(state, event, semanticBasisResult);
         if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.recordOrganLink(state, 'truth', event, 'tracked_shared_activation_requirements');
+        global.FortySecondMindBeliefMemoryField.ingest(state, event, semanticBasisResult);
+        if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.recordOrganLink(state, 'belief_memory', event, 'contextualized_shared_activation');
         global.FortySecondMindAutoplasticity.observe(state);
         if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.recordOrganLink(state, 'autoplasticity', event, 'observed_shared_activation_health');
         const output = global.FortySecondMindCommunicationMotor.select(state);
