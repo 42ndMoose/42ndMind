@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Growth export test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js?v=growth-export-20260522-1"></script>
+<script src="../src/maturity-core.js?v=growth-export-20260522-1"></script>
+<script src="../src/shared-substrate.js?v=growth-export-20260522-1"></script>
+<script src="../src/semantic-basis-core.js?v=growth-export-20260522-1"></script>
+<script src="../src/language-field.js?v=growth-export-20260522-1"></script>
+<script src="../src/neural-field.js?v=growth-export-20260522-1"></script>
+<script src="../src/truth-field.js?v=growth-export-20260522-1"></script>
+<script src="../src/belief-memory-field.js?v=growth-export-20260522-1"></script>
+<script src="../src/communication-motor.js?v=growth-export-20260522-1"></script>
+<script src="../src/autoplasticity.js?v=growth-export-20260522-1"></script>
+<script src="../src/growth-export.js?v=growth-export-20260522-1"></script>
+<script src="../src/kernel.js?v=growth-export-20260522-1"></script>
+<script>
+const TEST_BUILD = 'growth-export-test-v0-1';
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn){ return Array.isArray(list) && list.some(fn); }
+const kernel = FortySecondMindKernel.createKernel();
+FortySecondMindGrowthExport.ensure(kernel.state);
+const before = {
+  term: 'discernment',
+  dimensions: [
+    { dimension:'integrated_judgment', weight:0.4 },
+    { dimension:'self_correction', weight:0.3 },
+    { dimension:'reality_contact', weight:0.3 }
+  ]
+};
+const after = {
+  term: 'discernment',
+  dimensions: [
+    { dimension:'integrated_judgment', weight:0.32 },
+    { dimension:'self_correction', weight:0.24 },
+    { dimension:'reality_contact', weight:0.22 },
+    { dimension:'evidence_requirement', weight:0.12 },
+    { dimension:'truth_gap_visibility', weight:0.10 }
+  ]
+};
+const candidate = FortySecondMindGrowthExport.createCandidate(kernel.state, {
+  kind: 'semantic_mapping_growth',
+  target_path: 'data/growth-candidates/discernment-growth-v0-1.json',
+  summary: 'Provisional discernment mapping growth from repeated truth-pressure context.',
+  before_state: before,
+  after_state: after,
+  expected_effect: 'Discernment carries more evidence and unresolved-gap pressure without becoming final truth.',
+  source_event: 'growth_export_test'
+});
+const testRecord = FortySecondMindGrowthExport.recordTestResult(kernel.state, candidate.id, {
+  test_name: 'discernment-growth-invariant-check',
+  checks: [
+    { name:'after state has unit total', passed: Math.abs(after.dimensions.reduce((s,d)=>s+Math.abs(d.weight),0)-1) < 0.00001 },
+    { name:'does not claim final truth', passed: true },
+    { name:'human review remains required', passed: true }
+  ]
+});
+const artifact = FortySecondMindGrowthExport.createCommitArtifact(kernel.state, candidate.id);
+const exported = FortySecondMindGrowthExport.exportState(kernel.state);
+const saved = FortySecondMindGrowthExport.saveLocal(kernel.state, '42ndMind_growth_export_test_state');
+const s = kernel.snapshot();
+const growth = s.growthExport;
+const substrate = s.sharedSubstrate;
+ok('growth export state exists', !!growth);
+ok('candidate created', !!candidate && candidate.id === 'growth_candidate_1');
+ok('candidate has before checksum', !!candidate.before_checksum);
+ok('candidate has after checksum', !!candidate.after_checksum);
+ok('candidate before and after differ', candidate.before_checksum !== candidate.after_checksum);
+ok('candidate linked to shared substrate', !!candidate.shared_substrate_activation_id);
+ok('substrate has growth candidate activation', has(substrate.activations, a => a.kind === 'growth_export_candidate'));
+ok('test record passed', !!testRecord && testRecord.status === 'passed');
+ok('candidate is commit ready after passed test', growth.candidates[0].commit_ready === true);
+ok('promotion requires human review', growth.candidates[0].promotion_status === 'exportable_for_human_review' && artifact.promotion_status === 'human_review_required');
+ok('artifact created', !!artifact && artifact.file_content.includes('42ndMind_growth_candidate_export_v0_1'));
+ok('artifact patch text produced', !!artifact.patch_text && artifact.patch_text.includes('data/growth-candidates/discernment-growth-v0-1.json'));
+ok('export state produced', typeof exported === 'string' && exported.includes('42ndMind_growth_export_state_v0_1'));
+ok('local save attempted successfully', saved === true);
+ok('no GitHub write authority claimed', artifact.instructions.includes('does not modify GitHub'));
+ok('no final truth promotion implied', !artifact.file_content.includes('final_truth_promotion": true'));
+document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ growthExport: growth, sharedSubstrate: substrate, artifact }, null, 2);
+</script></body></html>
