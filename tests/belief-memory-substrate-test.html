@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Belief-memory substrate test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/maturity-core.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/shared-substrate.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/semantic-basis-core.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/language-field.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/neural-field.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/truth-field.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/belief-memory-field.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/communication-motor.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/autoplasticity.js?v=belief-memory-substrate-20260522-1"></script>
+<script src="../src/kernel.js?v=belief-memory-substrate-20260522-1"></script>
+<script>
+const TEST_BUILD = 'belief-memory-substrate-test-v0-1';
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn){ return Array.isArray(list) && list.some(fn); }
+const kernel = FortySecondMindKernel.createKernel();
+kernel.ingest('Register claim A.', { source: 'source_A', truth_packets: [
+  { kind:'claim', claim_id:'claim_a', text:'Claim A says the policy increases verification pressure.', source_id:'source_A' }
+]});
+kernel.ingest('Register support for claim A.', { source: 'source_B', truth_packets: [
+  { kind:'evidence', target_claim_id:'claim_a', stance:'support', text:'Independent support for claim A.', source_id:'source_B', weight:0.4 }
+]});
+kernel.ingest('Register counterclaim against claim A.', { source: 'source_C', truth_packets: [
+  { kind:'counterclaim', target_claim_id:'claim_a', claim_id:'counter_a', text:'Counterclaim says claim A is incomplete.', source_id:'source_C', weight:0.55 }
+]});
+const s = kernel.snapshot();
+const memory = s.beliefMemory;
+const truth = s.truth;
+const substrate = s.sharedSubstrate;
+const claimContext = memory.truth_context_items.find(item => item.kind === 'truth_claim_context' && item.claim_id === 'claim_a');
+const evidenceContext = memory.truth_context_items.find(item => item.kind === 'truth_evidence_context' && item.target_claim_id === 'claim_a');
+const counterContext = memory.truth_context_items.find(item => item.kind === 'truth_counterclaim_context' && item.target_claim_id === 'claim_a');
+const pressureSnapshot = memory.truth_pressure_snapshots.find(item => item.claim_id === 'claim_a' && item.counterclaim_id === 'counter_a');
+ok('belief-memory exists', !!memory);
+ok('truth claim context stored', !!claimContext);
+ok('truth evidence context stored', !!evidenceContext);
+ok('truth counterclaim context stored', !!counterContext);
+ok('claim context linked to substrate', !!claimContext && !!claimContext.shared_substrate_activation_id);
+ok('evidence context linked to substrate', !!evidenceContext && !!evidenceContext.shared_substrate_activation_id);
+ok('counterclaim context linked to substrate', !!counterContext && !!counterContext.shared_substrate_activation_id);
+ok('claim context preserves source id', !!claimContext && claimContext.source_id === 'source_A');
+ok('evidence context preserves source id', !!evidenceContext && evidenceContext.source_id === 'source_B');
+ok('counterclaim context preserves source id', !!counterContext && counterContext.source_id === 'source_C');
+ok('counterclaim pressure snapshot stored', !!pressureSnapshot && pressureSnapshot.pressure_snapshot.contradiction_pressure > 0);
+ok('open unresolved truth requirement stored', has(memory.open_truth_requirements, item => item.target_claim_id === 'claim_a' && item.truth_status === 'unresolved_not_truth'));
+ok('provisional belief is context only', has(memory.provisional_beliefs, item => item.kind === 'truth_pressure_context_available' && item.claim_id === 'claim_a' && item.belief_status === 'not_belief_commitment'));
+ok('memory does not promote truth', memory.truth_context_items.every(item => !String(item.truth_status || '').includes('final')));
+ok('truth final promotion remains false', truth.final_truth_promotion === false && truth.claim_records.every(claim => claim.final_truth_promotion === false));
+ok('belief-memory organ linked to substrate', has(substrate.organ_links, link => link.organ === 'belief_memory' && link.activation_ids.length > 0));
+document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ beliefMemory: memory, truth, sharedSubstrate: substrate }, null, 2);
+</script></body></html>
