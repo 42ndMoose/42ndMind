@@ -32,6 +32,9 @@ GROWTH_EXPORT_TEST_ADDED
 GROWTH_BREATHER_ADDED
 GROWTH_BREATHER_TEST_ADDED
 GROWTH_BREATHING_LAB_ADDED
+GROWTH_TARGET_DERIVER_ADDED
+GROWTH_DERIVED_TARGET_TEST_ADDED
+GROWTH_BREATHING_LAB_DERIVED_TARGET_MODE_ADDED
 ```
 
 ## Current goal
@@ -49,6 +52,7 @@ input
   -> truth field
   -> belief/memory field
   -> autoplasticity pressure
+  -> growth target derivation
   -> growth export
   -> communication motor
 ```
@@ -115,6 +119,7 @@ This still does not prove full natural-language understanding.
 
 ```text
 Breathing growth loop for repeated local value search.
+Pressure-derived growth target from internal state.
 Autoplasticity over weak internal mappings.
 ```
 
@@ -123,8 +128,10 @@ Files:
 ```text
 src/growth-breather.js
 src/growth-export.js
+src/growth-target-deriver.js
 ui/growth-breathing-lab.html
 tests/growth-breather-test.html
+tests/growth-derived-target-test.html
 ```
 
 Purpose:
@@ -132,27 +139,33 @@ Purpose:
 ```text
 Run repeated provisional growth steps over a unit-total semantic mapping.
 Keep the best state instead of creating duplicate exports every button press.
+Derive the breather target from internal truth, belief-memory, and language-context pressure instead of a fixed hand-written target.
 Export only the best candidate for human review.
 Do not auto-commit.
 Do not execute arbitrary code.
 ```
 
-Current breathing growth test:
+Current tests:
 
 ```text
 tests/growth-breather-test.html
-```
+Expected: 14/14 passed
 
-Expected result:
-
-```text
-14/14 passed
+tests/growth-derived-target-test.html
+Expected: 19/19 passed
 ```
 
 Current breathing growth lab:
 
 ```text
 ui/growth-breathing-lab.html
+```
+
+Use:
+
+```text
+Click "Seed context + derive target run" for pressure-derived target mode.
+Click "Start fixed-target run" only for the older fixed-target comparison mode.
 ```
 
 Boundary:
@@ -163,4 +176,5 @@ Do not add recall-command behavior.
 Do not add synonym-list demo behavior.
 Do not let communication motor directly decide truth or memory.
 Do not let static pages directly write to GitHub.
+Do not treat pressure-derived targets as final truth or doctrine.
 ```
