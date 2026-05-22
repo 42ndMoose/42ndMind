@@ -23,20 +23,42 @@
   }
 
   function ensure(state) {
-    if (!state.language) state.language = { term_fields: {}, semantic_relations: [], learning_deltas: [], unit_total_checks: [], updated_at: now() };
+    if (!state.language) state.language = { term_fields: {}, semantic_relations: [], learning_deltas: [], semantic_basis_links: [], rejected_semantic_noise: [], unit_total_checks: [], updated_at: now() };
     Object.keys(SEEDS).forEach(term => { if (!state.language.term_fields[term]) state.language.term_fields[term] = makeField(term, SEEDS[term]); });
     state.language.unit_total_checks = Object.values(state.language.term_fields).map(f => ({ term: f.term, ok: Math.abs(f.l1_total - 1) < 0.00001, l1_total: f.l1_total }));
     state.language.updated_at = now();
     return state.language;
   }
 
-  function ingest(state, event) {
+  function ingest(state, event, semanticBasisResult) {
     const field = ensure(state);
     const text = String(event && event.text || '').toLowerCase();
     Object.keys(SEEDS).forEach(term => {
       if (text.includes(term)) field.learning_deltas.unshift({ term, delta: 0.01, reason: 'pressure_bearing_term_seen', at: now() });
     });
+
+    const focus = state.semanticFocus || {};
+    arr(focus.admitted).forEach(meaning => {
+      field.term_fields[meaning.term] = {
+        term: meaning.term,
+        unit_total: 1,
+        dimensions: arr(meaning.dimensions),
+        l1_total: meaning.l1_total,
+        status: 'linked_from_semantic_basis',
+        updated_at: now()
+      };
+      field.semantic_basis_links.unshift({ term: meaning.term, dimensions: arr(meaning.dimensions).map(d => d.dimension), source_event: focus.source_event, at: now() });
+      field.learning_deltas.unshift({ term: meaning.term, delta: 0.05, reason: 'basis_reusing_meaning_admitted', at: now() });
+    });
+    arr(focus.rejected).forEach(rejection => {
+      field.rejected_semantic_noise.unshift({ term: rejection.term, reason: rejection.reason, source_event: focus.source_event, at: now() });
+    });
+
+    field.semantic_basis_links = arr(field.semantic_basis_links).slice(0, 80);
+    field.rejected_semantic_noise = arr(field.rejected_semantic_noise).slice(0, 80);
     field.learning_deltas = arr(field.learning_deltas).slice(0, 80);
+    field.unit_total_checks = Object.values(field.term_fields).map(f => ({ term: f.term, ok: Math.abs(f.l1_total - 1) < 0.00001, l1_total: f.l1_total }));
+    field.updated_at = now();
     return field;
   }
 
