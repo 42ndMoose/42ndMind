@@ -49,7 +49,7 @@
       proposeMeaning(term, dimensions, meta) {
         ensureSemanticBasis(state);
         const result = global.FortySecondMindSemanticBasisCore.admitCandidate(state.semanticBasis, term, dimensions, meta || { source: 'kernel_proposeMeaning' });
-        circulateSemanticFocus(state, { id: 'manual_proposal', text: term, meta: meta || {}, at: now() }, { available: true, action: 'manual_meaning_proposal', proposal_count: 1, admitted_count: result.admitted ? 1 : 0, rejected_count: result.admitted ? 0 : 1, results: [result] }, { proposals: [], activations: [], receptor_hits: [] });
+        circulateSemanticFocus(state, { id: 'manual_proposal', text: term, meta: meta || {}, at: now() }, { available: true, action: 'manual_meaning_proposal', proposal_count: 1, admitted_count: result.admitted ? 1 : 0, rejected_count: result.admitted ? 0 : 1, results: [result] }, { proposals: [], activations: [], receptor_hits: [], memory_feedback: [] });
         if (hasSharedSubstrate()) global.FortySecondMindSharedSubstrate.applySemanticFocus(state, { id: 'manual_proposal' });
         state.updated_at = now();
         return result;
@@ -92,6 +92,18 @@
     const admitted = arr(result.results).filter(r => r.admitted).map(r => compactMeaning(r.meaning));
     const rejected = arr(result.results).filter(r => !r.admitted).map(r => ({ term: r.evaluation && r.evaluation.term, reason: r.evaluation && r.evaluation.reason, evaluation: r.evaluation }));
     const activated = arr(languageReceptorResult && languageReceptorResult.activations).map(a => ({ term: a.term, dimensions: a.dimensions, source: a.source }));
+    const memoryFeedback = arr(languageReceptorResult && languageReceptorResult.memory_feedback).map(f => ({
+      term: f.term,
+      dimensions: f.dimensions,
+      context_count: f.context_count,
+      semantic_link_count: f.semantic_link_count,
+      truth_context_count: f.truth_context_count,
+      pressure_snapshot_count: f.pressure_snapshot_count,
+      shared_substrate_activation_ids: arr(f.shared_substrate_activation_ids),
+      source: f.source,
+      truth_status: f.truth_status,
+      belief_status: f.belief_status
+    }));
     const receptorHits = arr(languageReceptorResult && languageReceptorResult.receptor_hits);
     state.semanticFocus = {
       source_event: event && event.id,
@@ -99,15 +111,19 @@
       admitted,
       rejected,
       activated,
+      memory_feedback: memoryFeedback,
       receptor_hits: receptorHits,
       admitted_terms: admitted.map(m => m.term),
       rejected_terms: rejected.map(r => r.term),
       activated_terms: activated.map(a => a.term),
+      memory_feedback_terms: memoryFeedback.map(f => f.term),
       active_dimensions: admitted.reduce((dims, m) => dims.concat((m.dimensions || []).map(d => d.dimension)), [])
         .concat(activated.reduce((dims, a) => dims.concat(arr(a.dimensions).map(d => d.dimension)), []))
+        .concat(memoryFeedback.reduce((dims, f) => dims.concat(arr(f.dimensions)), []))
         .concat(receptorHits.map(h => h.dimension)),
       generated_proposal_count: result.generated_proposal_count || 0,
       receptor_hit_count: receptorHits.length,
+      memory_feedback_count: memoryFeedback.length,
       updated_at: now()
     };
     return state.semanticFocus;
@@ -119,12 +135,13 @@
       ? 0.12 + semanticBasisResult.admitted_count * 0.06 + semanticBasisResult.rejected_count * 0.04
       : 0;
     const activationPressure = arr(languageReceptorResult && languageReceptorResult.activations).length ? 0.08 : 0;
+    const memoryPressure = arr(languageReceptorResult && languageReceptorResult.memory_feedback).length ? 0.06 : 0;
     const receptorPressure = arr(languageReceptorResult && languageReceptorResult.receptor_hits).length ? 0.05 : 0;
     const substratePressure = hasSharedSubstrate() && event ? 0.03 : 0;
     return {
-      language_math: (/\b(language|meaning|truth|belief|memory|communication|formula|unit|semantic|basis)\b/.test(text) ? 0.25 : 0.05) + semanticPressure + receptorPressure + activationPressure + substratePressure,
-      truth_tracking: (/\b(true|truth|fact|evidence|verify|false|because)\b/.test(text) ? 0.25 : 0.05) + (semanticPressure || activationPressure ? 0.04 : 0),
-      belief_memory: semanticPressure || activationPressure ? 0.08 : 0.02,
+      language_math: (/\b(language|meaning|truth|belief|memory|communication|formula|unit|semantic|basis)\b/.test(text) ? 0.25 : 0.05) + semanticPressure + receptorPressure + activationPressure + memoryPressure + substratePressure,
+      truth_tracking: (/\b(true|truth|fact|evidence|verify|false|because)\b/.test(text) ? 0.25 : 0.05) + (semanticPressure || activationPressure || memoryPressure ? 0.04 : 0),
+      belief_memory: semanticPressure || activationPressure || memoryPressure ? 0.08 + memoryPressure : 0.02,
       communication_motor: /\?\s*$|\b(answer|say|ask|communicate)\b/.test(text) ? 0.25 : 0.02,
       curiosity_drive: /\?\s*$/.test(text) ? 0.18 : 0.03,
       core_maturity: 0.1,
