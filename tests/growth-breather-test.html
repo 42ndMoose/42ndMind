@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Growth breather test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js?v=growth-breather-20260522-1"></script>
+<script src="../src/maturity-core.js?v=growth-breather-20260522-1"></script>
+<script src="../src/shared-substrate.js?v=growth-breather-20260522-1"></script>
+<script src="../src/semantic-basis-core.js?v=growth-breather-20260522-1"></script>
+<script src="../src/language-field.js?v=growth-breather-20260522-1"></script>
+<script src="../src/neural-field.js?v=growth-breather-20260522-1"></script>
+<script src="../src/truth-field.js?v=growth-breather-20260522-1"></script>
+<script src="../src/belief-memory-field.js?v=growth-breather-20260522-1"></script>
+<script src="../src/communication-motor.js?v=growth-breather-20260522-1"></script>
+<script src="../src/autoplasticity.js?v=growth-breather-20260522-1"></script>
+<script src="../src/growth-export.js?v=growth-breather-20260522-1"></script>
+<script src="../src/growth-breather.js?v=growth-breather-20260522-1"></script>
+<script src="../src/kernel.js?v=growth-breather-20260522-1"></script>
+<script>
+const TEST_BUILD = 'growth-breather-test-v0-1';
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn){ return Array.isArray(list) && list.some(fn); }
+const kernel = FortySecondMindKernel.createKernel();
+FortySecondMindGrowthExport.ensure(kernel.state);
+FortySecondMindGrowthBreather.ensure(kernel.state);
+const run = FortySecondMindGrowthBreather.startRun(kernel.state, { term:'discernment', learning_rate:0.22, breath_amplitude:0.006, source_event:'growth_breather_test' });
+const initialScore = run.best_score;
+let lastStep = null;
+for (let i = 0; i < 20; i += 1) lastStep = FortySecondMindGrowthBreather.stepRun(kernel.state, run.id);
+const exported = FortySecondMindGrowthBreather.exportBest(kernel.state, run.id);
+const s = kernel.snapshot();
+const breather = s.growthBreather;
+const growth = s.growthExport;
+const substrate = s.sharedSubstrate;
+ok('growth breather state exists', !!breather);
+ok('run created', !!run && run.id === 'growth_breathing_run_1');
+ok('steps created', breather.steps.length >= 20);
+ok('iterations advanced', breather.runs[0].iteration === 20);
+ok('unit total preserved on last step', !!lastStep && lastStep.unit_total_ok === true);
+ok('best score did not regress', breather.runs[0].best_score >= initialScore);
+ok('best state exists', !!breather.runs[0].best_state && breather.runs[0].best_state.term === 'discernment');
+ok('shared substrate has run start activation', has(substrate.activations, a => a.kind === 'growth_breathing_run_started'));
+ok('shared substrate has step activation', has(substrate.activations, a => a.kind === 'growth_breathing_improved_step' || a.kind === 'growth_breathing_probe_step'));
+ok('export best returned artifact', !!exported && !!exported.artifact);
+ok('growth export candidate created', has(growth.candidates, c => c.kind === 'breathing_semantic_mapping_growth'));
+ok('growth export artifact is commit ready', !!exported.artifact && exported.artifact.commit_ready === true);
+ok('artifact still requires human review', !!exported.artifact && exported.artifact.promotion_status === 'human_review_required');
+ok('no auto commit claimed', !!exported.artifact && exported.artifact.instructions.includes('does not modify GitHub'));
+document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ growthBreather: breather, growthExport: growth, sharedSubstrate: substrate }, null, 2);
+</script></body></html>
