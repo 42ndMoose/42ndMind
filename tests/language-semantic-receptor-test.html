@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Language Semantic Receptor Test</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; background:#101217; color:#eef2ff; }
+    h1, h2 { font-family: system-ui, sans-serif; }
+    pre { background:#0b0d12; border:1px solid #2a3040; border-radius:10px; padding:12px; white-space:pre-wrap; overflow:auto; }
+    .ok { color:#9dffb4; } .bad { color:#ff8b8b; }
+  </style>
+</head>
+<body>
+<h1>42ndMind Language Semantic Receptor Test</h1>
+<p>Fails unless raw English creates a shared semantic proposal, and later use of the learned word reactivates the same shared basis across organs.</p>
+<h2 id="summary">Running...</h2>
+<pre id="out"></pre>
+<script src="../src/brain-state.js"></script>
+<script src="../src/maturity-core.js"></script>
+<script src="../src/semantic-basis-core.js"></script>
+<script src="../src/language-field.js"></script>
+<script src="../src/neural-field.js"></script>
+<script src="../src/belief-memory-field.js"></script>
+<script src="../src/truth-field.js"></script>
+<script src="../src/communication-motor.js"></script>
+<script src="../src/autoplasticity.js"></script>
+<script src="../src/kernel.js"></script>
+<script>
+const results = [];
+function check(name, condition, details) { results.push({ name, passed: !!condition, details }); if (!condition) throw new Error(name); }
+function has(arr, fn) { return Array.isArray(arr) && arr.some(fn); }
+let report = { packet_type:'42ndMind_language_semantic_receptor_test_report', steps:[], results };
+try {
+  const kernel = FortySecondMindKernel.createKernel();
+
+  const learn = kernel.ingest('Discernment means careful judgment that stays open to correction and grounded in reality before believing every claim.', {
+    source: 'language-semantic-receptor-test'
+  });
+  const afterLearn = kernel.snapshot();
+  report.steps.push({ step:'learn_from_raw_english', languageReceptorResult: learn.languageReceptorResult, semanticBasisResult: learn.semanticBasisResult, semanticFocus: afterLearn.semanticFocus });
+
+  check('language generated one semantic proposal from raw English', learn.languageReceptorResult.proposals.length === 1, learn.languageReceptorResult);
+  check('generated proposal term is discernment', learn.languageReceptorResult.proposals[0].term === 'discernment', learn.languageReceptorResult.proposals[0]);
+  check('generated dimensions include integrated_judgment', has(learn.languageReceptorResult.proposals[0].dimensions, d => d.dimension === 'integrated_judgment'), learn.languageReceptorResult.proposals[0].dimensions);
+  check('generated dimensions include self_correction', has(learn.languageReceptorResult.proposals[0].dimensions, d => d.dimension === 'self_correction'), learn.languageReceptorResult.proposals[0].dimensions);
+  check('generated dimensions include reality_contact', has(learn.languageReceptorResult.proposals[0].dimensions, d => d.dimension === 'reality_contact'), learn.languageReceptorResult.proposals[0].dimensions);
+  check('semantic basis admitted generated proposal', learn.semanticBasisResult.admitted_count === 1 && afterLearn.semanticFocus.admitted_terms.includes('discernment'), afterLearn.semanticFocus);
+  check('language field learned discernment from semantic basis', afterLearn.language.term_fields.discernment && afterLearn.language.term_fields.discernment.status === 'linked_from_semantic_basis', afterLearn.language.term_fields.discernment);
+  check('truth field registered discernment requirement', has(afterLearn.truth.semantic_requirements, r => r.term === 'discernment'), afterLearn.truth.semantic_requirements);
+  check('belief-memory linked discernment context', has(afterLearn.beliefMemory.semantic_memory_links, m => m.term === 'discernment'), afterLearn.beliefMemory.semantic_memory_links);
+
+  const use = kernel.ingest('Use discernment before accepting this claim.', {
+    source: 'language-semantic-receptor-test'
+  });
+  const afterUse = kernel.snapshot();
+  report.steps.push({ step:'reactivate_learned_word', languageReceptorResult: use.languageReceptorResult, semanticBasisResult: use.semanticBasisResult, semanticFocus: afterUse.semanticFocus });
+
+  check('later English reactivated known semantic term', use.languageReceptorResult.activations.some(a => a.term === 'discernment'), use.languageReceptorResult.activations);
+  check('semantic focus carries activated discernment', afterUse.semanticFocus.activated_terms.includes('discernment'), afterUse.semanticFocus);
+  check('language recorded reactivation delta', has(afterUse.language.learning_deltas, d => d.term === 'discernment' && d.reason === 'known_term_reactivated_shared_basis'), afterUse.language.learning_deltas);
+  check('truth field used activated discernment as semantic pressure', has(afterUse.truth.semantic_activations, a => a.term === 'discernment' && a.kind === 'known_meaning_reactivation_pressure'), afterUse.truth.semantic_activations);
+  check('belief-memory stored semantic reactivation', has(afterUse.beliefMemory.semantic_reactivations, a => a.term === 'discernment'), afterUse.beliefMemory.semantic_reactivations);
+  check('neural field received activation pressure from language/shared basis', afterUse.neural.activation_trace[0].pressure.language_math > 0.1 && afterUse.neural.activation_trace[0].pressure.belief_memory > 0.02, afterUse.neural.activation_trace[0]);
+  check('communication motor reports reactivated known semantic meaning', afterUse.communication.selected_action.action === 'report_semantic_reactivation_state', afterUse.communication.selected_action);
+
+} catch (e) {
+  results.push({ name:'fatal', passed:false, error:e.message });
+}
+const passed = results.filter(r => r.passed).length;
+const ok = passed === results.length;
+document.getElementById('summary').className = ok ? 'ok' : 'bad';
+document.getElementById('summary').textContent = `${passed}/${results.length} passed`;
+document.getElementById('out').textContent = JSON.stringify(report, null, 2);
+</script>
+</body>
+</html>
