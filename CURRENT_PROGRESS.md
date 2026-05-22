@@ -10,7 +10,9 @@ OLD_REPO_PURGED_FROM_MAIN
 PROTOTYPE_LAB_REMAINS_IN_GIT_HISTORY
 NO_OLD_LIVE_PAGES_PORTED
 NO_TOY_SPEECH_PORTED
-SEMANTIC_BASIS_CORE_BUILT_FOR_VERIFICATION
+SEMANTIC_BASIS_CORE_PASSED_BY_USER
+SEMANTIC_BASIS_WIRED_INTO_OWNED_BRAIN_STATE
+SEMANTIC_GROWTH_PROOF_BUILT_FOR_VERIFICATION
 ```
 
 ## Current goal
@@ -47,7 +49,7 @@ idempotence and memory compaction ideas
 
 Anything that emits fake module speech stays out.
 
-## Current verification target
+## Completed verification
 
 Files:
 
@@ -63,19 +65,34 @@ Prove the smallest useful semantic primitive:
 meaning fields must reuse a shared basis rather than endlessly inventing isolated local labels.
 ```
 
-The test checks:
+User reported:
 
 ```text
-module loads
-meaning fields preserve unit total
-related meanings share reusable dimensions
-opposed meanings contrast on the same basis
-new isolated subdivision is rejected
-basis-reusing candidate is admitted
-reused dimensions gain roles across meanings
-A/B overlap produces shared basis relation
-A/F disconnected pattern is detected
-semantic basis core has no speech surface
+semantic-basis-core-test.html passed
 ```
 
-This is not a language-understanding proof yet. It only tests whether semantic growth can avoid label soup.
+This did not prove English understanding. It proved that the clean core can enforce reusable semantic basis logic without speech projection.
+
+## Current verification target
+
+Files:
+
+```text
+src/brain-state.js
+src/kernel.js
+tests/semantic-growth-proof.html
+```
+
+Purpose:
+
+```text
+Show real early growth behavior inside the owned kernel state:
+- semanticBasis exists as part of state
+- kernel ingest can evaluate meaning proposals
+- basis-reusing proposal is admitted
+- disconnected fake expansion is rejected
+- admission/rejection is logged in owned state
+- semantic basis pressure reaches the neural field
+```
+
+This is still not full natural-language understanding. It is the next proof that semantic growth can be constrained inside the unified state instead of remaining an isolated test module.
