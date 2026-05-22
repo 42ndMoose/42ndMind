@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Growth derived target test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/brain-state.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/maturity-core.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/shared-substrate.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/semantic-basis-core.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/language-field.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/neural-field.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/truth-field.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/belief-memory-field.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/communication-motor.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/autoplasticity.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/growth-export.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/growth-breather.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/growth-target-deriver.js?v=growth-derived-target-20260522-1"></script>
+<script src="../src/kernel.js?v=growth-derived-target-20260522-1"></script>
+<script>
+const TEST_BUILD = 'growth-derived-target-test-v0-1';
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function has(list, fn){ return Array.isArray(list) && list.some(fn); }
+function dim(target, name){ return (target.dimensions || []).find(row => row.dimension === name); }
+const kernel = FortySecondMindKernel.createKernel();
+FortySecondMindGrowthExport.ensure(kernel.state);
+FortySecondMindGrowthBreather.ensure(kernel.state);
+FortySecondMindGrowthTargetDeriver.ensure(kernel.state);
+const learned = kernel.ingest('Discernment means careful judgment that stays open to correction and grounded in reality before believing every claim.', { source:'derived-target-test' });
+kernel.ingest('Register a truth context about discernment.', { source:'source_A', truth_packets:[
+  { kind:'claim', claim_id:'discernment_claim', text:'Discernment should slow belief when a claim lacks evidence.', source_id:'source_A' }
+]});
+kernel.ingest('Register support for discernment context.', { source:'source_B', truth_packets:[
+  { kind:'evidence', target_claim_id:'discernment_claim', stance:'support', text:'Discernment uses evidence and correction pressure.', source_id:'source_B', weight:0.4 }
+]});
+kernel.ingest('Register counterclaim for discernment context.', { source:'source_C', truth_packets:[
+  { kind:'counterclaim', target_claim_id:'discernment_claim', claim_id:'discernment_counter', text:'Discernment fails when unresolved gaps are hidden.', source_id:'source_C', weight:0.45 }
+]});
+const use = kernel.ingest('Use discernment before accepting this claim.', { source:'derived-target-test' });
+const target = FortySecondMindGrowthTargetDeriver.deriveTarget(kernel.state, 'discernment');
+const run = FortySecondMindGrowthBreather.startRun(kernel.state, { term:'discernment', target_state:target, learning_rate:0.2, breath_amplitude:0.006, source_event:'derived_target_test' });
+const initialScore = run.best_score;
+let lastStep = null;
+for (let i = 0; i < 24; i += 1) lastStep = FortySecondMindGrowthBreather.stepRun(kernel.state, run.id);
+const exported = FortySecondMindGrowthBreather.exportBest(kernel.state, run.id);
+const s = kernel.snapshot();
+const deriver = s.growthTargetDeriver;
+const breather = s.growthBreather;
+const substrate = s.sharedSubstrate;
+ok('discernment learned first', learned.semanticBasisResult.admitted_count === 1 && !!s.semanticBasis.meanings.discernment);
+ok('language memory feedback exists before derivation', use.languageReceptorResult.memory_feedback.some(item => item.term === 'discernment'));
+ok('derived target exists', !!target && target.term === 'discernment');
+ok('derived target source is internal pressure', target.target_source === 'derived_from_truth_memory_language_pressure');
+ok('derived target is unit total', Math.abs(target.l1_total - 1) < 0.00001);
+ok('derived target has truth context source count', target.source_counts.truth_context_count > 0);
+ok('derived target has language memory feedback count', target.source_counts.language_memory_feedback_count > 0);
+ok('derived target cites claim id', target.derived_from_claim_ids.includes('discernment_claim'));
+ok('derived target cites source ids', target.derived_from_sources.includes('source_A') && target.derived_from_sources.includes('source_B'));
+ok('derived target includes evidence requirement', !!dim(target, 'evidence_requirement'));
+ok('derived target includes truth gap visibility', !!dim(target, 'truth_gap_visibility'));
+ok('derived target includes false certainty resistance', !!dim(target, 'false_certainty_resistance'));
+ok('derived target is not truth', target.truth_status === 'target_not_truth' && target.promotion_status === 'not_committed');
+ok('derived target linked to shared substrate', !!target.shared_substrate_activation_id && has(substrate.activations, a => a.kind === 'pressure_derived_growth_target'));
+ok('breather used derived target', breather.runs[0].target_state.target_source === 'derived_from_truth_memory_language_pressure');
+ok('breather best score did not regress', breather.runs[0].best_score >= initialScore);
+ok('breather preserved unit total', !!lastStep && lastStep.unit_total_ok === true);
+ok('export artifact created', !!exported && !!exported.artifact && exported.artifact.commit_ready === true);
+ok('export still requires human review', exported.artifact.promotion_status === 'human_review_required');
+document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ target, growthTargetDeriver: deriver, growthBreather: breather, artifact: exported && exported.artifact, sharedSubstrate: substrate }, null, 2);
+</script></body></html>
