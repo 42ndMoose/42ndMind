@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Alive math kernel test</title></head>
 <body><pre id="out"></pre>
-<script src="../src/alive-math-kernel.js?v=alive-math-kernel-20260522-2"></script>
+<script src="../src/alive-math-kernel.js?v=alive-math-kernel-20260522-3"></script>
 <script>
-const TEST_BUILD = 'alive-math-kernel-test-v0-1-1-disabled-mouth';
+const TEST_BUILD = 'alive-math-kernel-test-v0-1-2-attention-expression-channel';
 const rows = [];
 function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
 function hasDim(list, dim){ return Array.isArray(list) && list.some(row => row.dimension === dim); }
+function attentionTotal(weights){ return (weights || []).reduce((s,w)=>s+Math.abs(Number(w.attention_weight)||0),0); }
 const kernel = FortySecondMindAliveMathKernel.create();
 const initial = FortySecondMindAliveMathKernel.snapshot(kernel);
 FortySecondMindAliveMathKernel.seeText(kernel, 'Can language and discernment see my text as math without editing the source code?');
@@ -24,13 +25,18 @@ ok('alive field breathes over time', s.time > initial.time && s.breath_phase > i
 ok('alive field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.alive_field) - 1) < 0.00001);
 ok('intent field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.intent_field) - 1) < 0.00001);
 ok('sensory field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.sensory_field) - 1) < 0.00001);
-ok('brain-state packet exists', !!s.brain_state_packet && s.brain_state_packet.packet_type === 'alive_math_brain_state_packet_v0_1');
+ok('attention query exists and is unit total', Array.isArray(s.attention_query) && Math.abs(FortySecondMindAliveMathKernel.l1(s.attention_query) - 1) < 0.00001);
+ok('attention weights exist', Array.isArray(s.attention_weights) && s.attention_weights.length >= 6);
+ok('attention weights sum near one', Math.abs(attentionTotal(s.attention_weights) - 1) < 0.00001);
+ok('attended field exists and is unit total', Array.isArray(s.attended_field) && Math.abs(FortySecondMindAliveMathKernel.l1(s.attended_field) - 1) < 0.00001);
+ok('brain-state packet exists', !!s.brain_state_packet && s.brain_state_packet.packet_type === 'alive_math_brain_state_packet_v0_2_attention');
 ok('brain-state packet is not speech', s.brain_state_packet.mode === 'brain_state_math_packet_not_speech');
-ok('english mouth channel is disabled', !!s.english_mouth_channel && s.english_mouth_channel.enabled === false && s.english_mouth_channel.content === '');
+ok('english expression channel is disabled', !!s.english_expression_channel && s.english_expression_channel.enabled === false && s.english_expression_channel.content === '');
 ok('brain-state packet carries intent vector', Array.isArray(s.brain_state_packet.intent_vector) && s.brain_state_packet.intent_vector.length > 0);
 ok('brain-state packet carries alive vector', Array.isArray(s.brain_state_packet.alive_vector) && s.brain_state_packet.alive_vector.length > 0);
 ok('brain-state packet carries seen vector', Array.isArray(s.brain_state_packet.seen_vector) && s.brain_state_packet.seen_vector.length > 0);
-ok('brain-state expression is generated from vectors', typeof s.brain_state_packet.rendered_expression === 'string' && s.brain_state_packet.rendered_expression.includes('intent ='));
-ok('trace records seeing and breathing', s.trace.some(t => t.type === 'seen_text_as_sensory_field') && s.trace.some(t => t.type === 'breath_tick'));
+ok('brain-state packet carries attention weights', Array.isArray(s.brain_state_packet.attention_weights) && s.brain_state_packet.attention_weights.length >= 6);
+ok('brain-state expression is generated from vectors', typeof s.brain_state_packet.rendered_expression === 'string' && s.brain_state_packet.rendered_expression.includes('attention ='));
+ok('trace records seeing, attention, and breathing', s.trace.some(t => t.type === 'seen_text_as_sensory_field' && Array.isArray(t.attention_weights)) && s.trace.some(t => t.type === 'breath_tick' && Array.isArray(t.attention_weights)));
 document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ initial, current: s }, null, 2);
 </script></body></html>
