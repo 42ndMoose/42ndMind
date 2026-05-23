@@ -1,22 +1,22 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Growth derived target test</title></head>
 <body><pre id="out"></pre>
-<script src="../src/brain-state.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/maturity-core.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/shared-substrate.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/semantic-basis-core.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/language-field.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/neural-field.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/truth-field.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/belief-memory-field.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/communication-motor.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/autoplasticity.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/growth-export.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/growth-breather.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/growth-target-deriver.js?v=growth-derived-target-20260522-2"></script>
-<script src="../src/kernel.js?v=growth-derived-target-20260522-2"></script>
+<script src="../src/brain-state.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/maturity-core.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/shared-substrate.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/semantic-basis-core.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/language-field.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/neural-field.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/truth-field.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/belief-memory-field.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/communication-motor.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/autoplasticity.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/growth-export.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/growth-breather.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/growth-target-deriver.js?v=growth-derived-target-20260522-3"></script>
+<script src="../src/kernel.js?v=growth-derived-target-20260522-3"></script>
 <script>
-const TEST_BUILD = 'growth-derived-target-test-v0-1-1-core-retention';
+const TEST_BUILD = 'growth-derived-target-test-v0-1-2-normalized-core-blend';
 const rows = [];
 function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
 function has(list, fn){ return Array.isArray(list) && list.some(fn); }
@@ -50,7 +50,7 @@ ok('discernment learned first', learned.semanticBasisResult.admitted_count === 1
 ok('language memory feedback exists before derivation', use.languageReceptorResult.memory_feedback.some(item => item.term === 'discernment'));
 ok('derived target exists', !!target && target.term === 'discernment');
 ok('derived target source is internal pressure', target.target_source === 'derived_from_truth_memory_language_pressure');
-ok('derived target uses semantic core blend', target.derivation_method === 'semantic_core_blend_v0_1');
+ok('derived target uses semantic core blend', target.derivation_method === 'semantic_core_blend_v0_2_normalized_pressure');
 ok('derived target retains semantic core', target.semantic_core_retention >= 0.6 && dim(target, 'integrated_judgment') && dim(target, 'integrated_judgment').weight >= 0.2);
 ok('derived target is unit total', Math.abs(target.l1_total - 1) < 0.00001);
 ok('derived target has truth context source count', target.source_counts.truth_context_count > 0);
