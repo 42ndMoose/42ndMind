@@ -1,4 +1,4 @@
-/* 42ndMind Infant Symbolic Kernel v0.1
+/* 42ndMind Infant Symbolic Kernel v0.2
  * First-principles infant layer.
  *
  * Doctrine:
@@ -7,12 +7,14 @@
  * - raw stream first
  * - compression before language
  * - prediction/error before meaning
+ * - token relations before English translation
  * - runtime body changes only inside the state
  * - English output disabled
  *
  * This is not a chatbot and not a completed brain.
- * It is the lowest layer: raw symbols -> pattern pressure -> compression
- * -> prediction -> error -> memory update -> runtime body mutation.
+ * It is the lower layer: raw symbols -> pattern pressure -> compression
+ * -> prediction -> error -> memory update -> token relation graph
+ * -> runtime body mutation.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -20,7 +22,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  const VERSION = "0.1.0-brain-one";
+  const VERSION = "0.2.0-token-relations";
   const EPS = 1e-6;
 
   function now() { return new Date().toISOString(); }
@@ -82,7 +84,7 @@
 
   function createBody(seed) {
     const body = {
-      type: "infant_runtime_body_v0_1",
+      type: "infant_runtime_body_v0_2",
       generation: 0,
       direct_source_write_enabled: false,
       english_output_enabled: false,
@@ -92,17 +94,19 @@
         prediction_order: 1,
         mutation_rate: 0.08,
         injury_tolerance: 0.02,
-        max_tokens: 128
+        max_tokens: 128,
+        max_relations: 256
       }, seed && seed.params || {}),
       body_field: normalize(seed && seed.body_field || [
-        ["sense", 0.14],
-        ["pattern", 0.14],
-        ["compress", 0.14],
-        ["predict", 0.14],
-        ["error", 0.12],
-        ["memory", 0.12],
-        ["mutate", 0.10],
-        ["act", 0.10]
+        ["sense", 0.13],
+        ["pattern", 0.13],
+        ["compress", 0.13],
+        ["predict", 0.13],
+        ["error", 0.11],
+        ["memory", 0.11],
+        ["relate", 0.10],
+        ["mutate", 0.08],
+        ["act", 0.08]
       ])
     };
     body.checksum = checksum({ generation: body.generation, params: body.params, body_field: body.body_field });
@@ -111,26 +115,28 @@
 
   function create(seed) {
     const state = {
-      packet_type: "42ndMind_infant_symbolic_kernel_v0_1",
+      packet_type: "42ndMind_infant_symbolic_kernel_v0_2",
       version: VERSION,
       doctrine: {
         brain_equals_one: true,
         no_semantic_label_learning_layer: true,
         raw_stream_first: true,
         compression_before_language: true,
+        token_relations_before_english: true,
         english_output_disabled: true,
         direct_source_write: false
       },
       time: 0,
       brain_field: normalize(seed && seed.brain_field || [
-        ["sense", 0.15],
-        ["pattern", 0.13],
+        ["sense", 0.14],
+        ["pattern", 0.12],
         ["compress", 0.12],
-        ["predict", 0.12],
-        ["error", 0.12],
-        ["memory", 0.12],
-        ["mutate", 0.12],
-        ["act", 0.12]
+        ["predict", 0.11],
+        ["error", 0.11],
+        ["memory", 0.11],
+        ["relate", 0.11],
+        ["mutate", 0.09],
+        ["act", 0.09]
       ]),
       body: createBody(seed && seed.body),
       memory: {
@@ -139,7 +145,9 @@
         transition_counts: {},
         ngram_counts: {},
         token_library: [],
-        token_index: {}
+        token_index: {},
+        relation_counts: {},
+        token_relation_graph: []
       },
       sensory: null,
       prediction: null,
@@ -147,6 +155,7 @@
       error: null,
       candidate_body: null,
       candidate_test: null,
+      internal_math_packet: null,
       injury_register: [],
       action_packet: { enabled: true, kind: "none", symbols: [], english: "" },
       english_expression_channel: { enabled: false, content: "" },
@@ -154,6 +163,7 @@
       updated_at: now()
     };
     enforceBrainEqualsOne(state);
+    updateInternalMathPacket(state);
     return state;
   }
 
@@ -262,7 +272,7 @@
       sensory,
       prediction,
       compression: { candidates, gain, compression_score: round(compression_score) },
-      score: round(prediction.accuracy * 0.42 + prediction.coverage * 0.14 + compression_score * 0.28 + stable * 0.16),
+      score: round(prediction.accuracy * 0.40 + prediction.coverage * 0.12 + compression_score * 0.26 + stable * 0.14 + Math.min(1, state.memory.token_relation_graph.length / 16) * 0.08),
       stable
     };
   }
@@ -303,22 +313,104 @@
         memory.token_library.push(token);
       }
     });
+
+    updateTokenRelations(memory, compression, sensory, body);
+  }
+
+  function pairKey(a, b) {
+    return a < b ? a + "|" + b : b + "|" + a;
+  }
+
+  function tokenForPattern(memory, pattern) {
+    return memory.token_library.find(token => token.pattern === pattern) || null;
+  }
+
+  function updateTokenRelations(memory, compression, sensory, body) {
+    const active = compression.candidates
+      .map(candidate => tokenForPattern(memory, candidate.pattern))
+      .filter(Boolean)
+      .slice(0, 12);
+
+    for (let i = 0; i < active.length; i += 1) {
+      for (let j = i + 1; j < active.length; j += 1) {
+        const a = active[i];
+        const b = active[j];
+        const key = pairKey(a.id, b.id);
+        const overlap = a.pattern.includes(b.pattern) || b.pattern.includes(a.pattern) ? 1 : 0;
+        const near = sensory.raw.indexOf(a.pattern) >= 0 && sensory.raw.indexOf(b.pattern) >= 0 ? 1 : 0;
+        const strength = 1 + overlap + near;
+        memory.relation_counts[key] = (memory.relation_counts[key] || 0) + strength;
+      }
+    }
+
+    memory.token_relation_graph = Object.keys(memory.relation_counts)
+      .map(key => {
+        const parts = key.split("|");
+        return {
+          from: parts[0],
+          to: parts[1],
+          count: memory.relation_counts[key]
+        };
+      })
+      .sort((a, b) => b.count - a.count || a.from.localeCompare(b.from) || a.to.localeCompare(b.to))
+      .slice(0, body.params.max_relations);
+  }
+
+  function tokenUnitField(memory) {
+    return normalize(memory.token_library.map(token => ({
+      axis: token.id,
+      weight: Math.max(1, Number(token.gain) || 1)
+    })));
+  }
+
+  function relationUnitField(memory) {
+    return normalize(memory.token_relation_graph.map(edge => ({
+      axis: edge.from + "↔" + edge.to,
+      weight: Math.max(1, Number(edge.count) || 1)
+    })));
+  }
+
+  function updateInternalMathPacket(state) {
+    const tokens = state.memory.token_library;
+    const relations = state.memory.token_relation_graph;
+    state.internal_math_packet = {
+      packet_type: "infant_internal_math_packet_v0_2",
+      mode: "token_relation_graph_not_english",
+      expressions: [
+        "brain=1",
+        "Σ|brain.pressure|=1",
+        "τ_i = compressed repeatable raw-symbol pattern",
+        "ρ_ij = relation(τ_i,τ_j) from shared compression pressure",
+        "T=N({τ_i})",
+        "R=N({ρ_ij})"
+      ],
+      token_count: tokens.length,
+      relation_count: relations.length,
+      token_unit_field: tokens.length ? tokenUnitField(state.memory) : [],
+      relation_unit_field: relations.length ? relationUnitField(state.memory) : [],
+      token_l1: tokens.length ? l1(tokenUnitField(state.memory)) : 0,
+      relation_l1: relations.length ? l1(relationUnitField(state.memory)) : 0,
+      at: now()
+    };
+    return state.internal_math_packet;
   }
 
   function updateBrainField(state, evaluation) {
     const p = evaluation.prediction;
     const c = evaluation.compression;
     const injury = state.injury_register.length ? Math.min(0.25, state.injury_register.length * 0.03) : 0;
+    const relationPressure = Math.min(1, state.memory.token_relation_graph.length / 16);
 
     state.brain_field = normalize([
-      ["sense", 0.10 + (evaluation.sensory.length ? 0.10 : 0)],
-      ["pattern", 0.10 + Math.min(1, c.candidates.length / 12) * 0.18],
-      ["compress", 0.08 + c.compression_score * 0.24],
-      ["predict", 0.08 + p.accuracy * 0.20],
-      ["error", 0.08 + p.error_rate * 0.24],
-      ["memory", 0.08 + Math.min(1, state.memory.seen_count / 16) * 0.16],
-      ["mutate", 0.08 + (p.error_rate + c.compression_score) * 0.10],
-      ["act", 0.07 + p.coverage * 0.10],
+      ["sense", 0.09 + (evaluation.sensory.length ? 0.09 : 0)],
+      ["pattern", 0.09 + Math.min(1, c.candidates.length / 12) * 0.16],
+      ["compress", 0.08 + c.compression_score * 0.22],
+      ["predict", 0.08 + p.accuracy * 0.18],
+      ["error", 0.08 + p.error_rate * 0.22],
+      ["memory", 0.08 + Math.min(1, state.memory.seen_count / 16) * 0.14],
+      ["relate", 0.08 + relationPressure * 0.18],
+      ["mutate", 0.07 + (p.error_rate + c.compression_score) * 0.09],
+      ["act", 0.06 + p.coverage * 0.09],
       ["injury", injury]
     ]);
 
@@ -330,6 +422,7 @@
     const candidate = clone(source);
     const p = evaluation.prediction;
     const c = evaluation.compression;
+    const relationPressure = Math.min(1, state.memory.token_relation_graph.length / 16);
 
     candidate.generation = source.generation + 1;
 
@@ -342,14 +435,15 @@
     }
 
     const pressure = normalize([
-      ["sense", 0.10],
-      ["pattern", 0.12 + Math.min(1, c.candidates.length / 10) * 0.18],
-      ["compress", 0.12 + c.compression_score * 0.22],
-      ["predict", 0.12 + p.accuracy * 0.18],
-      ["error", 0.08 + p.error_rate * 0.20],
-      ["memory", 0.12 + Math.min(1, state.memory.seen_count / 16) * 0.10],
-      ["mutate", 0.10 + Math.abs(c.compression_score - p.error_rate) * 0.12],
-      ["act", 0.08 + p.coverage * 0.10]
+      ["sense", 0.09],
+      ["pattern", 0.10 + Math.min(1, c.candidates.length / 10) * 0.16],
+      ["compress", 0.10 + c.compression_score * 0.20],
+      ["predict", 0.10 + p.accuracy * 0.16],
+      ["error", 0.08 + p.error_rate * 0.18],
+      ["memory", 0.10 + Math.min(1, state.memory.seen_count / 16) * 0.09],
+      ["relate", 0.10 + relationPressure * 0.16],
+      ["mutate", 0.09 + Math.abs(c.compression_score - p.error_rate) * 0.10],
+      ["act", 0.07 + p.coverage * 0.08]
     ]);
 
     candidate.body_field = blend(
@@ -387,7 +481,7 @@
     const failed = checks.filter(check => !check.passed);
 
     return {
-      packet_type: "infant_candidate_body_test_v0_1",
+      packet_type: "infant_candidate_body_test_v0_2",
       passed: failed.length === 0,
       checks,
       source_score: sourceScore.score,
@@ -429,8 +523,11 @@
     if (p.coverage < 0.25 || p.error_rate > 0.72) {
       kind = "inquire";
       symbols = ["?"];
-    } else if (c.candidates.length) {
+    } else if (state.memory.token_library.length) {
       kind = "emit_token";
+      symbols = [state.memory.token_library[0].id];
+    } else if (c.candidates.length) {
+      kind = "emit_pattern";
       symbols = [c.candidates[0].pattern];
     } else if (p.accuracy > 0.65) {
       kind = "predict_ready";
@@ -456,8 +553,9 @@
       misses: evaluation.prediction.misses
     };
 
-    updateBrainField(state, evaluation);
     remember(state.memory, state.sensory, state.body, state.compression);
+    updateInternalMathPacket(state);
+    updateBrainField(state, evaluation);
 
     const candidate = proposeCandidateBody(state, evaluation);
     const test = testCandidateBody(state, candidate, input);
@@ -468,6 +566,7 @@
 
     act(state, evaluation);
     enforceBrainEqualsOne(state);
+    updateInternalMathPacket(state);
 
     state.trace.unshift({
       type: "cycle",
@@ -478,6 +577,7 @@
       prediction: state.prediction,
       compression_gain: state.compression.gain,
       token_count: state.memory.token_library.length,
+      relation_count: state.memory.token_relation_graph.length,
       candidate_passed: test.passed,
       action: state.action_packet.kind,
       at: now()
@@ -506,6 +606,8 @@
     ngrams,
     predict,
     evaluateTextWithBody,
+    updateTokenRelations,
+    updateInternalMathPacket,
     proposeCandidateBody,
     testCandidateBody,
     l1,
