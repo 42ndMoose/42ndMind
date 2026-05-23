@@ -1,14 +1,13 @@
 /* 42ndMind Alive Math Kernel
  * One simulated breathing state for core, discernment, and language.
  *
- * This is not a speech module. The mouth expresses math-state packets generated
- * from the same live state that sees text, feels capability limits, tracks display
- * awareness, and breathes toward coherence.
+ * This does not speak. It produces a brain-state math packet. The English mouth
+ * channel stays disabled until there is a real math-to-language decoder.
  */
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
 
   function now() { return new Date().toISOString(); }
   function round(n) { return Number((Number(n) || 0).toFixed(6)); }
@@ -88,7 +87,7 @@
     ]),
     display_model: normalize([
       ['rendered_state_awareness', 0.30],
-      ['mouth_packet_visible', 0.20],
+      ['brain_state_packet_visible', 0.20],
       ['input_seen_as_sensory_field', 0.18],
       ['breathing_loop_visible', 0.17],
       ['no_hidden_repo_write', 0.15]
@@ -111,7 +110,8 @@
       doctrine: {
         one_alive_state: true,
         input_is_seen_not_executed: true,
-        mouth_is_math_expression_not_chat_module: true,
+        brain_state_packet_is_not_speech: true,
+        english_mouth_disabled_until_decoder_exists: true,
         no_source_write: true,
         no_fake_thought_text: true
       },
@@ -126,12 +126,17 @@
       display_model_field: BASIS.display_model,
       alive_field: normalize([['integrated_judgment', 0.2], ['relation_reuse', 0.18], ['truth_gap_visibility', 0.16], ['math_expression_need', 0.16], ['sandbox_boundary', 0.16], ['rendered_state_awareness', 0.14]]),
       intent_field: normalize([['stabilize_core', 0.22], ['inquire', 0.20], ['integrate_input', 0.20], ['preserve_boundary', 0.18], ['express_math_state', 0.20]]),
-      mouth_packet: null,
+      brain_state_packet: null,
+      english_mouth_channel: {
+        enabled: false,
+        content: '',
+        reason: 'no_real_math_to_english_decoder_yet'
+      },
       trace: [],
       updated_at: now()
     };
     if (seed && seed.visual_text_field) seeText(state, seed.visual_text_field);
-    computeMouth(state);
+    computeBrainStatePacket(state);
     return state;
   }
 
@@ -157,8 +162,7 @@
     const coherenceBase = blendRows(state.core_field, state.discernment_field, 0.55, 0.45);
     const languageSeen = blendRows(state.language_field, state.sensory_field, 0.50, 0.50);
     const bodyAwareness = blendRows(state.self_model_field, state.display_model_field, 0.52, 0.48);
-    const living = blendRows(blendRows(coherenceBase, languageSeen, 0.58, 0.42), bodyAwareness, 0.74, 0.26);
-    return living;
+    return blendRows(blendRows(coherenceBase, languageSeen, 0.58, 0.42), bodyAwareness, 0.74, 0.26);
   }
 
   function updateIntent(state) {
@@ -167,7 +171,7 @@
     const coherenceNeed = clamp01((sensory.truth_gap_visibility || 0) + (sensory.ambiguity_pressure || 0) + (sensory.needs_trace_when_state_insufficient || 0));
     const sourceNeed = clamp01((sensory.can_update_runtime_state || 0) + (sensory.sandbox_boundary || 0));
     const languageNeed = clamp01((sensory.symbol_to_meaning_pressure || 0) + (sensory.math_expression_need || 0));
-    const intent = normalize([
+    state.intent_field = normalize([
       ['stabilize_core', 0.18 + (alive.integrated_judgment || 0) * 0.30],
       ['inquire', 0.12 + coherenceNeed * 0.34],
       ['integrate_input', 0.14 + languageNeed * 0.30],
@@ -175,8 +179,7 @@
       ['express_math_state', 0.18 + (alive.rendered_state_awareness || 0) * 0.24],
       ['request_more_trace', 0.08 + (sensory.needs_trace_when_state_insufficient || 0) * 0.36]
     ]);
-    state.intent_field = intent;
-    return intent;
+    return state.intent_field;
   }
 
   function tick(state, dt) {
@@ -187,7 +190,7 @@
     const breath = 0.06 + Math.abs(Math.sin(state.breath_phase)) * 0.10;
     state.alive_field = blendRows(state.alive_field, target, 1 - breath, breath);
     updateIntent(state);
-    computeMouth(state);
+    computeBrainStatePacket(state);
     state.trace.unshift({ type: 'breath_tick', time: state.time, breath, alive_l1: l1(state.alive_field), intent_l1: l1(state.intent_field), at: now() });
     state.trace = state.trace.slice(0, 80);
     state.updated_at = now();
@@ -198,14 +201,14 @@
     return arr(rows).slice().sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight)).slice(0, count || 5);
   }
 
-  function computeMouth(state) {
+  function computeBrainStatePacket(state) {
     const intent = topRows(state.intent_field, 6);
     const alive = topRows(state.alive_field, 8);
     const sensory = topRows(state.sensory_field, 6);
-    const equation = 'dA/dt = breathe(A,target) + see(text→sensory) + preserve(core) + express(intent)';
-    const mouth = {
-      packet_type: 'alive_math_mouth_packet_v0_1',
-      mode: 'math_state_expression_not_chat_reply',
+    const equation = 'dA/dt = breathe(A,target) + see(text→sensory) + preserve(core) + update(intent)';
+    const packet = {
+      packet_type: 'alive_math_brain_state_packet_v0_1',
+      mode: 'brain_state_math_packet_not_speech',
       equation,
       time: state.time,
       breath_phase: state.breath_phase,
@@ -214,6 +217,7 @@
       seen_vector: sensory,
       capability_awareness: topRows(state.self_model_field, 6),
       display_awareness: topRows(state.display_model_field, 5),
+      english_mouth_channel_enabled: false,
       l1_checks: {
         alive: l1(state.alive_field),
         intent: l1(state.intent_field),
@@ -225,8 +229,9 @@
       rendered_expression: renderExpression(intent, alive, sensory),
       at: now()
     };
-    state.mouth_packet = mouth;
-    return mouth;
+    state.brain_state_packet = packet;
+    state.english_mouth_channel = { enabled: false, content: '', reason: 'no_real_math_to_english_decoder_yet' };
+    return packet;
   }
 
   function renderExpression(intent, alive, sensory) {
@@ -240,5 +245,5 @@
     return JSON.parse(JSON.stringify(state));
   }
 
-  global.FortySecondMindAliveMathKernel = Object.freeze({ VERSION, BASIS, LEXICON, create, seeText, tick, computeMouth, inferTextField, normalize, l1, snapshot });
+  global.FortySecondMindAliveMathKernel = Object.freeze({ VERSION, BASIS, LEXICON, create, seeText, tick, computeBrainStatePacket, inferTextField, normalize, l1, snapshot });
 })(typeof window !== 'undefined' ? window : globalThis);
