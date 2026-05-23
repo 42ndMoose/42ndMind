@@ -39,18 +39,22 @@ GROWTH_DERIVED_TARGET_EXACT_CORE_FLOOR_PASSED_BY_USER
 ALIVE_MATH_KERNEL_SANDBOX_ADDED
 ALIVE_MATH_KERNEL_TEST_ADDED
 ALIVE_MATH_KERNEL_LAB_ADDED
+ALIVE_MATH_KERNEL_ATTENTION_PASS_ADDED
+ENGLISH_EXPRESSION_CHANNEL_DISABLED
 ```
 
 ## Current goal
 
-Build the migrated kernel from first principles. Current experimental branch inside the repo is now testing whether core, discernment, language, self-model, display-awareness, input-seeing, intent, and mouth-output can live inside one breathing math state instead of being simulated as separate minds.
+Build the migrated kernel from first principles. Current experimental branch inside the repo is now testing whether core, discernment, language, self-model, display-awareness, input-seeing, attention, intent, and an eventual English expression channel can live inside one breathing math state instead of being simulated as separate minds.
 
 ```text
 text seen as sensory field
   -> one alive math state
+  -> query/key/value attention over alive fields
   -> core/discernment/language/self/display fields co-breathe
   -> intent field emerges from the same state
-  -> mouth displays math-state expression
+  -> brain-state math packet displays live state
+  -> English expression channel remains empty until language forms from math state itself
 ```
 
 ## Rule
@@ -98,6 +102,7 @@ truth-substrate-test.html passed 15/15
 language-memory-feedback-test.html passed 12/12
 growth-export-test.html passed 16/16
 growth-derived-target-test.html passed 21/21 after exact core-floor patch
+alive-math-kernel-test.html passed 20/20 before attention pass
 ```
 
 Meaning:
@@ -111,6 +116,7 @@ Truth field can register claim/support/counterclaim packets, link them to shared
 Language can reactivate known terms with belief-memory context pressure without treating memory as truth.
 Growth export can package before/after state, checksums, test records, substrate activation IDs, localStorage save, and commit-ready artifact text without writing to GitHub.
 Growth target derivation can derive a provisional unit-total target from internal truth, memory, and language pressure while preserving semantic core with an exact post-normalization floor.
+Alive math kernel can run one breathing math state and keep English expression disabled rather than pretending to speak.
 ```
 
 This still does not prove full natural-language understanding.
@@ -128,10 +134,11 @@ ui/alive-math-kernel-lab.html
 Purpose:
 
 ```text
-Create one simulated breathing math state for core, discernment, language, self-model, display-awareness, input-seeing, intent, and mouth-output.
+Create one simulated breathing math state for core, discernment, language, self-model, display-awareness, input-seeing, attention, and intent.
 Treat textbox words as a sensory field, not source code and not command routing.
-Display intent mathematically through live vectors and equations.
-Avoid fake chat output: the mouth displays math-state packets, not canned sentences.
+Use deterministic query/key/value attention over the alive fields.
+Display the brain-state math packet separately from English output.
+Keep the English expression channel empty until language forms from the live math state itself.
 Preserve unit-total fields.
 ```
 
@@ -139,7 +146,7 @@ Current test:
 
 ```text
 tests/alive-math-kernel-test.html
-Expected: 19/19 passed
+Expected: 25/25 passed
 ```
 
 Current lab:
@@ -159,4 +166,5 @@ Do not let static pages directly write to GitHub.
 Do not treat pressure-derived targets as final truth or doctrine.
 Do not turn uncertainty discipline into a hardcoded phrase generator.
 Do not fake thought through ordinary prose output.
+Do not build a separate decoder module for English expression.
 ```
