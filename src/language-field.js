@@ -21,7 +21,7 @@
     { dimension: 'integrated_judgment', weight: 0.24, patterns: [/careful judgment/, /judging carefully/, /sound judgment/, /weigh(?:s|ing)?[^.]{0,24}together/, /discern(?:s|ing)?[^.]{0,24}difference/] },
     { dimension: 'self_correction', weight: 0.22, patterns: [/open to correction/, /can be corrected/, /self[- ]?correct/, /willing to revise/, /revis(?:e|ion)/] },
     { dimension: 'reality_contact', weight: 0.22, patterns: [/grounded in reality/, /reality[- ]?contact/, /real[- ]world/, /contact with reality/, /grounded in what is real/] },
-    { dimension: 'false_certainty_resistance', weight: 0.18, patterns: [/not believing every claim/, /avoid(?:s|ing)? false certainty/, /resist(?:s|ing)? false certainty/, /not rush(?:ing)? to believe/, /does not close the question/] },
+    { dimension: 'false_certainty_resistance', weight: 0.18, patterns: [/not believing every claim/, /before believing every claim/, /before accepting (?:a |the |this )?claim/, /slow belief/, /slows belief/, /avoid(?:s|ing)? false certainty/, /resist(?:s|ing)? false certainty/, /not rush(?:ing)? to believe/, /does not close the question/] },
     { dimension: 'information_grasp', weight: 0.14, patterns: [/evidence/, /facts?/, /information/, /what is known/, /technical grasp/] },
     { dimension: 'person_concern', weight: 0.14, patterns: [/care for people/, /human concern/, /concern for persons/, /empathy/, /compassion/] },
     { dimension: 'constraint_contact', weight: 0.14, patterns: [/constraint/, /practical/, /what can actually be done/, /real[- ]world limit/, /functional demand/] },
