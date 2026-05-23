@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Alive math kernel test</title></head>
+<body><pre id="out"></pre>
+<script src="../src/alive-math-kernel.js?v=alive-math-kernel-20260522-1"></script>
+<script>
+const TEST_BUILD = 'alive-math-kernel-test-v0-1';
+const rows = [];
+function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
+function hasDim(list, dim){ return Array.isArray(list) && list.some(row => row.dimension === dim); }
+const kernel = FortySecondMindAliveMathKernel.create();
+const initial = FortySecondMindAliveMathKernel.snapshot(kernel);
+FortySecondMindAliveMathKernel.seeText(kernel, 'Can language and discernment see my text as math without editing the source code?');
+for (let i = 0; i < 12; i += 1) FortySecondMindAliveMathKernel.tick(kernel, 1);
+const s = FortySecondMindAliveMathKernel.snapshot(kernel);
+ok('alive math kernel exists', !!s && s.packet_type === '42ndMind_alive_math_kernel_v0_1');
+ok('single alive state has core field', Array.isArray(s.core_field) && s.core_field.length > 0);
+ok('single alive state has discernment field', Array.isArray(s.discernment_field) && s.discernment_field.length > 0);
+ok('single alive state has language field', Array.isArray(s.language_field) && s.language_field.length > 0);
+ok('textbox input was seen as sensory field', s.visual_text_field.includes('language and discernment') && Array.isArray(s.sensory_field));
+ok('input is not source mutation', s.doctrine.input_is_seen_not_executed === true && s.doctrine.no_source_write === true);
+ok('sensory field detected language pressure', hasDim(s.sensory_field, 'symbol_to_meaning_pressure'));
+ok('sensory field detected source boundary pressure', hasDim(s.sensory_field, 'sandbox_boundary') || hasDim(s.sensory_field, 'cannot_commit_source_directly'));
+ok('alive field breathes over time', s.time > initial.time && s.breath_phase > initial.breath_phase);
+ok('alive field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.alive_field) - 1) < 0.00001);
+ok('intent field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.intent_field) - 1) < 0.00001);
+ok('sensory field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.sensory_field) - 1) < 0.00001);
+ok('mouth packet exists', !!s.mouth_packet && s.mouth_packet.packet_type === 'alive_math_mouth_packet_v0_1');
+ok('mouth packet is math-state expression', s.mouth_packet.mode === 'math_state_expression_not_chat_reply');
+ok('mouth packet carries intent vector', Array.isArray(s.mouth_packet.intent_vector) && s.mouth_packet.intent_vector.length > 0);
+ok('mouth packet carries alive vector', Array.isArray(s.mouth_packet.alive_vector) && s.mouth_packet.alive_vector.length > 0);
+ok('mouth packet carries seen vector', Array.isArray(s.mouth_packet.seen_vector) && s.mouth_packet.seen_vector.length > 0);
+ok('mouth expression is generated from vectors', typeof s.mouth_packet.rendered_expression === 'string' && s.mouth_packet.rendered_expression.includes('intent ='));
+ok('trace records seeing and breathing', s.trace.some(t => t.type === 'seen_text_as_sensory_field') && s.trace.some(t => t.type === 'breath_tick'));
+document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ initial, current: s }, null, 2);
+</script></body></html>
