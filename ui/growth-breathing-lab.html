@@ -20,11 +20,12 @@
 </head>
 <body>
   <h1>42ndMind Breathing Growth Lab</h1>
-  <p>This page runs a local repeated growth loop. It can either use the old fixed target or derive a provisional target from truth, memory, and language pressure. It does not write to GitHub.</p>
+  <p>This page runs a local repeated growth loop. The derived-target button now starts from a fresh local kernel so repeated clicks do not inflate source counts. It does not write to GitHub.</p>
 
   <div class="card">
+    <button id="reset">Reset local lab state</button>
     <button id="start">Start fixed-target run</button>
-    <button id="deriveStart">Seed context + derive target run</button>
+    <button id="deriveStart">Fresh seed + derive target run</button>
     <button id="step">Step once</button>
     <button id="auto">Start auto-breathing</button>
     <button id="stop">Stop</button>
@@ -69,26 +70,22 @@
     <pre id="steps">No steps yet.</pre>
   </div>
 
-  <script src="../src/brain-state.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/maturity-core.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/shared-substrate.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/semantic-basis-core.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/language-field.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/neural-field.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/truth-field.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/belief-memory-field.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/communication-motor.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/autoplasticity.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/growth-export.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/growth-breather.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/growth-target-deriver.js?v=growth-breathing-lab-20260522-3"></script>
-  <script src="../src/kernel.js?v=growth-breathing-lab-20260522-3"></script>
+  <script src="../src/brain-state.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/maturity-core.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/shared-substrate.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/semantic-basis-core.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/language-field.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/neural-field.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/truth-field.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/belief-memory-field.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/communication-motor.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/autoplasticity.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/growth-export.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/growth-breather.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/growth-target-deriver.js?v=growth-breathing-lab-20260522-4"></script>
+  <script src="../src/kernel.js?v=growth-breathing-lab-20260522-4"></script>
   <script>
-    const kernel = FortySecondMindKernel.createKernel();
-    FortySecondMindGrowthExport.ensure(kernel.state);
-    FortySecondMindGrowthBreather.ensure(kernel.state);
-    FortySecondMindGrowthTargetDeriver.ensure(kernel.state);
-
+    let kernel = null;
     let activeRun = null;
     let timer = null;
     let latestArtifact = null;
@@ -105,6 +102,25 @@
     const reviewPacketEl = document.getElementById('reviewPacket');
     const derivedTargetEl = document.getElementById('derivedTarget');
 
+    function initKernel() {
+      kernel = FortySecondMindKernel.createKernel();
+      FortySecondMindGrowthExport.ensure(kernel.state);
+      FortySecondMindGrowthBreather.ensure(kernel.state);
+      FortySecondMindGrowthTargetDeriver.ensure(kernel.state);
+    }
+
+    function resetLab(message) {
+      stopAuto();
+      initKernel();
+      activeRun = null;
+      latestArtifact = null;
+      latestReviewPacket = null;
+      latestDerivedTarget = null;
+      artifact.textContent = 'No artifact yet.';
+      setStatus(message || 'Local lab state reset.', true);
+      refresh();
+    }
+
     function setStatus(text, ok) {
       statusEl.className = ok === true ? 'ok' : ok === false ? 'bad' : 'muted';
       statusEl.textContent = text;
@@ -119,7 +135,7 @@
       const recentSteps = (kernel.snapshot().growthBreather.steps || []).filter(step => step.run_id === run.id).slice(0, 8);
       const source = run.target_state && run.target_state.target_source || 'fixed_default_target';
       return {
-        packet_type: '42ndMind_growth_breathing_review_packet_v0_2',
+        packet_type: '42ndMind_growth_breathing_review_packet_v0_3',
         run_id: run.id,
         term: run.term,
         iteration: run.iteration,
@@ -136,12 +152,13 @@
         recent_steps: recentSteps.map(step => ({ iteration: step.iteration, score: step.score, improved: step.improved, unit_total_ok: step.unit_total_ok })),
         export_status: artifactObj ? { commit_ready: artifactObj.commit_ready, promotion_status: artifactObj.promotion_status, target_path: artifactObj.target_path } : null,
         interpretation_warning: source === 'derived_from_truth_memory_language_pressure'
-          ? 'This target was derived from internal truth, memory, and language pressure, but remains provisional and not truth.'
+          ? 'This target was derived from a fresh local truth, memory, and language pressure seed, but remains provisional and not truth.'
           : 'This shows convergence toward a fixed target, not autonomous discovery of a new target.'
       };
     }
 
     function refresh() {
+      if (!kernel) initKernel();
       const s = kernel.snapshot();
       const run = activeRun ? s.growthBreather.runs.find(r => r.id === activeRun.id) : null;
       if (!run) {
@@ -165,22 +182,18 @@
     }
 
     function startRun() {
-      stopAuto();
-      latestDerivedTarget = null;
+      resetLab('Started fresh fixed-target breathing run.');
       activeRun = FortySecondMindGrowthBreather.startRun(kernel.state, {
         term: 'discernment',
         learning_rate: 0.18,
         breath_amplitude: 0.012,
         source_event: 'growth_breathing_lab'
       });
-      latestArtifact = null;
-      artifact.textContent = 'No artifact yet.';
-      setStatus('Started fixed-target breathing run.', true);
       refresh();
     }
 
     function seedContextAndStartDerivedRun() {
-      stopAuto();
+      resetLab('Fresh local state created for pressure-derived run.');
       kernel.ingest('Discernment means careful judgment that stays open to correction and grounded in reality before believing every claim.', { source:'growth-breathing-lab' });
       kernel.ingest('Register a truth context about discernment.', { source:'source_A', truth_packets:[
         { kind:'claim', claim_id:'discernment_claim', text:'Discernment should slow belief when a claim lacks evidence.', source_id:'source_A' }
@@ -200,9 +213,7 @@
         breath_amplitude: 0.012,
         source_event: 'growth_breathing_lab_derived_target'
       });
-      latestArtifact = null;
-      artifact.textContent = 'No artifact yet.';
-      setStatus('Seeded context and started pressure-derived target run.', true);
+      setStatus('Seeded fresh context and started pressure-derived target run.', true);
       refresh();
     }
 
@@ -245,6 +256,7 @@
       URL.revokeObjectURL(url);
     }
 
+    document.getElementById('reset').onclick = () => resetLab('Local lab state reset.');
     document.getElementById('start').onclick = startRun;
     document.getElementById('deriveStart').onclick = seedContextAndStartDerivedRun;
     document.getElementById('step').onclick = stepOnce;
@@ -267,6 +279,7 @@
       }
     };
 
+    initKernel();
     refresh();
   </script>
 </body>
