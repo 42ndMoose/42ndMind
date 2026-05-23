@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Alive Math Kernel Lab</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; margin: 24px; max-width: 1180px; line-height: 1.45; }
+    button { padding: 8px 12px; margin: 4px 4px 4px 0; cursor: pointer; }
+    textarea { width: 100%; min-height: 110px; box-sizing: border-box; font: inherit; }
+    pre { background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .ok { color: #168a38; font-weight: 700; }
+    .muted { opacity: .72; }
+    meter { width: 100%; height: 18px; }
+    @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>42ndMind Alive Math Kernel Lab</h1>
+  <p>This sandbox keeps core, discernment, language, self-model, display-awareness, input-seeing, intent, and mouth-output inside one breathing state. The textbox is treated as a sensory field. It does not execute the text and does not write source files.</p>
+
+  <div class="card">
+    <h2>Text field the kernel sees</h2>
+    <textarea id="input">why not have core, discernment, and language together in one alive breathing math state?</textarea>
+    <button id="see">See text</button>
+    <button id="tick">Tick once</button>
+    <button id="auto">Start breathing</button>
+    <button id="stop">Stop</button>
+    <button id="reset">Reset</button>
+    <span id="status" class="muted">Idle.</span>
+  </div>
+
+  <div class="card">
+    <h2>Mouth: math-state expression</h2>
+    <pre id="mouth">No mouth packet yet.</pre>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Seen sensory field</h2>
+      <pre id="sensory">No sensory field yet.</pre>
+    </div>
+    <div class="card">
+      <h2>Intent field</h2>
+      <pre id="intent">No intent field yet.</pre>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Alive field</h2>
+      <pre id="alive">No alive field yet.</pre>
+    </div>
+    <div class="card">
+      <h2>Capability/display awareness</h2>
+      <pre id="awareness">No awareness yet.</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Trace</h2>
+    <pre id="trace">No trace yet.</pre>
+  </div>
+
+  <script src="../src/alive-math-kernel.js?v=alive-math-kernel-lab-20260522-1"></script>
+  <script>
+    let kernel = FortySecondMindAliveMathKernel.create();
+    let timer = null;
+
+    const input = document.getElementById('input');
+    const statusEl = document.getElementById('status');
+    const mouthEl = document.getElementById('mouth');
+    const sensoryEl = document.getElementById('sensory');
+    const intentEl = document.getElementById('intent');
+    const aliveEl = document.getElementById('alive');
+    const awarenessEl = document.getElementById('awareness');
+    const traceEl = document.getElementById('trace');
+
+    function status(text) { statusEl.textContent = text; statusEl.className = 'ok'; }
+
+    function refresh() {
+      const s = FortySecondMindAliveMathKernel.snapshot(kernel);
+      const mouth = s.mouth_packet || {};
+      mouthEl.textContent = mouth.rendered_expression ? mouth.rendered_expression + '\n\n' + JSON.stringify(mouth, null, 2) : JSON.stringify(mouth, null, 2);
+      sensoryEl.textContent = JSON.stringify(s.sensory_field, null, 2);
+      intentEl.textContent = JSON.stringify(s.intent_field, null, 2);
+      aliveEl.textContent = JSON.stringify({ time: s.time, breath_phase: s.breath_phase, alive_field: s.alive_field, l1: FortySecondMindAliveMathKernel.l1(s.alive_field) }, null, 2);
+      awarenessEl.textContent = JSON.stringify({ self_model_field: s.self_model_field, display_model_field: s.display_model_field }, null, 2);
+      traceEl.textContent = JSON.stringify(s.trace.slice(0, 16), null, 2);
+    }
+
+    function see() {
+      FortySecondMindAliveMathKernel.seeText(kernel, input.value);
+      FortySecondMindAliveMathKernel.tick(kernel, 1);
+      status('Text seen as sensory math field.');
+      refresh();
+    }
+
+    function tick() {
+      FortySecondMindAliveMathKernel.tick(kernel, 1);
+      status('Breath tick.');
+      refresh();
+    }
+
+    function start() {
+      if (!kernel.visual_text_field) see();
+      stop();
+      timer = setInterval(tick, 420);
+      status('Breathing.');
+    }
+
+    function stop() {
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
+    function reset() {
+      stop();
+      kernel = FortySecondMindAliveMathKernel.create();
+      status('Reset.');
+      refresh();
+    }
+
+    document.getElementById('see').onclick = see;
+    document.getElementById('tick').onclick = tick;
+    document.getElementById('auto').onclick = start;
+    document.getElementById('stop').onclick = () => { stop(); status('Stopped.'); };
+    document.getElementById('reset').onclick = reset;
+
+    refresh();
+  </script>
+</body>
+</html>
