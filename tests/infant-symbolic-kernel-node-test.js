@@ -1,0 +1,16 @@
+const assert = require('assert');
+const K = require('../src/infant-symbolic-kernel.js');
+const b = K.create();
+assert.strictEqual(K.VERSION, '0.1.0-brain-one');
+assert.ok(Math.abs(K.l1(b.brain_field) - 1) < 1e-6);
+assert.ok(Math.abs(K.l1(b.body.body_field) - 1) < 1e-6);
+K.step(b, 'abababab');
+assert.ok(Math.abs(K.l1(b.brain_field) - 1) < 1e-6);
+assert.ok(b.memory.token_library.length > 0);
+for (let i = 0; i < 8; i += 1) K.step(b, 'abababab');
+assert.ok(Math.abs(K.l1(b.brain_field) - 1) < 1e-6);
+assert.ok(Math.abs(K.l1(b.body.body_field) - 1) < 1e-6);
+K.step(b, 'xqz 91 %% ?? blorp');
+assert.ok(b.sensory.raw.includes('blorp'));
+assert.strictEqual(b.english_expression_channel.enabled, false);
+console.log('PASS infant symbolic kernel node test');
