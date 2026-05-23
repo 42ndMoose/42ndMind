@@ -8,143 +8,146 @@ Status:
 RESET_MERGED_TO_MAIN
 OLD_REPO_PURGED_FROM_MAIN
 NO_TOY_SPEECH_PORTED
-SEMANTIC_BASIS_CORE_PASSED_BY_USER
-LANGUAGE_SEMANTIC_RECEPTOR_PASSED_BY_USER
-SHARED_SUBSTRATE_TEST_PASSED_BY_USER
-TRUTH_SUBSTRATE_TEST_PASSED_BY_USER
-LANGUAGE_MEMORY_FEEDBACK_TEST_PASSED_BY_USER
-GROWTH_EXPORT_TEST_PASSED_BY_USER
-GROWTH_DERIVED_TARGET_EXACT_CORE_FLOOR_PASSED_BY_USER
 ALIVE_MATH_KERNEL_SANDBOX_ADDED
-ALIVE_MATH_KERNEL_ATTENTION_PASS_ADDED
-ENGLISH_EXPRESSION_CHANNEL_DISABLED
 ALIVE_SOURCE_BODY_GROWTH_SANDBOX_ADDED
 EPISTEMIC_OCTAHEDRON_PROJECTION_ADDED
 PURE_MATH_LANGUAGE_PACKET_ADDED
-ALIVE_SOURCE_BODY_GROWTH_TEST_ADDED
-ALIVE_MATH_KERNEL_LAB_UPDATED_FOR_SOURCE_BODY
+ENGLISH_EXPRESSION_CHANNEL_DISABLED
+INFANT_SYMBOLIC_KERNEL_ADDED
+INFANT_SYMBOLIC_NODE_TEST_ADDED
+INFANT_SYMBOLIC_LAB_ADDED
+BRAIN_EQUALS_ONE_DOCTRINE_ACTIVE
+RAW_STREAM_FIRST_LAYER_ACTIVE
+NO_SEMANTIC_LABEL_LEARNING_LAYER
 ```
 
 ## Current active direction
 
-The active center is now:
+The active lower layer is now:
 
 ```text
-src/alive-math-kernel.js
-tests/alive-math-kernel-test.html
-ui/alive-math-kernel-lab.html
+src/infant-symbolic-kernel.js
+tests/infant-symbolic-kernel-node-test.js
+ui/infant-symbolic-kernel-lab.html
 ```
 
-The old organ/shared-substrate system remains in the repo only as mined logic and historical scaffolding. Do not extend it as the main brain.
+The older alive math kernel remains as a higher experimental layer, but the project direction has shifted lower and closer to first principles.
 
-## Current kernel shape
+## Core rule
 
 ```text
-text seen as sensory field
-  -> one alive math state
-  -> query/key/value attention over alive fields
-  -> Epistemic Octahedron projection O=(x,y,z)
-  -> runtime source-body B
-  -> candidate body C = B + Δ(B,A,S,O,I)
-  -> internal candidate tests
-  -> accept candidate only if tests pass
-  -> failed candidate records injury I
-  -> pure math language packet
-  -> brain-state math packet
-  -> English expression channel remains empty
+brain = 1
 ```
 
-## New source-body sandbox
-
-The kernel now mutates a sandboxed runtime source-body representation, not GitHub source files.
-
-Current rule:
+The brain must not grow by adding endless modules. Every active state is a unit-total field:
 
 ```text
-C = B + Δ(B,A,S,O,I)
-accept(C) iff tests(C)=pass
-fail(C) -> injury_register += regression injury
-github_write = 0
-human_review_required = true
+Σ |brain.pressure.weight| = 1
 ```
 
-This is not full source-code self-editing yet. It is the first smaller structure: the live body can change its own runtime body parameters and weights under test pressure while preserving no direct write.
-
-## Epistemic Octahedron integration
-
-The alive kernel now projects a live octahedron position:
+The body is also unit-total:
 
 ```text
-O = (x,y,z)
-active state => |x| + |y| + |z| = 1
-null_origin != active_net_zero
-collapse = (0,-1,0)
-peak = (0,1,0)
+Σ |body.pressure.weight| = 1
 ```
 
-Axis semantics currently used:
+## Infant symbolic loop
 
 ```text
-x negative = empathy
-x positive = practicality
-z negative = knowledge
-z positive = wisdom
+raw stream
+  -> signal field
+  -> pattern pressure
+  -> compression
+  -> prediction
+  -> error
+  -> memory update
+  -> runtime body mutation
+  -> candidate test
+  -> symbolic action / inquiry
 ```
 
-Important correction preserved:
+This layer intentionally does not use:
 
 ```text
-wisdom_dimension_is_not_best_judgment = true
-peak_is_semantic_integration_not_l1_alone = true
+LLM calls
+semantic lexicon routing
+English output
+truth-label shortcuts
+module organs pretending to be a brain
 ```
 
-## Pure math language packet
-
-The kernel now emits a symbolic state packet, not English speech.
-
-Current symbolic expressions include:
+## What the infant layer currently does
 
 ```text
-A(t+1)=N((1-β)A(t)+βP(A,S,α,B,O))
-Q=N(intent⊕S⊕A)
-α_i=softmax(Q·K_i)
-O=N1(<P-E, stability, W-K>) where |x|+|y|+|z|=1 for active state
-C=B+Δ(B,A,S,O,I); accept(C) ⇔ tests(C)=pass; fail(C)→I+1; github_write=0
-Σ|meaning.dimension.weight|=1
+reads raw character streams
+counts symbols
+builds n-grams
+detects repeated compressible patterns
+forms internal tokens from repeated patterns
+predicts next symbols from memory
+measures prediction error
+keeps brain = 1 after every step
+keeps runtime body = 1 after every step
+proposes runtime body changes
+accepts only tested body candidates
+rejects broken unit-total candidates
+keeps English channel disabled
+```
+
+## Current verification
+
+Run from repo root:
+
+```bash
+node tests/infant-symbolic-kernel-node-test.js
+```
+
+Expected: all PASS lines.
+
+The test checks:
+
+```text
+module loads
+brain equals one at birth
+body equals one at birth
+English disabled
+no semantic lexicon exported
+raw input sensed
+brain remains one after steps
+memory updates
+compression candidates are found
+token library is created
+candidate body is tested
+runtime body does not directly write source
+prediction improves or stabilizes
+gibberish is tolerated
+bad unit-total candidate is rejected
+compression-before-language doctrine is active
 ```
 
 ## Boundary
 
 ```text
-Do not add objective_truth shortcuts.
-Do not add recall-command behavior.
-Do not add synonym-list demo behavior.
+Do not return to organ/module architecture as the main path.
+Do not add semantic labels as the main learning layer.
+Do not make English output until internal math tokens are stable enough to justify translation.
+Do not hardcode mature-brain traits.
+Do not call moving numbers intelligence.
+Do not treat passing tests as proof of understanding.
 Do not let static pages directly write to GitHub.
-Do not treat pressure-derived targets as final truth or doctrine.
-Do not turn uncertainty discipline into a hardcoded phrase generator.
-Do not fake thought through ordinary prose output.
-Do not build a separate decoder module for English expression.
-Do not return to the organ/shared-substrate architecture as the main path.
 ```
 
-## Verification status
+## Next real milestone
 
-Local Node sanity check passed for the new kernel logic before commit:
+Build the first bridge from internal tokens to a pure math language without English semantics:
 
 ```text
-VERSION = 0.2.0-source-body
-source_body.generation after 12 ticks = 12
-growth_cycle_count after 12 ticks = 12
-epistemic_octahedron.active_l1 = 1
-candidate_tests.passed = true
-english_expression_channel.enabled = false
-source_body body_weights L1 = 1
-brain_state_packet.packet_type = alive_math_brain_state_packet_v0_3_source_body
+raw pattern token τ
+  -> relation between tokens
+  -> compression graph
+  -> prediction graph
+  -> error/injury graph
+  -> unit-total internal expression
 ```
 
-Browser test to run manually:
-
-```text
-tests/alive-math-kernel-test.html
-Expected: all checks pass
-```
+Only after that should the system attempt English translation.
