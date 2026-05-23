@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Infant Symbolic Kernel Lab</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; max-width: 1180px; margin: 24px; line-height: 1.45; }
+    textarea { width: 100%; min-height: 110px; box-sizing: border-box; font: inherit; }
+    button { padding: 8px 12px; margin: 4px 4px 4px 0; cursor: pointer; }
+    pre { background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .muted { opacity: .72; }
+    .ok { font-weight: 700; }
+    @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>42ndMind Infant Symbolic Kernel Lab</h1>
+  <p>This is the lower infant layer: raw symbols enter one active brain field. The field stays unit-total. The system compresses repeated patterns, predicts from memory, records error, and updates a runtime body. English output stays empty.</p>
+
+  <div class="card">
+    <h2>Raw stream</h2>
+    <textarea id="input">abababab</textarea>
+    <button id="step">Step once</button>
+    <button id="train">Train 12x</button>
+    <button id="gibberish">Send irregular stream</button>
+    <button id="reset">Reset</button>
+    <span id="status" class="muted">Idle.</span>
+  </div>
+
+  <div class="card">
+    <h2>English channel</h2>
+    <p class="muted">Disabled. This should stay empty.</p>
+    <pre id="english"></pre>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Brain = 1</h2><pre id="brain"></pre></div>
+    <div class="card"><h2>Runtime body</h2><pre id="body"></pre></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Sensory stream</h2><pre id="sensory"></pre></div>
+    <div class="card"><h2>Prediction / error</h2><pre id="prediction"></pre></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Compression</h2><pre id="compression"></pre></div>
+    <div class="card"><h2>Memory tokens</h2><pre id="tokens"></pre></div>
+  </div>
+
+  <div class="card"><h2>Candidate body test</h2><pre id="candidate"></pre></div>
+  <div class="card"><h2>Trace</h2><pre id="trace"></pre></div>
+
+  <script src="../src/infant-symbolic-kernel.js?v=0.1.0-brain-one"></script>
+  <script>
+    let kernel = FortySecondMindInfantSymbolicKernel.create();
+    const input = document.getElementById('input');
+    const statusEl = document.getElementById('status');
+    const englishEl = document.getElementById('english');
+    const brainEl = document.getElementById('brain');
+    const bodyEl = document.getElementById('body');
+    const sensoryEl = document.getElementById('sensory');
+    const predictionEl = document.getElementById('prediction');
+    const compressionEl = document.getElementById('compression');
+    const tokensEl = document.getElementById('tokens');
+    const candidateEl = document.getElementById('candidate');
+    const traceEl = document.getElementById('trace');
+
+    function snapshot() { return FortySecondMindInfantSymbolicKernel.snapshot(kernel); }
+    function showStatus(text) { statusEl.textContent = text; statusEl.className = 'ok'; }
+    function refresh() {
+      const s = snapshot();
+      englishEl.textContent = s.english_expression_channel && s.english_expression_channel.enabled ? s.english_expression_channel.content : '';
+      brainEl.textContent = JSON.stringify({ l1: FortySecondMindInfantSymbolicKernel.l1(s.brain_field), brain_field: s.brain_field }, null, 2);
+      bodyEl.textContent = JSON.stringify({ generation: s.body.generation, l1: FortySecondMindInfantSymbolicKernel.l1(s.body.body_field), params: s.body.params, body_field: s.body.body_field }, null, 2);
+      sensoryEl.textContent = JSON.stringify(s.sensory, null, 2);
+      predictionEl.textContent = JSON.stringify({ prediction: s.prediction, error: s.error }, null, 2);
+      compressionEl.textContent = JSON.stringify(s.compression, null, 2);
+      tokensEl.textContent = JSON.stringify(s.memory.token_library, null, 2);
+      candidateEl.textContent = JSON.stringify({ candidate_body: s.candidate_body, candidate_test: s.candidate_test, injury_register: s.injury_register }, null, 2);
+      traceEl.textContent = JSON.stringify(s.trace.slice(0, 24), null, 2);
+    }
+    function stepOnce() { FortySecondMindInfantSymbolicKernel.step(kernel, input.value); showStatus('One raw-symbol cycle completed.'); refresh(); }
+    function train() { for (let i = 0; i < 12; i += 1) FortySecondMindInfantSymbolicKernel.step(kernel, input.value); showStatus('Twelve cycles completed.'); refresh(); }
+    function irregular() { input.value = 'xqz 91 %% ?? blorp'; stepOnce(); }
+    function reset() { kernel = FortySecondMindInfantSymbolicKernel.create(); showStatus('Reset.'); refresh(); }
+    document.getElementById('step').onclick = stepOnce;
+    document.getElementById('train').onclick = train;
+    document.getElementById('gibberish').onclick = irregular;
+    document.getElementById('reset').onclick = reset;
+    refresh();
+  </script>
+</body>
+</html>
