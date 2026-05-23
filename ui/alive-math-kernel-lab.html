@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang='en'>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
   <title>42ndMind Alive Math Kernel Lab</title>
   <style>
     :root { color-scheme: light dark; }
@@ -19,69 +19,84 @@
 </head>
 <body>
   <h1>42ndMind Alive Math Kernel Lab</h1>
-  <p>This sandbox keeps core, discernment, language, self-model, display-awareness, input-seeing, attention, and intent inside one breathing state. The textbox is treated as a sensory field. It does not execute the text and does not write source files.</p>
+  <p>This sandbox keeps one breathing math state. It sees text as sensory pressure, projects an Epistemic Octahedron position, mutates a sandboxed source-body, tests the candidate body, and keeps English output disabled.</p>
 
-  <div class="card">
+  <div class='card'>
     <h2>Text field the kernel sees</h2>
-    <textarea id="input">why not have core, discernment, and language together in one alive breathing math state?</textarea>
-    <button id="see">See text</button>
-    <button id="tick">Tick once</button>
-    <button id="auto">Start breathing</button>
-    <button id="stop">Stop</button>
-    <button id="reset">Reset</button>
-    <span id="status" class="muted">Idle.</span>
+    <textarea id='input'>I want a simple brain that can grow on its own, follow the epistemic octahedron, and create the language of pure math.</textarea>
+    <button id='see'>See text</button>
+    <button id='tick'>Tick once</button>
+    <button id='auto'>Start breathing</button>
+    <button id='stop'>Stop</button>
+    <button id='reset'>Reset</button>
+    <span id='status' class='muted'>Idle.</span>
   </div>
 
-  <div class="card">
+  <div class='card'>
     <h2>English expression channel</h2>
-    <p class="muted">Disabled until language forms from the live math state itself. This box should stay empty.</p>
-    <pre id="expression"></pre>
+    <p class='muted'>Disabled. This box should stay empty.</p>
+    <pre id='expression'></pre>
   </div>
 
-  <div class="card">
+  <div class='card'>
     <h2>Brain-state math packet</h2>
-    <p class="muted">This is internal state display, not speech.</p>
-    <pre id="brainPacket">No brain-state packet yet.</pre>
+    <p class='muted'>Internal math state, not speech.</p>
+    <pre id='brainPacket'>No brain-state packet yet.</pre>
   </div>
 
-  <div class="grid">
-    <div class="card">
+  <div class='grid'>
+    <div class='card'>
+      <h2>Epistemic Octahedron</h2>
+      <pre id='octahedron'>No octahedron projection yet.</pre>
+    </div>
+    <div class='card'>
+      <h2>Pure math language packet</h2>
+      <pre id='pureMath'>No pure math packet yet.</pre>
+    </div>
+  </div>
+
+  <div class='grid'>
+    <div class='card'>
+      <h2>Source body</h2>
+      <pre id='sourceBody'>No source body yet.</pre>
+    </div>
+    <div class='card'>
+      <h2>Candidate / injury</h2>
+      <pre id='candidate'>No candidate body yet.</pre>
+    </div>
+  </div>
+
+  <div class='grid'>
+    <div class='card'>
       <h2>Seen sensory field</h2>
-      <pre id="sensory">No sensory field yet.</pre>
+      <pre id='sensory'>No sensory field yet.</pre>
     </div>
-    <div class="card">
+    <div class='card'>
       <h2>Intent field</h2>
-      <pre id="intent">No intent field yet.</pre>
+      <pre id='intent'>No intent field yet.</pre>
     </div>
   </div>
 
-  <div class="grid">
-    <div class="card">
+  <div class='grid'>
+    <div class='card'>
       <h2>Alive field</h2>
-      <pre id="alive">No alive field yet.</pre>
+      <pre id='alive'>No alive field yet.</pre>
     </div>
-    <div class="card">
+    <div class='card'>
       <h2>Attention</h2>
-      <pre id="attention">No attention yet.</pre>
+      <pre id='attention'>No attention yet.</pre>
     </div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h2>Capability/display awareness</h2>
-      <pre id="awareness">No awareness yet.</pre>
-    </div>
-    <div class="card">
-      <h2>Trace</h2>
-      <pre id="trace">No trace yet.</pre>
-    </div>
+  <div class='card'>
+    <h2>Trace</h2>
+    <pre id='trace'>No trace yet.</pre>
   </div>
 
-  <script src="../src/alive-math-kernel.js?v=alive-math-kernel-lab-20260522-3"></script>
+  <script src='../src/alive-math-kernel.js?v=alive-math-kernel-v0-2-source-body'></script>
   <script>
     let kernel = FortySecondMindAliveMathKernel.create();
     let timer = null;
-
     const input = document.getElementById('input');
     const statusEl = document.getElementById('status');
     const brainPacketEl = document.getElementById('brainPacket');
@@ -90,11 +105,12 @@
     const intentEl = document.getElementById('intent');
     const aliveEl = document.getElementById('alive');
     const attentionEl = document.getElementById('attention');
-    const awarenessEl = document.getElementById('awareness');
     const traceEl = document.getElementById('trace');
-
+    const octahedronEl = document.getElementById('octahedron');
+    const pureMathEl = document.getElementById('pureMath');
+    const sourceBodyEl = document.getElementById('sourceBody');
+    const candidateEl = document.getElementById('candidate');
     function status(text) { statusEl.textContent = text; statusEl.className = 'ok'; }
-
     function refresh() {
       const s = FortySecondMindAliveMathKernel.snapshot(kernel);
       const packet = s.brain_state_packet || {};
@@ -104,48 +120,22 @@
       intentEl.textContent = JSON.stringify(s.intent_field, null, 2);
       aliveEl.textContent = JSON.stringify({ time: s.time, breath_phase: s.breath_phase, alive_field: s.alive_field, l1: FortySecondMindAliveMathKernel.l1(s.alive_field) }, null, 2);
       attentionEl.textContent = JSON.stringify({ query: s.attention_query, weights: s.attention_weights, attended_field: s.attended_field }, null, 2);
-      awarenessEl.textContent = JSON.stringify({ self_model_field: s.self_model_field, display_model_field: s.display_model_field }, null, 2);
-      traceEl.textContent = JSON.stringify(s.trace.slice(0, 16), null, 2);
+      octahedronEl.textContent = JSON.stringify(s.epistemic_octahedron, null, 2);
+      pureMathEl.textContent = JSON.stringify(s.pure_math_language_packet, null, 2);
+      sourceBodyEl.textContent = JSON.stringify(s.source_body, null, 2);
+      candidateEl.textContent = JSON.stringify({ candidate_body: s.candidate_body, candidate_patch: s.candidate_patch, candidate_tests: s.candidate_tests, injury_register: s.injury_register, growth_export_gate: s.growth_export_gate }, null, 2);
+      traceEl.textContent = JSON.stringify(s.trace.slice(0, 24), null, 2);
     }
-
-    function see() {
-      FortySecondMindAliveMathKernel.seeText(kernel, input.value);
-      FortySecondMindAliveMathKernel.tick(kernel, 1);
-      status('Text seen as sensory math field.');
-      refresh();
-    }
-
-    function tick() {
-      FortySecondMindAliveMathKernel.tick(kernel, 1);
-      status('Breath tick.');
-      refresh();
-    }
-
-    function start() {
-      if (!kernel.visual_text_field) see();
-      stop();
-      timer = setInterval(tick, 420);
-      status('Breathing.');
-    }
-
-    function stop() {
-      if (timer) clearInterval(timer);
-      timer = null;
-    }
-
-    function reset() {
-      stop();
-      kernel = FortySecondMindAliveMathKernel.create();
-      status('Reset.');
-      refresh();
-    }
-
+    function see() { FortySecondMindAliveMathKernel.seeText(kernel, input.value); FortySecondMindAliveMathKernel.tick(kernel, 1); status('Text seen and one growth breath completed.'); refresh(); }
+    function tick() { FortySecondMindAliveMathKernel.tick(kernel, 1); status('Breath tick.'); refresh(); }
+    function start() { if (!kernel.visual_text_field) see(); stop(); timer = setInterval(tick, 420); status('Breathing.'); }
+    function stop() { if (timer) clearInterval(timer); timer = null; }
+    function reset() { stop(); kernel = FortySecondMindAliveMathKernel.create(); status('Reset.'); refresh(); }
     document.getElementById('see').onclick = see;
     document.getElementById('tick').onclick = tick;
     document.getElementById('auto').onclick = start;
     document.getElementById('stop').onclick = () => { stop(); status('Stopped.'); };
     document.getElementById('reset').onclick = reset;
-
     refresh();
   </script>
 </body>
