@@ -8,7 +8,7 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.2';
+  const VERSION = '0.1.3';
 
   function now() { return global.FortySecondMindBrainState.now(); }
   function arr(v) { return global.FortySecondMindBrainState.arr(v); }
@@ -22,6 +22,7 @@
         target_derived_from_internal_pressure: true,
         semantic_core_retention_required: true,
         normalized_pressure_blend: true,
+        semantic_core_floor: true,
         target_is_not_truth: true,
         target_is_not_doctrine: true,
         shared_substrate_link_required: true,
@@ -34,6 +35,7 @@
     state.growthTargetDeriver.packet_version = VERSION;
     state.growthTargetDeriver.doctrine.semantic_core_retention_required = true;
     state.growthTargetDeriver.doctrine.normalized_pressure_blend = true;
+    state.growthTargetDeriver.doctrine.semantic_core_floor = true;
     return state.growthTargetDeriver;
   }
 
@@ -110,7 +112,7 @@
       derived_from_claim_ids: [],
       derived_from_sources: [],
       pressure_map: {},
-      blend_method: 'normalized_base_pressure_blend',
+      blend_method: 'normalized_base_pressure_blend_with_core_floor',
       at: now()
     };
 
@@ -147,19 +149,36 @@
 
     packet.derived_from_claim_ids = Array.from(new Set(packet.derived_from_claim_ids)).slice(0, 12);
     packet.derived_from_sources = Array.from(new Set(packet.derived_from_sources)).slice(0, 12);
-    packet.pressure_map = blendBaseWithPressure(packet.base_map, packet.pressure_only_map, { base_weight: 0.62, pressure_weight: 0.38 });
+    packet.pressure_map = blendBaseWithPressure(packet.base_map, packet.pressure_only_map, { base_weight: 0.62, pressure_weight: 0.38, core_floor_ratio: 0.72 });
     return packet;
+  }
+
+  function strongestBaseDimensions(normalizedBase, count) {
+    return Object.keys(normalizedBase || {})
+      .map(key => ({ key, weight: Number(normalizedBase[key]) || 0 }))
+      .sort((a, b) => b.weight - a.weight)
+      .slice(0, count || 2);
+  }
+
+  function enforceCoreFloor(blended, normalizedBase, ratio) {
+    const out = Object.assign({}, blended);
+    strongestBaseDimensions(normalizedBase, 2).forEach(row => {
+      const floor = row.weight * (ratio == null ? 0.72 : ratio);
+      if ((out[row.key] || 0) < floor) out[row.key] = floor;
+    });
+    return normalizeMap(out);
   }
 
   function blendBaseWithPressure(baseMap, pressureMap, options) {
     const baseWeight = Number(options && options.base_weight || 0.62);
     const pressureWeight = Number(options && options.pressure_weight || 0.38);
+    const coreFloorRatio = Number(options && options.core_floor_ratio || 0.72);
     const normalizedBase = normalizeMap(baseMap);
     const normalizedPressure = mapTotal(pressureMap) > 0 ? normalizeMap(pressureMap) : {};
     const blended = {};
     mergeInto(blended, scaleMap(normalizedBase, baseWeight));
     mergeInto(blended, scaleMap(normalizedPressure, pressureWeight));
-    return blended;
+    return enforceCoreFloor(blended, normalizedBase, coreFloorRatio);
   }
 
   function activate(state, target) {
@@ -183,10 +202,11 @@
     if (!fromMap) return null;
     const target = fromMap(key, 'pressure_derived_target_not_committed', packet.pressure_map, 'Derived from internal truth, memory, and language pressure while preserving semantic core.');
     target.target_source = 'derived_from_truth_memory_language_pressure';
-    target.derivation_method = 'semantic_core_blend_v0_2_normalized_pressure';
+    target.derivation_method = 'semantic_core_blend_v0_3_core_floor';
     target.semantic_core_source = packet.base_source;
     target.semantic_core_retention = 0.62;
     target.pressure_influence = 0.38;
+    target.semantic_core_floor_ratio = 0.72;
     target.source_counts = {
       semantic_requirement_count: packet.semantic_requirement_count,
       truth_context_count: packet.truth_context_count,
@@ -215,6 +235,8 @@
     pressureFromSnapshot,
     blendBaseWithPressure,
     normalizeMap,
-    mapTotal
+    mapTotal,
+    enforceCoreFloor,
+    strongestBaseDimensions
   });
 })(typeof window !== 'undefined' ? window : globalThis);
