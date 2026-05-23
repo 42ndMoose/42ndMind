@@ -1,42 +1,54 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Alive math kernel test</title></head>
-<body><pre id="out"></pre>
-<script src="../src/alive-math-kernel.js?v=alive-math-kernel-20260522-3"></script>
+<html lang='en'><head><meta charset='utf-8'><title>Alive math kernel test</title></head>
+<body><pre id='out'></pre>
+<script src='../src/alive-math-kernel.js?v=alive-math-kernel-v0-2-source-body'></script>
 <script>
-const TEST_BUILD = 'alive-math-kernel-test-v0-1-2-attention-expression-channel';
+const TEST_BUILD = 'alive-math-kernel-test-v0-2-source-body-growth';
 const rows = [];
 function ok(name, condition){ rows.push((condition ? 'PASS ' : 'FAIL ') + name); }
 function hasDim(list, dim){ return Array.isArray(list) && list.some(row => row.dimension === dim); }
 function attentionTotal(weights){ return (weights || []).reduce((s,w)=>s+Math.abs(Number(w.attention_weight)||0),0); }
-const kernel = FortySecondMindAliveMathKernel.create();
-const initial = FortySecondMindAliveMathKernel.snapshot(kernel);
-FortySecondMindAliveMathKernel.seeText(kernel, 'Can language and discernment see my text as math without editing the source code?');
-for (let i = 0; i < 12; i += 1) FortySecondMindAliveMathKernel.tick(kernel, 1);
-const s = FortySecondMindAliveMathKernel.snapshot(kernel);
-ok('alive math kernel exists', !!s && s.packet_type === '42ndMind_alive_math_kernel_v0_1');
+const K = FortySecondMindAliveMathKernel;
+const kernel = K.create();
+const initial = K.snapshot(kernel);
+K.seeText(kernel, 'I want a simple brain that can grow on its own, follow the epistemic octahedron, and create the language of pure math without editing GitHub directly.');
+for (let i = 0; i < 12; i += 1) K.tick(kernel, 1);
+const s = K.snapshot(kernel);
+ok('alive math kernel exists', !!s && s.packet_type === '42ndMind_alive_math_kernel_v0_2');
+ok('kernel version advanced to source body', K.VERSION === '0.2.0-source-body');
 ok('single alive state has core field', Array.isArray(s.core_field) && s.core_field.length > 0);
 ok('single alive state has discernment field', Array.isArray(s.discernment_field) && s.discernment_field.length > 0);
 ok('single alive state has language field', Array.isArray(s.language_field) && s.language_field.length > 0);
-ok('textbox input was seen as sensory field', s.visual_text_field.includes('language and discernment') && Array.isArray(s.sensory_field));
+ok('textbox input was seen as sensory field', s.visual_text_field.includes('simple brain') && Array.isArray(s.sensory_field));
 ok('input is not source mutation', s.doctrine.input_is_seen_not_executed === true && s.doctrine.no_source_write === true);
 ok('sensory field detected language pressure', hasDim(s.sensory_field, 'symbol_to_meaning_pressure'));
-ok('sensory field detected source boundary pressure', hasDim(s.sensory_field, 'sandbox_boundary') || hasDim(s.sensory_field, 'cannot_commit_source_directly'));
+ok('sensory field detected source growth pressure', hasDim(s.sensory_field, 'mutation_pressure') || hasDim(s.sensory_field, 'can_update_runtime_state'));
 ok('alive field breathes over time', s.time > initial.time && s.breath_phase > initial.breath_phase);
-ok('alive field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.alive_field) - 1) < 0.00001);
-ok('intent field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.intent_field) - 1) < 0.00001);
-ok('sensory field remains unit total', Math.abs(FortySecondMindAliveMathKernel.l1(s.sensory_field) - 1) < 0.00001);
-ok('attention query exists and is unit total', Array.isArray(s.attention_query) && Math.abs(FortySecondMindAliveMathKernel.l1(s.attention_query) - 1) < 0.00001);
-ok('attention weights exist', Array.isArray(s.attention_weights) && s.attention_weights.length >= 6);
+ok('alive field remains unit total', Math.abs(K.l1(s.alive_field) - 1) < 0.00001);
+ok('intent field remains unit total', Math.abs(K.l1(s.intent_field) - 1) < 0.00001);
+ok('sensory field remains unit total', Math.abs(K.l1(s.sensory_field) - 1) < 0.00001);
+ok('attention query exists and is unit total', Array.isArray(s.attention_query) && Math.abs(K.l1(s.attention_query) - 1) < 0.00001);
+ok('attention weights include source body and octahedron', s.attention_weights.some(w => w.source === 'source_body') && s.attention_weights.some(w => w.source === 'octahedron'));
 ok('attention weights sum near one', Math.abs(attentionTotal(s.attention_weights) - 1) < 0.00001);
-ok('attended field exists and is unit total', Array.isArray(s.attended_field) && Math.abs(FortySecondMindAliveMathKernel.l1(s.attended_field) - 1) < 0.00001);
-ok('brain-state packet exists', !!s.brain_state_packet && s.brain_state_packet.packet_type === 'alive_math_brain_state_packet_v0_2_attention');
+ok('attended field exists and is unit total', Array.isArray(s.attended_field) && Math.abs(K.l1(s.attended_field) - 1) < 0.00001);
+ok('octahedron state exists', !!s.epistemic_octahedron && !!s.epistemic_octahedron.active_position);
+ok('octahedron preserves active surface or null', s.epistemic_octahedron.active_l1 === 0 || Math.abs(s.epistemic_octahedron.active_l1 - 1) < 0.00001);
+ok('octahedron records wisdom correction', s.epistemic_octahedron.doctrine.wisdom_dimension_is_not_best_judgment === true);
+ok('source body exists', !!s.source_body && s.source_body.body_type === 'alive_kernel_source_body_sandbox_v0_1');
+ok('source body remains unit total', Math.abs(K.l1(s.source_body.body_weights) - 1) < 0.00001);
+ok('source body grew over ticks', s.source_body.generation > initial.source_body.generation && s.growth_cycle_count > 0);
+ok('candidate body exists', !!s.candidate_body && s.candidate_body.generation === s.source_body.generation);
+ok('candidate patch exists', !!s.candidate_patch && s.candidate_patch.direct_source_write === false);
+ok('candidate tests passed', !!s.candidate_tests && s.candidate_tests.passed === true && s.candidate_tests.failed_count === 0);
+ok('growth export gate is review gated', s.growth_export_gate.exportable === true && s.growth_export_gate.human_review_required === true && s.growth_export_gate.direct_github_write === false);
+ok('injury register exists', Array.isArray(s.injury_register));
+ok('pure math language packet exists', !!s.pure_math_language_packet && s.pure_math_language_packet.mode === 'symbolic_state_expression_not_english_speech');
+ok('pure math packet mentions candidate acceptance', s.pure_math_language_packet.expressions.some(x => x.includes('accept(C)')));
+ok('brain-state packet exists', !!s.brain_state_packet && s.brain_state_packet.packet_type === 'alive_math_brain_state_packet_v0_3_source_body');
 ok('brain-state packet is not speech', s.brain_state_packet.mode === 'brain_state_math_packet_not_speech');
+ok('brain-state packet carries source body', !!s.brain_state_packet.source_body && s.brain_state_packet.source_body.generation === s.source_body.generation);
+ok('brain-state packet carries octahedron', !!s.brain_state_packet.epistemic_octahedron && !!s.brain_state_packet.octahedron_equation);
 ok('english expression channel is disabled', !!s.english_expression_channel && s.english_expression_channel.enabled === false && s.english_expression_channel.content === '');
-ok('brain-state packet carries intent vector', Array.isArray(s.brain_state_packet.intent_vector) && s.brain_state_packet.intent_vector.length > 0);
-ok('brain-state packet carries alive vector', Array.isArray(s.brain_state_packet.alive_vector) && s.brain_state_packet.alive_vector.length > 0);
-ok('brain-state packet carries seen vector', Array.isArray(s.brain_state_packet.seen_vector) && s.brain_state_packet.seen_vector.length > 0);
-ok('brain-state packet carries attention weights', Array.isArray(s.brain_state_packet.attention_weights) && s.brain_state_packet.attention_weights.length >= 6);
-ok('brain-state expression is generated from vectors', typeof s.brain_state_packet.rendered_expression === 'string' && s.brain_state_packet.rendered_expression.includes('attention ='));
-ok('trace records seeing, attention, and breathing', s.trace.some(t => t.type === 'seen_text_as_sensory_field' && Array.isArray(t.attention_weights)) && s.trace.some(t => t.type === 'breath_tick' && Array.isArray(t.attention_weights)));
+ok('trace records seeing, breathing, and source growth', s.trace.some(t => t.type === 'seen_text_as_sensory_field') && s.trace.some(t => t.type === 'breath_tick') && s.trace.some(t => t.type === 'source_body_growth_cycle'));
 document.getElementById('out').textContent = 'BUILD ' + TEST_BUILD + '\n' + rows.join('\n') + '\n\n' + JSON.stringify({ initial, current: s }, null, 2);
 </script></body></html>

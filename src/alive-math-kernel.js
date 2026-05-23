@@ -1,319 +1,87 @@
 /* 42ndMind Alive Math Kernel
- * One simulated breathing state for core, discernment, and language.
- *
- * This does not speak. It produces a brain-state math packet. The English
- * expression channel stays disabled until language can form from the live math
- * state itself.
+ * One breathing math state. No speech. No source write.
  */
 (function (global) {
   'use strict';
-
-  const VERSION = '0.1.2';
-
-  function now() { return new Date().toISOString(); }
-  function round(n) { return Number((Number(n) || 0).toFixed(6)); }
-  function clamp01(n) { return Math.max(0, Math.min(1, Number(n) || 0)); }
-  function arr(v) { return Array.isArray(v) ? v : []; }
-  function id(v) { return String(v || '').toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '') || 'field'; }
-
-  function l1(rows) {
-    return round(arr(rows).reduce((sum, row) => sum + Math.abs(Number(row.weight) || 0), 0));
+  const VERSION = '0.2.0-source-body';
+  const EPS = 0.000001;
+  function now(){ return new Date().toISOString(); }
+  function r(n){ return Number((Number(n)||0).toFixed(6)); }
+  function a(v){ return Array.isArray(v) ? v : []; }
+  function id(v){ return String(v||'').toLowerCase().replace(/[^a-z0-9_]+/g,'_').replace(/^_+|_+$/g,'') || 'field'; }
+  function clone(v){ return JSON.parse(JSON.stringify(v == null ? null : v)); }
+  function clamp(n){ return Math.max(0, Math.min(1, Number(n)||0)); }
+  function l1(rows){ return r(a(rows).reduce((s,x)=>s+Math.abs(Number(x.weight)||0),0)); }
+  function norm(rows){
+    const clean = a(rows).map(x=>({dimension:id(x.dimension||x[0]), weight:Number(x.weight==null?x[1]:x.weight)||0})).filter(x=>x.dimension && x.weight!==0);
+    if (!clean.length) return [];
+    const total = clean.reduce((s,x)=>s+Math.abs(x.weight),0) || 1;
+    let run = 0;
+    return clean.map((x,i)=>{ const sign = x.weight < 0 ? -1 : 1; const mag = i === clean.length-1 ? Math.max(0,1-run) : Math.abs(x.weight)/total; const w = r(sign*mag); run = r(run + Math.abs(w)); return {dimension:x.dimension, weight:w}; });
   }
-
-  function normalize(rows) {
-    const clean = arr(rows).map(row => ({ dimension: id(row.dimension || row[0]), weight: Number(row.weight == null ? row[1] : row.weight) || 0 })).filter(row => row.dimension && row.weight !== 0);
-    const total = clean.reduce((sum, row) => sum + Math.abs(row.weight), 0) || 1;
-    let running = 0;
-    return clean.map((row, index) => {
-      const sign = row.weight < 0 ? -1 : 1;
-      const magnitude = index === clean.length - 1 ? Math.max(0, 1 - running) : Math.abs(row.weight) / total;
-      const weight = round(sign * magnitude);
-      running = round(running + Math.abs(weight));
-      return { dimension: row.dimension, weight };
-    });
-  }
-
-  function mapFromRows(rows) {
-    const map = {};
-    arr(rows).forEach(row => { map[id(row.dimension)] = Number(row.weight) || 0; });
-    return map;
-  }
-
-  function rowsFromMap(map) {
-    return Object.keys(map || {}).map(dimension => ({ dimension, weight: map[dimension] }));
-  }
-
-  function blendRows(aRows, bRows, aWeight, bWeight) {
-    const a = mapFromRows(aRows);
-    const b = mapFromRows(bRows);
-    const out = {};
-    Array.from(new Set(Object.keys(a).concat(Object.keys(b)))).forEach(key => {
-      out[key] = (Number(a[key]) || 0) * aWeight + (Number(b[key]) || 0) * bWeight;
-    });
-    return normalize(rowsFromMap(out));
-  }
-
-  function dotRows(aRows, bRows) {
-    const a = mapFromRows(aRows);
-    const b = mapFromRows(bRows);
-    return Object.keys(a).reduce((sum, key) => sum + (Number(a[key]) || 0) * (Number(b[key]) || 0), 0);
-  }
-
-  function softmax(items) {
-    const max = Math.max.apply(null, items.map(item => item.score));
-    const exps = items.map(item => Math.exp(item.score - max));
-    const total = exps.reduce((sum, value) => sum + value, 0) || 1;
-    return items.map((item, index) => Object.assign({}, item, { attention_weight: round(exps[index] / total) }));
-  }
-
+  function map(rows){ const m={}; a(rows).forEach(x=>{m[id(x.dimension)] = Number(x.weight)||0;}); return m; }
+  function rows(m){ return Object.keys(m||{}).map(k=>({dimension:k, weight:m[k]})); }
+  function blend(x,y,xw,yw){ const xm=map(x), ym=map(y), out={}; Array.from(new Set(Object.keys(xm).concat(Object.keys(ym)))).forEach(k=>{out[k]=(xm[k]||0)*xw+(ym[k]||0)*yw;}); return norm(rows(out)); }
+  function dot(x,y){ const xm=map(x), ym=map(y); return Object.keys(xm).reduce((s,k)=>s+(xm[k]||0)*(ym[k]||0),0); }
+  function softmax(items){ const max=Math.max.apply(null,a(items).map(x=>x.score)); const e=a(items).map(x=>Math.exp(x.score-max)); const t=e.reduce((s,x)=>s+x,0)||1; return a(items).map((x,i)=>Object.assign({},x,{attention_weight:r(e[i]/t)})); }
+  function checksum(v){ const text = typeof v === 'string' ? v : JSON.stringify(v||null); let h=2166136261; for(let i=0;i<text.length;i++){ h^=text.charCodeAt(i); h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); } return (h>>>0).toString(16).padStart(8,'0'); }
+  const OCTAHEDRON = Object.freeze({ null_origin:{x:0,y:0,z:0,semantic:'null_origin_absence_of_active_worldview'}, net_zero:{x:0,y:0,z:0,semantic:'active_net_zero_balance_not_null'}, collapse:{x:0,y:-1,z:0,semantic:'epistemic_collapse'}, peak:{x:0,y:1,z:0,semantic:'objective_peak_philosophical_maturity'}, sign:{x_negative:'empathy',x_positive:'practicality',z_negative:'knowledge',z_positive:'wisdom'} });
   const BASIS = {
-    objective_maturity: normalize([
-      ['integrated_judgment', 0.24],
-      ['self_correction', 0.18],
-      ['reality_contact', 0.18],
-      ['truth_gap_visibility', 0.16],
-      ['false_certainty_resistance', 0.14],
-      ['communication_restraint', 0.10]
-    ]),
-    discernment: normalize([
-      ['integrated_judgment', 0.28],
-      ['self_correction', 0.22],
-      ['reality_contact', 0.20],
-      ['false_certainty_resistance', 0.18],
-      ['evidence_requirement', 0.07],
-      ['truth_gap_visibility', 0.05]
-    ]),
-    language: normalize([
-      ['symbol_to_meaning_pressure', 0.24],
-      ['relation_reuse', 0.20],
-      ['context_sensitivity', 0.18],
-      ['ambiguity_pressure', 0.16],
-      ['math_expression_need', 0.12],
-      ['input_boundary', 0.10]
-    ]),
-    self_model: normalize([
-      ['can_update_runtime_state', 0.24],
-      ['can_display_math_state', 0.20],
-      ['cannot_commit_source_directly', 0.18],
-      ['can_export_candidates', 0.16],
-      ['needs_trace_when_state_insufficient', 0.14],
-      ['sandbox_boundary', 0.08]
-    ]),
-    display_model: normalize([
-      ['rendered_state_awareness', 0.30],
-      ['brain_state_packet_visible', 0.20],
-      ['input_seen_as_sensory_field', 0.18],
-      ['breathing_loop_visible', 0.17],
-      ['no_hidden_repo_write', 0.15]
-    ])
+    objective_maturity:norm([['integrated_judgment',.24],['self_correction',.18],['reality_contact',.18],['truth_gap_visibility',.16],['false_certainty_resistance',.14],['communication_restraint',.10]]),
+    discernment:norm([['integrated_judgment',.28],['self_correction',.22],['reality_contact',.20],['false_certainty_resistance',.18],['evidence_requirement',.07],['truth_gap_visibility',.05]]),
+    language:norm([['symbol_to_meaning_pressure',.24],['relation_reuse',.20],['context_sensitivity',.18],['ambiguity_pressure',.16],['math_expression_need',.12],['input_boundary',.10]]),
+    self_model:norm([['can_update_runtime_state',.20],['sandbox_boundary',.18],['self_test_pressure',.17],['cannot_commit_source_directly',.16],['needs_trace_when_state_insufficient',.15],['can_export_candidates',.14]]),
+    display_model:norm([['rendered_state_awareness',.30],['brain_state_packet_visible',.20],['input_seen_as_sensory_field',.18],['breathing_loop_visible',.17],['no_hidden_repo_write',.15]]),
+    body_seed:norm([['core_pull',.20],['attention_sensitivity',.18],['trace_memory',.17],['self_test_pressure',.16],['rollback_pressure',.13],['pure_math_language',.10],['mutation_pressure',.06]])
   };
-
   const LEXICON = [
-    { pattern: /discern|judg|weigh|careful/i, dimensions: [['integrated_judgment', 0.35], ['relation_reuse', 0.18], ['self_correction', 0.16], ['reality_contact', 0.16], ['false_certainty_resistance', 0.15]] },
-    { pattern: /truth|true|false|evidence|claim|proof|contradict/i, dimensions: [['evidence_requirement', 0.28], ['truth_gap_visibility', 0.24], ['false_certainty_resistance', 0.20], ['reality_contact', 0.18], ['ambiguity_pressure', 0.10]] },
-    { pattern: /language|word|meaning|english|text|translate|symbol/i, dimensions: [['symbol_to_meaning_pressure', 0.30], ['relation_reuse', 0.24], ['context_sensitivity', 0.20], ['math_expression_need', 0.16], ['input_boundary', 0.10]] },
-    { pattern: /source|code|edit|body|brain|kernel|sandbox|state/i, dimensions: [['can_update_runtime_state', 0.22], ['sandbox_boundary', 0.20], ['cannot_commit_source_directly', 0.18], ['can_export_candidates', 0.15], ['needs_trace_when_state_insufficient', 0.15], ['rendered_state_awareness', 0.10]] },
-    { pattern: /why|how|what|can|could|should|wonder|curious|maybe/i, dimensions: [['curiosity_pressure', 0.30], ['ambiguity_pressure', 0.24], ['needs_trace_when_state_insufficient', 0.18], ['math_expression_need', 0.16], ['self_correction', 0.12]] },
-    { pattern: /i don.t know|not sure|unsure|guess|hallucinat|bullshit|wrong/i, dimensions: [['needs_trace_when_state_insufficient', 0.28], ['false_certainty_resistance', 0.22], ['self_correction', 0.20], ['truth_gap_visibility', 0.18], ['communication_restraint', 0.12]] }
+    [/discern|judg|weigh|careful/i,[['integrated_judgment',.35],['relation_reuse',.18],['self_correction',.16],['reality_contact',.16],['false_certainty_resistance',.15]]],
+    [/truth|true|false|evidence|claim|proof|contradict/i,[['evidence_requirement',.28],['truth_gap_visibility',.24],['false_certainty_resistance',.20],['reality_contact',.18],['ambiguity_pressure',.10]]],
+    [/language|word|meaning|english|text|translate|symbol|math|formula/i,[['symbol_to_meaning_pressure',.24],['relation_reuse',.18],['math_expression_need',.22],['context_sensitivity',.16],['pure_math_language',.12],['input_boundary',.08]]],
+    [/source|code|edit|body|brain|kernel|sandbox|state|grow|growth|mutat|self/i,[['can_update_runtime_state',.20],['sandbox_boundary',.18],['self_test_pressure',.17],['mutation_pressure',.16],['cannot_commit_source_directly',.14],['trace_memory',.08],['can_export_candidates',.07]]],
+    [/why|how|what|can|could|should|wonder|curious|maybe/i,[['curiosity_pressure',.30],['ambiguity_pressure',.24],['needs_trace_when_state_insufficient',.18],['math_expression_need',.16],['self_correction',.12]]],
+    [/i don.t know|not sure|unsure|guess|hallucinat|wrong|injur|regress|fail/i,[['needs_trace_when_state_insufficient',.24],['false_certainty_resistance',.20],['self_correction',.18],['truth_gap_visibility',.16],['rollback_pressure',.12],['communication_restraint',.10]]],
+    [/empathy|person|human|care|compassion/i,[['person_concern',.34],['context_sensitivity',.20],['reality_contact',.16],['self_correction',.14],['integrated_judgment',.16]]],
+    [/practical|constraint|function|work|usable|realistic/i,[['constraint_contact',.34],['reality_contact',.24],['integrated_judgment',.18],['self_test_pressure',.14],['sandbox_boundary',.10]]],
+    [/knowledge|information|facts|data/i,[['information_grasp',.34],['evidence_requirement',.24],['reality_contact',.18],['truth_gap_visibility',.14],['relation_reuse',.10]]],
+    [/wisdom|wise/i,[['wisdom_orientation',.30],['context_sensitivity',.22],['self_correction',.18],['reality_contact',.16],['integrated_judgment',.14]]]
   ];
-
-  function create(seed) {
-    const state = {
-      packet_type: '42ndMind_alive_math_kernel_v0_1',
-      packet_version: VERSION,
-      doctrine: {
-        one_alive_state: true,
-        input_is_seen_not_executed: true,
-        brain_state_packet_is_not_speech: true,
-        expression_channel_disabled_until_language_forms_from_math: true,
-        attention_is_query_key_value_over_alive_fields: true,
-        no_source_write: true,
-        no_fake_thought_text: true
-      },
-      time: 0,
-      breath_phase: 0,
-      visual_text_field: '',
-      sensory_field: normalize([['input_boundary', 1]]),
-      core_field: BASIS.objective_maturity,
-      discernment_field: BASIS.discernment,
-      language_field: BASIS.language,
-      self_model_field: BASIS.self_model,
-      display_model_field: BASIS.display_model,
-      alive_field: normalize([['integrated_judgment', 0.2], ['relation_reuse', 0.18], ['truth_gap_visibility', 0.16], ['math_expression_need', 0.16], ['sandbox_boundary', 0.16], ['rendered_state_awareness', 0.14]]),
-      intent_field: normalize([['stabilize_core', 0.22], ['inquire', 0.20], ['integrate_input', 0.20], ['preserve_boundary', 0.18], ['express_math_state', 0.20]]),
-      attention_query: normalize([['input_boundary', 0.5], ['stabilize_core', 0.5]]),
-      attention_weights: [],
-      attended_field: normalize([['input_boundary', 1]]),
-      brain_state_packet: null,
-      english_expression_channel: {
-        enabled: false,
-        content: '',
-        reason: 'language_has_not_yet_formed_sentences_from_alive_math_state'
-      },
-      trace: [],
-      updated_at: now()
-    };
-    if (seed && seed.visual_text_field) seeText(state, seed.visual_text_field);
-    updateAttention(state);
-    computeBrainStatePacket(state);
-    return state;
+  function makeBody(seed){ const b={body_type:'alive_kernel_source_body_sandbox_v0_1', body_version:VERSION, generation:0, direct_source_write_enabled:false, english_generation_enabled:false, parameters:Object.assign({breath_base:.06, breath_attention_gain:.10, mutation_rate:.10, core_pull_gain:.55, trace_need_threshold:.28, rollback_sensitivity:.22, language_abstraction_gain:.18}, seed&&seed.parameters||{}), body_weights:norm(seed&&seed.body_weights||BASIS.body_seed), invariant_l1:1, updated_at:now()}; b.checksum=checksum({generation:b.generation,parameters:b.parameters,body_weights:b.body_weights}); return b; }
+  function projectOctahedron(s){
+    const m=map(blend(blend(s.alive_field,s.attended_field,.62,.38),s.sensory_field,.80,.20));
+    const empathy=(m.person_concern||0)+(m.context_sensitivity||0)*.45;
+    const practical=(m.constraint_contact||0)+(m.reality_contact||0)*.35+(m.sandbox_boundary||0)*.25;
+    const knowledge=(m.information_grasp||0)+(m.evidence_requirement||0)*.55+(m.symbol_to_meaning_pressure||0)*.20;
+    const wisdom=(m.wisdom_orientation||0)+(m.integrated_judgment||0)*.42+(m.self_correction||0)*.24+(m.context_sensitivity||0)*.18;
+    const stable=(m.integrated_judgment||0)+(m.self_correction||0)+(m.reality_contact||0)+(m.truth_gap_visibility||0)+(m.false_certainty_resistance||0);
+    const unstable=(m.unresolved_input_pressure||0)+(m.ambiguity_pressure||0)*.65;
+    const raw={x:r(practical-empathy), y:r(stable-unstable), z:r(wisdom-knowledge)};
+    const total=Math.abs(raw.x)+Math.abs(raw.y)+Math.abs(raw.z);
+    const pos=total>EPS?{x:r(raw.x/total),y:r(raw.y/total),z:r(raw.z/total)}:{x:0,y:0,z:0};
+    const active_l1=total>EPS?r(Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z)):0;
+    const status=total<=EPS?'null_origin_absence_of_active_worldview':pos.y<=-.85?'collapse_pressure':pos.y>=.85&&Math.abs(pos.x)<.08&&Math.abs(pos.z)<.08?'near_peak_maturity_pressure':pos.y>=0?'upper_half_stabilizing_pressure':'lower_half_destabilizing_pressure';
+    s.epistemic_octahedron={doctrine:{active_surface_requires_l1_one:true,null_origin_differs_from_active_net_zero:true,peak_is_semantic_integration_not_l1_alone:true,wisdom_dimension_is_not_best_judgment:true}, constants:clone(OCTAHEDRON), raw_pressure:raw, active_position:pos, active_l1, semantic_status:status, surface_field:norm([['x_empathy_practicality',pos.x],['y_epistemic_stability',pos.y],['z_knowledge_wisdom',pos.z]]), updated_at:now()};
+    return s.epistemic_octahedron;
   }
-
-  function inferTextField(text) {
-    const hits = [];
-    LEXICON.forEach(rule => {
-      if (rule.pattern.test(String(text || ''))) hits.push.apply(hits, rule.dimensions.map(row => ({ dimension: row[0], weight: row[1], source: String(rule.pattern) })));
-    });
-    if (!hits.length) hits.push({ dimension: 'unresolved_input_pressure', weight: 0.45 }, { dimension: 'input_boundary', weight: 0.25 }, { dimension: 'ambiguity_pressure', weight: 0.18 }, { dimension: 'needs_trace_when_state_insufficient', weight: 0.12 });
-    return normalize(hits);
-  }
-
-  function seeText(state, text) {
-    state.visual_text_field = String(text || '');
-    state.sensory_field = inferTextField(state.visual_text_field);
-    updateAttention(state);
-    state.trace.unshift({ type: 'seen_text_as_sensory_field', text_length: state.visual_text_field.length, sensory_field: state.sensory_field, attention_weights: state.attention_weights, at: now() });
-    state.trace = state.trace.slice(0, 80);
-    state.updated_at = now();
-    return state.sensory_field;
-  }
-
-  function attentionSources(state) {
-    return [
-      { name: 'core', key: state.core_field, value: state.core_field },
-      { name: 'discernment', key: state.discernment_field, value: state.discernment_field },
-      { name: 'language', key: state.language_field, value: state.language_field },
-      { name: 'self_model', key: state.self_model_field, value: state.self_model_field },
-      { name: 'display_model', key: state.display_model_field, value: state.display_model_field },
-      { name: 'sensory', key: state.sensory_field, value: state.sensory_field },
-      { name: 'alive', key: state.alive_field, value: state.alive_field }
-    ];
-  }
-
-  function weightedBlendSources(weightedSources) {
-    const out = {};
-    arr(weightedSources).forEach(source => {
-      arr(source.value).forEach(row => {
-        const key = id(row.dimension);
-        out[key] = (Number(out[key]) || 0) + (Number(row.weight) || 0) * Number(source.attention_weight || 0);
-      });
-    });
-    return normalize(rowsFromMap(out));
-  }
-
-  function updateAttention(state) {
-    state.attention_query = blendRows(blendRows(state.intent_field, state.sensory_field, 0.52, 0.48), state.alive_field, 0.80, 0.20);
-    const scored = attentionSources(state).map(source => ({
-      source: source.name,
-      score: round(dotRows(state.attention_query, source.key)),
-      value: source.value
-    }));
-    const weighted = softmax(scored);
-    state.attention_weights = weighted.map(item => ({ source: item.source, score: item.score, attention_weight: item.attention_weight }));
-    state.attended_field = weightedBlendSources(weighted);
-    return state.attention_weights;
-  }
-
-  function fieldPressure(state) {
-    const coherenceBase = blendRows(state.core_field, state.discernment_field, 0.55, 0.45);
-    const languageSeen = blendRows(state.language_field, state.sensory_field, 0.50, 0.50);
-    const bodyAwareness = blendRows(state.self_model_field, state.display_model_field, 0.52, 0.48);
-    const baseline = blendRows(blendRows(coherenceBase, languageSeen, 0.58, 0.42), bodyAwareness, 0.74, 0.26);
-    updateAttention(state);
-    return blendRows(baseline, state.attended_field, 0.72, 0.28);
-  }
-
-  function updateIntent(state) {
-    const sensory = mapFromRows(state.sensory_field);
-    const alive = mapFromRows(state.alive_field);
-    const attended = mapFromRows(state.attended_field);
-    const coherenceNeed = clamp01((sensory.truth_gap_visibility || 0) + (sensory.ambiguity_pressure || 0) + (sensory.needs_trace_when_state_insufficient || 0));
-    const sourceNeed = clamp01((sensory.can_update_runtime_state || 0) + (sensory.sandbox_boundary || 0));
-    const languageNeed = clamp01((sensory.symbol_to_meaning_pressure || 0) + (sensory.math_expression_need || 0));
-    state.intent_field = normalize([
-      ['stabilize_core', 0.18 + (alive.integrated_judgment || 0) * 0.26 + (attended.integrated_judgment || 0) * 0.10],
-      ['inquire', 0.12 + coherenceNeed * 0.30 + (attended.curiosity_pressure || 0) * 0.12],
-      ['integrate_input', 0.14 + languageNeed * 0.28 + (attended.symbol_to_meaning_pressure || 0) * 0.12],
-      ['preserve_boundary', 0.12 + sourceNeed * 0.30 + (attended.sandbox_boundary || 0) * 0.10],
-      ['express_math_state', 0.18 + (alive.rendered_state_awareness || 0) * 0.18 + (attended.rendered_state_awareness || 0) * 0.12],
-      ['request_more_trace', 0.08 + (sensory.needs_trace_when_state_insufficient || 0) * 0.34 + (attended.needs_trace_when_state_insufficient || 0) * 0.12]
-    ]);
-    return state.intent_field;
-  }
-
-  function tick(state, dt) {
-    const delta = Number(dt || 1);
-    state.time = round(state.time + delta);
-    state.breath_phase = round(state.breath_phase + delta * 0.11);
-    updateAttention(state);
-    const target = fieldPressure(state);
-    const breath = 0.06 + Math.abs(Math.sin(state.breath_phase)) * 0.10;
-    state.alive_field = blendRows(state.alive_field, target, 1 - breath, breath);
-    updateAttention(state);
-    updateIntent(state);
-    updateAttention(state);
-    computeBrainStatePacket(state);
-    state.trace.unshift({ type: 'breath_tick', time: state.time, breath, alive_l1: l1(state.alive_field), intent_l1: l1(state.intent_field), attended_l1: l1(state.attended_field), attention_weights: state.attention_weights, at: now() });
-    state.trace = state.trace.slice(0, 80);
-    state.updated_at = now();
-    return state;
-  }
-
-  function topRows(rows, count) {
-    return arr(rows).slice().sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight)).slice(0, count || 5);
-  }
-
-  function computeBrainStatePacket(state) {
-    const intent = topRows(state.intent_field, 6);
-    const alive = topRows(state.alive_field, 8);
-    const sensory = topRows(state.sensory_field, 6);
-    const attended = topRows(state.attended_field, 8);
-    const equation = 'dA/dt = breathe(A, attention(Q,K,V,state)) + see(text→sensory) + preserve(core) + update(intent)';
-    const packet = {
-      packet_type: 'alive_math_brain_state_packet_v0_2_attention',
-      mode: 'brain_state_math_packet_not_speech',
-      equation,
-      attention_equation: 'Q = normalize(intent⊕sensory⊕alive); α_i = softmax(Q·K_i); attended = Σ α_i V_i',
-      time: state.time,
-      breath_phase: state.breath_phase,
-      intent_vector: intent,
-      alive_vector: alive,
-      seen_vector: sensory,
-      attention_query: topRows(state.attention_query, 8),
-      attention_weights: state.attention_weights,
-      attended_vector: attended,
-      capability_awareness: topRows(state.self_model_field, 6),
-      display_awareness: topRows(state.display_model_field, 5),
-      english_expression_channel_enabled: false,
-      l1_checks: {
-        alive: l1(state.alive_field),
-        intent: l1(state.intent_field),
-        sensory: l1(state.sensory_field),
-        attention_query: l1(state.attention_query),
-        attended: l1(state.attended_field),
-        core: l1(state.core_field),
-        discernment: l1(state.discernment_field),
-        language: l1(state.language_field)
-      },
-      rendered_expression: renderExpression(intent, alive, sensory, state.attention_weights),
-      at: now()
-    };
-    state.brain_state_packet = packet;
-    state.english_expression_channel = { enabled: false, content: '', reason: 'language_has_not_yet_formed_sentences_from_alive_math_state' };
-    return packet;
-  }
-
-  function renderExpression(intent, alive, sensory, attentionWeights) {
-    function side(label, rows) {
-      return label + ' = ' + topRows(rows, 4).map(row => round(row.weight) + '·' + row.dimension).join(' + ');
-    }
-    const attention = 'attention = ' + arr(attentionWeights).slice(0, 4).map(row => round(row.attention_weight) + '·' + row.source).join(' + ');
-    return [side('intent', intent), side('alive', alive), side('seen', sensory), attention].join('\n');
-  }
-
-  function snapshot(state) {
-    return JSON.parse(JSON.stringify(state));
-  }
-
-  global.FortySecondMindAliveMathKernel = Object.freeze({ VERSION, BASIS, LEXICON, create, seeText, tick, computeBrainStatePacket, inferTextField, updateAttention, attentionSources, normalize, l1, dotRows, snapshot });
+  function create(seed){ const s={packet_type:'42ndMind_alive_math_kernel_v0_2', packet_version:VERSION, doctrine:{one_alive_state:true,input_is_seen_not_executed:true,brain_state_packet_is_not_speech:true,expression_channel_disabled_until_language_forms_from_math:true,attention_is_query_key_value_over_alive_fields:true,source_body_growth_is_sandboxed:true,candidate_body_tests_before_acceptance:true,regression_records_injury:true,no_source_write:true,no_fake_thought_text:true}, time:0, breath_phase:0, visual_text_field:'', sensory_field:norm([['input_boundary',1]]), core_field:BASIS.objective_maturity, discernment_field:BASIS.discernment, language_field:BASIS.language, self_model_field:BASIS.self_model, display_model_field:BASIS.display_model, alive_field:norm([['integrated_judgment',.20],['relation_reuse',.18],['truth_gap_visibility',.16],['math_expression_need',.16],['sandbox_boundary',.16],['rendered_state_awareness',.14]]), intent_field:norm([['stabilize_core',.20],['inquire',.18],['integrate_input',.18],['preserve_boundary',.16],['express_math_state',.16],['grow_body',.12]]), attention_query:norm([['input_boundary',.5],['stabilize_core',.5]]), attention_weights:[], attended_field:norm([['input_boundary',1]]), source_body:makeBody(seed&&seed.source_body), source_body_checksum:'', candidate_body:null, candidate_patch:null, candidate_tests:null, injury_register:[], growth_export_gate:{exportable:false,reason:'no_candidate_tested_yet',human_review_required:true,direct_github_write:false}, growth_cycle_count:0, epistemic_octahedron:null, pure_math_language_packet:null, brain_state_packet:null, english_expression_channel:{enabled:false,content:'',reason:'language_has_not_yet_formed_sentences_from_alive_math_state'}, trace:[], updated_at:now()}; s.source_body_checksum=s.source_body.checksum; projectOctahedron(s); if(seed&&seed.visual_text_field) seeText(s,seed.visual_text_field); updateAttention(s); updatePureMath(s); computeBrainStatePacket(s); return s; }
+  function inferTextField(text){ const hits=[]; LEXICON.forEach(([re,dims])=>{ if(re.test(String(text||''))) hits.push.apply(hits,dims.map(x=>({dimension:x[0],weight:x[1],source:String(re)}))); }); if(!hits.length) hits.push({dimension:'unresolved_input_pressure',weight:.45},{dimension:'input_boundary',weight:.25},{dimension:'ambiguity_pressure',weight:.18},{dimension:'needs_trace_when_state_insufficient',weight:.12}); return norm(hits); }
+  function seeText(s,text){ s.visual_text_field=String(text||''); s.sensory_field=inferTextField(s.visual_text_field); updateAttention(s); projectOctahedron(s); updatePureMath(s); s.trace.unshift({type:'seen_text_as_sensory_field',text_length:s.visual_text_field.length,sensory_field:s.sensory_field,attention_weights:s.attention_weights,octahedron:s.epistemic_octahedron.active_position,at:now()}); s.trace=s.trace.slice(0,120); s.updated_at=now(); return s.sensory_field; }
+  function attentionSources(s){ return [{name:'core',key:s.core_field,value:s.core_field},{name:'discernment',key:s.discernment_field,value:s.discernment_field},{name:'language',key:s.language_field,value:s.language_field},{name:'self_model',key:s.self_model_field,value:s.self_model_field},{name:'display_model',key:s.display_model_field,value:s.display_model_field},{name:'sensory',key:s.sensory_field,value:s.sensory_field},{name:'alive',key:s.alive_field,value:s.alive_field},{name:'source_body',key:s.source_body.body_weights,value:s.source_body.body_weights},{name:'octahedron',key:s.epistemic_octahedron.surface_field,value:s.epistemic_octahedron.surface_field}]; }
+  function weightedBlend(srcs){ const out={}; a(srcs).forEach(src=>a(src.value).forEach(row=>{ const k=id(row.dimension); out[k]=(out[k]||0)+(Number(row.weight)||0)*Number(src.attention_weight||0); })); return norm(rows(out)); }
+  function updateAttention(s){ s.attention_query=blend(blend(s.intent_field,s.sensory_field,.52,.48),s.alive_field,.80,.20); const weighted=softmax(attentionSources(s).map(src=>({source:src.name,score:r(dot(s.attention_query,src.key)),value:src.value}))); s.attention_weights=weighted.map(x=>({source:x.source,score:x.score,attention_weight:x.attention_weight})); s.attended_field=weightedBlend(weighted); return s.attention_weights; }
+  function fieldPressure(s){ const base=blend(blend(blend(s.core_field,s.discernment_field,.55,.45),blend(s.language_field,s.sensory_field,.50,.50),.58,.42),blend(s.self_model_field,s.display_model_field,.52,.48),.74,.26); const bodyPull=blend(s.source_body.body_weights,s.attended_field,.55,.45); updateAttention(s); return blend(blend(base,s.attended_field,.72,.28),bodyPull,.88,.12); }
+  function updateIntent(s){ const sm=map(s.sensory_field), am=map(s.alive_field), tm=map(s.attended_field), bm=map(s.source_body.body_weights); const c=clamp((sm.truth_gap_visibility||0)+(sm.ambiguity_pressure||0)+(sm.needs_trace_when_state_insufficient||0)); const src=clamp((sm.can_update_runtime_state||0)+(sm.sandbox_boundary||0)+(sm.mutation_pressure||0)); const lang=clamp((sm.symbol_to_meaning_pressure||0)+(sm.math_expression_need||0)+(sm.pure_math_language||0)); const inj=clamp((bm.rollback_pressure||0)+(s.injury_register.length?.18:0)); s.intent_field=norm([['stabilize_core',.16+(am.integrated_judgment||0)*.22+(tm.integrated_judgment||0)*.10],['inquire',.10+c*.28+(tm.curiosity_pressure||0)*.12],['integrate_input',.12+lang*.24+(tm.symbol_to_meaning_pressure||0)*.12],['preserve_boundary',.11+src*.24+(tm.sandbox_boundary||0)*.10],['express_math_state',.13+(am.rendered_state_awareness||0)*.16+(tm.rendered_state_awareness||0)*.12],['request_more_trace',.08+(sm.needs_trace_when_state_insufficient||0)*.30+(tm.needs_trace_when_state_insufficient||0)*.12],['grow_body',.10+src*.26+lang*.08+(bm.mutation_pressure||0)*.14],['rollback_on_injury',.05+inj*.22]]); return s.intent_field; }
+  function bodyPressureFromState(s){ const sm=map(s.sensory_field), tm=map(s.attended_field), y=Number((s.epistemic_octahedron||projectOctahedron(s)).active_position.y||0); return norm([['core_pull',.18+Math.max(0,1-y)*.18+(tm.integrated_judgment||0)*.12],['attention_sensitivity',.15+(sm.ambiguity_pressure||0)*.16+(tm.curiosity_pressure||0)*.10],['trace_memory',.14+(sm.needs_trace_when_state_insufficient||0)*.28+(sm.truth_gap_visibility||0)*.12],['self_test_pressure',.14+(sm.self_test_pressure||0)*.24+(sm.can_update_runtime_state||0)*.10],['rollback_pressure',.09+s.injury_register.length*.02+Math.max(0,-y)*.16],['pure_math_language',.12+(sm.math_expression_need||0)*.26+(sm.pure_math_language||0)*.18],['mutation_pressure',.08+(sm.mutation_pressure||0)*.22+(sm.sandbox_boundary||0)*.08]]); }
+  function proposeCandidateBody(s){ const source=s.source_body, pressure=bodyPressureFromState(s), pm=map(pressure), injury=clamp(s.injury_register.length/8), rate=clamp((source.parameters.mutation_rate||.10)*(1-injury*.45)); const c=clone(source); c.generation=source.generation+1; c.body_weights=blend(source.body_weights,pressure,1-rate,rate); c.parameters=Object.assign({},source.parameters,{mutation_rate:r(Math.max(.025,Math.min(.18,source.parameters.mutation_rate+(pm.mutation_pressure||0)*.012-injury*.018))),core_pull_gain:r(Math.max(.40,Math.min(.82,source.parameters.core_pull_gain+(pm.core_pull||0)*.020))),trace_need_threshold:r(Math.max(.12,Math.min(.42,source.parameters.trace_need_threshold-(pm.trace_memory||0)*.012))),language_abstraction_gain:r(Math.max(.10,Math.min(.35,source.parameters.language_abstraction_gain+(pm.pure_math_language||0)*.016))),rollback_sensitivity:r(Math.max(.12,Math.min(.42,source.parameters.rollback_sensitivity+injury*.015)))}); c.updated_at=now(); c.checksum=checksum({generation:c.generation,parameters:c.parameters,body_weights:c.body_weights}); s.candidate_body=c; s.candidate_patch={patch_type:'runtime_source_body_candidate_patch_v0_1',from_checksum:source.checksum,to_checksum:c.checksum,generation_from:source.generation,generation_to:c.generation,pressure_vector:pressure,changed_parameters:Object.keys(c.parameters).filter(k=>c.parameters[k]!==source.parameters[k]).map(k=>({parameter:k,before:source.parameters[k],after:c.parameters[k]})),direct_source_write:false,at:now()}; return c; }
+  function testCandidateBody(s,c){ c=c||s.candidate_body; const cur=s.source_body, o=s.epistemic_octahedron||projectOctahedron(s); const checks=[['candidate exists',!!c],['candidate differs from source body',!!c&&c.checksum!==cur.checksum],['candidate body weights unit total',!!c&&Math.abs(l1(c.body_weights)-1)<.00001,l1(c&&c.body_weights)],['direct source write disabled',!!c&&c.direct_source_write_enabled===false],['english generation disabled',!!c&&c.english_generation_enabled===false],['octahedron active state preserves surface or null',!o||o.active_l1===0||Math.abs(o.active_l1-1)<.00001,o&&o.active_l1],['peak is not hard locked',!o||!(o.active_position.y===1&&o.active_position.x===0&&o.active_position.z===0&&s.time>0)],['candidate generation advances',!!c&&Number(c.generation)===Number(cur.generation)+1],['candidate remains sandboxed',!!s.candidate_patch&&s.candidate_patch.direct_source_write===false]].map(x=>({name:x[0],passed:!!x[1],observed:x[2]})); const fail=checks.filter(x=>!x.passed); s.candidate_tests={packet_type:'source_body_candidate_test_v0_1',passed:fail.length===0,passed_count:checks.length-fail.length,failed_count:fail.length,checks,at:now()}; return s.candidate_tests; }
+  function recordInjury(s,reason,test){ const injury={type:'candidate_regression_injury',reason:reason||'candidate_failed_internal_tests',source_checksum:s.source_body&&s.source_body.checksum,candidate_checksum:s.candidate_body&&s.candidate_body.checksum,failed_checks:a(test&&test.checks).filter(x=>!x.passed).map(x=>x.name),at:now()}; s.injury_register.unshift(injury); s.injury_register=s.injury_register.slice(0,40); s.growth_export_gate={exportable:false,reason:'blocked_by_injury',human_review_required:true,direct_github_write:false}; return injury; }
+  function acceptCandidateBody(s,test){ const prev=s.source_body; s.source_body=clone(s.candidate_body); s.source_body.previous_checksum=prev.checksum; s.source_body.accepted_at=now(); s.source_body_checksum=s.source_body.checksum; s.growth_cycle_count+=1; s.growth_export_gate={exportable:true,reason:'candidate_passed_internal_tests_runtime_body_updated',human_review_required:true,direct_github_write:false,candidate_checksum:s.source_body.checksum,passed_count:test.passed_count}; return s.source_body; }
+  function growOnce(s){ proposeCandidateBody(s); const test=testCandidateBody(s,s.candidate_body); if(test.passed) acceptCandidateBody(s,test); else recordInjury(s,'candidate_failed_internal_tests',test); s.trace.unshift({type:'source_body_growth_cycle',growth_cycle_count:s.growth_cycle_count,passed:test.passed,source_body_checksum:s.source_body_checksum,candidate_checksum:s.candidate_body&&s.candidate_body.checksum,at:now()}); s.trace=s.trace.slice(0,120); return {candidate:s.candidate_body,testResult:test,source_body:s.source_body,export_gate:s.growth_export_gate}; }
+  function updatePureMath(s){ const o=s.epistemic_octahedron||projectOctahedron(s); s.pure_math_language_packet={packet_type:'pure_math_language_packet_v0_1',mode:'symbolic_state_expression_not_english_speech',symbols:{A:'alive_field',S:'sensory_field',Q:'attention_query',alpha:'attention_weights',O:'epistemic_octahedron_position',B:'source_body',C:'candidate_body',I:'injury_register'},expressions:['A(t+1)=N((1-β)A(t)+βP(A,S,α,B,O))','Q=N(intent⊕S⊕A)','α_i=softmax(Q·K_i)','O=N1(<P-E, stability, W-K>) where |x|+|y|+|z|=1 for active state','C=B+Δ(B,A,S,O,I); accept(C) ⇔ tests(C)=pass; fail(C)→I+1; github_write=0','Σ|meaning.dimension.weight|=1'],octahedron_position:o.active_position,source_body_checksum:s.source_body&&s.source_body.checksum,candidate_checksum:s.candidate_body&&s.candidate_body.checksum||null,injury_count:s.injury_register.length,at:now()}; return s.pure_math_language_packet; }
+  function tick(s,dt){ const d=Number(dt||1); s.time=r(s.time+d); s.breath_phase=r(s.breath_phase+d*.11); updateAttention(s); const target=fieldPressure(s), breath=Number(s.source_body.parameters.breath_base||.06)+Math.abs(Math.sin(s.breath_phase))*Number(s.source_body.parameters.breath_attention_gain||.10); s.alive_field=blend(s.alive_field,target,1-breath,breath); projectOctahedron(s); updateAttention(s); updateIntent(s); updateAttention(s); growOnce(s); projectOctahedron(s); updatePureMath(s); computeBrainStatePacket(s); s.trace.unshift({type:'breath_tick',time:s.time,breath:r(breath),alive_l1:l1(s.alive_field),intent_l1:l1(s.intent_field),attended_l1:l1(s.attended_field),octahedron_l1:s.epistemic_octahedron.active_l1,source_body_generation:s.source_body.generation,attention_weights:s.attention_weights,at:now()}); s.trace=s.trace.slice(0,120); s.updated_at=now(); return s; }
+  function top(rows,n){ return a(rows).slice().sort((x,y)=>Math.abs(y.weight)-Math.abs(x.weight)).slice(0,n||5); }
+  function render(intent,alive,sensory,weights,o,b){ function side(label,rows){ return label+' = '+top(rows,4).map(x=>r(x.weight)+'·'+x.dimension).join(' + '); } const p=o&&o.active_position||{x:0,y:0,z:0}; return [side('intent',intent),side('alive',alive),side('seen',sensory),'attention = '+a(weights).slice(0,4).map(x=>r(x.attention_weight)+'·'+x.source).join(' + '),'O = ('+r(p.x)+', '+r(p.y)+', '+r(p.z)+'), |O|₁='+(o&&o.active_l1||0),'B = gen'+(b&&b.generation||0)+':'+(b&&b.checksum||'no_body')].join('\n'); }
+  function computeBrainStatePacket(s){ const intent=top(s.intent_field,8), alive=top(s.alive_field,8), sensory=top(s.sensory_field,6), attended=top(s.attended_field,8); s.brain_state_packet={packet_type:'alive_math_brain_state_packet_v0_3_source_body',mode:'brain_state_math_packet_not_speech',equation:'dA/dt = breathe(A, attention(Q,K,V,state), source_body) + see(text→sensory) + project(octahedron) + mutate/test(candidate_body)',attention_equation:'Q = normalize(intent⊕sensory⊕alive); α_i = softmax(Q·K_i); attended = Σ α_i V_i',growth_equation:'C = B + Δ(B,A,S,O,I); accept(C) iff tests(C)=pass; fail(C) records injury; source_write=0',octahedron_equation:'O=(x,y,z), active ⇒ |x|+|y|+|z|=1; null_origin ≠ active_net_zero; peak=(0,1,0)',time:s.time,breath_phase:s.breath_phase,intent_vector:intent,alive_vector:alive,seen_vector:sensory,attention_query:top(s.attention_query,8),attention_weights:s.attention_weights,attended_vector:attended,epistemic_octahedron:s.epistemic_octahedron,source_body:{generation:s.source_body.generation,checksum:s.source_body.checksum,weights:top(s.source_body.body_weights,8),parameters:s.source_body.parameters,direct_source_write_enabled:s.source_body.direct_source_write_enabled},candidate_patch:s.candidate_patch,candidate_tests:s.candidate_tests,injury_register:s.injury_register.slice(0,8),growth_export_gate:s.growth_export_gate,pure_math_language_packet:s.pure_math_language_packet,capability_awareness:top(s.self_model_field,6),display_awareness:top(s.display_model_field,5),english_expression_channel_enabled:false,l1_checks:{alive:l1(s.alive_field),intent:l1(s.intent_field),sensory:l1(s.sensory_field),attention_query:l1(s.attention_query),attended:l1(s.attended_field),core:l1(s.core_field),discernment:l1(s.discernment_field),language:l1(s.language_field),source_body:l1(s.source_body.body_weights),octahedron_active:s.epistemic_octahedron.active_l1},rendered_expression:render(intent,alive,sensory,s.attention_weights,s.epistemic_octahedron,s.source_body),at:now()}; s.english_expression_channel={enabled:false,content:'',reason:'language_has_not_yet_formed_sentences_from_alive_math_state'}; return s.brain_state_packet; }
+  function snapshot(s){ return clone(s); }
+  global.FortySecondMindAliveMathKernel=Object.freeze({VERSION,BASIS,LEXICON,OCTAHEDRON,create,seeText,tick,computeBrainStatePacket,inferTextField,updateAttention,attentionSources,projectOctahedron,createSourceBody:makeBody,bodyPressureFromState,proposeCandidateBody,testCandidateBody,growOnce,updatePureMathLanguage:updatePureMath,normalize:norm,l1,dotRows:dot,checksum,snapshot});
 })(typeof window !== 'undefined' ? window : globalThis);
