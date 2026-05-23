@@ -8,14 +8,12 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
 
   function now() { return global.FortySecondMindBrainState.now(); }
   function arr(v) { return global.FortySecondMindBrainState.arr(v); }
-  function clone(v) { return global.FortySecondMindBrainState.clone(v); }
   function clamp01(n) { return global.FortySecondMindBrainState.clamp01(n); }
   function id(v) { return String(v || '').toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '') || 'term'; }
-  function round(n) { return Number((Number(n) || 0).toFixed(6)); }
 
   function ensure(state) {
     if (!state.growthTargetDeriver) state.growthTargetDeriver = {
@@ -23,6 +21,7 @@
       packet_version: VERSION,
       doctrine: {
         target_derived_from_internal_pressure: true,
+        semantic_core_retention_required: true,
         target_is_not_truth: true,
         target_is_not_doctrine: true,
         shared_substrate_link_required: true,
@@ -32,12 +31,20 @@
       pressure_packets: [],
       updated_at: now()
     };
+    state.growthTargetDeriver.packet_version = VERSION;
+    state.growthTargetDeriver.doctrine.semantic_core_retention_required = true;
     return state.growthTargetDeriver;
   }
 
   function add(map, dimension, weight) {
     const key = id(dimension);
     map[key] = Math.max(0, Number(map[key] || 0) + Number(weight || 0));
+  }
+
+  function scaleMap(source, factor) {
+    const out = {};
+    Object.keys(source || {}).forEach(key => { out[key] = Math.max(0, Number(source[key] || 0) * factor); });
+    return out;
   }
 
   function dimensionsToMap(rows, multiplier) {
@@ -78,9 +85,12 @@
 
   function collectPressure(state, term) {
     const key = id(term);
+    const base = baseMapping(state, key);
     const packet = {
       term: key,
-      base_source: null,
+      base_source: base.source,
+      base_map: base.map,
+      pressure_only_map: {},
       semantic_requirement_count: 0,
       truth_context_count: 0,
       truth_pressure_snapshot_count: 0,
@@ -90,13 +100,10 @@
       pressure_map: {},
       at: now()
     };
-    const base = baseMapping(state, key);
-    packet.base_source = base.source;
-    mergeInto(packet.pressure_map, base.map);
 
     arr(state.truth && state.truth.semantic_requirements).filter(item => item.term === key).forEach(item => {
       packet.semantic_requirement_count += 1;
-      arr(item.dimensions).forEach(dim => add(packet.pressure_map, dim, 0.035));
+      arr(item.dimensions).forEach(dim => add(packet.pressure_only_map, dim, 0.035));
     });
 
     arr(state.beliefMemory && state.beliefMemory.truth_context_items).filter(item => includesTerm(item.text, key) || item.claim_id === key || item.target_claim_id === key).forEach(item => {
@@ -104,30 +111,40 @@
       if (item.claim_id) packet.derived_from_claim_ids.push(item.claim_id);
       if (item.target_claim_id) packet.derived_from_claim_ids.push(item.target_claim_id);
       if (item.source_id) packet.derived_from_sources.push(item.source_id);
-      mergeInto(packet.pressure_map, pressureFromSnapshot(item.pressure_snapshot, 1));
-      if (item.kind === 'truth_evidence_context') add(packet.pressure_map, 'evidence_requirement', 0.08);
+      mergeInto(packet.pressure_only_map, pressureFromSnapshot(item.pressure_snapshot, 1));
+      if (item.kind === 'truth_evidence_context') add(packet.pressure_only_map, 'evidence_requirement', 0.08);
       if (item.kind === 'truth_counterclaim_context') {
-        add(packet.pressure_map, 'truth_gap_visibility', 0.08);
-        add(packet.pressure_map, 'false_certainty_resistance', 0.08);
-        add(packet.pressure_map, 'self_correction', 0.06);
+        add(packet.pressure_only_map, 'truth_gap_visibility', 0.08);
+        add(packet.pressure_only_map, 'false_certainty_resistance', 0.08);
+        add(packet.pressure_only_map, 'self_correction', 0.06);
       }
-      if (item.shared_substrate_activation_id) add(packet.pressure_map, 'shared_substrate_trace', 0.025);
+      if (item.shared_substrate_activation_id) add(packet.pressure_only_map, 'shared_substrate_trace', 0.025);
     });
 
     arr(state.beliefMemory && state.beliefMemory.truth_pressure_snapshots).filter(item => item.claim_id === key || String(item.claim_id || '').includes(key)).forEach(item => {
       packet.truth_pressure_snapshot_count += 1;
-      mergeInto(packet.pressure_map, pressureFromSnapshot(item.pressure_snapshot, 0.8));
+      mergeInto(packet.pressure_only_map, pressureFromSnapshot(item.pressure_snapshot, 0.8));
     });
 
     arr(state.language && state.language.semantic_memory_feedback).filter(item => item.term === key).forEach(item => {
       packet.language_memory_feedback_count += 1;
-      arr(item.dimensions).forEach(dim => add(packet.pressure_map, dim, 0.025));
-      if (Number(item.truth_context_count || 0) > 0) add(packet.pressure_map, 'belief_memory_context', 0.035);
+      arr(item.dimensions).forEach(dim => add(packet.pressure_only_map, dim, 0.025));
+      if (Number(item.truth_context_count || 0) > 0) add(packet.pressure_only_map, 'belief_memory_context', 0.035);
     });
 
     packet.derived_from_claim_ids = Array.from(new Set(packet.derived_from_claim_ids)).slice(0, 12);
     packet.derived_from_sources = Array.from(new Set(packet.derived_from_sources)).slice(0, 12);
+    packet.pressure_map = blendBaseWithPressure(packet.base_map, packet.pressure_only_map, { base_weight: 0.62, pressure_weight: 0.38 });
     return packet;
+  }
+
+  function blendBaseWithPressure(baseMap, pressureMap, options) {
+    const baseWeight = Number(options && options.base_weight || 0.62);
+    const pressureWeight = Number(options && options.pressure_weight || 0.38);
+    const blended = {};
+    mergeInto(blended, scaleMap(baseMap, baseWeight));
+    mergeInto(blended, scaleMap(pressureMap, pressureWeight));
+    return blended;
   }
 
   function activate(state, target) {
@@ -149,8 +166,12 @@
     const packet = collectPressure(state, key);
     const fromMap = global.FortySecondMindGrowthBreather && global.FortySecondMindGrowthBreather.fromMap;
     if (!fromMap) return null;
-    const target = fromMap(key, 'pressure_derived_target_not_committed', packet.pressure_map, 'Derived from internal truth, memory, and language pressure.');
+    const target = fromMap(key, 'pressure_derived_target_not_committed', packet.pressure_map, 'Derived from internal truth, memory, and language pressure while preserving semantic core.');
     target.target_source = 'derived_from_truth_memory_language_pressure';
+    target.derivation_method = 'semantic_core_blend_v0_1';
+    target.semantic_core_source = packet.base_source;
+    target.semantic_core_retention = 0.62;
+    target.pressure_influence = 0.38;
     target.source_counts = {
       semantic_requirement_count: packet.semantic_requirement_count,
       truth_context_count: packet.truth_context_count,
@@ -176,6 +197,7 @@
     baseMapping,
     collectPressure,
     deriveTarget,
-    pressureFromSnapshot
+    pressureFromSnapshot,
+    blendBaseWithPressure
   });
 })(typeof window !== 'undefined' ? window : globalThis);
