@@ -19,11 +19,11 @@
 </head>
 <body>
   <h1>42ndMind Infant Symbolic Kernel Lab</h1>
-  <p>This is the lower infant layer: raw symbols enter one active brain field. The field stays unit-total. The system compresses repeated patterns, predicts from memory, records error, and updates a runtime body. English output stays empty.</p>
+  <p>This lower layer keeps <code>brain = 1</code>. Raw symbols enter the field, repeated patterns become tokens, tokens form relations, and the internal math packet stays non-English.</p>
 
   <div class="card">
     <h2>Raw stream</h2>
-    <textarea id="input">abababab</textarea>
+    <textarea id="input">abababab cdcdcdcd ababab cdcdcdcd</textarea>
     <button id="step">Step once</button>
     <button id="train">Train 12x</button>
     <button id="gibberish">Send irregular stream</button>
@@ -52,10 +52,15 @@
     <div class="card"><h2>Memory tokens</h2><pre id="tokens"></pre></div>
   </div>
 
+  <div class="grid">
+    <div class="card"><h2>Token relation graph</h2><pre id="relations"></pre></div>
+    <div class="card"><h2>Internal math packet</h2><pre id="mathPacket"></pre></div>
+  </div>
+
   <div class="card"><h2>Candidate body test</h2><pre id="candidate"></pre></div>
   <div class="card"><h2>Trace</h2><pre id="trace"></pre></div>
 
-  <script src="../src/infant-symbolic-kernel.js?v=0.1.0-brain-one"></script>
+  <script src="../src/infant-symbolic-kernel.js?v=0.2.0-token-relations"></script>
   <script>
     let kernel = FortySecondMindInfantSymbolicKernel.create();
     const input = document.getElementById('input');
@@ -67,6 +72,8 @@
     const predictionEl = document.getElementById('prediction');
     const compressionEl = document.getElementById('compression');
     const tokensEl = document.getElementById('tokens');
+    const relationsEl = document.getElementById('relations');
+    const mathPacketEl = document.getElementById('mathPacket');
     const candidateEl = document.getElementById('candidate');
     const traceEl = document.getElementById('trace');
 
@@ -81,6 +88,8 @@
       predictionEl.textContent = JSON.stringify({ prediction: s.prediction, error: s.error }, null, 2);
       compressionEl.textContent = JSON.stringify(s.compression, null, 2);
       tokensEl.textContent = JSON.stringify(s.memory.token_library, null, 2);
+      relationsEl.textContent = JSON.stringify(s.memory.token_relation_graph, null, 2);
+      mathPacketEl.textContent = JSON.stringify(s.internal_math_packet, null, 2);
       candidateEl.textContent = JSON.stringify({ candidate_body: s.candidate_body, candidate_test: s.candidate_test, injury_register: s.injury_register }, null, 2);
       traceEl.textContent = JSON.stringify(s.trace.slice(0, 24), null, 2);
     }
