@@ -8,7 +8,7 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.3';
+  const VERSION = '0.1.4';
 
   function now() { return global.FortySecondMindBrainState.now(); }
   function arr(v) { return global.FortySecondMindBrainState.arr(v); }
@@ -23,6 +23,7 @@
         semantic_core_retention_required: true,
         normalized_pressure_blend: true,
         semantic_core_floor: true,
+        exact_post_normalization_core_floor: true,
         target_is_not_truth: true,
         target_is_not_doctrine: true,
         shared_substrate_link_required: true,
@@ -36,6 +37,7 @@
     state.growthTargetDeriver.doctrine.semantic_core_retention_required = true;
     state.growthTargetDeriver.doctrine.normalized_pressure_blend = true;
     state.growthTargetDeriver.doctrine.semantic_core_floor = true;
+    state.growthTargetDeriver.doctrine.exact_post_normalization_core_floor = true;
     return state.growthTargetDeriver;
   }
 
@@ -112,7 +114,7 @@
       derived_from_claim_ids: [],
       derived_from_sources: [],
       pressure_map: {},
-      blend_method: 'normalized_base_pressure_blend_with_core_floor',
+      blend_method: 'normalized_base_pressure_blend_with_exact_core_floor',
       at: now()
     };
 
@@ -161,11 +163,21 @@
   }
 
   function enforceCoreFloor(blended, normalizedBase, ratio) {
-    const out = Object.assign({}, blended);
-    strongestBaseDimensions(normalizedBase, 2).forEach(row => {
-      const floor = row.weight * (ratio == null ? 0.72 : ratio);
-      if ((out[row.key] || 0) < floor) out[row.key] = floor;
-    });
+    const normalized = normalizeMap(blended);
+    const floorRows = strongestBaseDimensions(normalizedBase, 2).map(row => ({ key: row.key, floor: row.weight * (ratio == null ? 0.72 : ratio) }));
+    const floorSum = floorRows.reduce((sum, row) => sum + row.floor, 0);
+    if (floorSum >= 0.95) return normalized;
+
+    const out = {};
+    const floorKeys = new Set(floorRows.map(row => row.key));
+    floorRows.forEach(row => { out[row.key] = Math.max(Number(normalized[row.key] || 0), row.floor); });
+
+    const used = mapTotal(out);
+    const remainingBudget = Math.max(0, 1 - used);
+    const nonFloor = {};
+    Object.keys(normalized).forEach(key => { if (!floorKeys.has(key)) nonFloor[key] = normalized[key]; });
+    const nonFloorTotal = mapTotal(nonFloor) || 1;
+    Object.keys(nonFloor).forEach(key => { out[key] = (nonFloor[key] / nonFloorTotal) * remainingBudget; });
     return normalizeMap(out);
   }
 
@@ -202,7 +214,7 @@
     if (!fromMap) return null;
     const target = fromMap(key, 'pressure_derived_target_not_committed', packet.pressure_map, 'Derived from internal truth, memory, and language pressure while preserving semantic core.');
     target.target_source = 'derived_from_truth_memory_language_pressure';
-    target.derivation_method = 'semantic_core_blend_v0_3_core_floor';
+    target.derivation_method = 'semantic_core_blend_v0_4_exact_core_floor';
     target.semantic_core_source = packet.base_source;
     target.semantic_core_retention = 0.62;
     target.pressure_influence = 0.38;
