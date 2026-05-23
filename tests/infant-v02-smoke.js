@@ -1,0 +1,13 @@
+const assert = require("assert");
+const K = require("../src/infant-symbolic-kernel.js");
+const s = K.create();
+assert.ok(K.VERSION);
+assert.ok(Math.abs(K.l1(s.brain_field) - 1) < 1e-6);
+assert.ok(Math.abs(K.l1(s.body.body_field) - 1) < 1e-6);
+K.step(s, "abababab cdcdcdcd ababab cdcdcdcd");
+assert.ok(s.memory.token_library.length > 0);
+assert.ok(s.memory.token_relation_graph.length > 0);
+assert.ok(s.internal_math_packet.token_count > 0);
+assert.ok(s.internal_math_packet.relation_count > 0);
+assert.strictEqual(s.english_expression_channel.enabled, false);
+console.log("PASS infant v02 smoke test");
