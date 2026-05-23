@@ -14,13 +14,12 @@
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .ok { color: #168a38; font-weight: 700; }
     .muted { opacity: .72; }
-    meter { width: 100%; height: 18px; }
     @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <h1>42ndMind Alive Math Kernel Lab</h1>
-  <p>This sandbox keeps core, discernment, language, self-model, display-awareness, input-seeing, and intent inside one breathing state. The textbox is treated as a sensory field. It does not execute the text and does not write source files.</p>
+  <p>This sandbox keeps core, discernment, language, self-model, display-awareness, input-seeing, attention, and intent inside one breathing state. The textbox is treated as a sensory field. It does not execute the text and does not write source files.</p>
 
   <div class="card">
     <h2>Text field the kernel sees</h2>
@@ -34,15 +33,15 @@
   </div>
 
   <div class="card">
-    <h2>Brain-state math packet</h2>
-    <p class="muted">This is internal state display, not speech.</p>
-    <pre id="brainPacket">No brain-state packet yet.</pre>
+    <h2>English expression channel</h2>
+    <p class="muted">Disabled until language forms from the live math state itself. This box should stay empty.</p>
+    <pre id="expression"></pre>
   </div>
 
   <div class="card">
-    <h2>Mouth / English translation</h2>
-    <p class="muted">Disabled until there is a real math-to-English decoder. This box should stay empty.</p>
-    <pre id="mouth"></pre>
+    <h2>Brain-state math packet</h2>
+    <p class="muted">This is internal state display, not speech.</p>
+    <pre id="brainPacket">No brain-state packet yet.</pre>
   </div>
 
   <div class="grid">
@@ -62,17 +61,23 @@
       <pre id="alive">No alive field yet.</pre>
     </div>
     <div class="card">
-      <h2>Capability/display awareness</h2>
-      <pre id="awareness">No awareness yet.</pre>
+      <h2>Attention</h2>
+      <pre id="attention">No attention yet.</pre>
     </div>
   </div>
 
-  <div class="card">
-    <h2>Trace</h2>
-    <pre id="trace">No trace yet.</pre>
+  <div class="grid">
+    <div class="card">
+      <h2>Capability/display awareness</h2>
+      <pre id="awareness">No awareness yet.</pre>
+    </div>
+    <div class="card">
+      <h2>Trace</h2>
+      <pre id="trace">No trace yet.</pre>
+    </div>
   </div>
 
-  <script src="../src/alive-math-kernel.js?v=alive-math-kernel-lab-20260522-2"></script>
+  <script src="../src/alive-math-kernel.js?v=alive-math-kernel-lab-20260522-3"></script>
   <script>
     let kernel = FortySecondMindAliveMathKernel.create();
     let timer = null;
@@ -80,10 +85,11 @@
     const input = document.getElementById('input');
     const statusEl = document.getElementById('status');
     const brainPacketEl = document.getElementById('brainPacket');
-    const mouthEl = document.getElementById('mouth');
+    const expressionEl = document.getElementById('expression');
     const sensoryEl = document.getElementById('sensory');
     const intentEl = document.getElementById('intent');
     const aliveEl = document.getElementById('alive');
+    const attentionEl = document.getElementById('attention');
     const awarenessEl = document.getElementById('awareness');
     const traceEl = document.getElementById('trace');
 
@@ -93,10 +99,11 @@
       const s = FortySecondMindAliveMathKernel.snapshot(kernel);
       const packet = s.brain_state_packet || {};
       brainPacketEl.textContent = packet.rendered_expression ? packet.rendered_expression + '\n\n' + JSON.stringify(packet, null, 2) : JSON.stringify(packet, null, 2);
-      mouthEl.textContent = s.english_mouth_channel && s.english_mouth_channel.enabled ? s.english_mouth_channel.content : '';
+      expressionEl.textContent = s.english_expression_channel && s.english_expression_channel.enabled ? s.english_expression_channel.content : '';
       sensoryEl.textContent = JSON.stringify(s.sensory_field, null, 2);
       intentEl.textContent = JSON.stringify(s.intent_field, null, 2);
       aliveEl.textContent = JSON.stringify({ time: s.time, breath_phase: s.breath_phase, alive_field: s.alive_field, l1: FortySecondMindAliveMathKernel.l1(s.alive_field) }, null, 2);
+      attentionEl.textContent = JSON.stringify({ query: s.attention_query, weights: s.attention_weights, attended_field: s.attended_field }, null, 2);
       awarenessEl.textContent = JSON.stringify({ self_model_field: s.self_model_field, display_model_field: s.display_model_field }, null, 2);
       traceEl.textContent = JSON.stringify(s.trace.slice(0, 16), null, 2);
     }
