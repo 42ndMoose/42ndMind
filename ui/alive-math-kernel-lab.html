@@ -20,7 +20,7 @@
 </head>
 <body>
   <h1>42ndMind Alive Math Kernel Lab</h1>
-  <p>This sandbox keeps core, discernment, language, self-model, display-awareness, input-seeing, intent, and mouth-output inside one breathing state. The textbox is treated as a sensory field. It does not execute the text and does not write source files.</p>
+  <p>This sandbox keeps core, discernment, language, self-model, display-awareness, input-seeing, and intent inside one breathing state. The textbox is treated as a sensory field. It does not execute the text and does not write source files.</p>
 
   <div class="card">
     <h2>Text field the kernel sees</h2>
@@ -34,8 +34,15 @@
   </div>
 
   <div class="card">
-    <h2>Mouth: math-state expression</h2>
-    <pre id="mouth">No mouth packet yet.</pre>
+    <h2>Brain-state math packet</h2>
+    <p class="muted">This is internal state display, not speech.</p>
+    <pre id="brainPacket">No brain-state packet yet.</pre>
+  </div>
+
+  <div class="card">
+    <h2>Mouth / English translation</h2>
+    <p class="muted">Disabled until there is a real math-to-English decoder. This box should stay empty.</p>
+    <pre id="mouth"></pre>
   </div>
 
   <div class="grid">
@@ -65,13 +72,14 @@
     <pre id="trace">No trace yet.</pre>
   </div>
 
-  <script src="../src/alive-math-kernel.js?v=alive-math-kernel-lab-20260522-1"></script>
+  <script src="../src/alive-math-kernel.js?v=alive-math-kernel-lab-20260522-2"></script>
   <script>
     let kernel = FortySecondMindAliveMathKernel.create();
     let timer = null;
 
     const input = document.getElementById('input');
     const statusEl = document.getElementById('status');
+    const brainPacketEl = document.getElementById('brainPacket');
     const mouthEl = document.getElementById('mouth');
     const sensoryEl = document.getElementById('sensory');
     const intentEl = document.getElementById('intent');
@@ -83,8 +91,9 @@
 
     function refresh() {
       const s = FortySecondMindAliveMathKernel.snapshot(kernel);
-      const mouth = s.mouth_packet || {};
-      mouthEl.textContent = mouth.rendered_expression ? mouth.rendered_expression + '\n\n' + JSON.stringify(mouth, null, 2) : JSON.stringify(mouth, null, 2);
+      const packet = s.brain_state_packet || {};
+      brainPacketEl.textContent = packet.rendered_expression ? packet.rendered_expression + '\n\n' + JSON.stringify(packet, null, 2) : JSON.stringify(packet, null, 2);
+      mouthEl.textContent = s.english_mouth_channel && s.english_mouth_channel.enabled ? s.english_mouth_channel.content : '';
       sensoryEl.textContent = JSON.stringify(s.sensory_field, null, 2);
       intentEl.textContent = JSON.stringify(s.intent_field, null, 2);
       aliveEl.textContent = JSON.stringify({ time: s.time, breath_phase: s.breath_phase, alive_field: s.alive_field, l1: FortySecondMindAliveMathKernel.l1(s.alive_field) }, null, 2);
