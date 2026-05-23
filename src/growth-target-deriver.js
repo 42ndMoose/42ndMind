@@ -8,11 +8,10 @@
 (function (global) {
   'use strict';
 
-  const VERSION = '0.1.1';
+  const VERSION = '0.1.2';
 
   function now() { return global.FortySecondMindBrainState.now(); }
   function arr(v) { return global.FortySecondMindBrainState.arr(v); }
-  function clamp01(n) { return global.FortySecondMindBrainState.clamp01(n); }
   function id(v) { return String(v || '').toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '') || 'term'; }
 
   function ensure(state) {
@@ -22,6 +21,7 @@
       doctrine: {
         target_derived_from_internal_pressure: true,
         semantic_core_retention_required: true,
+        normalized_pressure_blend: true,
         target_is_not_truth: true,
         target_is_not_doctrine: true,
         shared_substrate_link_required: true,
@@ -33,12 +33,24 @@
     };
     state.growthTargetDeriver.packet_version = VERSION;
     state.growthTargetDeriver.doctrine.semantic_core_retention_required = true;
+    state.growthTargetDeriver.doctrine.normalized_pressure_blend = true;
     return state.growthTargetDeriver;
   }
 
   function add(map, dimension, weight) {
     const key = id(dimension);
     map[key] = Math.max(0, Number(map[key] || 0) + Number(weight || 0));
+  }
+
+  function mapTotal(source) {
+    return Object.keys(source || {}).reduce((sum, key) => sum + Math.abs(Number(source[key]) || 0), 0);
+  }
+
+  function normalizeMap(source) {
+    const total = mapTotal(source) || 1;
+    const out = {};
+    Object.keys(source || {}).forEach(key => { out[key] = Math.max(0, Number(source[key] || 0) / total); });
+    return out;
   }
 
   function scaleMap(source, factor) {
@@ -98,6 +110,7 @@
       derived_from_claim_ids: [],
       derived_from_sources: [],
       pressure_map: {},
+      blend_method: 'normalized_base_pressure_blend',
       at: now()
     };
 
@@ -141,9 +154,11 @@
   function blendBaseWithPressure(baseMap, pressureMap, options) {
     const baseWeight = Number(options && options.base_weight || 0.62);
     const pressureWeight = Number(options && options.pressure_weight || 0.38);
+    const normalizedBase = normalizeMap(baseMap);
+    const normalizedPressure = mapTotal(pressureMap) > 0 ? normalizeMap(pressureMap) : {};
     const blended = {};
-    mergeInto(blended, scaleMap(baseMap, baseWeight));
-    mergeInto(blended, scaleMap(pressureMap, pressureWeight));
+    mergeInto(blended, scaleMap(normalizedBase, baseWeight));
+    mergeInto(blended, scaleMap(normalizedPressure, pressureWeight));
     return blended;
   }
 
@@ -168,7 +183,7 @@
     if (!fromMap) return null;
     const target = fromMap(key, 'pressure_derived_target_not_committed', packet.pressure_map, 'Derived from internal truth, memory, and language pressure while preserving semantic core.');
     target.target_source = 'derived_from_truth_memory_language_pressure';
-    target.derivation_method = 'semantic_core_blend_v0_1';
+    target.derivation_method = 'semantic_core_blend_v0_2_normalized_pressure';
     target.semantic_core_source = packet.base_source;
     target.semantic_core_retention = 0.62;
     target.pressure_influence = 0.38;
@@ -198,6 +213,8 @@
     collectPressure,
     deriveTarget,
     pressureFromSnapshot,
-    blendBaseWithPressure
+    blendBaseWithPressure,
+    normalizeMap,
+    mapTotal
   });
 })(typeof window !== 'undefined' ? window : globalThis);
