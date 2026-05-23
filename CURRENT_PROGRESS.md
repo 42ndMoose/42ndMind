@@ -35,6 +35,7 @@ GROWTH_BREATHING_LAB_ADDED
 GROWTH_TARGET_DERIVER_ADDED
 GROWTH_DERIVED_TARGET_TEST_ADDED
 GROWTH_BREATHING_LAB_DERIVED_TARGET_MODE_ADDED
+GROWTH_DERIVED_TARGET_EXACT_CORE_FLOOR_PASSED_BY_USER
 ```
 
 ## Current goal
@@ -87,6 +88,8 @@ tests/shared-substrate-test.html
 tests/truth-substrate-test.html
 tests/language-memory-feedback-test.html
 tests/growth-export-test.html
+tests/growth-breather-test.html
+tests/growth-derived-target-test.html
 ```
 
 User reported:
@@ -99,6 +102,7 @@ shared-substrate-test.html passed 10/10
 truth-substrate-test.html passed 15/15
 language-memory-feedback-test.html passed 12/12
 growth-export-test.html passed 16/16
+growth-derived-target-test.html passed 21/21 after exact core-floor patch
 ```
 
 Meaning:
@@ -111,6 +115,7 @@ Shared substrate now exists as an explicit unit-total activation layer touched b
 Truth field can register claim/support/counterclaim packets, link them to shared substrate activations, raise support/counter/contradiction/unresolved pressure, and keep final truth promotion disabled.
 Language can reactivate known terms with belief-memory context pressure without treating memory as truth.
 Growth export can package before/after state, checksums, test records, substrate activation IDs, localStorage save, and commit-ready artifact text without writing to GitHub.
+Growth target derivation can derive a provisional unit-total target from internal truth, memory, and language pressure while preserving semantic core with an exact post-normalization floor.
 ```
 
 This still does not prove full natural-language understanding.
@@ -121,6 +126,7 @@ This still does not prove full natural-language understanding.
 Breathing growth loop for repeated local value search.
 Pressure-derived growth target from internal state.
 Autoplasticity over weak internal mappings.
+Future source-edit simulation with stronger uncertainty and rollback discipline.
 ```
 
 Files:
@@ -140,6 +146,7 @@ Purpose:
 Run repeated provisional growth steps over a unit-total semantic mapping.
 Keep the best state instead of creating duplicate exports every button press.
 Derive the breather target from internal truth, belief-memory, and language-context pressure instead of a fixed hand-written target.
+Preserve the term's semantic core while allowing pressure to reshape it.
 Export only the best candidate for human review.
 Do not auto-commit.
 Do not execute arbitrary code.
@@ -152,7 +159,7 @@ tests/growth-breather-test.html
 Expected: 14/14 passed
 
 tests/growth-derived-target-test.html
-Expected: 19/19 passed
+Expected: 21/21 passed
 ```
 
 Current breathing growth lab:
@@ -164,7 +171,7 @@ ui/growth-breathing-lab.html
 Use:
 
 ```text
-Click "Seed context + derive target run" for pressure-derived target mode.
+Click "Fresh seed + derive target run" for pressure-derived target mode.
 Click "Start fixed-target run" only for the older fixed-target comparison mode.
 ```
 
@@ -177,4 +184,5 @@ Do not add synonym-list demo behavior.
 Do not let communication motor directly decide truth or memory.
 Do not let static pages directly write to GitHub.
 Do not treat pressure-derived targets as final truth or doctrine.
+Do not turn uncertainty discipline into a hardcoded phrase generator.
 ```
