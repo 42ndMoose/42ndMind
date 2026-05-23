@@ -36,26 +36,21 @@ GROWTH_TARGET_DERIVER_ADDED
 GROWTH_DERIVED_TARGET_TEST_ADDED
 GROWTH_BREATHING_LAB_DERIVED_TARGET_MODE_ADDED
 GROWTH_DERIVED_TARGET_EXACT_CORE_FLOOR_PASSED_BY_USER
+ALIVE_MATH_KERNEL_SANDBOX_ADDED
+ALIVE_MATH_KERNEL_TEST_ADDED
+ALIVE_MATH_KERNEL_LAB_ADDED
 ```
 
 ## Current goal
 
-Build the migrated kernel from first principles:
+Build the migrated kernel from first principles. Current experimental branch inside the repo is now testing whether core, discernment, language, self-model, display-awareness, input-seeing, intent, and mouth-output can live inside one breathing math state instead of being simulated as separate minds.
 
 ```text
-input
-  -> owned brain state
-  -> maturity orientation
-  -> shared substrate activation layer
-  -> semantic basis
-  -> language field as input/output meaning interface
-  -> neural field
-  -> truth field
-  -> belief/memory field
-  -> autoplasticity pressure
-  -> growth target derivation
-  -> growth export
-  -> communication motor
+text seen as sensory field
+  -> one alive math state
+  -> core/discernment/language/self/display fields co-breathe
+  -> intent field emerges from the same state
+  -> mouth displays math-state expression
 ```
 
 ## Rule
@@ -120,59 +115,37 @@ Growth target derivation can derive a provisional unit-total target from interna
 
 This still does not prove full natural-language understanding.
 
-## Current verification targets
-
-```text
-Breathing growth loop for repeated local value search.
-Pressure-derived growth target from internal state.
-Autoplasticity over weak internal mappings.
-Future source-edit simulation with stronger uncertainty and rollback discipline.
-```
+## Current experimental sandbox
 
 Files:
 
 ```text
-src/growth-breather.js
-src/growth-export.js
-src/growth-target-deriver.js
-ui/growth-breathing-lab.html
-tests/growth-breather-test.html
-tests/growth-derived-target-test.html
+src/alive-math-kernel.js
+tests/alive-math-kernel-test.html
+ui/alive-math-kernel-lab.html
 ```
 
 Purpose:
 
 ```text
-Run repeated provisional growth steps over a unit-total semantic mapping.
-Keep the best state instead of creating duplicate exports every button press.
-Derive the breather target from internal truth, belief-memory, and language-context pressure instead of a fixed hand-written target.
-Preserve the term's semantic core while allowing pressure to reshape it.
-Export only the best candidate for human review.
-Do not auto-commit.
-Do not execute arbitrary code.
+Create one simulated breathing math state for core, discernment, language, self-model, display-awareness, input-seeing, intent, and mouth-output.
+Treat textbox words as a sensory field, not source code and not command routing.
+Display intent mathematically through live vectors and equations.
+Avoid fake chat output: the mouth displays math-state packets, not canned sentences.
+Preserve unit-total fields.
 ```
 
-Current tests:
+Current test:
 
 ```text
-tests/growth-breather-test.html
-Expected: 14/14 passed
-
-tests/growth-derived-target-test.html
-Expected: 21/21 passed
+tests/alive-math-kernel-test.html
+Expected: 19/19 passed
 ```
 
-Current breathing growth lab:
+Current lab:
 
 ```text
-ui/growth-breathing-lab.html
-```
-
-Use:
-
-```text
-Click "Fresh seed + derive target run" for pressure-derived target mode.
-Click "Start fixed-target run" only for the older fixed-target comparison mode.
+ui/alive-math-kernel-lab.html
 ```
 
 Boundary:
@@ -185,4 +158,5 @@ Do not let communication motor directly decide truth or memory.
 Do not let static pages directly write to GitHub.
 Do not treat pressure-derived targets as final truth or doctrine.
 Do not turn uncertainty discipline into a hardcoded phrase generator.
+Do not fake thought through ordinary prose output.
 ```
