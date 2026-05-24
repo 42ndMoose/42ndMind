@@ -1,5 +1,5 @@
-/* 42ndMind Infant Symbolic Kernel v0.2
- * First-principles infant layer.
+/* 42ndMind Infant Symbolic Kernel v0.3
+ * One-state infant layer.
  *
  * Doctrine:
  * - brain = 1
@@ -8,13 +8,12 @@
  * - compression before language
  * - prediction/error before meaning
  * - token relations before English translation
- * - runtime body changes only inside the state
+ * - recurrent attention before speech
  * - English output disabled
  *
  * This is not a chatbot and not a completed brain.
- * It is the lower layer: raw symbols -> pattern pressure -> compression
- * -> prediction -> error -> memory update -> token relation graph
- * -> runtime body mutation.
+ * It adds primitive recurrent thought:
+ * observe -> think cycles -> settle -> symbolic action.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -22,7 +21,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  const VERSION = "0.2.0-token-relations";
+  const VERSION = "0.3.0-recurrent-attention";
   const EPS = 1e-6;
 
   function now() { return new Date().toISOString(); }
@@ -72,6 +71,13 @@
     return normalize(Object.keys(out).map(axis => ({ axis, weight: out[axis] })));
   }
 
+  function fieldDistance(a, b) {
+    const am = mapField(a);
+    const bm = mapField(b);
+    const keys = Array.from(new Set(Object.keys(am).concat(Object.keys(bm))));
+    return round(keys.reduce((sum, key) => sum + Math.abs((am[key] || 0) - (bm[key] || 0)), 0));
+  }
+
   function checksum(value) {
     const text = typeof value === "string" ? value : JSON.stringify(value || null);
     let hash = 2166136261;
@@ -84,7 +90,7 @@
 
   function createBody(seed) {
     const body = {
-      type: "infant_runtime_body_v0_2",
+      type: "infant_runtime_body_v0_3",
       generation: 0,
       direct_source_write_enabled: false,
       english_output_enabled: false,
@@ -95,18 +101,22 @@
         mutation_rate: 0.08,
         injury_tolerance: 0.02,
         max_tokens: 128,
-        max_relations: 256
+        max_relations: 256,
+        thought_cycles: 6,
+        settle_threshold: 0.82
       }, seed && seed.params || {}),
       body_field: normalize(seed && seed.body_field || [
-        ["sense", 0.13],
-        ["pattern", 0.13],
-        ["compress", 0.13],
-        ["predict", 0.13],
-        ["error", 0.11],
-        ["memory", 0.11],
+        ["sense", 0.12],
+        ["pattern", 0.11],
+        ["compress", 0.11],
+        ["predict", 0.11],
+        ["error", 0.10],
+        ["memory", 0.10],
         ["relate", 0.10],
-        ["mutate", 0.08],
-        ["act", 0.08]
+        ["attend", 0.10],
+        ["settle", 0.08],
+        ["mutate", 0.04],
+        ["act", 0.03]
       ])
     };
     body.checksum = checksum({ generation: body.generation, params: body.params, body_field: body.body_field });
@@ -115,7 +125,7 @@
 
   function create(seed) {
     const state = {
-      packet_type: "42ndMind_infant_symbolic_kernel_v0_2",
+      packet_type: "42ndMind_infant_symbolic_kernel_v0_3",
       version: VERSION,
       doctrine: {
         brain_equals_one: true,
@@ -123,20 +133,23 @@
         raw_stream_first: true,
         compression_before_language: true,
         token_relations_before_english: true,
+        recurrent_attention_before_speech: true,
         english_output_disabled: true,
         direct_source_write: false
       },
       time: 0,
       brain_field: normalize(seed && seed.brain_field || [
-        ["sense", 0.14],
-        ["pattern", 0.12],
-        ["compress", 0.12],
-        ["predict", 0.11],
-        ["error", 0.11],
-        ["memory", 0.11],
-        ["relate", 0.11],
-        ["mutate", 0.09],
-        ["act", 0.09]
+        ["sense", 0.13],
+        ["pattern", 0.11],
+        ["compress", 0.11],
+        ["predict", 0.10],
+        ["error", 0.10],
+        ["memory", 0.10],
+        ["relate", 0.10],
+        ["attend", 0.10],
+        ["settle", 0.07],
+        ["mutate", 0.04],
+        ["act", 0.04]
       ]),
       body: createBody(seed && seed.body),
       memory: {
@@ -153,6 +166,15 @@
       prediction: null,
       compression: null,
       error: null,
+      attention_field: normalize([["null", 1]]),
+      thought_field: normalize([["idle", 1]]),
+      thought_state: {
+        cycle_count: 0,
+        stability: 0,
+        settled: false,
+        selected: null,
+        candidates: []
+      },
       candidate_body: null,
       candidate_test: null,
       internal_math_packet: null,
@@ -170,9 +192,16 @@
   function enforceBrainEqualsOne(state) {
     state.brain_field = normalize(state.brain_field);
     state.body.body_field = normalize(state.body.body_field);
+    state.attention_field = normalize(state.attention_field);
+    state.thought_field = normalize(state.thought_field);
     state.brain_l1 = l1(state.brain_field);
     state.body_l1 = l1(state.body.body_field);
-    return Math.abs(state.brain_l1 - 1) < EPS && Math.abs(state.body_l1 - 1) < EPS;
+    state.attention_l1 = l1(state.attention_field);
+    state.thought_l1 = l1(state.thought_field);
+    return Math.abs(state.brain_l1 - 1) < EPS &&
+      Math.abs(state.body_l1 - 1) < EPS &&
+      Math.abs(state.attention_l1 - 1) < EPS &&
+      Math.abs(state.thought_l1 - 1) < EPS;
   }
 
   function sense(text) {
@@ -272,7 +301,14 @@
       sensory,
       prediction,
       compression: { candidates, gain, compression_score: round(compression_score) },
-      score: round(prediction.accuracy * 0.40 + prediction.coverage * 0.12 + compression_score * 0.26 + stable * 0.14 + Math.min(1, state.memory.token_relation_graph.length / 16) * 0.08),
+      score: round(
+        prediction.accuracy * 0.36 +
+        prediction.coverage * 0.10 +
+        compression_score * 0.22 +
+        stable * 0.12 +
+        Math.min(1, state.memory.token_relation_graph.length / 16) * 0.08 +
+        Math.min(1, state.thought_state.stability || 0) * 0.12
+      ),
       stable
     };
   }
@@ -374,25 +410,166 @@
     const tokens = state.memory.token_library;
     const relations = state.memory.token_relation_graph;
     state.internal_math_packet = {
-      packet_type: "infant_internal_math_packet_v0_2",
-      mode: "token_relation_graph_not_english",
+      packet_type: "infant_internal_math_packet_v0_3",
+      mode: "recurrent_token_attention_not_english",
       expressions: [
         "brain=1",
         "Σ|brain.pressure|=1",
         "τ_i = compressed repeatable raw-symbol pattern",
         "ρ_ij = relation(τ_i,τ_j) from shared compression pressure",
-        "T=N({τ_i})",
-        "R=N({ρ_ij})"
+        "A(t)=N(tokens + relations + error + prediction)",
+        "Θ(t+1)=N(A(t)+Θ(t)+candidate_action_pressure)",
+        "settle ⇔ stability(A_t,A_t-1) ≥ θ",
+        "R = selected symbolic action; English=∅"
       ],
       token_count: tokens.length,
       relation_count: relations.length,
       token_unit_field: tokens.length ? tokenUnitField(state.memory) : [],
       relation_unit_field: relations.length ? relationUnitField(state.memory) : [],
+      attention_field: state.attention_field,
+      thought_field: state.thought_field,
+      thought_state: state.thought_state,
       token_l1: tokens.length ? l1(tokenUnitField(state.memory)) : 0,
       relation_l1: relations.length ? l1(relationUnitField(state.memory)) : 0,
+      attention_l1: l1(state.attention_field),
+      thought_l1: l1(state.thought_field),
       at: now()
     };
     return state.internal_math_packet;
+  }
+
+  function attentionPressure(state) {
+    const memory = state.memory;
+    const p = state.prediction || { accuracy: 0, coverage: 0, error_rate: 1 };
+    const c = state.compression || { candidates: [] };
+    const field = [];
+
+    c.candidates.slice(0, 10).forEach(candidate => {
+      const token = tokenForPattern(memory, candidate.pattern);
+      if (token) field.push({ axis: token.id, weight: 0.12 + Math.min(1, candidate.gain / 12) * 0.18 });
+    });
+
+    memory.token_relation_graph.slice(0, 10).forEach(edge => {
+      field.push({ axis: edge.from + "↔" + edge.to, weight: 0.08 + Math.min(1, edge.count / 18) * 0.16 });
+    });
+
+    field.push({ axis: "error", weight: 0.06 + p.error_rate * 0.22 });
+    field.push({ axis: "predict", weight: 0.06 + p.accuracy * 0.20 });
+    field.push({ axis: "coverage", weight: 0.05 + p.coverage * 0.12 });
+
+    if (!memory.token_library.length) field.push({ axis: "inquire", weight: 0.40 });
+    return normalize(field);
+  }
+
+  function candidateActions(state) {
+    const p = state.prediction || { accuracy: 0, coverage: 0, error_rate: 1 };
+    const token = state.memory.token_library[0] || null;
+    const relation = state.memory.token_relation_graph[0] || null;
+    const focus = state.attention_field[0] || { axis: "null", weight: 1 };
+    const actions = [];
+
+    actions.push({ kind: "hold", symbols: [], weight: 0.10 + Math.max(0, 1 - Math.abs(state.thought_state.stability || 0)) * 0.10 });
+
+    if (p.coverage < 0.30 || p.error_rate > 0.70) {
+      actions.push({ kind: "inquire", symbols: ["?"], weight: 0.35 + p.error_rate * 0.25 });
+    }
+
+    if (token) {
+      actions.push({ kind: "emit_token", symbols: [token.id], weight: 0.20 + Math.min(1, token.gain / 12) * 0.20 });
+    }
+
+    if (relation) {
+      actions.push({ kind: "emit_relation", symbols: [relation.from + "↔" + relation.to], weight: 0.18 + Math.min(1, relation.count / 18) * 0.22 });
+    }
+
+    if (p.accuracy > 0.65 && p.coverage > 0.45) {
+      actions.push({ kind: "predict_ready", symbols: ["→"], weight: 0.16 + p.accuracy * 0.20 });
+    }
+
+    if (focus.axis && focus.axis !== "null" && focus.axis !== "error") {
+      actions.push({ kind: "attend", symbols: [focus.axis], weight: 0.14 + Math.abs(focus.weight) * 0.20 });
+    }
+
+    const total = actions.reduce((sum, action) => sum + Math.abs(action.weight), 0) || 1;
+    return actions
+      .map(action => Object.assign({}, action, { pressure: round(Math.abs(action.weight) / total) }))
+      .sort((a, b) => b.pressure - a.pressure || a.kind.localeCompare(b.kind));
+  }
+
+  function think(state, cycles) {
+    const count = Math.max(1, Number(cycles || state.body.params.thought_cycles || 1));
+    const trace = [];
+
+    for (let i = 0; i < count; i += 1) {
+      const previousAttention = state.attention_field;
+      const nextAttention = attentionPressure(state);
+      const distance = fieldDistance(previousAttention, nextAttention);
+      const stability = round(Math.max(0, 1 - Math.min(1, distance / 2)));
+
+      state.attention_field = nextAttention;
+      state.thought_state.candidates = candidateActions(state);
+      state.thought_state.selected = state.thought_state.candidates[0] || { kind: "hold", symbols: [], pressure: 1 };
+      state.thought_state.stability = stability;
+      state.thought_state.cycle_count += 1;
+      state.thought_state.settled = stability >= Number(state.body.params.settle_threshold || 0.82);
+
+      state.thought_field = normalize([
+        ["attend", 0.18 + Math.abs((state.attention_field[0] && state.attention_field[0].weight) || 0) * 0.24],
+        ["memory_reentry", 0.12 + Math.min(1, state.memory.token_library.length / 16) * 0.18],
+        ["relation_reentry", 0.10 + Math.min(1, state.memory.token_relation_graph.length / 16) * 0.18],
+        ["predict", 0.10 + ((state.prediction && state.prediction.accuracy) || 0) * 0.16],
+        ["error", 0.10 + ((state.prediction && state.prediction.error_rate) || 0) * 0.20],
+        ["action_compete", 0.12 + ((state.thought_state.selected && state.thought_state.selected.pressure) || 0) * 0.18],
+        ["settle", 0.08 + stability * 0.22]
+      ]);
+
+      state.brain_field = normalize([
+        ...state.brain_field.map(row => ({ axis: row.axis, weight: row.weight * 0.74 })),
+        ...state.thought_field.map(row => ({ axis: row.axis, weight: row.weight * 0.26 }))
+      ]);
+
+      enforceBrainEqualsOne(state);
+      trace.push({
+        cycle: state.thought_state.cycle_count,
+        stability,
+        settled: state.thought_state.settled,
+        focus: state.attention_field[0],
+        selected: state.thought_state.selected
+      });
+
+      if (state.thought_state.settled && i >= 1) break;
+    }
+
+    updateInternalMathPacket(state);
+    state.trace.unshift({ type: "think", cycles: trace.length, result: trace[trace.length - 1] || null, at: now() });
+    state.trace = state.trace.slice(0, 128);
+    return clone(state.thought_state);
+  }
+
+  function settle(state) {
+    if (!state.thought_state.candidates.length) think(state, state.body.params.thought_cycles);
+    const selected = state.thought_state.selected || { kind: "hold", symbols: [], pressure: 1 };
+    const settled = state.thought_state.settled || selected.kind === "inquire" || selected.pressure >= 0.34;
+    state.thought_state.settled = !!settled;
+    state.thought_state.selected = selected;
+    updateInternalMathPacket(state);
+    return clone({ settled: state.thought_state.settled, selected });
+  }
+
+  function act(state) {
+    const settled = settle(state);
+    const selected = settled.selected || { kind: "hold", symbols: [] };
+    state.action_packet = {
+      enabled: true,
+      kind: selected.kind,
+      symbols: arr(selected.symbols),
+      pressure: selected.pressure || 0,
+      settled: !!settled.settled,
+      english: "",
+      at: now()
+    };
+    state.english_expression_channel = { enabled: false, content: "" };
+    return clone(state.action_packet);
   }
 
   function updateBrainField(state, evaluation) {
@@ -400,17 +577,20 @@
     const c = evaluation.compression;
     const injury = state.injury_register.length ? Math.min(0.25, state.injury_register.length * 0.03) : 0;
     const relationPressure = Math.min(1, state.memory.token_relation_graph.length / 16);
+    const thoughtPressure = Math.min(1, state.thought_state.stability || 0);
 
     state.brain_field = normalize([
-      ["sense", 0.09 + (evaluation.sensory.length ? 0.09 : 0)],
-      ["pattern", 0.09 + Math.min(1, c.candidates.length / 12) * 0.16],
-      ["compress", 0.08 + c.compression_score * 0.22],
-      ["predict", 0.08 + p.accuracy * 0.18],
-      ["error", 0.08 + p.error_rate * 0.22],
-      ["memory", 0.08 + Math.min(1, state.memory.seen_count / 16) * 0.14],
-      ["relate", 0.08 + relationPressure * 0.18],
-      ["mutate", 0.07 + (p.error_rate + c.compression_score) * 0.09],
-      ["act", 0.06 + p.coverage * 0.09],
+      ["sense", 0.08 + (evaluation.sensory.length ? 0.08 : 0)],
+      ["pattern", 0.08 + Math.min(1, c.candidates.length / 12) * 0.14],
+      ["compress", 0.07 + c.compression_score * 0.20],
+      ["predict", 0.07 + p.accuracy * 0.16],
+      ["error", 0.07 + p.error_rate * 0.20],
+      ["memory", 0.07 + Math.min(1, state.memory.seen_count / 16) * 0.12],
+      ["relate", 0.07 + relationPressure * 0.16],
+      ["attend", 0.07 + l1(state.attention_field) * 0.10],
+      ["settle", 0.06 + thoughtPressure * 0.16],
+      ["mutate", 0.05 + (p.error_rate + c.compression_score) * 0.07],
+      ["act", 0.05 + ((state.action_packet && state.action_packet.pressure) || 0) * 0.08],
       ["injury", injury]
     ]);
 
@@ -423,6 +603,7 @@
     const p = evaluation.prediction;
     const c = evaluation.compression;
     const relationPressure = Math.min(1, state.memory.token_relation_graph.length / 16);
+    const attentionPressureValue = Math.min(1, Math.abs((state.attention_field[0] && state.attention_field[0].weight) || 0));
 
     candidate.generation = source.generation + 1;
 
@@ -435,15 +616,17 @@
     }
 
     const pressure = normalize([
-      ["sense", 0.09],
-      ["pattern", 0.10 + Math.min(1, c.candidates.length / 10) * 0.16],
-      ["compress", 0.10 + c.compression_score * 0.20],
-      ["predict", 0.10 + p.accuracy * 0.16],
-      ["error", 0.08 + p.error_rate * 0.18],
-      ["memory", 0.10 + Math.min(1, state.memory.seen_count / 16) * 0.09],
-      ["relate", 0.10 + relationPressure * 0.16],
-      ["mutate", 0.09 + Math.abs(c.compression_score - p.error_rate) * 0.10],
-      ["act", 0.07 + p.coverage * 0.08]
+      ["sense", 0.08],
+      ["pattern", 0.09 + Math.min(1, c.candidates.length / 10) * 0.14],
+      ["compress", 0.09 + c.compression_score * 0.18],
+      ["predict", 0.09 + p.accuracy * 0.14],
+      ["error", 0.07 + p.error_rate * 0.16],
+      ["memory", 0.09 + Math.min(1, state.memory.seen_count / 16) * 0.08],
+      ["relate", 0.09 + relationPressure * 0.14],
+      ["attend", 0.09 + attentionPressureValue * 0.12],
+      ["settle", 0.07 + (state.thought_state.stability || 0) * 0.13],
+      ["mutate", 0.07 + Math.abs(c.compression_score - p.error_rate) * 0.08],
+      ["act", 0.06 + ((state.thought_state.selected && state.thought_state.selected.pressure) || 0) * 0.08]
     ]);
 
     candidate.body_field = blend(
@@ -467,6 +650,8 @@
     const checks = [
       ["candidate exists", !!candidate],
       ["brain remains one", Math.abs(l1(state.brain_field) - 1) < EPS, l1(state.brain_field)],
+      ["attention remains one", Math.abs(l1(state.attention_field) - 1) < EPS, l1(state.attention_field)],
+      ["thought remains one", Math.abs(l1(state.thought_field) - 1) < EPS, l1(state.thought_field)],
       ["candidate body equals one", !!candidate && Math.abs(l1(candidate.body_field) - 1) < EPS, candidate && l1(candidate.body_field)],
       ["candidate sandboxed", !!candidate && candidate.direct_source_write_enabled === false],
       ["candidate keeps english disabled", !!candidate && candidate.english_output_enabled === false],
@@ -481,7 +666,7 @@
     const failed = checks.filter(check => !check.passed);
 
     return {
-      packet_type: "infant_candidate_body_test_v0_2",
+      packet_type: "infant_candidate_body_test_v0_3",
       passed: failed.length === 0,
       checks,
       source_score: sourceScore.score,
@@ -514,32 +699,12 @@
     return state.body;
   }
 
-  function act(state, evaluation) {
-    const p = evaluation.prediction;
-    const c = evaluation.compression;
-    let kind = "hold";
-    let symbols = [];
-
-    if (p.coverage < 0.25 || p.error_rate > 0.72) {
-      kind = "inquire";
-      symbols = ["?"];
-    } else if (state.memory.token_library.length) {
-      kind = "emit_token";
-      symbols = [state.memory.token_library[0].id];
-    } else if (c.candidates.length) {
-      kind = "emit_pattern";
-      symbols = [c.candidates[0].pattern];
-    } else if (p.accuracy > 0.65) {
-      kind = "predict_ready";
-      symbols = ["→"];
-    }
-
-    state.action_packet = { enabled: true, kind, symbols, english: "", at: now() };
-    state.english_expression_channel = { enabled: false, content: "" };
-    return state.action_packet;
+  function observe(state, text) {
+    return step(state, text, { autoThink: false });
   }
 
-  function step(state, text) {
+  function step(state, text, options) {
+    const opts = options || {};
     const input = text == null ? ((state.sensory && state.sensory.raw) || "") : String(text);
     state.time += 1;
 
@@ -557,6 +722,11 @@
     updateInternalMathPacket(state);
     updateBrainField(state, evaluation);
 
+    if (opts.autoThink !== false) {
+      think(state, state.body.params.thought_cycles);
+      act(state);
+    }
+
     const candidate = proposeCandidateBody(state, evaluation);
     const test = testCandidateBody(state, candidate, input);
     state.candidate_test = test;
@@ -564,7 +734,6 @@
     if (test.passed) acceptCandidateBody(state);
     else recordInjury(state, "candidate_failed_survival_test", test);
 
-    act(state, evaluation);
     enforceBrainEqualsOne(state);
     updateInternalMathPacket(state);
 
@@ -573,11 +742,14 @@
       time: state.time,
       brain_l1: state.brain_l1,
       body_l1: state.body_l1,
+      attention_l1: state.attention_l1,
+      thought_l1: state.thought_l1,
       score: evaluation.score,
       prediction: state.prediction,
       compression_gain: state.compression.gain,
       token_count: state.memory.token_library.length,
       relation_count: state.memory.token_relation_graph.length,
+      thought: clone(state.thought_state),
       candidate_passed: test.passed,
       action: state.action_packet.kind,
       at: now()
@@ -601,6 +773,10 @@
     VERSION,
     create,
     step,
+    observe,
+    think,
+    settle,
+    act,
     run,
     sense,
     ngrams,
