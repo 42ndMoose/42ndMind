@@ -19,16 +19,24 @@
 </head>
 <body>
   <h1>42ndMind Infant Symbolic Kernel Lab</h1>
-  <p>This lower layer keeps <code>brain = 1</code>. Raw symbols enter the field, repeated patterns become tokens, tokens form relations, and the internal math packet stays non-English.</p>
+  <p>This lower layer keeps <code>brain = 1</code>. Raw symbols become tokens, tokens form relations, recurrent attention runs thought cycles, and the system selects a symbolic action. English output remains disabled.</p>
 
   <div class="card">
     <h2>Raw stream</h2>
     <textarea id="input">abababab cdcdcdcd ababab cdcdcdcd</textarea>
-    <button id="step">Step once</button>
+    <button id="step">Step + think</button>
+    <button id="think">Think only</button>
+    <button id="act">Act</button>
     <button id="train">Train 12x</button>
     <button id="gibberish">Send irregular stream</button>
     <button id="reset">Reset</button>
     <span id="status" class="muted">Idle.</span>
+  </div>
+
+  <div class="card">
+    <h2>Symbolic action output</h2>
+    <p class="muted">This is the only output channel for now. English stays empty.</p>
+    <pre id="action"></pre>
   </div>
 
   <div class="card">
@@ -40,6 +48,16 @@
   <div class="grid">
     <div class="card"><h2>Brain = 1</h2><pre id="brain"></pre></div>
     <div class="card"><h2>Runtime body</h2><pre id="body"></pre></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Attention field</h2><pre id="attention"></pre></div>
+    <div class="card"><h2>Thought field</h2><pre id="thought"></pre></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Thought state</h2><pre id="thoughtState"></pre></div>
+    <div class="card"><h2>Candidate actions</h2><pre id="actions"></pre></div>
   </div>
 
   <div class="grid">
@@ -60,14 +78,19 @@
   <div class="card"><h2>Candidate body test</h2><pre id="candidate"></pre></div>
   <div class="card"><h2>Trace</h2><pre id="trace"></pre></div>
 
-  <script src="../src/infant-symbolic-kernel.js?v=0.2.0-token-relations"></script>
+  <script src="../src/infant-symbolic-kernel.js?v=0.3.0-recurrent-attention"></script>
   <script>
     let kernel = FortySecondMindInfantSymbolicKernel.create();
     const input = document.getElementById('input');
     const statusEl = document.getElementById('status');
+    const actionEl = document.getElementById('action');
     const englishEl = document.getElementById('english');
     const brainEl = document.getElementById('brain');
     const bodyEl = document.getElementById('body');
+    const attentionEl = document.getElementById('attention');
+    const thoughtEl = document.getElementById('thought');
+    const thoughtStateEl = document.getElementById('thoughtState');
+    const actionsEl = document.getElementById('actions');
     const sensoryEl = document.getElementById('sensory');
     const predictionEl = document.getElementById('prediction');
     const compressionEl = document.getElementById('compression');
@@ -81,9 +104,14 @@
     function showStatus(text) { statusEl.textContent = text; statusEl.className = 'ok'; }
     function refresh() {
       const s = snapshot();
+      actionEl.textContent = JSON.stringify(s.action_packet, null, 2);
       englishEl.textContent = s.english_expression_channel && s.english_expression_channel.enabled ? s.english_expression_channel.content : '';
       brainEl.textContent = JSON.stringify({ l1: FortySecondMindInfantSymbolicKernel.l1(s.brain_field), brain_field: s.brain_field }, null, 2);
       bodyEl.textContent = JSON.stringify({ generation: s.body.generation, l1: FortySecondMindInfantSymbolicKernel.l1(s.body.body_field), params: s.body.params, body_field: s.body.body_field }, null, 2);
+      attentionEl.textContent = JSON.stringify({ l1: FortySecondMindInfantSymbolicKernel.l1(s.attention_field), attention_field: s.attention_field }, null, 2);
+      thoughtEl.textContent = JSON.stringify({ l1: FortySecondMindInfantSymbolicKernel.l1(s.thought_field), thought_field: s.thought_field }, null, 2);
+      thoughtStateEl.textContent = JSON.stringify(s.thought_state, null, 2);
+      actionsEl.textContent = JSON.stringify((s.thought_state && s.thought_state.candidates) || [], null, 2);
       sensoryEl.textContent = JSON.stringify(s.sensory, null, 2);
       predictionEl.textContent = JSON.stringify({ prediction: s.prediction, error: s.error }, null, 2);
       compressionEl.textContent = JSON.stringify(s.compression, null, 2);
@@ -93,11 +121,15 @@
       candidateEl.textContent = JSON.stringify({ candidate_body: s.candidate_body, candidate_test: s.candidate_test, injury_register: s.injury_register }, null, 2);
       traceEl.textContent = JSON.stringify(s.trace.slice(0, 24), null, 2);
     }
-    function stepOnce() { FortySecondMindInfantSymbolicKernel.step(kernel, input.value); showStatus('One raw-symbol cycle completed.'); refresh(); }
-    function train() { for (let i = 0; i < 12; i += 1) FortySecondMindInfantSymbolicKernel.step(kernel, input.value); showStatus('Twelve cycles completed.'); refresh(); }
+    function stepOnce() { FortySecondMindInfantSymbolicKernel.step(kernel, input.value); showStatus('Observed, thought, and selected symbolic action.'); refresh(); }
+    function thinkOnly() { FortySecondMindInfantSymbolicKernel.think(kernel, 6); showStatus('Internal thought cycles completed.'); refresh(); }
+    function actOnly() { FortySecondMindInfantSymbolicKernel.act(kernel); showStatus('Symbolic action selected.'); refresh(); }
+    function train() { for (let i = 0; i < 12; i += 1) FortySecondMindInfantSymbolicKernel.step(kernel, input.value); showStatus('Twelve observe-think cycles completed.'); refresh(); }
     function irregular() { input.value = 'xqz 91 %% ?? blorp'; stepOnce(); }
     function reset() { kernel = FortySecondMindInfantSymbolicKernel.create(); showStatus('Reset.'); refresh(); }
     document.getElementById('step').onclick = stepOnce;
+    document.getElementById('think').onclick = thinkOnly;
+    document.getElementById('act').onclick = actOnly;
     document.getElementById('train').onclick = train;
     document.getElementById('gibberish').onclick = irregular;
     document.getElementById('reset').onclick = reset;
