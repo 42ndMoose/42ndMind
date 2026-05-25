@@ -3,6 +3,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 const K = require('../src/brain-kernel-v1.js');
 
 const forbidden = [
@@ -94,6 +95,16 @@ out = K.respond(state, 'hello');
 assert.strictEqual(out, '', 'non-derived inputs must produce silence, not placeholder speech');
 
 const root = path.resolve(__dirname, '..');
+const kernelSource = fs.readFileSync(path.join(root, 'src/brain-kernel-v1.js'), 'utf8');
+const browserContext = { globalThis: {} };
+browserContext.globalThis.globalThis = browserContext.globalThis;
+vm.runInNewContext(kernelSource, browserContext.globalThis);
+assert(browserContext.globalThis.FortySecondMindKernelV1, 'browser global must expose FortySecondMindKernelV1');
+let browserState = browserContext.globalThis.FortySecondMindKernelV1.birth();
+let browserOut = browserContext.globalThis.FortySecondMindKernelV1.respond(browserState, 'what is discernment?');
+assert(browserOut.includes('D = Σ(|contrast| + |separation| + |reality_contact| + |stability_gate|) = 1'), 'browser global kernel must answer from semantic math object');
+assertNoForbidden(browserOut);
+
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 assert(index.includes('src/brain-kernel-v1.js'), 'index.html must load the new kernel');
 assert(index.includes('FortySecondMindKernelV1'), 'index.html must use the new kernel global');
