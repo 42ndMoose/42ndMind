@@ -1,44 +1,109 @@
-# 42ndMind Kernel
+# 42ndMind
 
-This branch is the migration reset after the prototype-lab purge.
+42ndMind is currently centered on the unified infant brain loop.
 
-The old repository state remains recoverable through Git history and local ZIP backups. This branch intentionally does not preserve old live pages, route-specific patches, toy speech modules, or one-off tests.
-
-## Doctrine
-
-One brain, separate organs.
-
-The kernel owns one state object. Organs update fields inside that state, but they do not become separate minds and they do not print their own speech.
-
-Communication is a motor output of the unified brain.
-
-## Initial structure
+The main public entrypoint is:
 
 ```text
-src/brain-state.js
-src/kernel.js
-src/maturity-core.js
-src/neural-field.js
-src/language-field.js
-src/belief-memory-field.js
-src/truth-field.js
-src/communication-motor.js
-src/autoplasticity.js
-ui/live-kernel.html
-tests/kernel-smoke-test.html
-tests/neural-field-test.html
-tests/language-field-test.html
+src/infant-brain-v0-1.js
+```
+
+The browser lab is:
+
+```text
+ui/infant-brain-lab.html
+```
+
+GitHub Pages URL:
+
+```text
+https://42ndmoose.github.io/42ndMind/ui/infant-brain-lab.html
+```
+
+## Current direction
+
+The project is no longer organized around separate modules pretending to be separate organs.
+
+The current top-level loop creates a single causal field and forces every active field to participate in the same update cycle.
+
+Current active fields:
+
+```text
+brain
+language
+meaning
+source_body
+candidate_source
+sandbox_result
+attention
+thought
+inner_cycle
+drive
+expression
+expression_feedback
+whole
+memory
+trace
+action
+```
+
+The important invariant is no longer just `field = 1`.
+
+The stronger invariant is:
+
+```text
+organism = 1
+causal_field = 1
+every active field participates in causal_field
+causal_field reinjects into every active field
+```
+
+## Main API
+
+```js
+const K = require('./src/infant-brain-v0-1.js');
+
+const s = K.birthBrain();
+K.perceiveBrain(s, 'abababab cdcdcdcd abababab cdcdcdcd');
+K.brainLive(s, 12, 4);
+console.log(K.brainPacket(s));
+```
+
+Browser global:
+
+```js
+window.FortySecondMindInfantBrain
+```
+
+## Current tests
+
+Core top-level loop:
+
+```bash
+node tests/infant-v05-brain-loop.js
+node tests/infant-v05-causal-loop.js
+```
+
+Bridge stack:
+
+```bash
+node tests/infant-v05-inner-cycle-bridge.js
+node tests/infant-v05-drive-bridge.js
+node tests/infant-v05-drive-learning-bridge.js
+node tests/infant-v05-organism-entrypoint.js
+node tests/infant-v05-expression-field.js
+node tests/infant-v05-expression-feedback.js
+node tests/infant-v05-whole-loop.js
 ```
 
 ## Non-negotiables
 
-- Brain owns state.
+- One state.
 - No duplicated consciousness.
-- Objective maturity remains identity center.
-- Language/math uses unit-total meaning fields.
-- Memory is belief/context, not a separate self.
-- Truth tracking stays separate from belief.
-- Communication is a motor output, not module-generated speech.
-- Self-improvement is internal plasticity.
+- No English output until internal language deserves translation.
+- Unit-total active fields.
+- Every active field must be inside the causal loop.
+- Memory is not a separate self.
+- Source change remains sandboxed until the organism can compare harm and improvement.
 - No final truth promotion yet.
-- Do not fake intelligence through UI text.
+- No UI text pretending to be intelligence.
