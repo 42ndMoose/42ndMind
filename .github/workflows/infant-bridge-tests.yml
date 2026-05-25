@@ -17,3 +17,5 @@ jobs:
         run: node tests/infant-v05-inner-cycle-bridge.js
       - name: Run drive bridge test
         run: node tests/infant-v05-drive-bridge.js
+      - name: Run drive learning bridge test
+        run: node tests/infant-v05-drive-learning-bridge.js
