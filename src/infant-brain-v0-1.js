@@ -9,7 +9,9 @@
   function V(x){ return Number(x) || 0; }
   function L(field){ return Core.l1(field || [{axis:'empty', weight:1}]); }
   function top(field){ return A(field)[0] || {axis:'none', weight:1}; }
+  function unitField(name){ return [{axis:name || 'unit', weight:1}]; }
 
+  const BRAIN_VERSION = '0.1.1';
   const ACTIVE_FIELDS = [
     'brain_field',
     'language_field',
@@ -26,40 +28,68 @@
     'whole_field'
   ];
 
-  function birthBrain(seed){
-    const state = Core.birthWhole ? Core.birthWhole(seed) : Core.birth(seed);
-    state.brain_version = '0.1.0';
-    ensureBrainFields(state);
-    causalField(state);
-    metabolize(state);
-    state.brain_state = brainState(state, 'born');
-    return state;
+  function createBase(seed){
+    if(Core.create) return Core.create(seed);
+    if(Core.birth) return Core.birth(seed);
+    return {};
+  }
+
+  function ensureField(state, name, fallback){
+    state[name] = A(state[name]).length ? Core.normalize(state[name]) : Core.normalize(fallback || unitField(name));
+    return state[name];
   }
 
   function ensureBrainFields(state){
-    if(Core.ensureActiveFields) Core.ensureActiveFields(state);
-    if(Core.wholeField) Core.wholeField(state);
+    ensureField(state, 'brain_field', [['brain',1]]);
+    ensureField(state, 'language_field', [['empty_language',1]]);
+    ensureField(state, 'meaning_binding_field', [['empty_binding',1]]);
+    ensureField(state, 'source_body_field', [['source_body',1]]);
+    ensureField(state, 'candidate_source_change_field', [['candidate_source',1]]);
+    ensureField(state, 'sandbox_result_field', [['sandbox_result',1]]);
+    ensureField(state, 'attention_field', [['attention',1]]);
+    ensureField(state, 'thought_field', [['thought',1]]);
+    ensureField(state, 'inner_cycle_field', [['inner_cycle',1]]);
+    ensureField(state, 'drive_field', [['drive',1]]);
+    ensureField(state, 'expression_field', [['expression',1]]);
+    ensureField(state, 'expression_feedback_field', [['expression_feedback',1]]);
+    ensureField(state, 'whole_field', [['whole',1]]);
+
+    if(Core.updateMathLanguage) Core.updateMathLanguage(state);
+    if(Core.updateMeaningBindings) Core.updateMeaningBindings(state);
+    if(Core.updateSourceBody) Core.updateSourceBody(state);
+    if(Core.updateCandidateSourceChange) Core.updateCandidateSourceChange(state);
+    if(Core.sandboxCompare) Core.sandboxCompare(state, (state.sensory && state.sensory.raw) || '');
+    if(Core.ensureLearning) Core.ensureLearning(state);
+    if(Core.updateLearnedDrive) Core.updateLearnedDrive(state);
     if(Core.updateExpressionField) Core.updateExpressionField(state);
     if(Core.expressionSignal) Core.expressionSignal(state);
-    if(Core.updateLearnedDrive) Core.updateLearnedDrive(state);
-    state.inner_cycle_field = state.inner_cycle_field || Core.normalize([['idle',1]]);
-    state.drive_field = state.drive_field || Core.normalize([['idle_drive',1]]);
-    state.expression_field = state.expression_field || Core.normalize([['empty_expression',1]]);
-    state.expression_feedback_field = state.expression_feedback_field || Core.normalize([['empty_expression_feedback',1]]);
-    state.whole_field = state.whole_field || Core.normalize([['empty_whole',1]]);
+
+    ensureField(state, 'inner_cycle_field', [['inner_cycle',1]]);
+    ensureField(state, 'drive_field', [['drive',1]]);
+    ensureField(state, 'expression_field', [['expression',1]]);
+    ensureField(state, 'expression_feedback_field', [['expression_feedback',1]]);
+    ensureWholeField(state);
     return state;
   }
 
   function unitMap(state){
-    const base = Core.wholeUnitMap ? Core.wholeUnitMap(state) : (Core.unitMap ? Core.unitMap(state) : {});
-    return Object.assign({}, base, {
-      inner_cycle: L(state.inner_cycle_field),
-      drive: L(state.drive_field),
-      expression: L(state.expression_field),
-      expression_feedback: L(state.expression_feedback_field),
-      whole: L(state.whole_field),
-      causal: L(state.causal_field)
-    });
+    return {
+      brain:L(state.brain_field),
+      body:L(state.body && state.body.body_field),
+      language:L(state.language_field),
+      candidate_meaning:L(state.meaning_binding_field),
+      source_body:L(state.source_body_field),
+      candidate_source:L(state.candidate_source_change_field),
+      sandbox_result:L(state.sandbox_result_field),
+      attention:L(state.attention_field),
+      thought:L(state.thought_field),
+      inner_cycle:L(state.inner_cycle_field),
+      drive:L(state.drive_field),
+      expression:L(state.expression_field),
+      expression_feedback:L(state.expression_feedback_field),
+      whole:L(state.whole_field),
+      causal:L(state.causal_field)
+    };
   }
 
   function allUnit(state){
@@ -67,14 +97,45 @@
     return Object.keys(u).every(key => Math.abs(u[key] - 1) < 1e-6);
   }
 
+  function ensureWholeField(state){
+    const rows = [
+      ['brain', L(state.brain_field)],
+      ['body', L(state.body && state.body.body_field)],
+      ['language', L(state.language_field)],
+      ['candidate_meaning', L(state.meaning_binding_field)],
+      ['source_body', L(state.source_body_field)],
+      ['candidate_source', L(state.candidate_source_change_field)],
+      ['sandbox_result', L(state.sandbox_result_field)],
+      ['attention', L(state.attention_field)],
+      ['thought', L(state.thought_field)],
+      ['inner_cycle', L(state.inner_cycle_field)],
+      ['drive', L(state.drive_field)],
+      ['expression', L(state.expression_field)],
+      ['expression_feedback', L(state.expression_feedback_field)],
+      ['action', state.action_packet && state.action_packet.kind ? 1 : 0.25],
+      ['memory', Math.max(1, V(state.memory && state.memory.seen_count))],
+      ['trace', Math.max(1, A(state.trace).length)]
+    ];
+    state.whole_field = Core.normalize(rows.map(row => ({axis:row[0], weight:Math.max(0.001, V(row[1]))})));
+    state.whole_l1 = Core.l1(state.whole_field);
+    state.whole_state = {
+      version:BRAIN_VERSION,
+      unit:true,
+      l1:state.whole_l1,
+      focus:top(state.whole_field),
+      english:''
+    };
+    return state.whole_state;
+  }
+
   function causalField(state){
-    ensureBrainFields(state);
     const rows = [];
     ACTIVE_FIELDS.forEach(name => {
-      const field = state[name] || [{axis:'empty', weight:1}];
+      const field = A(state[name]).length ? state[name] : unitField(name);
       const t = top(field);
-      rows.push({axis:name.replace('_field',''), weight:1});
-      rows.push({axis:name.replace('_field','') + ':' + t.axis, weight:Math.max(0.001, Math.abs(V(t.weight)))});
+      const shortName = name.replace('_field','');
+      rows.push({axis:shortName, weight:1});
+      rows.push({axis:shortName + ':' + t.axis, weight:Math.max(0.001, Math.abs(V(t.weight)))});
     });
     rows.push({axis:'memory:seen', weight:Math.max(1, V(state.memory && state.memory.seen_count))});
     rows.push({axis:'trace:length', weight:Math.max(1, A(state.trace).length)});
@@ -83,7 +144,7 @@
     state.causal_field = Core.normalize(rows);
     state.causal_l1 = Core.l1(state.causal_field);
     state.causal_state = {
-      version:'0.1.0',
+      version:BRAIN_VERSION,
       unit:true,
       l1:state.causal_l1,
       focus:top(state.causal_field),
@@ -100,6 +161,7 @@
   }
 
   function metabolize(state){
+    ensureBrainFields(state);
     causalField(state);
     ACTIVE_FIELDS.forEach(name => {
       const tag = name.replace('_field','');
@@ -107,20 +169,31 @@
       const share = 1 - retain;
       state[name] = mixField(state[name], state.causal_field, retain, share, tag);
     });
+    ensureWholeField(state);
     state.causal_field = mixField(state.causal_field, state.whole_field, 0.72, 0.28, 'causal_from_whole');
     state.causal_l1 = Core.l1(state.causal_field);
     return state;
   }
 
+  function innerWork(state, depth){
+    const d = Math.max(1, Number(depth || 4));
+    if(Core.learningCycle) Core.learningCycle(state, 1, d);
+    else if(Core.driveCycle) Core.driveCycle(state, 1, d);
+    else if(Core.innerCycle) Core.innerCycle(state, 1, d);
+    else {
+      if(Core.think) Core.think(state, d);
+      if(Core.act) Core.act(state);
+    }
+    if(Core.updateExpressionField) Core.updateExpressionField(state);
+    if(Core.expressionSignal) Core.expressionSignal(state);
+    if(Core.think) Core.think(state, d);
+    if(Core.act) Core.act(state);
+  }
+
   function brainTick(state, depth){
     const before = brainState(state, 'before_tick');
     metabolize(state);
-    if(Core.feedbackLive) Core.feedbackLive(state, 1, depth || 4);
-    else if(Core.wholeLive) Core.wholeLive(state, 1, depth || 4);
-    else if(Core.live) Core.live(state, 1, depth || 4);
-    metabolize(state);
-    if(Core.think) Core.think(state, Math.max(1, Number(depth || 4)));
-    if(Core.act) Core.act(state);
+    innerWork(state, depth || 4);
     metabolize(state);
     const after = brainState(state, 'after_tick');
     const row = {
@@ -155,10 +228,20 @@
     return {state:Core.snapshot(state), rows, brain_state:C(state.brain_state)};
   }
 
+  function birthBrain(seed){
+    const state = createBase(seed);
+    state.brain_version = BRAIN_VERSION;
+    state.trace = A(state.trace);
+    ensureBrainFields(state);
+    metabolize(state);
+    state.brain_state = brainState(state, 'born');
+    return state;
+  }
+
   function perceiveBrain(state, text, options){
-    if(Core.perceiveWhole) Core.perceiveWhole(state, text, options || {});
+    if(Core.step) Core.step(state, text, options || {});
     else if(Core.perceive) Core.perceive(state, text, options || {});
-    else Core.step(state, text);
+    ensureBrainFields(state);
     metabolize(state);
     state.brain_state = brainState(state, 'perceived');
     return Core.snapshot(state);
@@ -172,9 +255,10 @@
   }
 
   function brainState(state, mode){
+    ensureBrainFields(state);
     causalField(state);
     return {
-      version:'0.1.0',
+      version:BRAIN_VERSION,
       mode:mode || 'state',
       unit:unitMap(state),
       all_unit:allUnit(state),
@@ -210,7 +294,7 @@
   }
 
   return Object.freeze(Object.assign({},Core,{
-    BRAIN_VERSION:'0.1.0',
+    BRAIN_VERSION,
     ACTIVE_FIELDS,
     birthBrain,
     perceiveBrain,
