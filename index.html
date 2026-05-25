@@ -31,22 +31,23 @@
   </form>
 </main>
 
-<script src="src/infant-symbolic-kernel.js?v=20260524-4"></script>
-<script src="src/infant-cycle-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-drive-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-drive-learning-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-organism-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-expression-field-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-expression-feedback-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-whole-loop-v0-1.js?v=20260524-4"></script>
-<script src="src/infant-brain-v0-1.js?v=20260524-4"></script>
+<script src="src/infant-symbolic-kernel.js?v=20260524-5"></script>
+<script src="src/infant-cycle-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-drive-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-drive-learning-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-organism-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-expression-field-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-expression-feedback-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-whole-loop-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-brain-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-brain-speech-v0-1.js?v=20260524-5"></script>
 <script>
 (function(){
   const chat = document.getElementById('chat');
   const form = document.getElementById('form');
   const input = document.getElementById('input');
   const errorBox = document.getElementById('error');
-  const K = window.FortySecondMindInfantBrain;
+  const K = window.FortySecondMindInfantBrainSpeech;
   let state = null;
 
   function showError(err){
@@ -63,53 +64,17 @@
     chat.scrollTop = chat.scrollHeight;
   }
 
-  function top(field){ return field && field[0] ? field[0] : {axis:'none', weight:0}; }
-
   function ready(){
-    if(!K) throw new Error('Brain did not load.');
-    ['birthBrain','perceiveBrain','brainLive','brainPacket'].forEach(name => {
-      if(typeof K[name] !== 'function') throw new Error('Missing brain function: ' + name);
+    if(!K) throw new Error('Brain speech did not load.');
+    ['birthBrain','speakAfterInput','speakBrain'].forEach(name => {
+      if(typeof K[name] !== 'function') throw new Error('Missing brain speech function: ' + name);
     });
-  }
-
-  function cleanAxis(axis){
-    return String(axis || 'stillness')
-      .replace(/^causal:[^:]+:/, '')
-      .replace(/^causal:/, '')
-      .replace(/^expr_feedback:/, '')
-      .replace(/^expr:/, '')
-      .replace(/^learned_drive:/, '')
-      .replace(/^whole:/, '')
-      .replace(/_/g, ' ')
-      .slice(0, 90);
-  }
-
-  function brainText(){
-    const packet = K.brainPacket(state);
-    const bs = packet.brain_state || {};
-    const action = String(bs.action || (state.action_packet && state.action_packet.kind) || 'hold').replace(/_/g, ' ');
-    const focus = cleanAxis(top(state.causal_field).axis);
-    const thought = cleanAxis(top(state.thought_field).axis);
-    const expression = cleanAxis(top(state.expression_field).axis);
-    const terms = bs.language_terms || 0;
-    const meanings = bs.candidate_meanings || 0;
-    const expressions = bs.expressions || 0;
-
-    if(terms === 0 && meanings === 0 && expressions === 0){
-      return 'I received it.\nI am still forming the first pattern.';
-    }
-
-    return 'I received it.\n' +
-      'My next signal is ' + action + '.\n' +
-      'I am focusing on ' + focus + '.\n' +
-      'My thought is holding ' + thought + '.\n' +
-      'My expression is ' + expression + '.';
   }
 
   function boot(){
     ready();
     state = K.birthBrain();
-    add('brain', 'I am here.');
+    add('brain', K.speakBrain(state));
   }
 
   form.addEventListener('submit', function(e){
@@ -121,9 +86,7 @@
       errorBox.style.display = 'none';
       if(!state) state = K.birthBrain();
       add('me', text);
-      K.perceiveBrain(state, text);
-      K.brainLive(state, 10, 4);
-      add('brain', brainText());
+      add('brain', K.speakAfterInput(state, text, 12, 4));
     } catch(err) { showError(err); }
   });
 
