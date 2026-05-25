@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42ndMind Infant Brain Lab</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, sans-serif; background:#0b0f14; color:#e8edf2; }
+    main { max-width:1100px; margin:0 auto; padding:24px; }
+    h1 { margin:0 0 8px; font-size:28px; }
+    p { color:#aeb8c2; line-height:1.45; }
+    textarea { width:100%; min-height:110px; box-sizing:border-box; background:#111821; color:#e8edf2; border:1px solid #26313d; border-radius:10px; padding:12px; font:15px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    button { background:#d7e7ff; color:#07111f; border:0; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; margin:8px 8px 8px 0; }
+    button.secondary { background:#1b2633; color:#d7e7ff; border:1px solid #334457; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:16px; }
+    .card { background:#111821; border:1px solid #26313d; border-radius:14px; padding:14px; }
+    .card h2 { margin:0 0 10px; font-size:16px; color:#f2f6fa; }
+    .kv { display:grid; grid-template-columns:1fr auto; gap:8px; font:13px ui-monospace, SFMono-Regular, Menlo, monospace; padding:4px 0; border-bottom:1px solid rgba(255,255,255,.06); }
+    .kv:last-child { border-bottom:0; }
+    .good { color:#92ffb3; }
+    .warn { color:#ffd479; }
+    pre { white-space:pre-wrap; word-break:break-word; background:#070b10; border:1px solid #202b36; border-radius:10px; padding:12px; max-height:360px; overflow:auto; font-size:12px; }
+    .small { font-size:12px; color:#8f9aa5; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>42ndMind Infant Brain Lab</h1>
+  <p>This page runs the current top-level loop: one state, causal field, internal live ticks, unit-total active fields, and no English output channel.</p>
+
+  <textarea id="input">abababab cdcdcdcd abababab cdcdcdcd</textarea>
+  <div>
+    <button id="birth">Birth</button>
+    <button id="perceive">Perceive</button>
+    <button id="live">Live 12 ticks</button>
+    <button id="run">Birth → Perceive → Live</button>
+    <button id="clear" class="secondary">Clear trace</button>
+  </div>
+
+  <div class="grid">
+    <section class="card"><h2>Brain state</h2><div id="brainState"></div></section>
+    <section class="card"><h2>Unit map</h2><div id="unitMap"></div></section>
+    <section class="card"><h2>Causal participation</h2><div id="participation"></div></section>
+  </div>
+
+  <div class="grid">
+    <section class="card"><h2>Top fields</h2><pre id="fields"></pre></section>
+    <section class="card"><h2>Trace</h2><pre id="trace"></pre></section>
+  </div>
+
+  <p class="small">Main API: <code>FortySecondMindInfantBrain</code>. Entry functions: <code>birthBrain()</code>, <code>perceiveBrain()</code>, <code>brainLive()</code>, <code>brainPacket()</code>.</p>
+</main>
+
+<script src="../src/infant-symbolic-kernel.js"></script>
+<script src="../src/infant-cycle-v0-1.js"></script>
+<script src="../src/infant-drive-v0-1.js"></script>
+<script src="../src/infant-drive-learning-v0-1.js"></script>
+<script src="../src/infant-organism-v0-1.js"></script>
+<script src="../src/infant-expression-field-v0-1.js"></script>
+<script src="../src/infant-expression-feedback-v0-1.js"></script>
+<script src="../src/infant-whole-loop-v0-1.js"></script>
+<script src="../src/infant-brain-v0-1.js"></script>
+<script>
+  const K = window.FortySecondMindInfantBrain;
+  let state = null;
+
+  function fmt(x){ return typeof x === 'number' ? x.toFixed(6).replace(/0+$/,'').replace(/\.$/,'') : String(x); }
+  function kv(container, key, value, cls){
+    const row = document.createElement('div'); row.className = 'kv';
+    const k = document.createElement('span'); k.textContent = key;
+    const v = document.createElement('span'); v.textContent = fmt(value); if(cls) v.className = cls;
+    row.append(k,v); container.append(row);
+  }
+  function top(field){ return (field && field[0]) ? field[0] : {axis:'none', weight:0}; }
+  function render(){
+    if(!state){ state = K.birthBrain(); }
+    const packet = K.brainPacket(state);
+    const brain = document.getElementById('brainState'); brain.innerHTML='';
+    kv(brain, 'version', K.BRAIN_VERSION);
+    kv(brain, 'mode', packet.brain_state.mode || 'packet');
+    kv(brain, 'all_unit', packet.brain_state.all_unit, packet.brain_state.all_unit ? 'good' : 'warn');
+    kv(brain, 'causal_l1', packet.brain_state.causal_l1, packet.brain_state.causal_l1 === 1 ? 'good' : 'warn');
+    kv(brain, 'focus', packet.brain_state.focus.axis);
+    kv(brain, 'action', packet.brain_state.action || 'none');
+    kv(brain, 'language_terms', packet.brain_state.language_terms || 0);
+    kv(brain, 'candidate_meanings', packet.brain_state.candidate_meanings || 0);
+    kv(brain, 'expressions', packet.brain_state.expressions || 0);
+
+    const units = document.getElementById('unitMap'); units.innerHTML='';
+    Object.entries(packet.brain_state.unit || {}).forEach(([k,v]) => kv(units, k, v, Math.abs(v-1)<1e-6 ? 'good' : 'warn'));
+
+    const p = document.getElementById('participation'); p.innerHTML='';
+    Object.entries(packet.causal_participation || {}).forEach(([k,v]) => kv(p, k, v, v === true ? 'good' : 'warn'));
+
+    const selected = {
+      causal: top(state.causal_field),
+      brain: top(state.brain_field),
+      attention: top(state.attention_field),
+      thought: top(state.thought_field),
+      language: top(state.language_field),
+      meaning: top(state.meaning_binding_field),
+      expression: top(state.expression_field),
+      whole: top(state.whole_field)
+    };
+    document.getElementById('fields').textContent = JSON.stringify(selected, null, 2);
+    document.getElementById('trace').textContent = JSON.stringify((state.trace || []).slice(0,12), null, 2);
+  }
+
+  document.getElementById('birth').onclick = () => { state = K.birthBrain(); render(); };
+  document.getElementById('perceive').onclick = () => { if(!state) state = K.birthBrain(); K.perceiveBrain(state, document.getElementById('input').value); render(); };
+  document.getElementById('live').onclick = () => { if(!state) state = K.birthBrain(); K.brainLive(state, 12, 4); render(); };
+  document.getElementById('run').onclick = () => { state = K.birthBrain(); K.perceiveBrain(state, document.getElementById('input').value); K.brainLive(state, 12, 4); render(); };
+  document.getElementById('clear').onclick = () => { if(state) state.trace = []; render(); };
+  render();
+</script>
+</body>
+</html>
