@@ -1,0 +1,19 @@
+name: Infant bridge tests
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  infant-bridge-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run inner cycle bridge test
+        run: node tests/infant-v05-inner-cycle-bridge.js
+      - name: Run drive bridge test
+        run: node tests/infant-v05-drive-bridge.js
