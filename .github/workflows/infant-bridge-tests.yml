@@ -1,4 +1,4 @@
-name: Infant bridge tests
+name: Infant tests
 
 on:
   push:
@@ -6,24 +6,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  infant-bridge-tests:
+  node-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Run inner cycle bridge test
-        run: node tests/infant-v05-inner-cycle-bridge.js
-      - name: Run drive bridge test
-        run: node tests/infant-v05-drive-bridge.js
-      - name: Run drive learning bridge test
-        run: node tests/infant-v05-drive-learning-bridge.js
-      - name: Run organism entrypoint test
-        run: node tests/infant-v05-organism-entrypoint.js
-      - name: Run expression field bridge test
-        run: node tests/infant-v05-expression-field.js
-      - name: Run expression feedback bridge test
-        run: node tests/infant-v05-expression-feedback.js
-      - name: Run whole organism loop test
-        run: node tests/infant-v05-whole-loop.js
+      - name: Run test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          find tests -maxdepth 1 -type f -name '*.js' | sort | while read -r f; do
+            echo "::group::$f"
+            node "$f"
+            echo "::endgroup::"
+          done
