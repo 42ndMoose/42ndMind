@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
 
-  var VERSION = 'brain-kernel-v1.0.1';
+  var VERSION = 'brain-kernel-v1.0.2';
   var PRESSURE_FORBIDDEN = [
     'unresolved_error','inquire','prediction_gap','low_coverage','thought_instability',
     'action_uncertainty','comparison_pain','body_tension','language_gap','continue_inner_cycle'
@@ -317,7 +317,7 @@
   function derive(state, input){
     var raw = normalizeText(input);
     var k = keyText(raw);
-    if(!k || isGreeting(k) || isFragment(k)) return null;
+    if(!k || isGreeting(k)) return null;
 
     var m = raw.match(/^my\s+name\s+is\s+(.+)$/i);
     if(m) return bindName(state, m[1], raw);
@@ -331,6 +331,8 @@
     if(q) objectKey = objectKeyFromTerm(q[2]);
     if(!objectKey) objectKey = objectKeyFromTerm(raw);
     if(objectKey) return renderObjectJudgment(state, objectKey, raw);
+
+    if(isFragment(k)) return null;
 
     if(isSubstantiveUnknownQuery(raw)){
       return makeUnknown(raw, raw);
