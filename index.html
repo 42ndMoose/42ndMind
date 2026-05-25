@@ -26,28 +26,28 @@
   <div id="error"></div>
   <section id="chat" aria-live="polite"></section>
   <form id="form">
-    <input id="input" autocomplete="off" placeholder="Message the brain" />
+    <input id="input" autocomplete="off" />
     <button>Send</button>
   </form>
 </main>
 
-<script src="src/infant-symbolic-kernel.js?v=20260524-5"></script>
-<script src="src/infant-cycle-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-drive-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-drive-learning-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-organism-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-expression-field-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-expression-feedback-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-whole-loop-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-brain-v0-1.js?v=20260524-5"></script>
-<script src="src/infant-brain-speech-v0-1.js?v=20260524-5"></script>
+<script src="src/infant-symbolic-kernel.js?v=20260524-6"></script>
+<script src="src/infant-cycle-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-drive-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-drive-learning-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-organism-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-expression-field-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-expression-feedback-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-whole-loop-v0-1.js?v=20260524-6"></script>
+<script src="src/infant-brain-v0-1.js?v=20260524-6"></script>
+<script src="src/brain-v0-1.js?v=20260524-6"></script>
 <script>
 (function(){
   const chat = document.getElementById('chat');
   const form = document.getElementById('form');
   const input = document.getElementById('input');
   const errorBox = document.getElementById('error');
-  const K = window.FortySecondMindInfantBrainSpeech;
+  const K = window.FortySecondMindBrain;
   let state = null;
 
   function showError(err){
@@ -57,6 +57,7 @@
   }
 
   function add(kind, text){
+    if(!text) return;
     const div = document.createElement('div');
     div.className = 'msg ' + kind;
     div.textContent = text;
@@ -65,16 +66,15 @@
   }
 
   function ready(){
-    if(!K) throw new Error('Brain speech did not load.');
-    ['birthBrain','speakAfterInput','speakBrain'].forEach(name => {
-      if(typeof K[name] !== 'function') throw new Error('Missing brain speech function: ' + name);
+    if(!K) throw new Error('Brain did not load.');
+    ['birthBrain','respondBrain','speakBrain'].forEach(name => {
+      if(typeof K[name] !== 'function') throw new Error('Missing brain function: ' + name);
     });
   }
 
   function boot(){
     ready();
     state = K.birthBrain();
-    add('brain', K.speakBrain(state));
   }
 
   form.addEventListener('submit', function(e){
@@ -86,7 +86,7 @@
       errorBox.style.display = 'none';
       if(!state) state = K.birthBrain();
       add('me', text);
-      add('brain', K.speakAfterInput(state, text, 12, 4));
+      add('brain', K.respondBrain(state, text, 12, 4));
     } catch(err) { showError(err); }
   });
 
