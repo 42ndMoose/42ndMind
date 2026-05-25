@@ -21,3 +21,5 @@ jobs:
         run: node tests/infant-v05-drive-learning-bridge.js
       - name: Run organism entrypoint test
         run: node tests/infant-v05-organism-entrypoint.js
+      - name: Run expression field bridge test
+        run: node tests/infant-v05-expression-field.js
