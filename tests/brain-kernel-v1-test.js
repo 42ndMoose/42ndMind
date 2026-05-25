@@ -41,6 +41,10 @@ assert(out.includes('D = Σ(|contrast| + |separation| + |reality_contact| + |sta
 assert(out.includes('Discernment is contrast-preserving separation'));
 assertNoForbidden(out);
 
+out = K.respond(state, 'discernment');
+assert(out.includes('D = Σ(|contrast| + |separation| + |reality_contact| + |stability_gate|) = 1'), 'direct one-word semantic terms must still resolve');
+assertNoForbidden(out);
+
 out = K.respond(state, 'what is wisdom?');
 assert(out.includes('W = Σ(|application| + |context| + |consequence| + |integration|) = 1'));
 assert(out.includes('It is not peak judgment.'));
@@ -91,8 +95,10 @@ out = K.respond(state, 'say yes');
 assert.strictEqual(out, 'COMMAND(yes) = 1');
 assertNoForbidden(out);
 
-out = K.respond(state, 'hello');
-assert.strictEqual(out, '', 'non-derived inputs must produce silence, not placeholder speech');
+for(const input of ['hello', 'hello?', 'hey', 'what', 'is', 'this', 'hfhwhshs']){
+  out = K.respond(state, input);
+  assert.strictEqual(out, '', `${input} must produce silence, not UNKNOWN noise or placeholder speech`);
+}
 
 const root = path.resolve(__dirname, '..');
 const kernelSource = fs.readFileSync(path.join(root, 'src/brain-kernel-v1.js'), 'utf8');
@@ -104,6 +110,8 @@ let browserState = browserContext.globalThis.FortySecondMindKernelV1.birth();
 let browserOut = browserContext.globalThis.FortySecondMindKernelV1.respond(browserState, 'what is discernment?');
 assert(browserOut.includes('D = Σ(|contrast| + |separation| + |reality_contact| + |stability_gate|) = 1'), 'browser global kernel must answer from semantic math object');
 assertNoForbidden(browserOut);
+browserOut = browserContext.globalThis.FortySecondMindKernelV1.respond(browserState, 'hello?');
+assert.strictEqual(browserOut, '', 'browser global kernel must silence greeting questions');
 
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 assert(index.includes('src/brain-kernel-v1.js'), 'index.html must load the new kernel');
