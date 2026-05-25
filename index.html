@@ -26,29 +26,19 @@
   <div id="error"></div>
   <section id="chat" aria-live="polite"></section>
   <form id="form">
-    <input id="input" autocomplete="off" />
+    <input id="input" autocomplete="off" aria-label="Message" />
     <button>Send</button>
   </form>
 </main>
 
-<script src="src/infant-symbolic-kernel.js?v=20260524-8"></script>
-<script src="src/infant-cycle-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-drive-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-drive-learning-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-organism-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-expression-field-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-expression-feedback-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-whole-loop-v0-1.js?v=20260524-8"></script>
-<script src="src/infant-brain-v0-1.js?v=20260524-8"></script>
-<script src="src/math-language-core-v0-1.js?v=20260524-8"></script>
-<script src="src/brain-v0-3.js?v=20260524-8"></script>
+<script src="src/brain-kernel-v1.js?v=20260524-1"></script>
 <script>
 (function(){
   const chat = document.getElementById('chat');
   const form = document.getElementById('form');
   const input = document.getElementById('input');
   const errorBox = document.getElementById('error');
-  const K = window.FortySecondMindBrain;
+  const K = window.FortySecondMindKernelV1;
   let state = null;
 
   function showError(err){
@@ -67,15 +57,15 @@
   }
 
   function ready(){
-    if(!K) throw new Error('Brain did not load.');
-    ['birthBrain','respondBrain','speakBrain'].forEach(name => {
-      if(typeof K[name] !== 'function') throw new Error('Missing brain function: ' + name);
+    if(!K) throw new Error('Semantic math kernel did not load.');
+    ['birth','step','think','respond','packet'].forEach(name => {
+      if(typeof K[name] !== 'function') throw new Error('Missing kernel function: ' + name);
     });
   }
 
   function boot(){
     ready();
-    state = K.birthBrain();
+    state = K.birth();
   }
 
   form.addEventListener('submit', function(e){
@@ -85,9 +75,9 @@
     input.value = '';
     try {
       errorBox.style.display = 'none';
-      if(!state) state = K.birthBrain();
+      if(!state) state = K.birth();
       add('me', text);
-      add('brain', K.respondBrain(state, text, 12, 4));
+      add('brain', K.respond(state, text));
     } catch(err) { showError(err); }
   });
 
