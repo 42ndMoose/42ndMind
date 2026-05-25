@@ -22,7 +22,10 @@ function checkParticipation(state, label) {
 }
 
 const s = K.birthBrain();
-assert.strictEqual(K.BRAIN_VERSION, "0.1.0");
+assert.strictEqual(typeof K.BRAIN_VERSION, "string", "brain version is exported");
+assert.ok(/^0\.1\.\d+$/.test(K.BRAIN_VERSION), "brain version uses the current infant v0.1.x line");
+assert.strictEqual(s.brain_version, K.BRAIN_VERSION, "birth state records exported brain version");
+assert.strictEqual(s.brain_state.version, K.BRAIN_VERSION, "birth brain state uses exported brain version");
 checkUnits(s, "birth brain");
 
 K.perceiveBrain(s, "abababab cdcdcdcd abababab cdcdcdcd");
@@ -59,6 +62,7 @@ assert.notStrictEqual(JSON.stringify(s.causal_field), before.causal, "causal fie
 
 const packet = K.brainPacket(s);
 assert.strictEqual(packet.english, "", "brain packet has no English output");
+assert.strictEqual(packet.brain_state.version, K.BRAIN_VERSION, "brain packet uses exported brain version");
 assert.strictEqual(packet.brain_state.all_unit, true, "brain packet all unit");
 K.ACTIVE_FIELDS.forEach(name => {
   assert.strictEqual(packet.causal_participation[name], true, "packet confirms " + name + " participates");
