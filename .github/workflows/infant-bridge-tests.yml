@@ -23,3 +23,7 @@ jobs:
         run: node tests/infant-v05-organism-entrypoint.js
       - name: Run expression field bridge test
         run: node tests/infant-v05-expression-field.js
+      - name: Run expression feedback bridge test
+        run: node tests/infant-v05-expression-feedback.js
+      - name: Run whole organism loop test
+        run: node tests/infant-v05-whole-loop.js
