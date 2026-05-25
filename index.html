@@ -4,20 +4,142 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>42ndMind</title>
-  <meta http-equiv="refresh" content="0; url=ui/infant-brain-lab.html" />
   <style>
     :root { color-scheme: dark; }
-    body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:#0b0f14; color:#e8edf2; }
-    main { max-width:720px; padding:32px; }
-    a { color:#d7e7ff; }
-    p { color:#aeb8c2; line-height:1.5; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:#070b10; color:#e8edf2; display:flex; justify-content:center; }
+    main { width:min(820px,100%); min-height:100vh; display:flex; flex-direction:column; padding:16px; }
+    header { padding:8px 0 14px; border-bottom:1px solid #1d2834; }
+    h1 { margin:0; font-size:20px; letter-spacing:.2px; }
+    .sub { margin:4px 0 0; color:#8f9aa5; font-size:13px; }
+    #chat { flex:1; overflow:auto; padding:18px 0; display:flex; flex-direction:column; gap:12px; }
+    .msg { max-width:86%; border:1px solid #26313d; border-radius:16px; padding:12px 14px; line-height:1.42; white-space:pre-wrap; word-break:break-word; }
+    .me { align-self:flex-end; background:#d7e7ff; color:#07111f; border-color:#d7e7ff; }
+    .brain { align-self:flex-start; background:#111821; color:#e8edf2; }
+    .brain .meta { display:block; color:#8f9aa5; font-size:12px; margin-top:8px; }
+    form { display:flex; gap:8px; padding:12px 0 4px; border-top:1px solid #1d2834; }
+    input { flex:1; background:#0d141c; border:1px solid #26313d; color:#e8edf2; border-radius:14px; padding:12px 14px; font-size:16px; outline:none; }
+    input:focus { border-color:#58708d; }
+    button { border:0; border-radius:14px; background:#d7e7ff; color:#07111f; font-weight:800; padding:0 16px; cursor:pointer; }
+    footer { color:#73808d; font-size:12px; padding:6px 0 0; display:flex; gap:12px; flex-wrap:wrap; }
+    a { color:#9cc7ff; text-decoration:none; }
+    #error { display:none; color:#ffb4b4; background:#260f12; border:1px solid #7c2d2d; border-radius:12px; padding:10px; margin:10px 0; font:12px ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; }
   </style>
 </head>
 <body>
-  <main>
+<main>
+  <header>
     <h1>42ndMind</h1>
-    <p>Redirecting to the current infant brain lab.</p>
-    <p><a href="ui/infant-brain-lab.html">Open the lab</a></p>
-  </main>
+    <p class="sub">Minimal chat with the current infant brain loop. The brain replies as internal signal, not fake English.</p>
+    <div id="error"></div>
+  </header>
+
+  <section id="chat" aria-live="polite"></section>
+
+  <form id="form">
+    <input id="input" autocomplete="off" placeholder="Type anything. Natural language, typo, pattern, gibberish." />
+    <button>Send</button>
+  </form>
+
+  <footer>
+    <span id="status">loading</span>
+    <a href="ui/infant-brain-lab.html?v=20260524-3">technical lab</a>
+  </footer>
+</main>
+
+<script src="src/infant-symbolic-kernel.js?v=20260524-3"></script>
+<script src="src/infant-cycle-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-drive-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-drive-learning-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-organism-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-expression-field-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-expression-feedback-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-whole-loop-v0-1.js?v=20260524-3"></script>
+<script src="src/infant-brain-v0-1.js?v=20260524-3"></script>
+<script>
+(function(){
+  const chat = document.getElementById('chat');
+  const form = document.getElementById('form');
+  const input = document.getElementById('input');
+  const status = document.getElementById('status');
+  const errorBox = document.getElementById('error');
+  const K = window.FortySecondMindInfantBrain;
+  let state = null;
+
+  function showError(err){
+    errorBox.style.display = 'block';
+    errorBox.textContent = String((err && err.stack) || err);
+    status.textContent = 'error';
+    console.error(err);
+  }
+
+  function msg(kind, text){
+    const div = document.createElement('div');
+    div.className = 'msg ' + kind;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+
+  function top(field){ return field && field[0] ? field[0] : {axis:'none', weight:0}; }
+  function fmt(x){ return typeof x === 'number' ? x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'') : String(x); }
+  function loaded(){
+    if(!K) throw new Error('Brain API did not load.');
+    ['birthBrain','perceiveBrain','brainLive','brainPacket'].forEach(name => {
+      if(typeof K[name] !== 'function') throw new Error('Missing brain API: ' + name);
+    });
+  }
+
+  function brainReply(){
+    const packet = K.brainPacket(state);
+    const bs = packet.brain_state || {};
+    const causal = top(state.causal_field);
+    const attention = top(state.attention_field);
+    const thought = top(state.thought_field);
+    const expression = top(state.expression_field);
+    const unitsOk = bs.all_unit === true;
+    const action = bs.action || (state.action_packet && state.action_packet.kind) || 'none';
+    const parts = [];
+    parts.push('signal: ' + action);
+    parts.push('focus: ' + causal.axis);
+    parts.push('attention: ' + attention.axis);
+    parts.push('thought: ' + thought.axis);
+    parts.push('expression: ' + expression.axis);
+    parts.push('terms: ' + (bs.language_terms || 0) + ' | meanings: ' + (bs.candidate_meanings || 0) + ' | expressions: ' + (bs.expressions || 0));
+    parts.push('unit: ' + (unitsOk ? '1' : 'broken'));
+    return parts.join('\n');
+  }
+
+  function boot(){
+    loaded();
+    state = K.birthBrain();
+    status.textContent = 'ready · brain v' + K.BRAIN_VERSION;
+    msg('brain', 'signal: born\nfocus: ' + top(state.causal_field).axis + '\nunit: 1');
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const text = input.value;
+    if(!text.trim()) return;
+    input.value = '';
+    try {
+      if(!state) state = K.birthBrain();
+      errorBox.style.display = 'none';
+      msg('me', text);
+      K.perceiveBrain(state, text);
+      K.brainLive(state, 10, 4);
+      msg('brain', brainReply());
+      status.textContent = 'ready · ticks ' + ((state.brain_state && state.brain_state.ticks) || 10) + ' · inner ' + (state.inner_time || 0);
+    } catch(err) { showError(err); }
+  });
+
+  window.addEventListener('error', e => showError(e.error || e.message));
+  window.addEventListener('unhandledrejection', e => showError(e.reason || e));
+
+  try { boot(); }
+  catch(err) { showError(err); }
+})();
+</script>
 </body>
 </html>
