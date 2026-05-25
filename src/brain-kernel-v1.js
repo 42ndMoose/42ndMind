@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
 
-  var VERSION = 'brain-kernel-v1.0.0';
+  var VERSION = 'brain-kernel-v1.0.1';
   var PRESSURE_FORBIDDEN = [
     'unresolved_error','inquire','prediction_gap','low_coverage','thought_instability',
     'action_uncertainty','comparison_pain','body_tension','language_gap','continue_inner_cycle'
@@ -144,6 +144,17 @@
     'yes no command': 'yes/no-command', 'yes/no-command': 'yes/no-command'
   };
 
+  var GREETING_TERMS = {
+    hi: true, hello: true, hey: true, yo: true, sup: true, 'what up': true, 'whats up': true,
+    'good morning': true, 'good afternoon': true, 'good evening': true
+  };
+
+  var FRAGMENT_TERMS = {
+    what: true, is: true, are: true, was: true, were: true, do: true, does: true, did: true,
+    can: true, could: true, would: true, should: true, this: true, that: true, it: true,
+    the: true, a: true, an: true, why: true, how: true, who: true, where: true, when: true
+  };
+
   function birth(){
     return {
       version: VERSION,
@@ -174,6 +185,18 @@
   function safeName(value){
     return normalizeText(value).replace(/[\n\r\t]+/g, ' ').replace(/[<>]/g, '').trim();
   }
+  function tokenCount(value){
+    var k = keyText(value);
+    if(!k) return 0;
+    return k.split(/\s+/).filter(Boolean).length;
+  }
+  function isGreeting(value){
+    return !!GREETING_TERMS[keyText(value)];
+  }
+  function isFragment(value){
+    var k = keyText(value);
+    return !k || !!FRAGMENT_TERMS[k] || tokenCount(k) < 2;
+  }
   function topicKey(value){
     var cleaned = keyText(value).replace(/^(is|are|was|were|do|does|did|can|could|would|should)\s+/i, '');
     cleaned = cleaned.replace(/\b(true|the case)\b/gi, '').replace(/\s+/g, ' ').trim();
@@ -187,6 +210,19 @@
     if(SEMANTIC_OBJECTS[withoutWhatIs]) return withoutWhatIs;
     if(TERM_ALIASES[withoutWhatIs]) return TERM_ALIASES[withoutWhatIs];
     return null;
+  }
+  function isSubstantiveUnknownQuery(value){
+    var raw = normalizeText(value);
+    var k = keyText(raw);
+    if(!k || isGreeting(k) || isFragment(k)) return false;
+
+    var auxiliary = raw.match(/^(are|is|was|were|do|does|did|can|could|would|should)\s+(.+?)\??$/i);
+    if(auxiliary && tokenCount(auxiliary[2]) >= 2) return true;
+
+    var open = raw.match(/^(what|why|how|who|where|when)\s+(.+?)\??$/i);
+    if(open && tokenCount(open[2]) >= 2) return true;
+
+    return false;
   }
   function pushCause(state, cause){
     Object.keys(state.organism.fields).forEach(function(field){
@@ -281,7 +317,7 @@
   function derive(state, input){
     var raw = normalizeText(input);
     var k = keyText(raw);
-    if(!k) return null;
+    if(!k || isGreeting(k) || isFragment(k)) return null;
 
     var m = raw.match(/^my\s+name\s+is\s+(.+)$/i);
     if(m) return bindName(state, m[1], raw);
@@ -296,7 +332,7 @@
     if(!objectKey) objectKey = objectKeyFromTerm(raw);
     if(objectKey) return renderObjectJudgment(state, objectKey, raw);
 
-    if(/\?$/.test(raw) || /^(are|is|do|does|did|can|could|would|should)\b/i.test(raw)){
+    if(isSubstantiveUnknownQuery(raw)){
       return makeUnknown(raw, raw);
     }
     return null;
