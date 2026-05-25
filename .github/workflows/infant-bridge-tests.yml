@@ -19,3 +19,5 @@ jobs:
         run: node tests/infant-v05-drive-bridge.js
       - name: Run drive learning bridge test
         run: node tests/infant-v05-drive-learning-bridge.js
+      - name: Run organism entrypoint test
+        run: node tests/infant-v05-organism-entrypoint.js
