@@ -24,6 +24,13 @@ tests/math-language-kernel-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
 tests/nested-relation-core-v0-1-test.js
+tests/language-v0-1-conformance-test.js
+```
+
+The active conformance fixtures are:
+
+```text
+tests/fixtures/language-v0-1/conformance-fixtures.json
 ```
 
 The active language draft is:
@@ -142,6 +149,27 @@ Nested relation graphs serialize separately as:
 Ν{nodes[...];relations[...]}
 ```
 
+## Conformance
+
+The conformance suite defines what independent implementations must accept and reject.
+
+It includes:
+
+```text
+valid packets
+invalid packets
+valid nested graphs
+invalid nested graphs
+intention fixtures
+canonical round-trip checks
+```
+
+Run:
+
+```bash
+node tests/language-v0-1-conformance-test.js
+```
+
 ## Main API
 
 ```js
@@ -175,6 +203,7 @@ node tests/math-language-kernel-v0-1-test.js
 node tests/intention-algebra-v0-1-test.js
 node tests/language-parser-v0-1-test.js
 node tests/nested-relation-core-v0-1-test.js
+node tests/language-v0-1-conformance-test.js
 ```
 
 Expected result: all PASS lines.
