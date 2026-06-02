@@ -1,0 +1,61 @@
+{
+  "version": "0.1.0",
+  "validPackets": [
+    {
+      "name": "single-row canonical packet",
+      "source": "Ω{τ[τ1=1];ρ[ρ1=1];μ[μ1=1];ε[ε1=1];λ[λ1=1];ι[ι1=1];κ[κ1=1];Ω[Ω1=1]}",
+      "canonical": "Ω{τ[τ1=1];ρ[ρ1=1];μ[μ1=1];ε[ε1=1];λ[λ1=1];ι[ι1=1];κ[κ1=1];Ω[Ω1=1]}"
+    },
+    {
+      "name": "weighted language intention packet",
+      "source": "Ω{τ[τ1=0.6,τ2=0.4];ρ[ρ1=1];μ[μ1=0.7,μ2=0.3];ε[ε↓=0.8,ε↑=0.2];λ[λ1=1];ι[ιτ=0.5,ιμ=0.5];κ[κλ=1];Ω[λ:λ1=0.5,ι:ιτ=0.5]}",
+      "canonical": null
+    }
+  ],
+  "invalidPackets": [
+    {
+      "name": "not an omega packet",
+      "source": "bad"
+    },
+    {
+      "name": "missing required fields",
+      "source": "Ω{τ[τ1=1]}"
+    },
+    {
+      "name": "duplicate field",
+      "source": "Ω{τ[τ1=1];τ[τ2=1];ρ[ρ1=1];μ[μ1=1];ε[ε1=1];λ[λ1=1];ι[ι1=1];κ[κ1=1];Ω[Ω1=1]}"
+    },
+    {
+      "name": "invalid row weight",
+      "source": "Ω{τ[τ1=x];ρ[ρ1=1];μ[μ1=1];ε[ε1=1];λ[λ1=1];ι[ι1=1];κ[κ1=1];Ω[Ω1=1]}"
+    }
+  ],
+  "validNestedGraphs": [
+    {
+      "name": "relation points to relation",
+      "source": "Ν{nodes[a:symbol,b:symbol,c:symbol];relations[ν1(rel,a,b,s,1);ν2(rel,ν1,c,s,1)]}"
+    },
+    {
+      "name": "relation between two relations",
+      "source": "Ν{nodes[a:symbol,b:symbol,c:symbol,d:symbol];relations[ν1(rel,a,b,s,1);ν2(rel,c,d,s,1);ν3(supports,ν1,ν2,meta,1)]}"
+    }
+  ],
+  "invalidNestedGraphs": [
+    {
+      "name": "cycle between relations",
+      "source": "Ν{nodes[x:symbol,y:symbol];relations[νa(rel,νb,x,s,1);νb(rel,νa,y,s,1)]}"
+    },
+    {
+      "name": "malformed nested graph",
+      "source": "Ν{nodes[a:symbol];bad[]}"
+    }
+  ],
+  "intentionPackets": [
+    {
+      "name": "manual intention packet",
+      "source": "Ω{τ[τ1=1];ρ[ρ1=1];μ[μ1=1];ε[ε↓=0.8,ε↑=0.2];λ[λ1=1];ι[ι1=1];κ[κ1=1];Ω[Ω1=1]}",
+      "expectedL1": 1,
+      "english": ""
+    }
+  ]
+}
