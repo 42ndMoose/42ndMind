@@ -13,6 +13,7 @@ The active source files are:
 ```text
 src/math-language-kernel-v0-1.js
 src/intention-algebra-v0-1.js
+src/language-parser-v0-1.js
 ```
 
 The active verification files are:
@@ -20,6 +21,13 @@ The active verification files are:
 ```text
 tests/math-language-kernel-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
+tests/language-parser-v0-1-test.js
+```
+
+The active language draft is:
+
+```text
+docs/language-standard-v0-1.md
 ```
 
 ## Core rule
@@ -87,15 +95,18 @@ The current intention algebra is:
 
 This is project-official as version `0.1.0`, but not yet a frozen public language standard.
 
-A broader official language requires:
+## Packet grammar
+
+The parser accepts packets like:
 
 ```text
-frozen grammar
-parser
-canonical serializer
-conformance tests
-versioned spec
-reference implementation
+Ω{τ[τ1=1];ρ[ρ∅=1];μ[μ1=0.7,μ2=0.3];ε[ε↓=0.8,ε↑=0.2];λ[λ1=1];ι[ιτ=0.5,ιμ=0.5];κ[κλ=1];Ω[λ:λ1=0.5,ι:ιτ=0.5]}
+```
+
+The canonical round trip is:
+
+```text
+source packet -> parse -> canonical packet -> serialize -> parse -> same canonical packet
 ```
 
 ## Main API
@@ -103,11 +114,14 @@ reference implementation
 ```js
 const K = require('./src/math-language-kernel-v0-1.js');
 const I = require('./src/intention-algebra-v0-1.js');
+const P = require('./src/language-parser-v0-1.js');
 
 const s = K.create();
 K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 const p = K.packet(s);
-console.log(I.compute(p));
+const i = I.compute(p);
+const text = P.serialize(P.fromKernelPacket(p));
+console.log({ i, text, roundTrip: P.roundTrip(text).same });
 ```
 
 Browser global:
@@ -115,6 +129,7 @@ Browser global:
 ```js
 window.FortySecondMindMathLanguageKernel
 window.FortySecondMindIntentionAlgebra
+window.FortySecondMindLanguageParser
 ```
 
 ## Run verification
@@ -122,6 +137,7 @@ window.FortySecondMindIntentionAlgebra
 ```bash
 node tests/math-language-kernel-v0-1-test.js
 node tests/intention-algebra-v0-1-test.js
+node tests/language-parser-v0-1-test.js
 ```
 
 Expected result: all PASS lines.
