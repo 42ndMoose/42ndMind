@@ -1,92 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=ui/math-language-lab.html">
   <title>42ndMind</title>
   <style>
-    :root { color-scheme: dark; }
-    * { box-sizing:border-box; }
-    html, body { margin:0; height:100%; }
-    body { font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:#070b10; color:#e8edf2; }
-    main { height:100%; max-width:760px; margin:0 auto; display:flex; flex-direction:column; padding:12px; }
-    #chat { flex:1; overflow:auto; display:flex; flex-direction:column; gap:10px; padding:6px 0 12px; }
-    .msg { max-width:82%; padding:11px 13px; border-radius:18px; line-height:1.38; white-space:pre-wrap; word-break:break-word; }
-    .me { align-self:flex-end; background:#d7e7ff; color:#07111f; border-bottom-right-radius:6px; }
-    .brain { align-self:flex-start; background:#111821; color:#e8edf2; border:1px solid #26313d; border-bottom-left-radius:6px; }
-    form { display:flex; gap:8px; padding-top:8px; }
-    input { flex:1; border:1px solid #26313d; background:#0d141c; color:#e8edf2; border-radius:18px; padding:12px 14px; font-size:16px; outline:none; }
-    input:focus { border-color:#58708d; }
-    button { border:0; border-radius:18px; background:#d7e7ff; color:#07111f; font-weight:800; padding:0 17px; cursor:pointer; }
-    #error { display:none; margin-bottom:8px; color:#ffb4b4; background:#260f12; border:1px solid #7c2d2d; border-radius:12px; padding:10px; font:12px ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; }
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; margin: 24px; line-height: 1.45; }
+    a { font-weight: 700; }
   </style>
 </head>
 <body>
-<main>
-  <div id="error"></div>
-  <section id="chat" aria-live="polite"></section>
-  <form id="form">
-    <input id="input" autocomplete="off" aria-label="Message" />
-    <button>Send</button>
-  </form>
-</main>
-
-<script src="src/brain-kernel-v1.js?v=20260524-2"></script>
-<script>
-(function(){
-  const chat = document.getElementById('chat');
-  const form = document.getElementById('form');
-  const input = document.getElementById('input');
-  const errorBox = document.getElementById('error');
-  const K = window.FortySecondMindKernelV1;
-  let state = null;
-
-  function showError(err){
-    errorBox.style.display = 'block';
-    errorBox.textContent = String((err && err.stack) || err);
-    console.error(err);
-  }
-
-  function add(kind, text){
-    if(!text) return;
-    const div = document.createElement('div');
-    div.className = 'msg ' + kind;
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function ready(){
-    if(!K) throw new Error('Semantic math kernel did not load.');
-    ['birth','step','think','respond','packet'].forEach(name => {
-      if(typeof K[name] !== 'function') throw new Error('Missing kernel function: ' + name);
-    });
-  }
-
-  function boot(){
-    ready();
-    state = K.birth();
-  }
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    const text = input.value.trim();
-    if(!text) return;
-    input.value = '';
-    try {
-      errorBox.style.display = 'none';
-      if(!state) state = K.birth();
-      add('me', text);
-      add('brain', K.respond(state, text));
-    } catch(err) { showError(err); }
-  });
-
-  window.addEventListener('error', e => showError(e.error || e.message));
-  window.addEventListener('unhandledrejection', e => showError(e.reason || e));
-
-  try { boot(); }
-  catch(err) { showError(err); }
-})();
-</script>
+  <p>42ndMind now opens the math-language lab.</p>
+  <p><a href="ui/math-language-lab.html">Open ui/math-language-lab.html</a></p>
 </body>
 </html>
