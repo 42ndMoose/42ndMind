@@ -24,6 +24,7 @@ EPSILON = error / uncertainty field
 LAMBDA = internal language field
 IOTA = intention field
 KAPPA = constraint field
+NU = nested relation field
 OMEGA = whole active state field
 XI = English output channel
 ```
@@ -40,6 +41,7 @@ L1(EPSILON) = 1
 L1(LAMBDA) = 1
 L1(IOTA) = 1
 L1(KAPPA) = 1
+L1(NU) = 1
 L1(OMEGA) = 1
 ```
 
@@ -50,6 +52,46 @@ IOTA = N(0.18 TAU + 0.16 RHO + 0.18 MU + 0.18 LAMBDA + 0.15 EPSILON_DOWN + 0.10 
 ```
 
 `N` means unit-total normalization.
+
+## Nested relations
+
+Nested relations are implemented in:
+
+```text
+src/nested-relation-core-v0-1.js
+```
+
+Verification is implemented in:
+
+```text
+tests/nested-relation-core-v0-1-test.js
+```
+
+Nested relations allow a relation to use another relation as one of its endpoints:
+
+```text
+NU1 = rel(a, b)
+NU2 = rel(NU1, c)
+NU3 = rel(NU2, NU1)
+```
+
+This is required for complex structure such as:
+
+```text
+evidence about evidence
+support between claims
+contradiction over a relation
+scope over another relation
+causality between relation chains
+```
+
+The nested relation graph has its own unit-total field:
+
+```text
+L1(NU) = 1
+```
+
+Cycles are rejected by validation.
 
 ## Packet grammar v0.1
 
@@ -80,24 +122,54 @@ Every canonical packet must include all fields in this order:
 
 The parser may accept loose packets with missing fields only when explicitly called in loose mode. Loose mode fills missing fields with unit-total empty fields.
 
+## Nested graph grammar v0.1
+
+Nested graphs serialize separately as:
+
+```text
+Ν{nodes[...];relations[...]}
+```
+
+Concrete example:
+
+```text
+Ν{nodes[a:symbol,b:symbol,c:symbol];relations[ν1(rel,a,b,s,1);ν2(rel,ν1,c,s,1)]}
+```
+
+A relation row has this form:
+
+```text
+RELATION ::= ID(OP,FROM,TO,SCOPE,WEIGHT)
+```
+
+`FROM` and `TO` may be symbols or relation IDs.
+
 ## Parser and serializer
 
-The parser and serializer are implemented in:
+The packet parser and serializer are implemented in:
 
 ```text
 src/language-parser-v0-1.js
+```
+
+The nested graph parser and serializer are implemented in:
+
+```text
+src/nested-relation-core-v0-1.js
 ```
 
 Verification is implemented in:
 
 ```text
 tests/language-parser-v0-1-test.js
+tests/nested-relation-core-v0-1-test.js
 ```
 
 The required round trip is:
 
 ```text
 source packet -> parse -> canonical packet -> serialize -> parse -> same canonical packet
+nested graph -> serialize -> parse -> same nested graph
 ```
 
 ## What counts as language here
@@ -159,6 +231,7 @@ valid packet fixtures
 invalid packet fixtures
 canonical serialization fixtures
 intention-algebra fixtures
+nested-relation fixtures
 round-trip fixtures
 ```
 
