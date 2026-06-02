@@ -1,8 +1,8 @@
 # 42ndMind Language Standard v0.1 Draft
 
-Status: draft project standard.
+Status: internal formal language draft.
 
-This file defines the current internal language direction. It is project-official for this repository, but not yet a frozen external standard.
+This file defines the current internal language direction. It is project-official for this repository, but not yet frozen as an external public standard.
 
 ## Core objects
 
@@ -51,6 +51,55 @@ IOTA = N(0.18 TAU + 0.16 RHO + 0.18 MU + 0.18 LAMBDA + 0.15 EPSILON_DOWN + 0.10 
 
 `N` means unit-total normalization.
 
+## Packet grammar v0.1
+
+The parser accepts canonical packets of this form:
+
+```text
+OMEGA_PACKET ::= OMEGA_OPEN FIELD_LIST OMEGA_CLOSE
+FIELD_LIST   ::= FIELD (SEMICOLON FIELD)*
+FIELD        ::= FIELD_NAME OPEN ROW_LIST CLOSE
+ROW_LIST     ::= ROW (COMMA ROW)*
+ROW          ::= SYMBOL EQUAL NUMBER
+FIELD_NAME   ::= TAU | RHO | MU | EPSILON | LAMBDA | IOTA | KAPPA | OMEGA
+```
+
+The concrete character form is:
+
+```text
+Ω{τ[τ1=1];ρ[ρ∅=1];μ[μ1=0.7,μ2=0.3];ε[ε↓=0.8,ε↑=0.2];λ[λ1=1];ι[ιτ=0.5,ιμ=0.5];κ[κλ=1];Ω[λ:λ1=0.5,ι:ιτ=0.5]}
+```
+
+Whitespace is ignored by the parser.
+
+Every canonical packet must include all fields in this order:
+
+```text
+τ, ρ, μ, ε, λ, ι, κ, Ω
+```
+
+The parser may accept loose packets with missing fields only when explicitly called in loose mode. Loose mode fills missing fields with unit-total empty fields.
+
+## Parser and serializer
+
+The parser and serializer are implemented in:
+
+```text
+src/language-parser-v0-1.js
+```
+
+Verification is implemented in:
+
+```text
+tests/language-parser-v0-1-test.js
+```
+
+The required round trip is:
+
+```text
+source packet -> parse -> canonical packet -> serialize -> parse -> same canonical packet
+```
+
 ## What counts as language here
 
 A language exists in this repository when it has:
@@ -64,24 +113,53 @@ tests that reject invalid packets
 stable versioning
 ```
 
-Under that definition, v0.1 is already a project language draft.
+Under that definition, v0.1 is now an internal formal language draft.
 
 It is not yet a mature public language because it still lacks:
 
 ```text
-frozen grammar
-canonical parser
-canonical serializer
 external conformance suite
-formal spec stability guarantee
+formal freeze guarantee
+multiple independent implementations
+complete grammar document with all edge cases fixed
 ```
+
+## Frozen grammar
+
+A frozen grammar means the syntax rules cannot silently change inside the same version.
+
+For example, if v0.1 says fields must appear as:
+
+```text
+τ[...] ; ρ[...] ; μ[...] ; ε[...] ; λ[...] ; ι[...] ; κ[...] ; Ω[...]
+```
+
+then v0.1 cannot later redefine packet order, row separators, required fields, or numeric rules without becoming v0.2.
+
+PEMDAS is not the whole grammar of math. PEMDAS only tells you the order for evaluating arithmetic operations. A grammar tells you what strings are valid expressions in the first place.
+
+Example distinction:
+
+```text
+1 + 2 * 3
+```
+
+PEMDAS says multiplication happens before addition.
+
+But grammar says `1 + * 3` is not even a valid expression.
+
+42ndMind needs grammar first, then evaluation rules.
 
 ## Next standardization target
 
-The next milestone is a parser and canonical serializer:
+The next milestone is a conformance suite:
 
 ```text
-text packet -> parsed field packet -> canonical JSON -> same packet after round trip
+valid packet fixtures
+invalid packet fixtures
+canonical serialization fixtures
+intention-algebra fixtures
+round-trip fixtures
 ```
 
-After that, the language can be called a versioned internal formal language instead of only a draft symbolic protocol.
+After that, the language can move from internal formal draft toward a frozen v0.1 standard.
