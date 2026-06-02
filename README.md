@@ -8,16 +8,18 @@ The active public entrypoint is:
 ui/math-language-lab.html
 ```
 
-The active source file is:
+The active source files are:
 
 ```text
 src/math-language-kernel-v0-1.js
+src/intention-algebra-v0-1.js
 ```
 
-The active verification file is:
+The active verification files are:
 
 ```text
 tests/math-language-kernel-v0-1-test.js
+tests/intention-algebra-v0-1-test.js
 ```
 
 ## Core rule
@@ -75,26 +77,51 @@ Current flow:
 
 Each new observation readjusts the active fields by normalization instead of appending an uncontrolled module.
 
+## Intention algebra
+
+The current intention algebra is:
+
+```text
+ι = N(0.18τ + 0.16ρ + 0.18μ + 0.18λ + 0.15ε↓ + 0.10ε↑ + 0.05κ)
+```
+
+This is project-official as version `0.1.0`, but not yet a frozen public language standard.
+
+A broader official language requires:
+
+```text
+frozen grammar
+parser
+canonical serializer
+conformance tests
+versioned spec
+reference implementation
+```
+
 ## Main API
 
 ```js
 const K = require('./src/math-language-kernel-v0-1.js');
+const I = require('./src/intention-algebra-v0-1.js');
 
 const s = K.create();
 K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
-console.log(K.packet(s));
+const p = K.packet(s);
+console.log(I.compute(p));
 ```
 
 Browser global:
 
 ```js
 window.FortySecondMindMathLanguageKernel
+window.FortySecondMindIntentionAlgebra
 ```
 
 ## Run verification
 
 ```bash
 node tests/math-language-kernel-v0-1-test.js
+node tests/intention-algebra-v0-1-test.js
 ```
 
 Expected result: all PASS lines.
