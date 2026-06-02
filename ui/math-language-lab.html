@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind Math Language Lab</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; max-width: 1120px; margin: 24px; line-height: 1.45; }
+    textarea { width: 100%; min-height: 96px; box-sizing: border-box; font: inherit; }
+    button { padding: 8px 12px; margin: 4px 4px 4px 0; cursor: pointer; }
+    pre { background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
+    .muted { opacity: .72; }
+    @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>42ndMind Math Language Lab</h1>
+  <p class="muted">Raw symbols update λ, ι, μ, ε, and Ω. Every active field remains unit-total. Ξ stays empty.</p>
+
+  <div class="card">
+    <h2>Σ input</h2>
+    <textarea id="input">abababab cdcdcdcd ababab cdcdcdcd</textarea>
+    <button id="step">observe(Σ)</button>
+    <button id="train">observe(Σ) × 12</button>
+    <button id="noise">irregular Σ</button>
+    <button id="reset">reset</button>
+    <span id="status" class="muted">idle</span>
+  </div>
+
+  <div class="card"><h2>χ invariants</h2><pre id="chi"></pre></div>
+  <div class="grid">
+    <div class="card"><h2>λ language</h2><pre id="lambda"></pre></div>
+    <div class="card"><h2>ι intention</h2><pre id="intent"></pre></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h2>τ tokens</h2><pre id="tokens"></pre></div>
+    <div class="card"><h2>ρ relations</h2><pre id="relations"></pre></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h2>μ bindings</h2><pre id="mu"></pre></div>
+    <div class="card"><h2>ε error / uncertainty</h2><pre id="epsilon"></pre></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h2>Ω whole state</h2><pre id="omega"></pre></div>
+    <div class="card"><h2>unit report</h2><pre id="unit"></pre></div>
+  </div>
+  <div class="card"><h2>packet</h2><pre id="packet"></pre></div>
+  <div class="card"><h2>trace</h2><pre id="trace"></pre></div>
+
+  <script src="../src/math-language-kernel-v0-1.js?v=0.1.0"></script>
+  <script>
+    const K = FortySecondMindMathLanguageKernel;
+    let s = K.create();
+    const $ = id => document.getElementById(id);
+    function show(msg) { $('status').textContent = msg; }
+    function render() {
+      const p = K.packet(s);
+      $('chi').textContent = p.χ.join('\n');
+      $('lambda').textContent = JSON.stringify(p.λ, null, 2);
+      $('intent').textContent = JSON.stringify(p.ι, null, 2);
+      $('tokens').textContent = JSON.stringify({ field: p.τ, memory: s.memory.tokens }, null, 2);
+      $('relations').textContent = JSON.stringify({ field: p.ρ, memory: s.memory.relations }, null, 2);
+      $('mu').textContent = JSON.stringify(p.μ, null, 2);
+      $('epsilon').textContent = JSON.stringify(p.ε, null, 2);
+      $('omega').textContent = JSON.stringify(p.Ω, null, 2);
+      $('unit').textContent = JSON.stringify(p.u, null, 2);
+      $('packet').textContent = JSON.stringify(p, null, 2);
+      $('trace').textContent = JSON.stringify(s.trace.slice(0, 24), null, 2);
+    }
+    $('step').onclick = () => { K.observe(s, $('input').value); show('observed'); render(); };
+    $('train').onclick = () => { for (let i = 0; i < 12; i += 1) K.observe(s, $('input').value); show('observed × 12'); render(); };
+    $('noise').onclick = () => { $('input').value = 'xqz 91 %% ?? blorp'; K.observe(s, $('input').value); show('irregular stream observed'); render(); };
+    $('reset').onclick = () => { s = K.create(); show('reset'); render(); };
+    render();
+  </script>
+</body>
+</html>
