@@ -1,109 +1,115 @@
 # 42ndMind
 
-42ndMind is currently centered on the unified infant brain loop.
+42ndMind is now centered on a pure math-language kernel.
 
-The main public entrypoint is:
-
-```text
-src/infant-brain-v0-1.js
-```
-
-The browser lab is:
+The active public entrypoint is:
 
 ```text
-ui/infant-brain-lab.html
+ui/math-language-lab.html
 ```
 
-GitHub Pages URL:
+The active source file is:
 
 ```text
-https://42ndmoose.github.io/42ndMind/ui/infant-brain-lab.html
+src/math-language-kernel-v0-1.js
 ```
+
+The active verification file is:
+
+```text
+tests/math-language-kernel-v0-1-test.js
+```
+
+## Core rule
+
+```text
+∥Ω∥₁ = 1
+```
+
+Every active subdivision is also unit-total:
+
+```text
+∥τ∥₁ = 1
+∥ρ∥₁ = 1
+∥μ∥₁ = 1
+∥ε∥₁ = 1
+∥λ∥₁ = 1
+∥ι∥₁ = 1
+∥κ∥₁ = 1
+```
+
+Where:
+
+```text
+τ = raw pattern tokens
+ρ = token relations
+μ = candidate bindings
+ε = error / uncertainty pressure
+λ = internal language field
+ι = intention field
+κ = constraint field
+Ω = whole active math state
+Ξ = English output channel
+```
+
+`Ξ` must stay empty at this layer.
 
 ## Current direction
 
-The project is no longer organized around separate modules pretending to be separate organs.
+The repo should not treat English as the language of the kernel.
 
-The current top-level loop creates a single causal field and forces every active field to participate in the same update cycle.
+English may describe the kernel from outside, but the kernel state itself is expressed as normalized symbolic fields.
 
-Current active fields:
-
-```text
-brain
-language
-meaning
-source_body
-candidate_source
-sandbox_result
-attention
-thought
-inner_cycle
-drive
-expression
-expression_feedback
-whole
-memory
-trace
-action
-```
-
-The important invariant is no longer just `field = 1`.
-
-The stronger invariant is:
+Current flow:
 
 ```text
-organism = 1
-causal_field = 1
-every active field participates in causal_field
-causal_field reinjects into every active field
+Σ raw input
+  -> τ repeated pattern tokens
+  -> ρ token relations
+  -> μ candidate bindings
+  -> ε error / uncertainty
+  -> λ internal language
+  -> ι intention
+  -> Ω whole state
 ```
+
+Each new observation readjusts the active fields by normalization instead of appending an uncontrolled module.
 
 ## Main API
 
 ```js
-const K = require('./src/infant-brain-v0-1.js');
+const K = require('./src/math-language-kernel-v0-1.js');
 
-const s = K.birthBrain();
-K.perceiveBrain(s, 'abababab cdcdcdcd abababab cdcdcdcd');
-K.brainLive(s, 12, 4);
-console.log(K.brainPacket(s));
+const s = K.create();
+K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
+console.log(K.packet(s));
 ```
 
 Browser global:
 
 ```js
-window.FortySecondMindInfantBrain
+window.FortySecondMindMathLanguageKernel
 ```
 
-## Current tests
-
-Core top-level loop:
+## Run verification
 
 ```bash
-node tests/infant-v05-brain-loop.js
-node tests/infant-v05-causal-loop.js
+node tests/math-language-kernel-v0-1-test.js
 ```
 
-Bridge stack:
+Expected result: all PASS lines.
 
-```bash
-node tests/infant-v05-inner-cycle-bridge.js
-node tests/infant-v05-drive-bridge.js
-node tests/infant-v05-drive-learning-bridge.js
-node tests/infant-v05-organism-entrypoint.js
-node tests/infant-v05-expression-field.js
-node tests/infant-v05-expression-feedback.js
-node tests/infant-v05-whole-loop.js
+## Boundaries
+
+```text
+No LLM calls.
+No English output as internal language.
+No semantic label shortcut as the main learning layer.
+No direct GitHub/source writing from static pages.
+No final truth promotion.
+No claim that unit-total fields alone prove understanding.
 ```
 
-## Non-negotiables
+## Archived / experimental layers
 
-- One state.
-- No duplicated consciousness.
-- No English output until internal language deserves translation.
-- Unit-total active fields.
-- Every active field must be inside the causal loop.
-- Memory is not a separate self.
-- Source change remains sandboxed until the organism can compare harm and improvement.
-- No final truth promotion yet.
-- No UI text pretending to be intelligence.
+Older infant, brain, alive-math, and bridge files may remain in the repository as recoverable experimental history, but they are no longer the default project center.
