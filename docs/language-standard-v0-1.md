@@ -1,6 +1,6 @@
 # 42ndMind Language Standard v0.1 Draft
 
-Status: internal formal language draft.
+Status: internal formal language draft with conformance fixtures.
 
 This file defines the current internal language direction. It is project-official for this repository, but not yet frozen as an external public standard.
 
@@ -163,6 +163,7 @@ Verification is implemented in:
 ```text
 tests/language-parser-v0-1-test.js
 tests/nested-relation-core-v0-1-test.js
+tests/language-v0-1-conformance-test.js
 ```
 
 The required round trip is:
@@ -171,6 +172,28 @@ The required round trip is:
 source packet -> parse -> canonical packet -> serialize -> parse -> same canonical packet
 nested graph -> serialize -> parse -> same nested graph
 ```
+
+## Conformance suite
+
+The conformance suite is implemented in:
+
+```text
+tests/fixtures/language-v0-1/conformance-fixtures.json
+tests/language-v0-1-conformance-test.js
+```
+
+It defines:
+
+```text
+valid packet fixtures
+invalid packet fixtures
+valid nested graph fixtures
+invalid nested graph fixtures
+intention-algebra fixtures
+canonical round-trip checks
+```
+
+An independent implementation of v0.1 should pass the same fixture set.
 
 ## What counts as language here
 
@@ -185,15 +208,15 @@ tests that reject invalid packets
 stable versioning
 ```
 
-Under that definition, v0.1 is now an internal formal language draft.
+Under that definition, v0.1 is now an internal formal language draft with conformance fixtures.
 
 It is not yet a mature public language because it still lacks:
 
 ```text
-external conformance suite
 formal freeze guarantee
 multiple independent implementations
 complete grammar document with all edge cases fixed
+large cross-domain fixture suite
 ```
 
 ## Frozen grammar
@@ -224,15 +247,16 @@ But grammar says `1 + * 3` is not even a valid expression.
 
 ## Next standardization target
 
-The next milestone is a conformance suite:
+The next milestone is a cross-domain fixture suite:
 
 ```text
-valid packet fixtures
-invalid packet fixtures
-canonical serialization fixtures
-intention-algebra fixtures
-nested-relation fixtures
-round-trip fixtures
+logic fixtures
+causality fixtures
+evidence fixtures
+time/order fixtures
+scope fixtures
+contradiction fixtures
+translation fixtures
 ```
 
 After that, the language can move from internal formal draft toward a frozen v0.1 standard.
