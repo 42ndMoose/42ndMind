@@ -14,6 +14,7 @@ The active source files are:
 src/math-language-kernel-v0-1.js
 src/intention-algebra-v0-1.js
 src/language-parser-v0-1.js
+src/nested-relation-core-v0-1.js
 ```
 
 The active verification files are:
@@ -22,6 +23,7 @@ The active verification files are:
 tests/math-language-kernel-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
+tests/nested-relation-core-v0-1-test.js
 ```
 
 The active language draft is:
@@ -46,6 +48,7 @@ Every active subdivision is also unit-total:
 ∥λ∥₁ = 1
 ∥ι∥₁ = 1
 ∥κ∥₁ = 1
+∥ν∥₁ = 1
 ```
 
 Where:
@@ -58,6 +61,7 @@ Where:
 λ = internal language field
 ι = intention field
 κ = constraint field
+ν = nested relation field
 Ω = whole active math state
 Ξ = English output channel
 ```
@@ -80,6 +84,7 @@ Current flow:
   -> ε error / uncertainty
   -> λ internal language
   -> ι intention
+  -> ν nested relations
   -> Ω whole state
 ```
 
@@ -95,6 +100,28 @@ The current intention algebra is:
 
 This is project-official as version `0.1.0`, but not yet a frozen public language standard.
 
+## Nested relations
+
+The nested relation core allows relations to point to other relations.
+
+Example:
+
+```text
+ν1 = rel(a,b)
+ν2 = rel(ν1,c)
+ν3 = rel(ν2,ν1)
+```
+
+This is the first layer needed for complex structure: evidence about evidence, contradiction about a relation, support between claims, and scope over another relation.
+
+The nested graph also has a unit-total relation field:
+
+```text
+∥ν∥₁ = 1
+```
+
+Cycles are rejected by validation.
+
 ## Packet grammar
 
 The parser accepts packets like:
@@ -109,19 +136,27 @@ The canonical round trip is:
 source packet -> parse -> canonical packet -> serialize -> parse -> same canonical packet
 ```
 
+Nested relation graphs serialize separately as:
+
+```text
+Ν{nodes[...];relations[...]}
+```
+
 ## Main API
 
 ```js
 const K = require('./src/math-language-kernel-v0-1.js');
 const I = require('./src/intention-algebra-v0-1.js');
 const P = require('./src/language-parser-v0-1.js');
+const N = require('./src/nested-relation-core-v0-1.js');
 
 const s = K.create();
 K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 const p = K.packet(s);
 const i = I.compute(p);
 const text = P.serialize(P.fromKernelPacket(p));
-console.log({ i, text, roundTrip: P.roundTrip(text).same });
+const graph = N.fromKernelPacket(p);
+console.log({ i, text, graphText: N.serialize(graph), roundTrip: P.roundTrip(text).same });
 ```
 
 Browser global:
@@ -130,6 +165,7 @@ Browser global:
 window.FortySecondMindMathLanguageKernel
 window.FortySecondMindIntentionAlgebra
 window.FortySecondMindLanguageParser
+window.FortySecondMindNestedRelationCore
 ```
 
 ## Run verification
@@ -138,6 +174,7 @@ window.FortySecondMindLanguageParser
 node tests/math-language-kernel-v0-1-test.js
 node tests/intention-algebra-v0-1-test.js
 node tests/language-parser-v0-1-test.js
+node tests/nested-relation-core-v0-1-test.js
 ```
 
 Expected result: all PASS lines.
