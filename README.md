@@ -15,6 +15,7 @@ src/math-language-kernel-v0-1.js
 src/intention-algebra-v0-1.js
 src/language-parser-v0-1.js
 src/nested-relation-core-v0-1.js
+src/truth-accounting-core-v0-1.js
 ```
 
 The active verification files are:
@@ -25,6 +26,7 @@ tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
 tests/nested-relation-core-v0-1-test.js
 tests/language-v0-1-conformance-test.js
+tests/truth-accounting-core-v0-1-test.js
 ```
 
 The active conformance fixtures are:
@@ -56,6 +58,7 @@ Every active subdivision is also unit-total:
 ∥ι∥₁ = 1
 ∥κ∥₁ = 1
 ∥ν∥₁ = 1
+∥θ∥₁ = 1
 ```
 
 Where:
@@ -69,6 +72,7 @@ Where:
 ι = intention field
 κ = constraint field
 ν = nested relation field
+θ = truth-accounting field
 Ω = whole active math state
 Ξ = English output channel
 ```
@@ -92,6 +96,7 @@ Current flow:
   -> λ internal language
   -> ι intention
   -> ν nested relations
+  -> θ truth accounting
   -> Ω whole state
 ```
 
@@ -129,6 +134,34 @@ The nested graph also has a unit-total relation field:
 
 Cycles are rejected by validation.
 
+## Truth accounting
+
+The truth-accounting core ports the old truth-field pressure logic into pure math fields.
+
+```text
+σ = scope field
+δ = definition field
+ο = observation field
+η = support/counter field
+χ = contradiction field
+υ = unknown field
+μ = measurement field
+θ = truth accounting field
+```
+
+The truth gate opens only when support is complete and every error/unknown/contradiction channel is zero.
+
+```text
+θT = 1 only if:
+η+ = 1
+χ! = 0
+υ? = 0
+σ! = 0
+δ! = 0
+ο! = 0
+μ! = 0
+```
+
 ## Packet grammar
 
 The parser accepts packets like:
@@ -147,6 +180,12 @@ Nested relation graphs serialize separately as:
 
 ```text
 Ν{nodes[...];relations[...]}
+```
+
+Truth-accounting packets serialize separately as:
+
+```text
+Θ{σ[...];δ[...];ο[...];η[...];χ[...];υ[...];μ[...];θ[...]}
 ```
 
 ## Conformance
@@ -177,6 +216,7 @@ const K = require('./src/math-language-kernel-v0-1.js');
 const I = require('./src/intention-algebra-v0-1.js');
 const P = require('./src/language-parser-v0-1.js');
 const N = require('./src/nested-relation-core-v0-1.js');
+const T = require('./src/truth-accounting-core-v0-1.js');
 
 const s = K.create();
 K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
@@ -184,7 +224,8 @@ const p = K.packet(s);
 const i = I.compute(p);
 const text = P.serialize(P.fromKernelPacket(p));
 const graph = N.fromKernelPacket(p);
-console.log({ i, text, graphText: N.serialize(graph), roundTrip: P.roundTrip(text).same });
+const claim = T.create({ support: 1, no_contradiction: 1, no_unknown: 1, scope_ok: 1, definition_ok: 1, observation_ok: 1, measurement_ok: 1 });
+console.log({ i, text, graphText: N.serialize(graph), truth: claim.truth_gate.true, roundTrip: P.roundTrip(text).same });
 ```
 
 Browser global:
@@ -194,6 +235,7 @@ window.FortySecondMindMathLanguageKernel
 window.FortySecondMindIntentionAlgebra
 window.FortySecondMindLanguageParser
 window.FortySecondMindNestedRelationCore
+window.FortySecondMindTruthAccountingCore
 ```
 
 ## Run verification
@@ -204,6 +246,7 @@ node tests/intention-algebra-v0-1-test.js
 node tests/language-parser-v0-1-test.js
 node tests/nested-relation-core-v0-1-test.js
 node tests/language-v0-1-conformance-test.js
+node tests/truth-accounting-core-v0-1-test.js
 ```
 
 Expected result: all PASS lines.
@@ -215,7 +258,7 @@ No LLM calls.
 No English output as internal language.
 No semantic label shortcut as the main learning layer.
 No direct GitHub/source writing from static pages.
-No final truth promotion.
+No final truth promotion without truth-accounting closure.
 No claim that unit-total fields alone prove understanding.
 ```
 
