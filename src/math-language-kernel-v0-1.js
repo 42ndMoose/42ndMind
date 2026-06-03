@@ -133,6 +133,98 @@
     };
   }
 
+  function isField(value) {
+    return Array.isArray(value) && value.every(row => Array.isArray(row) || (row && typeof row === 'object' && ('σ' in row || 'axis' in row || 'dimension' in row)));
+  }
+
+  function packetField(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+    const out = [];
+    ['τ', 'ρ', 'μ', 'ε', 'λ', 'ι', 'κ', 'Ω', 'δ', 'Δ'].forEach(key => {
+      A(value[key]).forEach(row => out.push({ σ: key + ':' + rowAxis(row), w: rowWeight(row) }));
+    });
+    return out;
+  }
+
+  function comparableField(value) {
+    if (isField(value)) return normalize(value);
+    const packet = packetField(value);
+    if (packet.length) return normalize(packet);
+    if (scalarOk(value)) return normalize([[String(scalar(value)), Math.max(EPS, Math.abs(scalar(value)))] ]);
+    return [];
+  }
+
+  function axisMismatch(a, b) {
+    const am = fieldMap(a);
+    const bm = fieldMap(b);
+    const keys = Array.from(new Set(Object.keys(am).concat(Object.keys(bm))));
+    if (!keys.length) return 1;
+    const diff = keys.filter(key => !(key in am) || !(key in bm)).length;
+    return R(diff / keys.length);
+  }
+
+  function weightMismatch(a, b) {
+    if (!A(a).length && !A(b).length) return 1;
+    return R(Math.min(1, distance(a, b) / 2));
+  }
+
+  function unitMismatch(a, b) {
+    const au = A(a).length ? Math.abs(l1(a) - 1) : 1;
+    const bu = A(b).length ? Math.abs(l1(b) - 1) : 1;
+    return R(Math.min(1, au + bu));
+  }
+
+  function invariantRows(value) {
+    if (!value || typeof value !== 'object') return [];
+    return A(value.χ || value.invariants || value.constraints).map(String);
+  }
+
+  function invariantMismatch(a, b) {
+    const ax = invariantRows(a);
+    const bx = invariantRows(b);
+    if (!ax.length && !bx.length) return 0;
+    const keys = Array.from(new Set(ax.concat(bx)));
+    const amap = countMap(ax);
+    const bmap = countMap(bx);
+    const diff = keys.filter(key => !amap[key] || !bmap[key]).length;
+    return R(diff / Math.max(1, keys.length));
+  }
+
+  function unknownMismatch(a, b, af, bf) {
+    const measurable = A(af).length && A(bf).length;
+    return measurable ? 0 : 1;
+  }
+
+  function gap(a, b, scope) {
+    const af = comparableField(a);
+    const bf = comparableField(b);
+    const z = {
+      'Δσ': axisMismatch(af, bf),
+      'Δw': weightMismatch(af, bf),
+      'Δ∥': unitMismatch(af, bf),
+      'Δχ': invariantMismatch(a, b),
+      'Δ?': unknownMismatch(a, b, af, bf)
+    };
+    const Δ = normalize([
+      ['Δσ', Math.max(EPS, z['Δσ'])],
+      ['Δw', Math.max(EPS, z['Δw'])],
+      ['Δ∥', Math.max(EPS, z['Δ∥'])],
+      ['Δχ', Math.max(EPS, z['Δχ'])],
+      ['Δ?', Math.max(EPS, z['Δ?'])]
+    ]);
+    return {
+      φ: 'Δ',
+      v: VERSION,
+      s: scope == null ? '∅' : String(scope),
+      Δ,
+      ω: dominant(Δ),
+      z,
+      u: { Δ: l1(Δ), ok: Math.abs(l1(Δ) - 1) < EPS },
+      χ: ['Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'Δσ=axis gap', 'Δw=weight gap', 'Δ∥=unit gap', 'Δχ=invariant gap'],
+      Ξ: ''
+    };
+  }
+
   function countMap(list) {
     const out = {};
     A(list).forEach(item => { out[item] = (out[item] || 0) + 1; });
@@ -308,6 +400,7 @@
       '∥ι∥₁=1',
       '∥Ω∥₁=1',
       'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)',
+      'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)',
       'λ=𝒩(τ⊕ρ⊕μ⊕ε)',
       'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)',
       'Ω=𝒩(λ⊕ι⊕ε⊕κ)'
@@ -397,6 +490,7 @@
     distance,
     entropy,
     discrepancy,
+    gap,
     rebalance,
     unitReport
   });
