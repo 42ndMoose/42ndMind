@@ -10,9 +10,8 @@ function ok(name, condition) {
 
 function moduleSource(needles) {
   const unique = Array.from(new Set((needles || ['ok']).map(String)));
-  const fns = unique.map(needle => String(needle).replace(/[^a-z0-9_]/gi, '_')).filter(Boolean);
-  const body = fns.map(fn => 'function ' + fn + '(){ return true; }').join('\n');
-  return body + '\nmodule.exports = { VERSION: \'0.1.0\', ' + fns.join(', ') + ' };\n' + unique.join('\n');
+  const markers = unique.map(needle => '// marker: ' + needle).join('\n');
+  return "module.exports = { VERSION: '0.1.0' };\n" + markers + "\n";
 }
 
 function moduleTest(sourcePath) {
