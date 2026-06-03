@@ -3,31 +3,34 @@
     require('./discovery-core-v0-1.js'),
     require('./source-sandbox-v0-1.js'),
     require('./truth-accounting-core-v0-1.js'),
-    require('./mathematical-patch-proposer-v0-1.js')
+    require('./mathematical-patch-proposer-v0-1.js'),
+    require('./operator-synthesis-core-v0-1.js')
   );
   else root.FortySecondMindSelfEditLoop = factory(
     root.FortySecondMindDiscoveryCore,
     root.FortySecondMindSourceSandbox,
     root.FortySecondMindTruthAccountingCore,
-    root.FortySecondMindMathematicalPatchProposer
+    root.FortySecondMindMathematicalPatchProposer,
+    root.FortySecondMindOperatorSynthesisCore
   );
-})(typeof globalThis !== 'undefined' ? globalThis : this, function(D, X, T, M) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function(D, X, T, M, O) {
   'use strict';
 
   const VERSION = '0.1.0';
   const EPS = 1e-6;
 
   const DEFAULT_MANIFEST = Object.freeze([
-    { id: 'kernel', source: 'src/math-language-kernel-v0-1.js', test: 'tests/math-language-kernel-v0-1-test.js', w: 0.14 },
-    { id: 'discovery', source: 'src/discovery-core-v0-1.js', test: 'tests/discovery-core-v0-1-test.js', w: 0.16 },
-    { id: 'sandbox', source: 'src/source-sandbox-v0-1.js', test: 'tests/source-sandbox-v0-1-test.js', w: 0.16 },
-    { id: 'math_patch', source: 'src/mathematical-patch-proposer-v0-1.js', test: 'tests/mathematical-patch-proposer-v0-1-test.js', w: 0.12 },
-    { id: 'self_edit', source: 'src/self-edit-loop-v0-1.js', test: 'tests/self-edit-loop-v0-1-test.js', w: 0.12 },
-    { id: 'parser', source: 'src/language-parser-v0-1.js', test: 'tests/language-parser-v0-1-test.js', w: 0.09 },
-    { id: 'intention', source: 'src/intention-algebra-v0-1.js', test: 'tests/intention-algebra-v0-1-test.js', w: 0.08 },
-    { id: 'nested', source: 'src/nested-relation-core-v0-1.js', test: 'tests/nested-relation-core-v0-1-test.js', w: 0.09 },
-    { id: 'truth', source: 'src/truth-accounting-core-v0-1.js', test: 'tests/truth-accounting-core-v0-1-test.js', w: 0.12 },
-    { id: 'conformance', source: 'tests/fixtures/language-v0-1/conformance-fixtures.json', test: 'tests/language-v0-1-conformance-test.js', w: 0.06 }
+    { id: 'kernel', source: 'src/math-language-kernel-v0-1.js', test: 'tests/math-language-kernel-v0-1-test.js', w: 0.12 },
+    { id: 'discovery', source: 'src/discovery-core-v0-1.js', test: 'tests/discovery-core-v0-1-test.js', w: 0.13 },
+    { id: 'sandbox', source: 'src/source-sandbox-v0-1.js', test: 'tests/source-sandbox-v0-1-test.js', w: 0.13 },
+    { id: 'math_patch', source: 'src/mathematical-patch-proposer-v0-1.js', test: 'tests/mathematical-patch-proposer-v0-1-test.js', w: 0.11 },
+    { id: 'operator_synthesis', source: 'src/operator-synthesis-core-v0-1.js', test: 'tests/operator-synthesis-core-v0-1-test.js', w: 0.12 },
+    { id: 'self_edit', source: 'src/self-edit-loop-v0-1.js', test: 'tests/self-edit-loop-v0-1-test.js', w: 0.11 },
+    { id: 'parser', source: 'src/language-parser-v0-1.js', test: 'tests/language-parser-v0-1-test.js', w: 0.08 },
+    { id: 'intention', source: 'src/intention-algebra-v0-1.js', test: 'tests/intention-algebra-v0-1-test.js', w: 0.07 },
+    { id: 'nested', source: 'src/nested-relation-core-v0-1.js', test: 'tests/nested-relation-core-v0-1-test.js', w: 0.08 },
+    { id: 'truth', source: 'src/truth-accounting-core-v0-1.js', test: 'tests/truth-accounting-core-v0-1-test.js', w: 0.10 },
+    { id: 'conformance', source: 'tests/fixtures/language-v0-1/conformance-fixtures.json', test: 'tests/language-v0-1-conformance-test.js', w: 0.05 }
   ]);
 
   const A = value => Array.isArray(value) ? value : [];
@@ -172,17 +175,21 @@
     const tests = opts.tests || testPathsForManifest(baseFiles, opts.manifest);
     const validators = validatorsForWholeState(state);
     const report = X.simulate(sandbox, proposal, tests, validators);
+    const operatorSynthesis = O && O.synthesize ? O.synthesize(report, { state, mathPatch }) : null;
+    if (operatorSynthesis) {
+      sandbox.virtual['artifacts/operator-synthesis-v0-1.json'] = JSON.stringify(operatorSynthesis, null, 2) + '\n';
+    }
     const truth = T && T.create ? T.create({
       support: report.accepted ? 1 : 0,
       counter: report.accepted ? 0 : 1,
       contradiction: report.accepted ? 0 : 1,
-      unknown: 0,
+      unknown: operatorSynthesis && operatorSynthesis.candidates && operatorSynthesis.candidates.length ? 0.15 : 0,
       scope_ok: 1,
       definition_ok: 1,
       observation_ok: 1,
       measurement_ok: 1,
       no_contradiction: report.accepted ? 1 : 0,
-      no_unknown: 1
+      no_unknown: operatorSynthesis && operatorSynthesis.candidates && operatorSynthesis.candidates.length ? 0.85 : 1
     }) : null;
 
     return {
@@ -192,7 +199,11 @@
       math_patch: mathPatch,
       proposal,
       sandbox_report: report,
+      operator_synthesis: operatorSynthesis,
       accepted: report.accepted === true,
+      decision: operatorSynthesis && operatorSynthesis.decision && operatorSynthesis.decision.code === 'operator_candidates_ready'
+        ? { code: 'operator_candidates_ready', summary: operatorSynthesis.decision.summary }
+        : (mathPatch ? mathPatch.decision : null),
       truth_gate: truth ? truth.truth_gate : null,
       virtual_summary: X.summarize(sandbox.virtual),
       base_summary: X.summarize(sandbox.base),
