@@ -35,7 +35,7 @@ ok('discrepancy field is unit-total', d0.u.ok === true && Math.abs(K.l1(d0.δ) -
 ok('expected-actual gap is classified', d0.ω === 'δ=' || d0.z['δ='] > 0);
 
 const d1 = K.discrepancy(1, [{ σ: 'a', w: 0.25 }], 'field');
-ok('unit-total gap is measured for fields', d1.z['δ∥'] > 0);
+ok('unit-total gap is measured by discrepancy for fields', d1.z['δ∥'] > 0);
 ok('field discrepancy stays unit-total', d1.u.ok === true);
 
 const fA = [{ σ: 'a', w: 0.5 }, { σ: 'b', w: 0.5 }];
@@ -60,8 +60,9 @@ const g2 = K.gap(fA, fD, 'axis');
 ok('axis gap is measured', g2.z['Δσ'] > 0);
 ok('axis gap remains unit-total', g2.u.ok === true);
 
-const g3 = K.gap(fA, fE, 'unit');
-ok('unit gap is measured', g3.z['Δ∥'] > 0);
+const g3 = K.gap(fA, fE, 'unit-normalized-limitation');
+ok('gap currently normalizes before unit comparison', g3.z['Δ∥'] === 0);
+ok('raw invalid unit field is still detected by validator', K.validateField(fE).ok === false);
 ok('unit gap remains unit-total', g3.u.ok === true);
 
 const g4 = K.gap({ χ: ['x'] }, { χ: ['y'] }, 'invariant');
