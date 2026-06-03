@@ -18,6 +18,16 @@ ok('no English output channel', s.Ξ === '');
 const p0 = K.packet(s);
 ok('packet is symbolic', p0.φ === 'Ω' && p0.Ξ === '');
 ok('packet carries invariant list', p0.χ.includes('∥λ∥₁=1') && p0.χ.includes('∥ι∥₁=1'));
+ok('packet carries discrepancy invariant', p0.χ.some(row => row.indexOf('δ=') >= 0));
+
+const d0 = K.discrepancy(1, 0, 'unit');
+ok('discrepancy packet is symbolic', d0.φ === 'δ' && d0.Ξ === '');
+ok('discrepancy field is unit-total', d0.u.ok === true && Math.abs(K.l1(d0.δ) - 1) < 1e-6);
+ok('expected-actual gap is classified', d0.ω === 'δ=' || d0.z['δ='] > 0);
+
+const d1 = K.discrepancy(1, [{ σ: 'a', w: 0.25 }], 'field');
+ok('unit-total gap is measured for fields', d1.z['δ∥'] > 0);
+ok('field discrepancy stays unit-total', d1.u.ok === true);
 
 const p1 = K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 ok('observation returns packet', p1.φ === 'Ω');
