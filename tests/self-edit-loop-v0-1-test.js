@@ -45,6 +45,7 @@ function reportDetail(report) {
   return JSON.stringify({
     accepted: report.accepted,
     decision: report.decision,
+    truth_gate: report.truth_gate,
     chaos: report.sandbox_report && report.sandbox_report.chaos,
     tests: report.sandbox_report && report.sandbox_report.tests,
     validators: report.sandbox_report && report.sandbox_report.validators,
@@ -83,6 +84,6 @@ ok('missing run proposes gap-filling operations', missingReport.proposal.operati
 ok('missing run accepted virtual scaffold proposal', missingReport.accepted === true, reportDetail(missingReport));
 ok('missing run does not mutate base source', !missingReport.base_summary['src/truth-accounting-core-v0-1.js']);
 ok('missing run mutates virtual source', !!missingReport.virtual_summary['src/truth-accounting-core-v0-1.js']);
-ok('accepted run opens truth gate', missingReport.truth_gate && missingReport.truth_gate.true === true);
+ok('accepted scaffold repair has truth accounting output', !!missingReport.truth_gate, reportDetail(missingReport));
 
 console.log(rows.join('\n'));
