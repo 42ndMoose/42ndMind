@@ -205,6 +205,14 @@
     return [];
   }
 
+  function rawComparableField(value) {
+    if (isField(value)) return A(value).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);
+    const packet = packetField(value);
+    if (packet.length) return A(packet).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);
+    if (scalarOk(value)) return [{ σ: String(scalar(value)), w: Math.max(EPS, Math.abs(scalar(value))) }];
+    return [];
+  }
+
   function axisMismatch(a, b) {
     const am = fieldMap(a);
     const bm = fieldMap(b);
