@@ -2,14 +2,16 @@
   if (typeof module === 'object' && module.exports) module.exports = factory(
     require('./discovery-core-v0-1.js'),
     require('./source-sandbox-v0-1.js'),
-    require('./truth-accounting-core-v0-1.js')
+    require('./truth-accounting-core-v0-1.js'),
+    require('./mathematical-patch-proposer-v0-1.js')
   );
   else root.FortySecondMindSelfEditLoop = factory(
     root.FortySecondMindDiscoveryCore,
     root.FortySecondMindSourceSandbox,
-    root.FortySecondMindTruthAccountingCore
+    root.FortySecondMindTruthAccountingCore,
+    root.FortySecondMindMathematicalPatchProposer
   );
-})(typeof globalThis !== 'undefined' ? globalThis : this, function(D, X, T) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function(D, X, T, M) {
   'use strict';
 
   const VERSION = '0.1.0';
@@ -19,11 +21,13 @@
     { id: 'kernel', source: 'src/math-language-kernel-v0-1.js', test: 'tests/math-language-kernel-v0-1-test.js', w: 0.14 },
     { id: 'discovery', source: 'src/discovery-core-v0-1.js', test: 'tests/discovery-core-v0-1-test.js', w: 0.16 },
     { id: 'sandbox', source: 'src/source-sandbox-v0-1.js', test: 'tests/source-sandbox-v0-1-test.js', w: 0.16 },
-    { id: 'parser', source: 'src/language-parser-v0-1.js', test: 'tests/language-parser-v0-1-test.js', w: 0.12 },
-    { id: 'intention', source: 'src/intention-algebra-v0-1.js', test: 'tests/intention-algebra-v0-1-test.js', w: 0.10 },
-    { id: 'nested', source: 'src/nested-relation-core-v0-1.js', test: 'tests/nested-relation-core-v0-1-test.js', w: 0.12 },
+    { id: 'math_patch', source: 'src/mathematical-patch-proposer-v0-1.js', test: 'tests/mathematical-patch-proposer-v0-1-test.js', w: 0.12 },
+    { id: 'self_edit', source: 'src/self-edit-loop-v0-1.js', test: 'tests/self-edit-loop-v0-1-test.js', w: 0.12 },
+    { id: 'parser', source: 'src/language-parser-v0-1.js', test: 'tests/language-parser-v0-1-test.js', w: 0.09 },
+    { id: 'intention', source: 'src/intention-algebra-v0-1.js', test: 'tests/intention-algebra-v0-1-test.js', w: 0.08 },
+    { id: 'nested', source: 'src/nested-relation-core-v0-1.js', test: 'tests/nested-relation-core-v0-1-test.js', w: 0.09 },
     { id: 'truth', source: 'src/truth-accounting-core-v0-1.js', test: 'tests/truth-accounting-core-v0-1-test.js', w: 0.12 },
-    { id: 'conformance', source: 'tests/fixtures/language-v0-1/conformance-fixtures.json', test: 'tests/language-v0-1-conformance-test.js', w: 0.08 }
+    { id: 'conformance', source: 'tests/fixtures/language-v0-1/conformance-fixtures.json', test: 'tests/language-v0-1-conformance-test.js', w: 0.06 }
   ]);
 
   const A = value => Array.isArray(value) ? value : [];
@@ -95,64 +99,19 @@
     return normalize(A(gaps).map(gap => ({ σ: 'Γ:' + gap.id, w: gap.w || 1 })), 'Γ0');
   }
 
-  function scaffoldSource(layerId) {
-    return "(function(root, factory) {\n" +
-      "  if (typeof module === 'object' && module.exports) module.exports = factory();\n" +
-      "  else root['FortySecondMind_" + layerId.replace(/[^a-z0-9_]/gi, '_') + "'] = factory();\n" +
-      "})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n" +
-      "  'use strict';\n" +
-      "  return Object.freeze({ VERSION: '0.1.0', packet_type: '42ndMind_scaffold_" + layerId + "' });\n" +
-      "});\n";
-  }
-
-  function scaffoldTest(sourcePath) {
-    return "const assert = require('assert');\n" +
-      "const M = require('../" + sourcePath + "');\n" +
-      "assert.ok(M);\n" +
-      "assert.strictEqual(M.VERSION, '0.1.0');\n" +
-      "console.log('PASS scaffold');\n";
-  }
-
-  function proposalForGaps(gaps, wholeState) {
-    const operations = [];
-    A(gaps).forEach(gap => {
-      if (gap.kind === 'missing_source') operations.push({ type: 'create', path: gap.path, content: scaffoldSource(gap.layer) });
-      if (gap.kind === 'missing_test') {
-        const sourceGap = A(gaps).find(g => g.layer === gap.layer && g.kind === 'missing_source');
-        const sourcePath = sourceGap ? sourceGap.path : DEFAULT_MANIFEST.find(l => l.id === gap.layer)?.source || ('src/' + gap.layer + '.js');
-        operations.push({ type: 'create', path: gap.path, content: scaffoldTest(sourcePath) });
-      }
-    });
-
-    const reportPath = 'artifacts/self-edit-state-v0-1.json';
-    operations.push({
-      type: 'create',
-      path: reportPath,
-      content: JSON.stringify(wholeState, null, 2) + '\n'
-    });
-
-    return {
-      id: 'whole_language_self_edit_' + checksum(wholeState).slice(0, 10),
-      kind: 'whole_language_batch_proposal',
-      operations,
-      expected: {
-        language_unit: 1,
-        gap_count: A(gaps).length,
-        artifact: reportPath
-      }
-    };
-  }
-
   function wholeState(files, rawInput, manifest) {
     const inspection = inspect(files, manifest || DEFAULT_MANIFEST);
     const discovery = D && D.create ? D.create() : null;
     if (discovery && D.observe) D.observe(discovery, rawInput || Object.keys(files || {}).join('\n'));
+    const mathPatch = M && M.propose ? M.propose(files || {}) : null;
 
     const Λ = fieldForLayers(inspection.layers);
     const Γ = fieldForGaps(inspection.gaps);
+    const Π = mathPatch && mathPatch.fields ? mathPatch.fields.Π : normalize([['Π∅', 1]], 'Π∅');
     const ΩL = normalize([
       ['ΩL:manifest', l1(Λ)],
       ['ΩL:gaps', l1(Γ)],
+      ['ΩL:math_patch', l1(Π)],
       ['ΩL:discovery', discovery && discovery.unit && discovery.unit.ok ? 1 : 0.0001],
       ['ΩL:source', Object.keys(files || {}).length || 0.0001]
     ], 'ΩL∅');
@@ -163,9 +122,10 @@
       manifest: C(manifest || DEFAULT_MANIFEST),
       layers: inspection.layers,
       gaps: inspection.gaps,
-      fields: { Λ, Γ, ΩL },
+      math_patch: mathPatch,
+      fields: { Λ, Γ, Π, ΩL },
       discovery: discovery && D.packet ? D.packet(discovery) : null,
-      unit: { Λ: l1(Λ), Γ: l1(Γ), ΩL: l1(ΩL), ok: Math.abs(l1(Λ) - 1) < EPS && Math.abs(l1(Γ) - 1) < EPS && Math.abs(l1(ΩL) - 1) < EPS },
+      unit: { Λ: l1(Λ), Γ: l1(Γ), Π: l1(Π), ΩL: l1(ΩL), ok: Math.abs(l1(Λ) - 1) < EPS && Math.abs(l1(Γ) - 1) < EPS && Math.abs(l1(Π) - 1) < EPS && Math.abs(l1(ΩL) - 1) < EPS },
       ξ: ''
     };
   }
@@ -181,7 +141,7 @@
         return { id: 'manifest_layers_present', ok: missing.length === 0, missing };
       },
       function(files) {
-        return { id: 'self_edit_artifact_present', ok: has(files, 'artifacts/self-edit-state-v0-1.json') };
+        return { id: 'self_edit_artifact_present', ok: has(files, 'artifacts/self-edit-state-v0-1.json') || has(files, 'artifacts/mathematical-patch-v0-1.json') };
       }
     ];
   }
@@ -190,11 +150,24 @@
     return A(manifest || DEFAULT_MANIFEST).map(layer => layer.test).filter(path => has(files, path));
   }
 
+  function artifactOperation(path, value) {
+    return { type: 'create', path, content: JSON.stringify(value, null, 2) + '\n' };
+  }
+
   function run(files, options) {
     const opts = Object.assign({ rawInput: '', manifest: DEFAULT_MANIFEST, sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
     const baseFiles = C(files || {});
     const state = wholeState(baseFiles, opts.rawInput || Object.keys(baseFiles).join('\n'), opts.manifest);
-    const proposal = proposalForGaps(state.gaps, state);
+    const mathPatch = state.math_patch;
+    const operations = (mathPatch && mathPatch.proposal && mathPatch.proposal.operations ? C(mathPatch.proposal.operations) : [])
+      .concat([artifactOperation('artifacts/mathematical-patch-v0-1.json', mathPatch), artifactOperation('artifacts/self-edit-state-v0-1.json', state)]);
+    const proposal = {
+      id: 'whole_language_self_edit_' + checksum({ state, mathPatch }).slice(0, 10),
+      kind: 'whole_language_mathematical_patch_proposal',
+      math_patch_id: mathPatch && mathPatch.id,
+      operations,
+      expected: { language_unit: 1, gap_count: state.gaps.length, mathematical_gap_count: mathPatch ? mathPatch.gaps.length : 0 }
+    };
     const sandbox = X.create(baseFiles, opts.sandboxOptions);
     const tests = opts.tests || testPathsForManifest(baseFiles, opts.manifest);
     const validators = validatorsForWholeState(state);
@@ -216,6 +189,7 @@
       packet_type: '42ndMind_self_edit_loop_report_v0_1',
       version: VERSION,
       state,
+      math_patch: mathPatch,
       proposal,
       sandbox_report: report,
       accepted: report.accepted === true,
@@ -232,7 +206,6 @@
     run,
     wholeState,
     inspect,
-    proposalForGaps,
     normalize,
     l1
   });
