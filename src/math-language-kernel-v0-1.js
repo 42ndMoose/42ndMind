@@ -11,6 +11,24 @@
   const R = value => Number((Number(value) || 0).toFixed(6));
   const C = value => JSON.parse(JSON.stringify(value == null ? null : value));
 
+  const DEFINITIONS = Object.freeze({
+    σ: 'axis identity inside a finite symbolic field',
+    w: 'signed finite scalar weight assigned to σ before or after 𝒩',
+    χ: 'constraint row that must remain stable under accepted transformations',
+    '𝒩': 'unit-total normalization by L1 magnitude',
+    Δ: 'normalized gap field over measurable mismatch axes',
+    δ: 'expected-actual discrepancy field',
+    T: 'local unit-preserving correction transform'
+  });
+
+  const INVARIANTS = Object.freeze([
+    { id: 'χ_unit_total', row: '∥F∥₁=1', axis: '∥', weight: 0.34 },
+    { id: 'χ_finite_weight', row: '∀w∈F:Number.isFinite(w)', axis: 'w', weight: 0.22 },
+    { id: 'χ_axis_defined', row: '∀σ∈F:σ≠∅', axis: 'σ', weight: 0.18 },
+    { id: 'χ_no_english', row: 'Ξ=""', axis: 'Ξ', weight: 0.14 },
+    { id: 'χ_local_minimality', row: 'T*=argmin(score(Δ(T(F),G))+cost(T))', axis: 'T', weight: 0.12 }
+  ]);
+
   function rowAxis(row) {
     if (Array.isArray(row)) return String(row[0] == null ? '∅' : row[0]);
     return String((row && (row.σ ?? row.axis ?? row.dimension)) ?? '∅');
@@ -105,6 +123,39 @@
     return rows.length ? rowAxis(rows[0]) : '∅';
   }
 
+  function definitions() {
+    return C(DEFINITIONS);
+  }
+
+  function invariants() {
+    return C(INVARIANTS);
+  }
+
+  function invariantField() {
+    return normalize(INVARIANTS.map(row => ({ σ: row.axis, w: row.weight })));
+  }
+
+  function validateField(field) {
+    const rows = A(field);
+    const finite = rows.every(row => Number.isFinite(rowWeight(row)));
+    const axisDefined = rows.every(row => rowAxis(row) !== '∅' && rowAxis(row) !== '');
+    const unit = Math.abs(l1(rows) - 1) < EPS;
+    const χ = normalize([
+      ['∥', unit ? 1 : EPS],
+      ['w', finite ? 1 : EPS],
+      ['σ', axisDefined ? 1 : EPS],
+      ['Ξ', 1]
+    ]);
+    return {
+      φ: 'χ',
+      v: VERSION,
+      χ,
+      ok: unit && finite && axisDefined,
+      z: { '∥': unit ? 0 : R(Math.abs(l1(rows) - 1)), w: finite ? 0 : 1, σ: axisDefined ? 0 : 1, Ξ: 0 },
+      Ξ: ''
+    };
+  }
+
   function discrepancy(expected, actual, scope) {
     const eOk = scalarOk(expected);
     const aOk = scalarOk(actual);
@@ -150,7 +201,7 @@
     if (isField(value)) return normalize(value);
     const packet = packetField(value);
     if (packet.length) return normalize(packet);
-    if (scalarOk(value)) return normalize([[String(scalar(value)), Math.max(EPS, Math.abs(scalar(value)))] ]);
+    if (scalarOk(value)) return normalize([[String(scalar(value)), Math.max(EPS, Math.abs(scalar(value)))]]);
     return [];
   }
 
@@ -195,6 +246,11 @@
     return measurable ? 0 : 1;
   }
 
+  function rawGapScore(packet) {
+    const z = packet && packet.z || {};
+    return R(Object.keys(z).reduce((sum, key) => sum + Math.abs(Number(z[key]) || 0), 0));
+  }
+
   function gap(a, b, scope) {
     const af = comparableField(a);
     const bf = comparableField(b);
@@ -218,9 +274,65 @@
       s: scope == null ? '∅' : String(scope),
       Δ,
       ω: dominant(Δ),
+      score: rawGapScore({ z }),
       z,
       u: { Δ: l1(Δ), ok: Math.abs(l1(Δ) - 1) < EPS },
       χ: ['Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'Δσ=axis gap', 'Δw=weight gap', 'Δ∥=unit gap', 'Δχ=invariant gap'],
+      Ξ: ''
+    };
+  }
+
+  function axisUnionField(current, target) {
+    const cm = fieldMap(current);
+    const tm = fieldMap(target);
+    const keys = Array.from(new Set(Object.keys(cm).concat(Object.keys(tm)))).sort();
+    return normalize(keys.map(key => ({ σ: key, w: key in cm ? cm[key] : EPS })));
+  }
+
+  function weightProjectedField(current, target) {
+    const cm = fieldMap(current);
+    const tm = fieldMap(target);
+    const keys = Array.from(new Set(Object.keys(cm).concat(Object.keys(tm)))).sort();
+    return normalize(keys.map(key => ({ σ: key, w: key in tm ? tm[key] : EPS })));
+  }
+
+  function candidateTransform(name, cost, field) {
+    return { name, cost, field: normalize(field) };
+  }
+
+  function correction(current, target, scope) {
+    const cf = comparableField(current);
+    const tf = comparableField(target);
+    const before = gap(cf, tf, scope);
+    const candidates = [];
+    if (cf.length) candidates.push(candidateTransform('T0', 0, cf));
+    if (cf.length) candidates.push(candidateTransform('T∥', 0.02, normalize(cf)));
+    if (cf.length && tf.length) candidates.push(candidateTransform('Tσ', 0.08, axisUnionField(cf, tf)));
+    if (cf.length && tf.length) candidates.push(candidateTransform('Tw', 0.13, weightProjectedField(cf, tf)));
+    if (!candidates.length && tf.length) candidates.push(candidateTransform('T?', 0.21, tf));
+
+    const evaluated = candidates.map(item => {
+      const after = gap(item.field, tf, scope);
+      return Object.assign({}, item, { gap: after, score: R(rawGapScore(after) + item.cost) });
+    }).sort((a, b) => a.score - b.score || a.cost - b.cost || a.name.localeCompare(b.name));
+
+    const best = evaluated[0] || candidateTransform('T∅', 1, normalize([['∅', 1]]));
+    const reduced = best.gap ? best.gap.score <= before.score : false;
+    const T = normalize(evaluated.map(item => ({ σ: item.name, w: 1 / Math.max(EPS, item.score + EPS) })));
+    return {
+      φ: 'T',
+      v: VERSION,
+      s: scope == null ? '∅' : String(scope),
+      method: 'finite_local_argmin',
+      T,
+      chosen: best.name,
+      before,
+      after: best.gap || gap(best.field, tf, scope),
+      transformed: C(best.field),
+      candidates: evaluated.map(item => ({ T: item.name, cost: item.cost, score: item.score, ω: item.gap.ω, z: item.gap.z })),
+      reduced,
+      u: { T: l1(T), ok: Math.abs(l1(T) - 1) < EPS && validateField(best.field).ok },
+      χ: ['T*=argmin(score(Δ(T(F),G))+cost(T))', '∥T(F)∥₁=1', 'Ξ=""'],
       Ξ: ''
     };
   }
@@ -391,20 +503,13 @@
       { field: state.ε.map(row => ({ σ: 'ε:' + row.σ, w: row.w })), gain: 0.18 },
       { field: state.κ.map(row => ({ σ: 'κ:' + row.σ, w: row.w })), gain: 0.16 }
     ]);
-    state.χ = [
-      '∥τ∥₁=1',
-      '∥ρ∥₁=1',
-      '∥μ∥₁=1',
-      '∥ε∥₁=1',
-      '∥λ∥₁=1',
-      '∥ι∥₁=1',
-      '∥Ω∥₁=1',
+    state.χ = INVARIANTS.map(row => row.row).concat([
       'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)',
       'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)',
       'λ=𝒩(τ⊕ρ⊕μ⊕ε)',
       'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)',
       'Ω=𝒩(λ⊕ι⊕ε⊕κ)'
-    ];
+    ]);
     state.unit = unitReport(state);
     return state;
   }
@@ -479,6 +584,10 @@
 
   return Object.freeze({
     VERSION,
+    definitions,
+    invariants,
+    invariantField,
+    validateField,
     create,
     observe,
     step,
@@ -491,6 +600,7 @@
     entropy,
     discrepancy,
     gap,
+    correction,
     rebalance,
     unitReport
   });
