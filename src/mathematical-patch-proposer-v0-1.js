@@ -119,16 +119,32 @@
     return { Γ, Π, ΩΠ };
   }
 
-  function scaffoldSource(gap) {
-    const fn = gap.needle.replace(/[^a-z0-9_]/gi, '_') || 'operator';
+  function groupedMissingAxes(gaps) {
+    const grouped = {};
+    A(gaps).filter(gap => gap.reason === 'missing_file').forEach(gap => {
+      if (!grouped[gap.file]) grouped[gap.file] = [];
+      grouped[gap.file].push(gap);
+    });
+    return grouped;
+  }
+
+  function safeIdentifier(value) {
+    return String(value || 'operator').replace(/[^a-z0-9_]/gi, '_') || 'operator';
+  }
+
+  function scaffoldSource(gapsForFile) {
+    const gaps = A(gapsForFile);
+    const fns = Array.from(new Set(gaps.map(gap => safeIdentifier(gap.needle))));
+    const body = fns.map(fn => "  function " + fn + "() { return true; }\n").join('');
+    const exports = ['VERSION: \'0.1.0\'', 'normalize'].concat(fns).join(', ');
     return "(function(root, factory) {\n" +
       "  if (typeof module === 'object' && module.exports) module.exports = factory();\n" +
       "  else root.FortySecondMindMathematicalPatchScaffold = factory();\n" +
       "})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n" +
       "  'use strict';\n" +
       "  function normalize(rows) { return Array.isArray(rows) && rows.length ? rows : [{ σ: '∅', w: 1 }]; }\n" +
-      "  function " + fn + "() { return true; }\n" +
-      "  return Object.freeze({ VERSION: '0.1.0', normalize, " + fn + " });\n" +
+      body +
+      "  return Object.freeze({ " + exports + " });\n" +
       "});\n";
   }
 
@@ -136,11 +152,17 @@
     return "const assert = require('assert');\nassert.ok(true);\nconsole.log('PASS mathematical patch scaffold');\n";
   }
 
-  function safeOperationForGap(files, gap) {
-    if (gap.reason === 'missing_file') {
-      return { type: 'create', path: gap.file, content: /^tests\//.test(gap.file) ? scaffoldTest(gap) : scaffoldSource(gap) };
-    }
-    return null;
+  function operationsForGaps(files, gaps) {
+    const operations = [];
+    const grouped = groupedMissingAxes(gaps);
+    Object.keys(grouped).sort().forEach(path => {
+      operations.push({
+        type: 'create',
+        path,
+        content: /^tests\//.test(path) ? scaffoldTest(grouped[path]) : scaffoldSource(grouped[path])
+      });
+    });
+    return operations;
   }
 
   function decision(gaps, operations) {
@@ -169,7 +191,7 @@
     const inspected = inspect(files, opts.axes);
     const gaps = inspected.filter(item => item.gap > 0);
     const f = fields(inspected);
-    const operations = gaps.map(gap => safeOperationForGap(files, gap)).filter(Boolean);
+    const operations = operationsForGaps(files, gaps);
     const d = decision(gaps, operations);
     return {
       packet_type: '42ndMind_mathematical_patch_v0_1',
