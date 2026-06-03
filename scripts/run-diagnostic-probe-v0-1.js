@@ -4,13 +4,13 @@
 const fs = require('fs');
 const path = require('path');
 const L = require('../src/self-edit-loop-v0-1.js');
-const R = require('../src/realization-plan-core-v0-1.js');
+const K = require('../src/math-language-kernel-v0-1.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const REPORT_PATH = path.join(ARTIFACT_DIR, 'diagnostic-probe-report-v0-1.json');
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'diagnostic-probe-summary-v0-1.json');
-const REALIZATION_PATH = path.join(ARTIFACT_DIR, 'diagnostic-realization-plan-v0-1.json');
+const KERNEL_DISCREPANCY_PATH = path.join(ARTIFACT_DIR, 'diagnostic-kernel-discrepancy-v0-1.json');
 const PROBE_TEST = 'tests/diagnostic-probe-v0-1-test.js';
 
 function readIfExists(relativePath) {
@@ -45,14 +45,13 @@ function main() {
     sandboxOptions: { allowDelete: false, maxPatchBytes: 5_000_000 }
   });
 
-  const realization = R.plan(report.operator_synthesis, { probe: 'forced_diagnostic_signature' });
+  const kernelDiscrepancy = K.discrepancy(0, 1, 'tests/diagnostic-probe-v0-1-test.js');
 
   fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + '\n');
-  fs.writeFileSync(REALIZATION_PATH, JSON.stringify(realization, null, 2) + '\n');
+  fs.writeFileSync(KERNEL_DISCREPANCY_PATH, JSON.stringify(kernelDiscrepancy, null, 2) + '\n');
 
   const failedTests = report.sandbox_report.tests.filter(t => !t.ok).map(t => ({ path: t.path, error: t.error }));
-  const compact = R.compact(realization);
   const summary = {
     probe: 'forced_diagnostic_signature',
     accepted: report.accepted,
@@ -64,9 +63,14 @@ function main() {
     operator_candidates: report.operator_synthesis && report.operator_synthesis.candidates
       ? report.operator_synthesis.candidates.map(c => ({ operator: c.operator, target: c.target, rule: c.rule, source_failure: c.source_failure }))
       : [],
-    realization_decision: compact.decision,
-    realization_action_count: compact.action_count,
-    realization_actions: compact.actions,
+    kernel_discrepancy: {
+      φ: kernelDiscrepancy.φ,
+      ω: kernelDiscrepancy.ω,
+      z: kernelDiscrepancy.z,
+      u: kernelDiscrepancy.u,
+      χ: kernelDiscrepancy.χ,
+      Ξ: kernelDiscrepancy.Ξ
+    },
     operations: report.proposal.operations.map(op => ({ type: op.type, path: op.path })),
     truth_gate: report.truth_gate,
     changed_virtual_paths: report.sandbox_report.changed,
