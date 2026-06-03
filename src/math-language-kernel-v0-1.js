@@ -257,7 +257,7 @@
     const z = {
       'Δσ': axisMismatch(af, bf),
       'Δw': weightMismatch(af, bf),
-      'Δ∥': unitMismatch(af, bf),
+      'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)),
       'Δχ': invariantMismatch(a, b),
       'Δ?': unknownMismatch(a, b, af, bf)
     };
