@@ -63,7 +63,7 @@ ok('complete files have no manifest gaps', completeState.gaps.length === 0);
 ok('complete files have no mathematical gaps', completeState.math_patch.gaps.length === 0);
 ok('whole language fields are unit-total', ['Λ', 'Γ', 'Π', 'ΩL'].every(key => Math.abs(L.l1(completeState.fields[key]) - 1) < 1e-6));
 
-const completeReport = L.run(completeFiles, { rawInput: 'abababab cdcdcdcd' });
+const completeReport = L.run(completeFiles, { rawInput: 'abababab cdcdcdcd', tests: [] });
 ok('complete run accepted artifact-only proposal', completeReport.accepted === true, reportDetail(completeReport));
 ok('complete run exports self-edit artifact in virtual source', !!completeReport.virtual_summary['artifacts/self-edit-state-v0-1.json']);
 ok('complete run exports mathematical patch artifact in virtual source', !!completeReport.virtual_summary['artifacts/mathematical-patch-v0-1.json']);
@@ -77,7 +77,7 @@ delete missingFiles['tests/truth-accounting-core-v0-1-test.js'];
 const missingState = L.wholeState(missingFiles, 'abababab cdcdcdcd');
 ok('missing files produce manifest gaps', missingState.gaps.length === 2);
 ok('missing files produce mathematical gaps', missingState.math_patch.gaps.length >= 1);
-const missingReport = L.run(missingFiles, { rawInput: 'abababab cdcdcdcd' });
+const missingReport = L.run(missingFiles, { rawInput: 'abababab cdcdcdcd', tests: [] });
 ok('missing run proposes mathematical operations', missingReport.math_patch.proposal.operations.length > 0);
 ok('missing run proposes gap-filling operations', missingReport.proposal.operations.some(op => op.path === 'src/truth-accounting-core-v0-1.js'));
 ok('missing run accepted virtual scaffold proposal', missingReport.accepted === true, reportDetail(missingReport));
