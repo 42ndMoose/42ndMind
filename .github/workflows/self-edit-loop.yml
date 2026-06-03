@@ -31,6 +31,7 @@ jobs:
           node tests/discovery-core-v0-1-test.js
           node tests/source-sandbox-v0-1-test.js
           node tests/mathematical-patch-proposer-v0-1-test.js
+          node tests/operator-synthesis-core-v0-1-test.js
           node tests/self-edit-loop-v0-1-test.js
           node tests/intention-algebra-v0-1-test.js
           node tests/language-parser-v0-1-test.js
