@@ -13,6 +13,7 @@ function moduleSource(needle) {
 }
 
 function moduleTest(sourcePath) {
+  if (sourcePath.endsWith('.json')) return "const assert = require('assert'); assert.ok(true);";
   return "const assert = require('assert'); const M = require('../" + sourcePath + "'); assert.strictEqual(M.VERSION, '0.1.0');";
 }
 
@@ -24,13 +25,14 @@ L.DEFAULT_MANIFEST.forEach(layer => {
     'src/source-sandbox-v0-1.js': 'simulate',
     'src/self-edit-loop-v0-1.js': 'wholeState',
     'src/mathematical-patch-proposer-v0-1.js': 'propose',
+    'src/operator-synthesis-core-v0-1.js': 'synthesize',
     'src/language-parser-v0-1.js': 'roundTrip',
     'src/intention-algebra-v0-1.js': 'compute',
     'src/nested-relation-core-v0-1.js': 'relationDepth',
     'src/truth-accounting-core-v0-1.js': 'truth_gate',
     'tests/fixtures/language-v0-1/conformance-fixtures.json': 'validPackets'
   };
-  completeFiles[layer.source] = layer.source.endsWith('.json') ? '{"validPackets":[]}' : moduleSource(requiredNeedles[layer.source] || 'ok');
+  completeFiles[layer.source] = layer.source.endsWith('.json') ? '{"validPackets":[],"invalidPackets":[]}' : moduleSource(requiredNeedles[layer.source] || 'ok');
   completeFiles[layer.test] = moduleTest(layer.source);
 });
 
