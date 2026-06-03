@@ -60,9 +60,9 @@ const g2 = K.gap(fA, fD, 'axis');
 ok('axis gap is measured', g2.z['Δσ'] > 0);
 ok('axis gap remains unit-total', g2.u.ok === true);
 
-const g3 = K.gap(fA, fE, 'unit-normalized-limitation');
-ok('gap currently normalizes before unit comparison', g3.z['Δ∥'] === 0);
-ok('raw invalid unit field is still detected by validator', K.validateField(fE).ok === false);
+const g3 = K.gap(fA, fE, 'unit');
+ok('unit gap is measured by gap from raw fields', g3.z['Δ∥'] > 0);
+ok('raw invalid unit field is detected by validator', K.validateField(fE).ok === false);
 ok('unit gap remains unit-total', g3.u.ok === true);
 
 const g4 = K.gap({ χ: ['x'] }, { χ: ['y'] }, 'invariant');
