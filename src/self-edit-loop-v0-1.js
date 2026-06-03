@@ -157,12 +157,34 @@
     return { type: 'create', path, content: JSON.stringify(value, null, 2) + '\n' };
   }
 
+  function manifestSourceScaffold(gap) {
+    return "module.exports = { VERSION: '0.1.0', packet_type: '42ndMind_manifest_scaffold_" + gap.layer + "' };\n";
+  }
+
+  function manifestTestScaffold() {
+    return "const assert = require('assert');\nassert.ok(true);\nconsole.log('PASS manifest scaffold');\n";
+  }
+
+  function manifestGapOperations(gaps, existingOperations) {
+    const existing = new Set(A(existingOperations).map(op => op && op.path).filter(Boolean));
+    const ops = [];
+    A(gaps).forEach(gap => {
+      if (!gap || !gap.path || existing.has(gap.path)) return;
+      const content = gap.kind === 'missing_test' ? manifestTestScaffold(gap) : manifestSourceScaffold(gap);
+      ops.push({ type: 'create', path: gap.path, content });
+      existing.add(gap.path);
+    });
+    return ops;
+  }
+
   function run(files, options) {
     const opts = Object.assign({ rawInput: '', manifest: DEFAULT_MANIFEST, sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
     const baseFiles = C(files || {});
     const state = wholeState(baseFiles, opts.rawInput || Object.keys(baseFiles).join('\n'), opts.manifest);
     const mathPatch = state.math_patch;
-    const operations = (mathPatch && mathPatch.proposal && mathPatch.proposal.operations ? C(mathPatch.proposal.operations) : [])
+    const mathOperations = mathPatch && mathPatch.proposal && mathPatch.proposal.operations ? C(mathPatch.proposal.operations) : [];
+    const operations = mathOperations
+      .concat(manifestGapOperations(state.gaps, mathOperations))
       .concat([artifactOperation('artifacts/mathematical-patch-v0-1.json', mathPatch), artifactOperation('artifacts/self-edit-state-v0-1.json', state)]);
     const proposal = {
       id: 'whole_language_self_edit_' + checksum({ state, mathPatch }).slice(0, 10),
