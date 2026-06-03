@@ -5,6 +5,7 @@ PASS intention starts unit-total
 PASS whole state starts unit-total
 PASS no English output channel
 PASS kernel defines sigma weight and constraint rows
+PASS kernel defines closure and equivalence symbols
 PASS kernel has invariant registry beyond unit-total
 PASS invariant field is unit-total
 PASS valid field passes invariant validator
@@ -13,6 +14,7 @@ PASS packet is symbolic
 PASS packet carries invariant list
 PASS packet carries discrepancy invariant
 PASS packet carries gap invariant
+PASS packet carries closure invariant rows
 PASS discrepancy packet is symbolic
 PASS discrepancy field is unit-total
 PASS expected-actual gap is classified
@@ -38,6 +40,22 @@ PASS correction transform field is unit-total
 PASS correction uses finite local argmin
 PASS correction reduces or preserves measured gap
 PASS correction outputs transformed unit field
+PASS canonical packet is symbolic
+PASS canonical merges sorts and normalizes fields
+PASS canonical field is unit-total
+PASS equivalent detects same canonical field
+PASS equivalent detects different canonical field
+PASS closure packet is symbolic
+PASS closure emits closed fields
+PASS closure fields are unit-total
+PASS closure can emit transforms when target is supplied
+PASS proof gate packet is symbolic
+PASS proof gate accepts unit-preserving reducing transform
+PASS convergence packet is symbolic
+PASS convergence remains unit-total
+PASS convergence reaches or approaches lower gap
+PASS grounding distinguishes formal mode
+PASS grounding distinguishes observed mode
 PASS observation returns packet
 PASS tokens form from repeated raw symbols
 PASS lambda remains unit-total after observation
