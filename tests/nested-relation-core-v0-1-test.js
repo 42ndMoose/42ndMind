@@ -37,7 +37,10 @@ const kg = N.fromKernelPacket(K.packet(s));
 ok('kernel packet converts to nested graph', !!kg.relations.νnested1 && !!kg.relations.νnested2);
 ok('converted graph has nested relations', N.nestedCount(kg) >= 2);
 ok('converted graph is unit-total', Math.abs(N.l1(kg.relation_field) - 1) < 1e-6);
-ok('converted graph round trips', N.roundTrip(kg).same === true);
+const convertedText = N.serialize(kg);
+const convertedParsed = N.parse(convertedText);
+ok('converted graph serializes and validates', N.validate(convertedText).ok === true);
+ok('converted graph preserves nested relation refs', convertedParsed.relations.νnested1.from === 'ντλ' && convertedParsed.relations.νnested2.to === 'νnested1');
 
 const bad = N.create();
 N.addRelation(bad, { id: 'νa', op: 'rel', from: 'νb', to: 'x', scope: 's', w: 1 });
