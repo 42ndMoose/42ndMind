@@ -72,6 +72,7 @@
 
   function addNode(graph, value, kind) {
     const n = node(value, kind);
+    if (graph.relations[n.id]) return graph.nodes[n.id] || n;
     graph.nodes[n.id] = n;
     return n;
   }
@@ -85,6 +86,7 @@
     const r = relation(rel);
     if (!hasNodeOrRelation(graph, r.from)) addNode(graph, r.from, 'symbol');
     if (!hasNodeOrRelation(graph, r.to)) addNode(graph, r.to, 'symbol');
+    delete graph.nodes[r.id];
     graph.relations[r.id] = r;
     refresh(graph);
     return r;
