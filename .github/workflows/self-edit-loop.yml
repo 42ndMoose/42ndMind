@@ -25,31 +25,80 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run core tests
+      - name: Run core tests and capture status
         run: |
-          node tests/math-language-kernel-v0-1-test.js
-          node tests/discovery-core-v0-1-test.js
-          node tests/source-sandbox-v0-1-test.js
-          node tests/mathematical-patch-proposer-v0-1-test.js
-          node tests/operator-synthesis-core-v0-1-test.js
-          node tests/self-edit-loop-v0-1-test.js
-          node tests/intention-algebra-v0-1-test.js
-          node tests/language-parser-v0-1-test.js
-          node tests/nested-relation-core-v0-1-test.js
-          node tests/language-v0-1-conformance-test.js
-          node tests/truth-accounting-core-v0-1-test.js
+          set +e
+          mkdir -p artifacts
+          : > artifacts/core-test-log-v0-1.txt
+          status=0
+          for test in \
+            tests/math-language-kernel-v0-1-test.js \
+            tests/discovery-core-v0-1-test.js \
+            tests/source-sandbox-v0-1-test.js \
+            tests/mathematical-patch-proposer-v0-1-test.js \
+            tests/operator-synthesis-core-v0-1-test.js \
+            tests/self-edit-loop-v0-1-test.js \
+            tests/intention-algebra-v0-1-test.js \
+            tests/language-parser-v0-1-test.js \
+            tests/nested-relation-core-v0-1-test.js \
+            tests/language-v0-1-conformance-test.js \
+            tests/truth-accounting-core-v0-1-test.js
+          do
+            echo "## $test" | tee -a artifacts/core-test-log-v0-1.txt
+            node "$test" >> artifacts/core-test-log-v0-1.txt 2>&1
+            code=$?
+            echo "exit_code=$code" | tee -a artifacts/core-test-log-v0-1.txt
+            if [ "$code" -ne 0 ]; then status=$code; fi
+          done
+          printf '{\n  "core_tests_exit_code": %s,\n  "ok": %s\n}\n' "$status" "$([ "$status" -eq 0 ] && echo true || echo false)" > artifacts/core-test-status-v0-1.json
+          echo "CORE_TEST_STATUS=$status" >> "$GITHUB_ENV"
 
-      - name: Run whole-language self-edit loop
-        run: node scripts/run-self-edit-loop-v0-1.js
+      - name: Run whole-language self-edit loop and capture status
+        run: |
+          set +e
+          node scripts/run-self-edit-loop-v0-1.js > artifacts/self-edit-loop-console-v0-1.txt 2>&1
+          code=$?
+          printf '{\n  "self_edit_exit_code": %s,\n  "ok": %s\n}\n' "$code" "$([ "$code" -eq 0 ] && echo true || echo false)" > artifacts/self-edit-loop-status-v0-1.json
+          echo "SELF_EDIT_STATUS=$code" >> "$GITHUB_ENV"
 
-      - name: Run growth probe
-        run: node scripts/run-growth-probe-v0-1.js
+      - name: Run growth probe and capture status
+        run: |
+          set +e
+          node scripts/run-growth-probe-v0-1.js > artifacts/growth-probe-console-v0-1.txt 2>&1
+          code=$?
+          printf '{\n  "growth_probe_exit_code": %s,\n  "ok": %s\n}\n' "$code" "$([ "$code" -eq 0 ] && echo true || echo false)" > artifacts/growth-probe-status-v0-1.json
+          echo "GROWTH_PROBE_STATUS=$code" >> "$GITHUB_ENV"
 
-      - name: Run diagnostic probe
-        run: node scripts/run-diagnostic-probe-v0-1.js
+      - name: Run diagnostic probe and capture status
+        run: |
+          set +e
+          node scripts/run-diagnostic-probe-v0-1.js > artifacts/diagnostic-probe-console-v0-1.txt 2>&1
+          code=$?
+          printf '{\n  "diagnostic_probe_exit_code": %s,\n  "ok": %s\n}\n' "$code" "$([ "$code" -eq 0 ] && echo true || echo false)" > artifacts/diagnostic-probe-status-v0-1.json
+          echo "DIAGNOSTIC_PROBE_STATUS=$code" >> "$GITHUB_ENV"
+
+      - name: Ensure report placeholders exist
+        run: |
+          mkdir -p artifacts
+          for file in \
+            self-edit-loop-report-v0-1.json \
+            self-edit-loop-summary-v0-1.json \
+            growth-probe-report-v0-1.json \
+            growth-probe-summary-v0-1.json \
+            diagnostic-probe-report-v0-1.json \
+            diagnostic-probe-summary-v0-1.json
+          do
+            if [ ! -f "artifacts/$file" ]; then
+              printf '{\n  "missing": true,\n  "file": "%s"\n}\n' "$file" > "artifacts/$file"
+            fi
+          done
 
       - name: Print self-edit summary
         run: |
+          echo "## 42ndMind Core Test Status" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/core-test-status-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/self-edit-loop-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
@@ -66,16 +115,23 @@ jobs:
       - name: Publish latest report into repository
         run: |
           mkdir -p artifacts
+          cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
+          cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
+          cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
+          cp artifacts/growth-probe-status-v0-1.json artifacts/latest-growth-probe-status-v0-1.json
+          cp artifacts/diagnostic-probe-status-v0-1.json artifacts/latest-diagnostic-probe-status-v0-1.json
           cp artifacts/self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-report-v0-1.json
           cp artifacts/self-edit-loop-summary-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json
           cp artifacts/growth-probe-report-v0-1.json artifacts/latest-growth-probe-report-v0-1.json
           cp artifacts/growth-probe-summary-v0-1.json artifacts/latest-growth-probe-summary-v0-1.json
           cp artifacts/diagnostic-probe-report-v0-1.json artifacts/latest-diagnostic-probe-report-v0-1.json
           cp artifacts/diagnostic-probe-summary-v0-1.json artifacts/latest-diagnostic-probe-summary-v0-1.json
+          [ -f artifacts/diagnostic-kernel-logic-v0-1.json ] && cp artifacts/diagnostic-kernel-logic-v0-1.json artifacts/latest-diagnostic-kernel-logic-v0-1.json || true
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add artifacts/latest-self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json artifacts/latest-growth-probe-report-v0-1.json artifacts/latest-growth-probe-summary-v0-1.json artifacts/latest-diagnostic-probe-report-v0-1.json artifacts/latest-diagnostic-probe-summary-v0-1.json
-          git diff --cached --quiet || git commit -m "Update latest self-edit growth diagnostic reports [skip ci]"
+          git add artifacts/latest-*.json artifacts/latest-core-test-log-v0-1.txt
+          git diff --cached --quiet || git commit -m "Update latest self-edit diagnostics [skip ci]"
+          git pull --rebase || true
           git push
 
       - name: Upload self-edit reports
@@ -83,9 +139,14 @@ jobs:
         with:
           name: self-edit-loop-reports-v0-1
           path: |
-            artifacts/self-edit-loop-report-v0-1.json
-            artifacts/self-edit-loop-summary-v0-1.json
-            artifacts/growth-probe-report-v0-1.json
-            artifacts/growth-probe-summary-v0-1.json
-            artifacts/diagnostic-probe-report-v0-1.json
-            artifacts/diagnostic-probe-summary-v0-1.json
+            artifacts/*-v0-1.json
+            artifacts/*-v0-1.txt
+
+      - name: Fail if captured status failed
+        run: |
+          status=0
+          [ "${CORE_TEST_STATUS:-0}" -eq 0 ] || status=${CORE_TEST_STATUS}
+          [ "${SELF_EDIT_STATUS:-0}" -eq 0 ] || status=${SELF_EDIT_STATUS}
+          [ "${GROWTH_PROBE_STATUS:-0}" -eq 0 ] || status=${GROWTH_PROBE_STATUS}
+          [ "${DIAGNOSTIC_PROBE_STATUS:-0}" -eq 0 ] || status=${DIAGNOSTIC_PROBE_STATUS}
+          exit "$status"
