@@ -42,18 +42,28 @@ jobs:
       - name: Run whole-language self-edit loop
         run: node scripts/run-self-edit-loop-v0-1.js
 
+      - name: Print self-edit summary
+        run: |
+          echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/self-edit-loop-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Publish latest report into repository
         run: |
           mkdir -p artifacts
           cp artifacts/self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-report-v0-1.json
+          cp artifacts/self-edit-loop-summary-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add artifacts/latest-self-edit-loop-report-v0-1.json
-          git diff --cached --quiet || git commit -m "Update latest self-edit loop report [skip ci]"
+          git add artifacts/latest-self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json
+          git diff --cached --quiet || git commit -m "Update latest self-edit loop reports [skip ci]"
           git push
 
-      - name: Upload self-edit report
+      - name: Upload self-edit reports
         uses: actions/upload-artifact@v4
         with:
-          name: self-edit-loop-report-v0-1
-          path: artifacts/self-edit-loop-report-v0-1.json
+          name: self-edit-loop-reports-v0-1
+          path: |
+            artifacts/self-edit-loop-report-v0-1.json
+            artifacts/self-edit-loop-summary-v0-1.json
