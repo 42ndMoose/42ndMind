@@ -14,6 +14,7 @@ The active source files are:
 src/math-language-kernel-v0-1.js
 src/discovery-core-v0-1.js
 src/source-sandbox-v0-1.js
+src/self-edit-loop-v0-1.js
 src/intention-algebra-v0-1.js
 src/language-parser-v0-1.js
 src/nested-relation-core-v0-1.js
@@ -26,6 +27,7 @@ The active verification files are:
 tests/math-language-kernel-v0-1-test.js
 tests/discovery-core-v0-1-test.js
 tests/source-sandbox-v0-1-test.js
+tests/self-edit-loop-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
 tests/nested-relation-core-v0-1-test.js
@@ -64,6 +66,7 @@ Every active subdivision is also unit-total:
 ∥ν∥₁ = 1
 ∥θ∥₁ = 1
 ∥Ωd∥₁ = 1
+∥ΩL∥₁ = 1
 ```
 
 Where:
@@ -79,6 +82,7 @@ Where:
 ν = nested relation field
 θ = truth-accounting field
 Ωd = discovery state field
+ΩL = whole-language self-edit state field
 Ω = whole active math state
 Ξ = English output channel
 ```
@@ -96,6 +100,7 @@ Current flow:
 ```text
 Σ raw input
   -> Ωd discovery
+  -> ΩL whole-language stack calculation
   -> sandboxed source mutation proposal
   -> tests and validators
   -> accepted virtual state or rejected chaos report
@@ -122,35 +127,35 @@ It does not define meanings. It observes raw streams, compresses repeated struct
 Σ -> α -> π -> Δ -> β -> ν -> χ/υ -> Ωd
 ```
 
-Where:
-
-```text
-α = observation field
-π = pattern pressure field
-Δ = candidate distinction field
-β = born symbol field
-ν = relation field
-χ = contradiction field
-υ = unknown field
-Ωd = discovery state field
-```
-
-## Source sandbox
+## Source sandbox and self-edit loop
 
 The source sandbox is the protected self-edit layer.
 
-It simulates source mutation inside a virtual file map. It does not write real repository files. A proposal must pass tests and validators before it is accepted into the virtual state.
+The self-edit loop calculates the whole declared language stack as one unit-total state, detects manifest-level gaps, generates one batch proposal, simulates the proposal in the virtual source sandbox, runs tests and validators, and returns a full accepted/rejected report.
 
 ```text
 base source
-  -> virtual source
-  -> mutation proposal
-  -> sandbox simulation
+  -> whole-language field ΩL
+  -> gap field Γ
+  -> batch mutation proposal
+  -> virtual source simulation
   -> tests / validators
   -> accepted virtual state OR rejected chaos report
 ```
 
 Real source patching remains outside the sandbox and requires an external write gate.
+
+Run the loop locally:
+
+```bash
+node scripts/run-self-edit-loop-v0-1.js
+```
+
+It writes:
+
+```text
+artifacts/self-edit-loop-report-v0-1.json
+```
 
 ## Intention algebra
 
@@ -262,47 +267,9 @@ node tests/language-v0-1-conformance-test.js
 ## Main API
 
 ```js
-const K = require('./src/math-language-kernel-v0-1.js');
-const D = require('./src/discovery-core-v0-1.js');
-const X = require('./src/source-sandbox-v0-1.js');
-const I = require('./src/intention-algebra-v0-1.js');
-const P = require('./src/language-parser-v0-1.js');
-const N = require('./src/nested-relation-core-v0-1.js');
-const T = require('./src/truth-accounting-core-v0-1.js');
-
-const d = D.create();
-D.observe(d, 'abababab cdcdcdcd ababab cdcdcdcd');
-
-const sandbox = X.create({
-  'src/core.js': 'module.exports = { value: () => 1 };',
-  'tests/core-test.js': "const assert = require('assert'); const core = require('../src/core.js'); assert.strictEqual(core.value(), 1);"
-});
-
-const report = X.simulate(sandbox, {
-  id: 'example_mutation',
-  operations: [{ type: 'patch', path: 'src/core.js', from: '1', to: '1' }]
-}, ['tests/core-test.js']);
-
-const s = K.create();
-K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
-const p = K.packet(s);
-const i = I.compute(p);
-const text = P.serialize(P.fromKernelPacket(p));
-const graph = N.fromKernelPacket(p);
-const claim = T.create({ support: 1, no_contradiction: 1, no_unknown: 1, scope_ok: 1, definition_ok: 1, observation_ok: 1, measurement_ok: 1 });
-console.log({ discovery: D.packet(d), sandbox: report.accepted, i, text, graphText: N.serialize(graph), truth: claim.truth_gate.true, roundTrip: P.roundTrip(text).same });
-```
-
-Browser global:
-
-```js
-window.FortySecondMindMathLanguageKernel
-window.FortySecondMindDiscoveryCore
-window.FortySecondMindSourceSandbox
-window.FortySecondMindIntentionAlgebra
-window.FortySecondMindLanguageParser
-window.FortySecondMindNestedRelationCore
-window.FortySecondMindTruthAccountingCore
+const L = require('./src/self-edit-loop-v0-1.js');
+const report = L.run(files, { rawInput: '...' });
+console.log(report.accepted, report.state.fields.ΩL, report.sandbox_report.chaos);
 ```
 
 ## Run verification
@@ -311,6 +278,7 @@ window.FortySecondMindTruthAccountingCore
 node tests/math-language-kernel-v0-1-test.js
 node tests/discovery-core-v0-1-test.js
 node tests/source-sandbox-v0-1-test.js
+node tests/self-edit-loop-v0-1-test.js
 node tests/intention-algebra-v0-1-test.js
 node tests/language-parser-v0-1-test.js
 node tests/nested-relation-core-v0-1-test.js
