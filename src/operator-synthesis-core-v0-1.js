@@ -68,7 +68,7 @@
     const failures = [];
     A(report && report.tests).forEach(item => { if (!item.ok) failures.push({ kind: 'test', id: item.path, text: text(item.error || item.logs || item) }); });
     A(report && report.validators).forEach(item => { if (!item.ok) failures.push({ kind: 'validator', id: item.id, text: text(item.error || item) }); });
-    A(report && report.chaos).forEach(item => failures.push({ kind: 'chaos', id: String(item), text: String(item) }));
+    A(report && report.chaos).forEach(item => failures.push({ kind: 'diagnostic', id: String(item), text: String(item) }));
     if (report && report.error) failures.push({ kind: 'blocked', id: 'blocked', text: text(report.error) });
     return failures;
   }
@@ -80,18 +80,46 @@
     return [{ id: 'unknown_failure', match: '', op: 'unknown_gap_operator', target: 'unclassified', w: 0.05 }];
   }
 
+  function diagnosticPath(failure) {
+    const id = String(failure && failure.id || '');
+    const match = /^test_failed:(.+)$/.exec(id);
+    return match ? match[1] : null;
+  }
+
+  function classifiedTestPaths(classified) {
+    const paths = {};
+    A(classified).forEach(item => {
+      if (item.failure && item.failure.kind === 'test' && item.rules.some(rule => rule.id !== 'unknown_failure')) {
+        paths[item.failure.id] = true;
+      }
+    });
+    return paths;
+  }
+
+  function classifyAll(failures) {
+    const classified = A(failures).map(failure => ({ failure, rules: classifyFailure(failure) }));
+    const coveredTests = classifiedTestPaths(classified);
+    return classified.filter(item => {
+      const path = diagnosticPath(item.failure);
+      if (!path) return true;
+      const onlyUnknown = item.rules.length === 1 && item.rules[0].id === 'unknown_failure';
+      return !(onlyUnknown && coveredTests[path]);
+    });
+  }
+
   function synthesize(report, context) {
     const failures = collectFailures(report);
+    const classified = classifyAll(failures);
     const candidates = [];
-    failures.forEach(failure => {
-      classifyFailure(failure).forEach(rule => {
+    classified.forEach(item => {
+      item.rules.forEach(rule => {
         candidates.push({
-          id: 'ω' + checksum({ failure, rule }).slice(0, 10),
+          id: 'ω' + checksum({ failure: item.failure, rule }).slice(0, 10),
           rule: rule.id,
           operator: rule.op,
           target: rule.target,
-          source_failure: failure.id,
-          failure_kind: failure.kind,
+          source_failure: item.failure.id,
+          failure_kind: item.failure.kind,
           support: rule.w || 0.05,
           implementation_status: 'candidate_not_implemented'
         });
@@ -107,8 +135,9 @@
     return {
       packet_type: '42ndMind_operator_synthesis_v0_1',
       version: VERSION,
-      id: 'Ωω' + checksum({ failures, context }).slice(0, 10),
+      id: 'Ωω' + checksum({ failures, classified, context }).slice(0, 10),
       failures,
+      classified_failures: classified.map(item => ({ failure: item.failure, rules: item.rules.map(rule => rule.id) })),
       candidates,
       fields: { Ωω, Γω },
       unit: { Ωω: l1(Ωω), Γω: l1(Γω), ok: Math.abs(l1(Ωω) - 1) < EPS && Math.abs(l1(Γω) - 1) < EPS },
@@ -132,6 +161,7 @@
     SIGNATURE_RULES: C(SIGNATURE_RULES),
     collectFailures,
     classifyFailure,
+    classifyAll,
     synthesize,
     toFixture,
     normalize,
