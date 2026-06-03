@@ -42,11 +42,18 @@ jobs:
       - name: Run whole-language self-edit loop
         run: node scripts/run-self-edit-loop-v0-1.js
 
+      - name: Run growth probe
+        run: node scripts/run-growth-probe-v0-1.js
+
       - name: Print self-edit summary
         run: |
           echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/self-edit-loop-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Growth Probe Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/growth-probe-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish latest report into repository
@@ -54,10 +61,12 @@ jobs:
           mkdir -p artifacts
           cp artifacts/self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-report-v0-1.json
           cp artifacts/self-edit-loop-summary-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json
+          cp artifacts/growth-probe-report-v0-1.json artifacts/latest-growth-probe-report-v0-1.json
+          cp artifacts/growth-probe-summary-v0-1.json artifacts/latest-growth-probe-summary-v0-1.json
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add artifacts/latest-self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json
-          git diff --cached --quiet || git commit -m "Update latest self-edit loop reports [skip ci]"
+          git add artifacts/latest-self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json artifacts/latest-growth-probe-report-v0-1.json artifacts/latest-growth-probe-summary-v0-1.json
+          git diff --cached --quiet || git commit -m "Update latest self-edit and growth reports [skip ci]"
           git push
 
       - name: Upload self-edit reports
@@ -67,3 +76,5 @@ jobs:
           path: |
             artifacts/self-edit-loop-report-v0-1.json
             artifacts/self-edit-loop-summary-v0-1.json
+            artifacts/growth-probe-report-v0-1.json
+            artifacts/growth-probe-summary-v0-1.json
