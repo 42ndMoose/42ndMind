@@ -1,5 +1,6 @@
 const assert = require('assert');
 const L = require('../src/self-edit-loop-v0-1.js');
+const M = require('../src/mathematical-patch-proposer-v0-1.js');
 
 const rows = [];
 function ok(name, condition) {
@@ -7,9 +8,11 @@ function ok(name, condition) {
   assert.ok(condition, name);
 }
 
-function moduleSource(needle) {
-  const fn = String(needle).replace(/[^a-z0-9_]/gi, '_');
-  return "function " + fn + "(){ return true; } module.exports = { VERSION: '0.1.0', " + fn + " };";
+function moduleSource(needles) {
+  const unique = Array.from(new Set((needles || ['ok']).map(String)));
+  const fns = unique.map(needle => String(needle).replace(/[^a-z0-9_]/gi, '_')).filter(Boolean);
+  const body = fns.map(fn => 'function ' + fn + '(){ return true; }').join('\n');
+  return body + '\nmodule.exports = { VERSION: \'0.1.0\', ' + fns.join(', ') + ' };\n' + unique.join('\n');
 }
 
 function moduleTest(sourcePath) {
@@ -17,24 +20,29 @@ function moduleTest(sourcePath) {
   return "const assert = require('assert'); const M = require('../" + sourcePath + "'); assert.strictEqual(M.VERSION, '0.1.0');";
 }
 
-const completeFiles = {};
-L.DEFAULT_MANIFEST.forEach(layer => {
-  const requiredNeedles = {
-    'src/math-language-kernel-v0-1.js': 'normalize',
-    'src/discovery-core-v0-1.js': 'birth',
-    'src/source-sandbox-v0-1.js': 'simulate',
-    'src/self-edit-loop-v0-1.js': 'wholeState',
-    'src/mathematical-patch-proposer-v0-1.js': 'propose',
-    'src/operator-synthesis-core-v0-1.js': 'synthesize',
-    'src/language-parser-v0-1.js': 'roundTrip',
-    'src/intention-algebra-v0-1.js': 'compute',
-    'src/nested-relation-core-v0-1.js': 'relationDepth',
-    'src/truth-accounting-core-v0-1.js': 'truth_gate',
-    'tests/fixtures/language-v0-1/conformance-fixtures.json': 'validPackets'
-  };
-  completeFiles[layer.source] = layer.source.endsWith('.json') ? '{"validPackets":[],"invalidPackets":[]}' : moduleSource(requiredNeedles[layer.source] || 'ok');
-  completeFiles[layer.test] = moduleTest(layer.source);
-});
+function completeFixtureJsonFor(path) {
+  const needles = M.REQUIRED_AXES.filter(axis => axis.file === path).map(axis => axis.needle);
+  const data = { validPackets: [], invalidPackets: [], markers: needles };
+  return JSON.stringify(data);
+}
+
+function buildCompleteFiles() {
+  const files = {};
+  const needlesByFile = {};
+  M.REQUIRED_AXES.forEach(axis => {
+    if (!needlesByFile[axis.file]) needlesByFile[axis.file] = [];
+    needlesByFile[axis.file].push(axis.needle);
+  });
+
+  L.DEFAULT_MANIFEST.forEach(layer => {
+    const needles = needlesByFile[layer.source] || ['ok'];
+    files[layer.source] = layer.source.endsWith('.json') ? completeFixtureJsonFor(layer.source) : moduleSource(needles);
+    files[layer.test] = moduleTest(layer.source);
+  });
+  return files;
+}
+
+const completeFiles = buildCompleteFiles();
 
 ok('self-edit loop loads', L.VERSION === '0.1.0');
 const completeState = L.wholeState(completeFiles, 'abababab cdcdcdcd');
