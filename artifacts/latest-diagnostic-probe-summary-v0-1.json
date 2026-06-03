@@ -35,9 +35,13 @@
       "𝒩": "unit-total normalization by L1 magnitude",
       "Δ": "normalized gap field over measurable mismatch axes",
       "δ": "expected-actual discrepancy field",
-      "T": "local unit-preserving correction transform"
+      "T": "local unit-preserving correction transform",
+      "C": "finite one-step closure over fields, gaps, and transforms",
+      "≡": "canonical equivalence relation",
+      "⊢": "invariant-preserving proof gate",
+      "G": "grounding status packet"
     },
-    "invariant_count": 5,
+    "invariant_count": 6,
     "invariant_field_unit": 1,
     "valid_field_ok": true,
     "invalid_unit_field_ok": false,
@@ -139,7 +143,7 @@
       },
       "after": {
         "φ": "Δ",
-        "ω": "Δ?",
+        "ω": "∅",
         "score": 0,
         "z": {
           "Δσ": 0,
@@ -176,7 +180,7 @@
           "T": "Tw",
           "cost": 0.13,
           "score": 0.13,
-          "ω": "Δ?",
+          "ω": "∅",
           "z": {
             "Δσ": 0,
             "Δw": 0,
