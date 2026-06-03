@@ -147,10 +147,30 @@
     return graph;
   }
 
+  function relationOrder(graph) {
+    const ordered = [];
+    const temp = {};
+    const done = {};
+    const keys = Object.keys(graph.relations || {}).sort();
+    function visit(rid) {
+      if (done[rid]) return;
+      if (temp[rid]) return;
+      const r = graph.relations[rid];
+      if (!r) return;
+      temp[rid] = true;
+      if (graph.relations[r.from]) visit(r.from);
+      if (graph.relations[r.to]) visit(r.to);
+      done[rid] = true;
+      ordered.push(rid);
+    }
+    keys.forEach(visit);
+    return ordered;
+  }
+
   function serialize(graph) {
     refresh(graph);
     const nodePart = Object.keys(graph.nodes).sort().map(key => key + ':' + graph.nodes[key].kind).join(',');
-    const relationPart = Object.keys(graph.relations).sort().map(key => {
+    const relationPart = relationOrder(graph).map(key => {
       const r = graph.relations[key];
       return r.id + '(' + r.op + ',' + r.from + ',' + r.to + ',' + r.scope + ',' + R(r.w) + ')';
     }).join(';');
