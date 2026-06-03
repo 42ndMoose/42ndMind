@@ -85,6 +85,54 @@
     return (hash >>> 0).toString(16);
   }
 
+  function scalar(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function scalarOk(value) {
+    return Number.isFinite(Number(value));
+  }
+
+  function unitGap(value) {
+    if (Array.isArray(value)) return Math.abs(l1(value) - 1);
+    if (scalarOk(value)) return Math.abs(Math.abs(scalar(value)) - 1);
+    return 1;
+  }
+
+  function dominant(field) {
+    const rows = A(field).slice().sort((a, b) => Math.abs(rowWeight(b)) - Math.abs(rowWeight(a)) || rowAxis(a).localeCompare(rowAxis(b)));
+    return rows.length ? rowAxis(rows[0]) : '∅';
+  }
+
+  function discrepancy(expected, actual, scope) {
+    const eOk = scalarOk(expected);
+    const aOk = scalarOk(actual);
+    const e = scalar(expected);
+    const a = scalar(actual);
+    const contractGap = eOk && aOk ? Math.abs(e - a) : 1;
+    const totalGap = unitGap(actual);
+    const measureGap = eOk && aOk ? 0 : 1;
+    const δ = normalize([
+      ['δ=', Math.max(EPS, contractGap)],
+      ['δ∥', Math.max(EPS, totalGap)],
+      ['δ?', Math.max(EPS, measureGap)]
+    ]);
+    return {
+      φ: 'δ',
+      v: VERSION,
+      s: scope == null ? '∅' : String(scope),
+      e: C(expected),
+      a: C(actual),
+      δ,
+      ω: dominant(δ),
+      u: { δ: l1(δ), ok: Math.abs(l1(δ) - 1) < EPS },
+      z: { 'δ=': R(contractGap), 'δ∥': R(totalGap), 'δ?': R(measureGap) },
+      χ: ['δ=|e-a|', 'δ∥=|1-∥a∥₁|', 'δ=𝒩(δ=⊕δ∥⊕δ?)'],
+      Ξ: ''
+    };
+  }
+
   function countMap(list) {
     const out = {};
     A(list).forEach(item => { out[item] = (out[item] || 0) + 1; });
@@ -259,6 +307,7 @@
       '∥λ∥₁=1',
       '∥ι∥₁=1',
       '∥Ω∥₁=1',
+      'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)',
       'λ=𝒩(τ⊕ρ⊕μ⊕ε)',
       'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)',
       'Ω=𝒩(λ⊕ι⊕ε⊕κ)'
@@ -347,6 +396,7 @@
     blend,
     distance,
     entropy,
+    discrepancy,
     rebalance,
     unitReport
   });
