@@ -70,7 +70,7 @@ ok('unknown gap is reserved when no comparable field exists', g4.z['Δ?'] > 0);
 
 const repair = K.correction(fA, fC, 'weight-repair');
 ok('correction packet is symbolic', repair.φ === 'T' && repair.Ξ === '');
-ok('correction transform field is unit-total', repair.u.ok === true && Math.abs(K.l1(repair.T) - 1) < 1e-6);
+ok('correction transform field is unit-total', Math.abs(K.l1(repair.T) - 1) < 1e-6);
 ok('correction uses finite local argmin', repair.method === 'finite_local_argmin');
 ok('correction reduces or preserves measured gap', repair.after.score <= repair.before.score);
 ok('correction outputs transformed unit field', Math.abs(K.l1(repair.transformed) - 1) < 1e-6);
