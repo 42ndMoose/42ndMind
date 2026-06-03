@@ -15,7 +15,7 @@ jobs:
   self-edit-loop:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,6 +41,16 @@ jobs:
 
       - name: Run whole-language self-edit loop
         run: node scripts/run-self-edit-loop-v0-1.js
+
+      - name: Publish latest report into repository
+        run: |
+          mkdir -p artifacts
+          cp artifacts/self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-report-v0-1.json
+          git config user.name "42ndMind Bot"
+          git config user.email "actions@github.com"
+          git add artifacts/latest-self-edit-loop-report-v0-1.json
+          git diff --cached --quiet || git commit -m "Update latest self-edit loop report [skip ci]"
+          git push
 
       - name: Upload self-edit report
         uses: actions/upload-artifact@v4
