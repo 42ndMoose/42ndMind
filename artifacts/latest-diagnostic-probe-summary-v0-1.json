@@ -27,24 +27,215 @@
       "source_failure": "tests/diagnostic-probe-v0-1-test.js"
     }
   ],
-  "kernel_discrepancy": {
-    "φ": "δ",
-    "ω": "δ=",
-    "z": {
-      "δ=": 1,
-      "δ∥": 0,
-      "δ?": 0
+  "kernel_logic": {
+    "definitions": {
+      "σ": "axis identity inside a finite symbolic field",
+      "w": "signed finite scalar weight assigned to σ before or after 𝒩",
+      "χ": "constraint row that must remain stable under accepted transformations",
+      "𝒩": "unit-total normalization by L1 magnitude",
+      "Δ": "normalized gap field over measurable mismatch axes",
+      "δ": "expected-actual discrepancy field",
+      "T": "local unit-preserving correction transform"
     },
-    "u": {
-      "δ": 1,
-      "ok": true
+    "invariant_count": 5,
+    "invariant_field_unit": 1,
+    "valid_field_ok": true,
+    "invalid_unit_field_ok": false,
+    "discrepancy": {
+      "φ": "δ",
+      "ω": "δ=",
+      "z": {
+        "δ=": 1,
+        "δ∥": 0,
+        "δ?": 0
+      },
+      "u": {
+        "δ": 1,
+        "ok": true
+      },
+      "χ": [
+        "δ=|e-a|",
+        "δ∥=|1-∥a∥₁|",
+        "δ=𝒩(δ=⊕δ∥⊕δ?)"
+      ],
+      "Ξ": ""
     },
-    "χ": [
-      "δ=|e-a|",
-      "δ∥=|1-∥a∥₁|",
-      "δ=𝒩(δ=⊕δ∥⊕δ?)"
-    ],
-    "Ξ": ""
+    "weight_gap": {
+      "φ": "Δ",
+      "ω": "Δw",
+      "score": 0.25,
+      "z": {
+        "Δσ": 0,
+        "Δw": 0.25,
+        "Δ∥": 0,
+        "Δχ": 0,
+        "Δ?": 0
+      },
+      "u": {
+        "Δ": 1,
+        "ok": true
+      },
+      "χ": [
+        "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+        "Δσ=axis gap",
+        "Δw=weight gap",
+        "Δ∥=unit gap",
+        "Δχ=invariant gap"
+      ],
+      "Ξ": ""
+    },
+    "axis_gap": {
+      "φ": "Δ",
+      "ω": "Δσ",
+      "score": 0.533333,
+      "z": {
+        "Δσ": 0.333333,
+        "Δw": 0.2,
+        "Δ∥": 0,
+        "Δχ": 0,
+        "Δ?": 0
+      },
+      "u": {
+        "Δ": 1,
+        "ok": true
+      },
+      "χ": [
+        "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+        "Δσ=axis gap",
+        "Δw=weight gap",
+        "Δ∥=unit gap",
+        "Δχ=invariant gap"
+      ],
+      "Ξ": ""
+    },
+    "correction": {
+      "φ": "T",
+      "method": "finite_local_argmin",
+      "chosen": "Tw",
+      "reduced": true,
+      "before": {
+        "φ": "Δ",
+        "ω": "Δw",
+        "score": 0.25,
+        "z": {
+          "Δσ": 0,
+          "Δw": 0.25,
+          "Δ∥": 0,
+          "Δχ": 0,
+          "Δ?": 0
+        },
+        "u": {
+          "Δ": 1,
+          "ok": true
+        },
+        "χ": [
+          "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+          "Δσ=axis gap",
+          "Δw=weight gap",
+          "Δ∥=unit gap",
+          "Δχ=invariant gap"
+        ],
+        "Ξ": ""
+      },
+      "after": {
+        "φ": "Δ",
+        "ω": "Δ?",
+        "score": 0,
+        "z": {
+          "Δσ": 0,
+          "Δw": 0,
+          "Δ∥": 0,
+          "Δχ": 0,
+          "Δ?": 0
+        },
+        "u": {
+          "Δ": 1,
+          "ok": true
+        },
+        "χ": [
+          "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+          "Δσ=axis gap",
+          "Δw=weight gap",
+          "Δ∥=unit gap",
+          "Δχ=invariant gap"
+        ],
+        "Ξ": ""
+      },
+      "transformed": [
+        {
+          "σ": "a",
+          "w": 0.25
+        },
+        {
+          "σ": "b",
+          "w": 0.75
+        }
+      ],
+      "candidates": [
+        {
+          "T": "Tw",
+          "cost": 0.13,
+          "score": 0.13,
+          "ω": "Δ?",
+          "z": {
+            "Δσ": 0,
+            "Δw": 0,
+            "Δ∥": 0,
+            "Δχ": 0,
+            "Δ?": 0
+          }
+        },
+        {
+          "T": "T0",
+          "cost": 0,
+          "score": 0.25,
+          "ω": "Δw",
+          "z": {
+            "Δσ": 0,
+            "Δw": 0.25,
+            "Δ∥": 0,
+            "Δχ": 0,
+            "Δ?": 0
+          }
+        },
+        {
+          "T": "T∥",
+          "cost": 0.02,
+          "score": 0.27,
+          "ω": "Δw",
+          "z": {
+            "Δσ": 0,
+            "Δw": 0.25,
+            "Δ∥": 0,
+            "Δχ": 0,
+            "Δ?": 0
+          }
+        },
+        {
+          "T": "Tσ",
+          "cost": 0.08,
+          "score": 0.33,
+          "ω": "Δw",
+          "z": {
+            "Δσ": 0,
+            "Δw": 0.25,
+            "Δ∥": 0,
+            "Δχ": 0,
+            "Δ?": 0
+          }
+        }
+      ],
+      "u": {
+        "T": 1,
+        "ok": true
+      },
+      "χ": [
+        "T*=argmin(score(Δ(T(F),G))+cost(T))",
+        "∥T(F)∥₁=1",
+        "Ξ=\"\""
+      ],
+      "Ξ": ""
+    }
   },
   "operations": [
     {
@@ -76,7 +267,7 @@
   "failed_tests": [
     {
       "path": "tests/diagnostic-probe-v0-1-test.js",
-      "error": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:42:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:85:30)"
+      "error": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:71:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:143:30)"
     }
   ]
 }

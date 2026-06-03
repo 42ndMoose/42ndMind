@@ -1,0 +1,204 @@
+## tests/math-language-kernel-v0-1-test.js
+node:internal/assert/utils:281
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: unit gap is measured
+    at ok (/home/runner/work/42ndMind/42ndMind/tests/math-language-kernel-v0-1-test.js:7:10)
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/math-language-kernel-v0-1-test.js:64:1)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '=='
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/discovery-core-v0-1-test.js
+PASS discovery core loads
+PASS initial discovery state is unit-total
+PASS initial output has no English
+PASS observation creates candidates
+PASS observation can birth symbols
+PASS observation creates fields
+PASS observation keeps discovery state unit-total
+PASS packet is symbolic only
+PASS repeated observation preserves or grows symbol set
+PASS relations are tracked as unit field
+PASS trace records discovery count
+PASS irregular stream tolerated
+PASS irregular stream does not require English
+PASS unknown field remains unit-total
+exit_code=0
+## tests/source-sandbox-v0-1-test.js
+PASS sandbox loads
+PASS sandbox starts with virtual copy
+PASS sandbox has no English output channel
+PASS bad mutation is rejected
+PASS bad mutation reports failed test
+PASS bad mutation does not change virtual source
+PASS good mutation is accepted in sandbox
+PASS good mutation changes virtual source only
+PASS base source remains unchanged
+PASS accepted report exports patch summary
+PASS delete is blocked by policy
+PASS blocked proposal reports chaos
+PASS reset restores virtual source
+exit_code=0
+## tests/mathematical-patch-proposer-v0-1-test.js
+PASS mathematical patch proposer loads
+PASS complete source has no gaps
+PASS complete source has unit patch fields
+PASS complete source decision is no_action
+PASS complete source keeps English empty
+PASS missing source creates gaps
+PASS patch has normalized gap field
+PASS patch has normalized patch field
+PASS patch emits proposal operations for missing files
+PASS patch proposal is symbolic packet
+PASS patch has machine decision
+PASS patch proposal can be sandbox simulated
+PASS sandbox virtual source receives missing file
+PASS base source remains unchanged
+PASS operator gap is detected
+PASS operator gap requires implementation
+PASS operator gap does not hallucinate source operations
+exit_code=0
+## tests/operator-synthesis-core-v0-1-test.js
+PASS operator synthesis core loads
+PASS failures are collected
+PASS synthesis packet exists
+PASS operator candidates are generated
+PASS unit fields are preserved
+PASS decision is candidate-ready
+PASS missing module becomes operator candidate
+PASS unit failure becomes operator candidate
+PASS english channel is empty
+PASS fixture can be produced
+PASS clean report has no failures decision
+PASS clean report remains unit-total
+exit_code=0
+## tests/self-edit-loop-v0-1-test.js
+PASS self-edit loop loads
+PASS whole language state is unit-total
+PASS complete files have no manifest gaps
+PASS complete files have no mathematical gaps
+PASS whole language fields are unit-total
+PASS complete run accepted artifact-only proposal
+PASS complete run exports self-edit artifact in virtual source
+PASS complete run exports mathematical patch artifact in virtual source
+PASS complete run includes mathematical patch packet
+PASS complete run keeps English empty
+PASS missing files produce manifest gaps
+PASS missing files produce mathematical gaps
+PASS missing run proposes mathematical operations
+PASS missing run proposes gap-filling operations
+PASS missing run accepted virtual scaffold proposal
+PASS missing run does not mutate base source
+PASS missing run mutates virtual source
+PASS accepted scaffold repair has truth accounting output
+exit_code=0
+## tests/intention-algebra-v0-1-test.js
+PASS intention algebra loads
+PASS intention result is unit-total
+PASS intention result has no English
+PASS classification has no English
+PASS computed intention remains unit-total after repeated pattern stream
+PASS apply writes state intention field
+PASS apply writes intention algebra packet
+PASS lambda input was included
+PASS tau input was included
+PASS mu input was included
+PASS formula is explicit
+PASS irregular stream intention remains unit-total
+PASS new stream produces measurable intention distance
+PASS result remains symbolic only
+PASS manual packet computes
+PASS manual packet stays unit-total
+exit_code=0
+## tests/language-parser-v0-1-test.js
+PASS parser loads
+PASS parse returns omega packet
+PASS parse keeps English empty
+PASS all required fields exist
+PASS parsed fields are unit-total
+PASS serialize returns packet wrapper
+PASS round trip is stable
+PASS round trip keeps unit totals
+PASS validation passes valid source
+PASS validation rejects invalid source
+PASS kernel packet converts to language packet
+PASS kernel packet serializes
+PASS kernel packet reparses
+PASS kernel packet round trip is stable
+PASS missing fields fail by default
+PASS missing fields can be filled in loose mode
+exit_code=0
+## tests/nested-relation-core-v0-1-test.js
+PASS nested relation core loads
+PASS relations can point to relations
+PASS nested count sees nested relations
+PASS relation depth increases through nesting
+PASS relation field is unit-total
+PASS graph has no English output
+PASS graph validates
+PASS nested graph serializes
+PASS nested graph round trips
+PASS round trip validates
+PASS parser restores nested relation
+PASS parser preserves unit field
+PASS kernel packet converts to nested graph
+PASS converted graph has nested relations
+PASS converted graph is unit-total
+PASS converted graph serializes and validates
+PASS converted graph preserves nested relation refs
+PASS cycles are rejected by validation
+exit_code=0
+## tests/language-v0-1-conformance-test.js
+PASS fixture version matches parser
+PASS valid packet accepted: single-row canonical packet
+PASS valid packet round trip: single-row canonical packet
+PASS canonical packet matches fixture: single-row canonical packet
+PASS valid packet accepted: weighted language intention packet
+PASS valid packet round trip: weighted language intention packet
+PASS invalid packet rejected: not an omega packet
+PASS invalid packet rejected: missing required fields
+PASS invalid packet rejected: duplicate field
+PASS invalid packet rejected: invalid row weight
+PASS valid nested graph accepted: relation points to relation
+PASS valid nested graph round trip: relation points to relation
+PASS valid nested graph has unit relation field: relation points to relation
+PASS valid nested graph accepted: relation between two relations
+PASS valid nested graph round trip: relation between two relations
+PASS valid nested graph has unit relation field: relation between two relations
+PASS invalid nested graph rejected: cycle between relations
+PASS invalid nested graph rejected: malformed nested graph
+PASS intention fixture computes: manual intention packet
+PASS intention fixture l1: manual intention packet
+PASS intention fixture english empty: manual intention packet
+exit_code=0
+## tests/truth-accounting-core-v0-1-test.js
+PASS truth accounting core loads
+PASS closed claim has unit fields
+PASS closed claim opens truth gate
+PASS closed claim theta true is one
+PASS closed claim has no English
+PASS unknown claim remains unit-total
+PASS unknown claim does not open truth gate
+PASS unknown claim is unresolved
+PASS contradicted claim remains unit-total
+PASS contradicted claim does not open truth gate
+PASS contradicted claim is contested
+PASS scope error blocks truth
+PASS definition/observation/measurement channels exist
+PASS old truth pressure ports into math claim
+PASS old truth pressure does not auto-promote truth
+PASS serialized truth packet exists
+exit_code=0
