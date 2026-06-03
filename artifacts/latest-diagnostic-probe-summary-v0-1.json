@@ -7,10 +7,10 @@
   },
   "gap_count": 0,
   "mathematical_gap_count": 0,
-  "operator_candidate_count": 3,
+  "operator_candidate_count": 2,
   "operator_decision": {
     "code": "operator_candidates_ready",
-    "confidence": 0.69,
+    "confidence": 0.61,
     "summary": "Failed simulations produced candidate algebraic operators. They are not source patches yet; they are operator candidates for the next sandbox proposal."
   },
   "operator_candidates": [
@@ -25,20 +25,14 @@
       "target": "field_normalization",
       "rule": "unit_failed",
       "source_failure": "tests/diagnostic-probe-v0-1-test.js"
-    },
-    {
-      "operator": "unknown_gap_operator",
-      "target": "unclassified",
-      "rule": "unknown_failure",
-      "source_failure": "test_failed:tests/diagnostic-probe-v0-1-test.js"
     }
   ],
   "realization_decision": {
-    "code": "plan_needs_classification",
-    "confidence": 0.72,
-    "summary": "A realization plan exists, but at least one candidate needs classification."
+    "code": "plan_ready",
+    "confidence": 0.78,
+    "summary": "Candidate operators were converted into realization actions."
   },
-  "realization_action_count": 3,
+  "realization_action_count": 2,
   "realization_actions": [
     {
       "class": "contract_alignment",
@@ -51,12 +45,6 @@
       "realization": "restore_normalized_field_total",
       "status": "ready_for_design",
       "source_failure": "tests/diagnostic-probe-v0-1-test.js"
-    },
-    {
-      "class": "unclassified",
-      "realization": "classify_before_design",
-      "status": "needs_classification",
-      "source_failure": "test_failed:tests/diagnostic-probe-v0-1-test.js"
     }
   ],
   "operations": [
