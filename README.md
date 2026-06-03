@@ -12,6 +12,7 @@ The active source files are:
 
 ```text
 src/math-language-kernel-v0-1.js
+src/discovery-core-v0-1.js
 src/intention-algebra-v0-1.js
 src/language-parser-v0-1.js
 src/nested-relation-core-v0-1.js
@@ -22,6 +23,7 @@ The active verification files are:
 
 ```text
 tests/math-language-kernel-v0-1-test.js
+tests/discovery-core-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
 tests/nested-relation-core-v0-1-test.js
@@ -59,6 +61,7 @@ Every active subdivision is also unit-total:
 ∥κ∥₁ = 1
 ∥ν∥₁ = 1
 ∥θ∥₁ = 1
+∥Ωd∥₁ = 1
 ```
 
 Where:
@@ -73,6 +76,7 @@ Where:
 κ = constraint field
 ν = nested relation field
 θ = truth-accounting field
+Ωd = discovery state field
 Ω = whole active math state
 Ξ = English output channel
 ```
@@ -89,6 +93,7 @@ Current flow:
 
 ```text
 Σ raw input
+  -> Ωd discovery
   -> τ repeated pattern tokens
   -> ρ token relations
   -> μ candidate bindings
@@ -101,6 +106,29 @@ Current flow:
 ```
 
 Each new observation readjusts the active fields by normalization instead of appending an uncontrolled module.
+
+## Discovery core
+
+The discovery core is the first non-dictionary growth operator.
+
+It does not define meanings. It observes raw streams, compresses repeated structure, forms candidate distinctions, births stable symbols, tracks relations, exposes contradiction and unknown pressure, and keeps the discovery state unit-total.
+
+```text
+Σ -> α -> π -> Δ -> β -> ν -> χ/υ -> Ωd
+```
+
+Where:
+
+```text
+α = observation field
+π = pattern pressure field
+Δ = candidate distinction field
+β = born symbol field
+ν = relation field
+χ = contradiction field
+υ = unknown field
+Ωd = discovery state field
+```
 
 ## Intention algebra
 
@@ -213,10 +241,14 @@ node tests/language-v0-1-conformance-test.js
 
 ```js
 const K = require('./src/math-language-kernel-v0-1.js');
+const D = require('./src/discovery-core-v0-1.js');
 const I = require('./src/intention-algebra-v0-1.js');
 const P = require('./src/language-parser-v0-1.js');
 const N = require('./src/nested-relation-core-v0-1.js');
 const T = require('./src/truth-accounting-core-v0-1.js');
+
+const d = D.create();
+D.observe(d, 'abababab cdcdcdcd ababab cdcdcdcd');
 
 const s = K.create();
 K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
@@ -225,13 +257,14 @@ const i = I.compute(p);
 const text = P.serialize(P.fromKernelPacket(p));
 const graph = N.fromKernelPacket(p);
 const claim = T.create({ support: 1, no_contradiction: 1, no_unknown: 1, scope_ok: 1, definition_ok: 1, observation_ok: 1, measurement_ok: 1 });
-console.log({ i, text, graphText: N.serialize(graph), truth: claim.truth_gate.true, roundTrip: P.roundTrip(text).same });
+console.log({ discovery: D.packet(d), i, text, graphText: N.serialize(graph), truth: claim.truth_gate.true, roundTrip: P.roundTrip(text).same });
 ```
 
 Browser global:
 
 ```js
 window.FortySecondMindMathLanguageKernel
+window.FortySecondMindDiscoveryCore
 window.FortySecondMindIntentionAlgebra
 window.FortySecondMindLanguageParser
 window.FortySecondMindNestedRelationCore
@@ -242,6 +275,7 @@ window.FortySecondMindTruthAccountingCore
 
 ```bash
 node tests/math-language-kernel-v0-1-test.js
+node tests/discovery-core-v0-1-test.js
 node tests/intention-algebra-v0-1-test.js
 node tests/language-parser-v0-1-test.js
 node tests/nested-relation-core-v0-1-test.js
