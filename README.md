@@ -13,6 +13,7 @@ The active source files are:
 ```text
 src/math-language-kernel-v0-1.js
 src/discovery-core-v0-1.js
+src/source-sandbox-v0-1.js
 src/intention-algebra-v0-1.js
 src/language-parser-v0-1.js
 src/nested-relation-core-v0-1.js
@@ -24,6 +25,7 @@ The active verification files are:
 ```text
 tests/math-language-kernel-v0-1-test.js
 tests/discovery-core-v0-1-test.js
+tests/source-sandbox-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
 tests/nested-relation-core-v0-1-test.js
@@ -94,6 +96,9 @@ Current flow:
 ```text
 Σ raw input
   -> Ωd discovery
+  -> sandboxed source mutation proposal
+  -> tests and validators
+  -> accepted virtual state or rejected chaos report
   -> τ repeated pattern tokens
   -> ρ token relations
   -> μ candidate bindings
@@ -129,6 +134,23 @@ Where:
 υ = unknown field
 Ωd = discovery state field
 ```
+
+## Source sandbox
+
+The source sandbox is the protected self-edit layer.
+
+It simulates source mutation inside a virtual file map. It does not write real repository files. A proposal must pass tests and validators before it is accepted into the virtual state.
+
+```text
+base source
+  -> virtual source
+  -> mutation proposal
+  -> sandbox simulation
+  -> tests / validators
+  -> accepted virtual state OR rejected chaos report
+```
+
+Real source patching remains outside the sandbox and requires an external write gate.
 
 ## Intention algebra
 
@@ -242,6 +264,7 @@ node tests/language-v0-1-conformance-test.js
 ```js
 const K = require('./src/math-language-kernel-v0-1.js');
 const D = require('./src/discovery-core-v0-1.js');
+const X = require('./src/source-sandbox-v0-1.js');
 const I = require('./src/intention-algebra-v0-1.js');
 const P = require('./src/language-parser-v0-1.js');
 const N = require('./src/nested-relation-core-v0-1.js');
@@ -250,6 +273,16 @@ const T = require('./src/truth-accounting-core-v0-1.js');
 const d = D.create();
 D.observe(d, 'abababab cdcdcdcd ababab cdcdcdcd');
 
+const sandbox = X.create({
+  'src/core.js': 'module.exports = { value: () => 1 };',
+  'tests/core-test.js': "const assert = require('assert'); const core = require('../src/core.js'); assert.strictEqual(core.value(), 1);"
+});
+
+const report = X.simulate(sandbox, {
+  id: 'example_mutation',
+  operations: [{ type: 'patch', path: 'src/core.js', from: '1', to: '1' }]
+}, ['tests/core-test.js']);
+
 const s = K.create();
 K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 const p = K.packet(s);
@@ -257,7 +290,7 @@ const i = I.compute(p);
 const text = P.serialize(P.fromKernelPacket(p));
 const graph = N.fromKernelPacket(p);
 const claim = T.create({ support: 1, no_contradiction: 1, no_unknown: 1, scope_ok: 1, definition_ok: 1, observation_ok: 1, measurement_ok: 1 });
-console.log({ discovery: D.packet(d), i, text, graphText: N.serialize(graph), truth: claim.truth_gate.true, roundTrip: P.roundTrip(text).same });
+console.log({ discovery: D.packet(d), sandbox: report.accepted, i, text, graphText: N.serialize(graph), truth: claim.truth_gate.true, roundTrip: P.roundTrip(text).same });
 ```
 
 Browser global:
@@ -265,6 +298,7 @@ Browser global:
 ```js
 window.FortySecondMindMathLanguageKernel
 window.FortySecondMindDiscoveryCore
+window.FortySecondMindSourceSandbox
 window.FortySecondMindIntentionAlgebra
 window.FortySecondMindLanguageParser
 window.FortySecondMindNestedRelationCore
@@ -276,6 +310,7 @@ window.FortySecondMindTruthAccountingCore
 ```bash
 node tests/math-language-kernel-v0-1-test.js
 node tests/discovery-core-v0-1-test.js
+node tests/source-sandbox-v0-1-test.js
 node tests/intention-algebra-v0-1-test.js
 node tests/language-parser-v0-1-test.js
 node tests/nested-relation-core-v0-1-test.js
@@ -291,7 +326,7 @@ Expected result: all PASS lines.
 No LLM calls.
 No English output as internal language.
 No semantic label shortcut as the main learning layer.
-No direct GitHub/source writing from static pages.
+No direct real-source writing from sandbox simulation.
 No final truth promotion without truth-accounting closure.
 No claim that unit-total fields alone prove understanding.
 ```
