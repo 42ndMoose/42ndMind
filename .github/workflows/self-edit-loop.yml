@@ -32,15 +32,17 @@ jobs:
           const path = 'src/math-language-kernel-v0-1.js';
           let s = fs.readFileSync(path, 'utf8');
           if (!s.includes('function rawComparableField(value)')) {
+            const anchor = '\n  function axisMismatch(a, b) {';
+            const helper = '\n  function rawComparableField(value) {\n    if (isField(value)) return A(value).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);\n    const packet = packetField(value);\n    if (packet.length) return A(packet).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);\n    if (scalarOk(value)) return [{ σ: String(scalar(value)), w: Math.max(EPS, Math.abs(scalar(value))) }];\n    return [];\n  }\n\n  function axisMismatch(a, b) {';
+            if (!s.includes(anchor)) throw new Error('axisMismatch anchor not found');
+            s = s.replace(anchor, helper);
+          }
+          if (!s.includes("      'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)),")) {
             s = s.replace(
-              "  function comparableField(value) {\n    if (isField(value)) return normalize(value);\n    const packet = packetField(value);\n    if (packet.length) return normalize(packet);\n    if (scalarOk(value)) return normalize([[String(scalar(value)), Math.max(EPS, Math.abs(scalar(value)))]);\n    return [];\n  }",
-              "  function comparableField(value) {\n    if (isField(value)) return normalize(value);\n    const packet = packetField(value);\n    if (packet.length) return normalize(packet);\n    if (scalarOk(value)) return normalize([[String(scalar(value)), Math.max(EPS, Math.abs(scalar(value)))]);\n    return [];\n  }\n\n  function rawComparableField(value) {\n    if (isField(value)) return A(value).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);\n    const packet = packetField(value);\n    if (packet.length) return A(packet).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);\n    if (scalarOk(value)) return [{ σ: String(scalar(value)), w: Math.max(EPS, Math.abs(scalar(value))) }];\n    return [];\n  }"
+              "      'Δ∥': unitMismatch(af, bf),",
+              "      'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)),"
             );
           }
-          s = s.replace(
-            "      'Δ∥': unitMismatch(af, bf),",
-            "      'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)),"
-          );
           fs.writeFileSync(path, s);
           NODE
 
