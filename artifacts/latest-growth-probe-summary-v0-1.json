@@ -1,0 +1,58 @@
+{
+  "probe": "missing_truth_layer_plus_parser_roundtrip_marker",
+  "accepted": true,
+  "decision": {
+    "code": "sandbox_only",
+    "confidence": 0.9,
+    "summary": "The patch can safely scaffold missing files in the sandbox. Real source still requires an external write gate."
+  },
+  "gap_count": 2,
+  "mathematical_gap_count": 3,
+  "mathematical_decision": {
+    "code": "sandbox_only",
+    "confidence": 0.9,
+    "summary": "The patch can safely scaffold missing files in the sandbox. Real source still requires an external write gate."
+  },
+  "operator_candidate_count": 0,
+  "operator_decision": {
+    "code": "no_failures",
+    "confidence": 1,
+    "summary": "No failed simulation signatures were available for operator synthesis."
+  },
+  "operator_candidates": [],
+  "operations": [
+    {
+      "type": "create",
+      "path": "src/truth-accounting-core-v0-1.js"
+    },
+    {
+      "type": "create",
+      "path": "tests/truth-accounting-core-v0-1-test.js"
+    },
+    {
+      "type": "create",
+      "path": "artifacts/mathematical-patch-v0-1.json"
+    },
+    {
+      "type": "create",
+      "path": "artifacts/self-edit-state-v0-1.json"
+    }
+  ],
+  "truth_gate": {
+    "true": false,
+    "contested": false,
+    "unresolved": false,
+    "scoped": false,
+    "defined": false,
+    "observed": false,
+    "measured": false,
+    "english": ""
+  },
+  "changed_virtual_paths": [
+    "artifacts/mathematical-patch-v0-1.json",
+    "artifacts/self-edit-state-v0-1.json",
+    "src/truth-accounting-core-v0-1.js",
+    "tests/truth-accounting-core-v0-1-test.js"
+  ],
+  "chaos": []
+}
