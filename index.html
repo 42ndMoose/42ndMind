@@ -10,9 +10,18 @@
     body { font-family: system-ui, sans-serif; margin: 24px; line-height: 1.45; }
     a { font-weight: 700; }
   </style>
+  <script src="src/brain-kernel-v1.js"></script>
 </head>
 <body>
   <p>42ndMind now opens the math-language lab.</p>
   <p><a href="ui/math-language-lab.html">Open ui/math-language-lab.html</a></p>
+  <script>
+    const K = globalThis.FortySecondMindKernelV1;
+    const state = K.birth();
+    function respond42ndMind(text) {
+      return K.respond(state, text);
+    }
+    globalThis.respond42ndMind = respond42ndMind;
+  </script>
 </body>
 </html>
