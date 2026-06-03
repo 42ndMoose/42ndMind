@@ -15,9 +15,17 @@ ok('intention starts unit-total', Math.abs(K.l1(s.ι) - 1) < 1e-6);
 ok('whole state starts unit-total', Math.abs(K.l1(s.Ω) - 1) < 1e-6);
 ok('no English output channel', s.Ξ === '');
 
+const defs = K.definitions();
+ok('kernel defines sigma weight and constraint rows', !!defs.σ && !!defs.w && !!defs.χ);
+const inv = K.invariants();
+ok('kernel has invariant registry beyond unit-total', inv.length >= 4 && inv.some(row => row.id === 'χ_no_english'));
+ok('invariant field is unit-total', Math.abs(K.l1(K.invariantField()) - 1) < 1e-6);
+ok('valid field passes invariant validator', K.validateField([{ σ: 'a', w: 1 }]).ok === true);
+ok('bad unit field fails invariant validator', K.validateField([{ σ: 'a', w: 0.25 }]).ok === false);
+
 const p0 = K.packet(s);
 ok('packet is symbolic', p0.φ === 'Ω' && p0.Ξ === '');
-ok('packet carries invariant list', p0.χ.includes('∥λ∥₁=1') && p0.χ.includes('∥ι∥₁=1'));
+ok('packet carries invariant list', p0.χ.includes('∥F∥₁=1') && p0.χ.includes('Ξ=""'));
 ok('packet carries discrepancy invariant', p0.χ.some(row => row.indexOf('δ=') >= 0));
 ok('packet carries gap invariant', p0.χ.some(row => row.indexOf('Δ=') >= 0));
 
@@ -59,6 +67,13 @@ ok('unit gap remains unit-total', g3.u.ok === true);
 const g4 = K.gap({ χ: ['x'] }, { χ: ['y'] }, 'invariant');
 ok('invariant gap is measured', g4.z['Δχ'] > 0);
 ok('unknown gap is reserved when no comparable field exists', g4.z['Δ?'] > 0);
+
+const repair = K.correction(fA, fC, 'weight-repair');
+ok('correction packet is symbolic', repair.φ === 'T' && repair.Ξ === '');
+ok('correction transform field is unit-total', repair.u.ok === true && Math.abs(K.l1(repair.T) - 1) < 1e-6);
+ok('correction uses finite local argmin', repair.method === 'finite_local_argmin');
+ok('correction reduces or preserves measured gap', repair.after.score <= repair.before.score);
+ok('correction outputs transformed unit field', Math.abs(K.l1(repair.transformed) - 1) < 1e-6);
 
 const p1 = K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 ok('observation returns packet', p1.φ === 'Ω');
