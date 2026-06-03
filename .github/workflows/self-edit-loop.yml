@@ -25,27 +25,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Apply pending kernel unit-gap patch
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const path = 'src/math-language-kernel-v0-1.js';
-          let s = fs.readFileSync(path, 'utf8');
-          if (!s.includes('function rawComparableField(value)')) {
-            const anchor = '\n  function axisMismatch(a, b) {';
-            const helper = '\n  function rawComparableField(value) {\n    if (isField(value)) return A(value).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);\n    const packet = packetField(value);\n    if (packet.length) return A(packet).map(row => ({ σ: rowAxis(row), w: rowWeight(row) })).filter(row => row.σ && row.w !== 0);\n    if (scalarOk(value)) return [{ σ: String(scalar(value)), w: Math.max(EPS, Math.abs(scalar(value))) }];\n    return [];\n  }\n\n  function axisMismatch(a, b) {';
-            if (!s.includes(anchor)) throw new Error('axisMismatch anchor not found');
-            s = s.replace(anchor, helper);
-          }
-          if (!s.includes("      'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)),")) {
-            s = s.replace(
-              "      'Δ∥': unitMismatch(af, bf),",
-              "      'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)),"
-            );
-          }
-          fs.writeFileSync(path, s);
-          NODE
-
       - name: Run core tests and capture status
         run: |
           set +e
@@ -136,10 +115,6 @@ jobs:
       - name: Publish latest report into repository
         run: |
           mkdir -p artifacts
-          git config user.name "42ndMind Bot"
-          git config user.email "actions@github.com"
-          git add src/math-language-kernel-v0-1.js
-          git diff --cached --quiet || git commit -m "Apply kernel raw unit-gap measurement [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
@@ -152,6 +127,8 @@ jobs:
           cp artifacts/diagnostic-probe-report-v0-1.json artifacts/latest-diagnostic-probe-report-v0-1.json
           cp artifacts/diagnostic-probe-summary-v0-1.json artifacts/latest-diagnostic-probe-summary-v0-1.json
           [ -f artifacts/diagnostic-kernel-logic-v0-1.json ] && cp artifacts/diagnostic-kernel-logic-v0-1.json artifacts/latest-diagnostic-kernel-logic-v0-1.json || true
+          git config user.name "42ndMind Bot"
+          git config user.email "actions@github.com"
           git add artifacts/latest-*.json artifacts/latest-core-test-log-v0-1.txt
           git diff --cached --quiet || git commit -m "Update latest self-edit diagnostics [skip ci]"
           git pull --rebase || true
