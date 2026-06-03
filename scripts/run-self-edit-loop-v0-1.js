@@ -8,6 +8,7 @@ const L = require('../src/self-edit-loop-v0-1.js');
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const REPORT_PATH = path.join(ARTIFACT_DIR, 'self-edit-loop-report-v0-1.json');
+const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'self-edit-loop-summary-v0-1.json');
 
 function readIfExists(relativePath) {
   const full = path.join(ROOT, relativePath);
@@ -51,13 +52,19 @@ function main() {
 
   const summary = {
     accepted: report.accepted,
+    decision: report.decision,
     gap_count: report.state.gaps.length,
+    mathematical_gap_count: report.math_patch ? report.math_patch.gaps.length : null,
+    operator_candidate_count: report.operator_synthesis && report.operator_synthesis.candidates ? report.operator_synthesis.candidates.length : 0,
+    operator_decision: report.operator_synthesis ? report.operator_synthesis.decision : null,
     operations: report.proposal.operations.length,
     artifact: path.relative(ROOT, REPORT_PATH),
+    summary_artifact: path.relative(ROOT, SUMMARY_PATH),
     truth_gate: report.truth_gate,
     changed_virtual_paths: report.sandbox_report.changed
   };
 
+  fs.writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2) + '\n');
   console.log(JSON.stringify(summary, null, 2));
 }
 
