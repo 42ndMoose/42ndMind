@@ -1,0 +1,48 @@
+name: 42ndMind Self-Edit Loop
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'docs/**'
+      - 'README.md'
+      - '.github/workflows/self-edit-loop.yml'
+
+jobs:
+  self-edit-loop:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run core tests
+        run: |
+          node tests/math-language-kernel-v0-1-test.js
+          node tests/discovery-core-v0-1-test.js
+          node tests/source-sandbox-v0-1-test.js
+          node tests/mathematical-patch-proposer-v0-1-test.js
+          node tests/self-edit-loop-v0-1-test.js
+          node tests/intention-algebra-v0-1-test.js
+          node tests/language-parser-v0-1-test.js
+          node tests/nested-relation-core-v0-1-test.js
+          node tests/language-v0-1-conformance-test.js
+          node tests/truth-accounting-core-v0-1-test.js
+
+      - name: Run whole-language self-edit loop
+        run: node scripts/run-self-edit-loop-v0-1.js
+
+      - name: Upload self-edit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-edit-loop-report-v0-1
+          path: artifacts/self-edit-loop-report-v0-1.json
