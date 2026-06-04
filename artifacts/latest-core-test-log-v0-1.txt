@@ -67,7 +67,12 @@ PASS lexicon packet is symbolic
 PASS lexicon field is unit-total
 PASS lexicon derives closed-gap lexeme
 PASS lexicon derives proof and convergence lexemes
+PASS lexicon derives generalized numeric fact lexemes
+PASS lexicon derives generalized boolean fact lexemes
+PASS lexicon derives generalized distance fact lexeme
 PASS lexeme resolver returns exactly one accepted match
+PASS generalized lexeme resolver returns exactly one accepted match
+PASS lexeme conflict is rejected
 PASS observation returns packet
 PASS tokens form from repeated raw symbols
 PASS lambda remains unit-total after observation
