@@ -182,6 +182,57 @@ PASS unmeasurable scope does not falsely complete
 PASS unmeasurable scope reports unresolved gap
 PASS unmeasurable scope still preserves unit report
 exit_code=0
+## tests/completion-frontier-scopes-v0-1-test.js
+PASS argument-like claim scope is Ω* packet
+PASS argument-like claim scope reaches fixed point
+PASS argument-like claim scope completes
+PASS argument-like claim scope preserves unit-total
+PASS argument-like claim scope has no unresolved gap
+PASS argument-like claim scope has no conflict
+PASS argument-like claim scope emits lexicon
+PASS argument-like scope derives observed grounding
+PASS argument-like scope derives correction and proof
+PASS argument-like scope closes to claim target
+PASS truth-accounting-like scope is Ω* packet
+PASS truth-accounting-like scope reaches fixed point
+PASS truth-accounting-like scope completes
+PASS truth-accounting-like scope preserves unit-total
+PASS truth-accounting-like scope has no unresolved gap
+PASS truth-accounting-like scope has no conflict
+PASS truth-accounting-like scope emits lexicon
+PASS truth-like scope derives formal grounding
+PASS truth-like scope emits canonical equality
+PASS truth-like scope keeps truth symbols in completed field
+PASS nested-relation-like scope is Ω* packet
+PASS nested-relation-like scope reaches fixed point
+PASS nested-relation-like scope completes
+PASS nested-relation-like scope preserves unit-total
+PASS nested-relation-like scope has no unresolved gap
+PASS nested-relation-like scope has no conflict
+PASS nested-relation-like scope emits lexicon
+PASS nested-like scope emits closed gap
+PASS nested-like scope keeps nested relation axes
+PASS parser-token-like scope is Ω* packet
+PASS parser-token-like scope reaches fixed point
+PASS parser-token-like scope completes
+PASS parser-token-like scope preserves unit-total
+PASS parser-token-like scope has no unresolved gap
+PASS parser-token-like scope has no conflict
+PASS parser-token-like scope emits lexicon
+PASS parser-like scope emits formal grounding
+PASS parser-like scope has generalized gap facts
+PASS parser-like scope keeps parse axes
+PASS mixed formal observed scope is Ω* packet
+PASS mixed formal observed scope reaches fixed point
+PASS mixed formal observed scope completes
+PASS mixed formal observed scope preserves unit-total
+PASS mixed formal observed scope has no unresolved gap
+PASS mixed formal observed scope has no conflict
+PASS mixed formal observed scope emits lexicon
+PASS mixed scope derives observed grounding
+PASS mixed scope derives observed fact
+PASS mixed scope emits equality closure
+exit_code=0
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
