@@ -24,17 +24,19 @@
     '≡': 'canonical equivalence relation',
     '⊢': 'invariant-preserving proof gate',
     G: 'grounding status packet',
-    Λ: 'kernel-derived lexeme over a stable packet pattern'
+    Λ: 'kernel-derived lexeme over a stable packet pattern',
+    'Ω*': 'fixed-point completion packet under C and Λ while χ holds'
   });
 
   const INVARIANTS = Object.freeze([
-    { id: 'χ_unit_total', row: '∥F∥₁=1', axis: '∥', weight: 0.27 },
-    { id: 'χ_finite_weight', row: '∀w∈F:Number.isFinite(w)', axis: 'w', weight: 0.16 },
-    { id: 'χ_axis_defined', row: '∀σ∈F:σ≠∅', axis: 'σ', weight: 0.13 },
+    { id: 'χ_unit_total', row: '∥F∥₁=1', axis: '∥', weight: 0.25 },
+    { id: 'χ_finite_weight', row: '∀w∈F:Number.isFinite(w)', axis: 'w', weight: 0.15 },
+    { id: 'χ_axis_defined', row: '∀σ∈F:σ≠∅', axis: 'σ', weight: 0.12 },
     { id: 'χ_canonical_order', row: 'canonical(F)=sort(merge(F))', axis: '≡', weight: 0.12 },
-    { id: 'χ_zero_gap', row: 'Δ.score=0⇒Δ=Δ0', axis: 'Δ0', weight: 0.10 },
-    { id: 'χ_no_english', row: 'Ξ=""', axis: 'Ξ', weight: 0.10 },
-    { id: 'χ_local_minimality', row: 'T*=argmin(score(Δ(T(F),G))+cost(T))', axis: 'T', weight: 0.12 }
+    { id: 'χ_zero_gap', row: 'Δ.score=0⇒Δ=Δ0', axis: 'Δ0', weight: 0.09 },
+    { id: 'χ_no_english', row: 'Ξ=""', axis: 'Ξ', weight: 0.09 },
+    { id: 'χ_local_minimality', row: 'T*=argmin(score(Δ(T(F),G))+cost(T))', axis: 'T', weight: 0.10 },
+    { id: 'χ_completion_fixed_point', row: 'Ω*=fix(C⊕Λ)', axis: 'Ω*', weight: 0.08 }
   ]);
 
   function rowAxis(row) {
@@ -425,6 +427,76 @@
     return { φ: 'Λ?', v: VERSION, σ: symbol, ok: matches.length === 1, matches: C(matches), χ: ['Λ? resolves iff exactly one accepted σ'], Ξ: '' };
   }
 
+  function uniqueFields(fields) {
+    const unique = [];
+    const seen = {};
+    A(fields).forEach(field => {
+      const c = canonical(field);
+      if (!seen[c.id]) { seen[c.id] = true; unique.push(c.F || normalize(rawComparableField(field))); }
+    });
+    return unique;
+  }
+
+  function uniqueLexemes(entries) {
+    const out = [];
+    const seen = {};
+    A(entries).forEach(entry => {
+      if (!entry || entry.φ !== 'Λ' || entry.accepted !== true) return;
+      const key = entry.σ + '|' + entry.ν;
+      if (!seen[key]) { seen[key] = true; out.push(entry); }
+    });
+    return out;
+  }
+
+  function completionId(fields, lexemes) {
+    return checksum({ fields: A(fields).map(field => canonical(field).id).sort(), lexemes: A(lexemes).map(entry => entry.σ + '=' + entry.ν).sort() });
+  }
+
+  function complete(seed, options) {
+    const opts = options || {};
+    const max = Math.max(1, Number(opts.steps || 8));
+    const target = opts.target ? canonical(opts.target).F : null;
+    let fields = uniqueFields(A(seed).length ? seed : [invariantField()]);
+    let registry = uniqueLexemes(opts.registry || []);
+    let previous = '';
+    let fixed = false;
+    const trace = [];
+    let packets = [];
+    for (let stepIndex = 0; stepIndex < max; stepIndex += 1) {
+      packets = [];
+      const nextFields = fields.slice();
+      for (let i = 0; i < fields.length; i += 1) {
+        packets.push(canonical(fields[i]));
+        packets.push(ground(fields[i]));
+        for (let j = i; j < fields.length; j += 1) packets.push(gap(fields[i], fields[j], 'Ω*'));
+        if (target) {
+          const t = correction(fields[i], target, 'Ω*');
+          const p = proveTransform(t, fields[i], target, 'Ω*');
+          const l = converge(fields[i], target, { steps: max });
+          packets.push(gap(fields[i], target, 'Ω*'));
+          packets.push(t);
+          packets.push(p);
+          packets.push(l);
+          nextFields.push(t.transformed);
+          nextFields.push(l.final);
+        }
+      }
+      fields = uniqueFields(target ? nextFields.concat([target]) : nextFields);
+      const lex = deriveLexicon(packets, registry);
+      registry = uniqueLexemes(registry.concat(lex.entries));
+      const id = completionId(fields, registry);
+      trace.push({ i: stepIndex, id, field_count: fields.length, lexeme_count: registry.length, packet_count: packets.length });
+      if (id === previous) { fixed = true; break; }
+      previous = id;
+    }
+    const unresolved = packets.filter(packet => packet && packet.φ === 'Δ' && packet.z && packet.z['Δ?'] > 0);
+    const conflicts = A(opts.registry).map(entry => acceptLexeme(entry, registry)).filter(entry => entry.rejected === true);
+    const Λ = normalize(registry.map(item => ({ σ: item.σ, w: Math.max(EPS, item.c || EPS) })));
+    const Ω = normalize(fields.reduce((rows, field, index) => rows.concat(field.map(row => ({ σ: 'F' + index + ':' + row.σ, w: row.w }))), []).concat(registry.map(item => ({ σ: item.σ, w: Math.max(EPS, item.c || EPS) }))));
+    const unitOk = fields.every(field => Math.abs(l1(field) - 1) < EPS) && Math.abs(l1(Λ) - 1) < EPS && Math.abs(l1(Ω) - 1) < EPS;
+    return { φ: 'Ω*', v: VERSION, fixed, complete: fixed && unresolved.length === 0 && conflicts.length === 0 && unitOk, fields: C(fields), lexicon: { φ: 'Λ', v: VERSION, Λ, entries: C(registry), count: registry.length, u: { Λ: l1(Λ), ok: Math.abs(l1(Λ) - 1) < EPS }, χ: ['Λ=Ω*.lexicon', 'Ξ=""'], Ξ: '' }, Ω, trace, unresolved_count: unresolved.length, conflict_count: conflicts.length, u: { Ω: l1(Ω), ok: unitOk }, χ: ['Ω*=fix(C⊕Λ)', 'Ω* complete iff fixed and χ holds and Δ?=0 and conflicts=0', 'Ξ=""'], Ξ: '' };
+  }
+
   function countMap(list) {
     const out = {};
     A(list).forEach(item => { out[item] = (out[item] || 0) + 1; });
@@ -507,7 +579,7 @@
     state.κ = normalize(state.κ);
     state.Λ = normalize(state.Λ || [['Λ∅', 1]]);
     state.Ω = blend([{ field: state.λ.map(row => ({ σ: 'λ:' + row.σ, w: row.w })), gain: 0.32 }, { field: state.ι.map(row => ({ σ: 'ι:' + row.σ, w: row.w })), gain: 0.27 }, { field: state.ε.map(row => ({ σ: 'ε:' + row.σ, w: row.w })), gain: 0.16 }, { field: state.κ.map(row => ({ σ: 'κ:' + row.σ, w: row.w })), gain: 0.14 }, { field: state.Λ.map(row => ({ σ: 'Λ:' + row.σ, w: row.w })), gain: 0.11 }]);
-    state.χ = INVARIANTS.map(row => row.row).concat(['δ.score=0⇒δ=δ0', 'Δ.score=0⇒Δ=Δ0', 'Λ=derive(packet fact)', 'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)', 'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'ν=canonical(x)', '≡ iff canonical(a)=canonical(b)', 'C=finite_closure(F,Δ,T)', '⊢=invariant_preserving_transform', 'λ=𝒩(τ⊕ρ⊕μ⊕ε)', 'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)', 'Ω=𝒩(λ⊕ι⊕ε⊕κ⊕Λ)']);
+    state.χ = INVARIANTS.map(row => row.row).concat(['δ.score=0⇒δ=δ0', 'Δ.score=0⇒Δ=Δ0', 'Λ=derive(packet fact)', 'Ω*=fix(C⊕Λ)', 'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)', 'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'ν=canonical(x)', '≡ iff canonical(a)=canonical(b)', 'C=finite_closure(F,Δ,T)', '⊢=invariant_preserving_transform', 'λ=𝒩(τ⊕ρ⊕μ⊕ε)', 'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)', 'Ω=𝒩(λ⊕ι⊕ε⊕κ⊕Λ)']);
     state.unit = unitReport(state);
     return state;
   }
@@ -538,5 +610,5 @@
 
   function snapshot(state) { return C(state); }
 
-  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, rebalance, unitReport });
+  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, complete, rebalance, unitReport });
 });
