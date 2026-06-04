@@ -75,6 +75,10 @@ function compactGround(packet) {
   return { φ: packet.φ, mode: packet.mode, formal: packet.formal, observed: packet.observed, true: packet.true, id: packet.id, χ: packet.χ, Ξ: packet.Ξ };
 }
 
+function compactLexicon(packet) {
+  return { φ: packet.φ, Λ: packet.Λ, count: packet.count, entries: packet.entries, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
+}
+
 function main() {
   const files = collectFiles();
   files[PROBE_TEST] = [
@@ -86,11 +90,13 @@ function main() {
   const rawInput = Object.keys(files).sort().map(key => '--- ' + key + '\n' + files[key]).join('\n');
   const report = L.run(files, { rawInput, tests: [PROBE_TEST], sandboxOptions: { allowDelete: false, maxPatchBytes: 5_000_000 } });
 
+  const kernelClosedDiscrepancy = K.discrepancy(1, 1, 'diagnostic:closed-discrepancy');
   const kernelDiscrepancy = K.discrepancy(0, 1, 'tests/diagnostic-probe-v0-1-test.js');
   const current = [{ σ: 'a', w: 0.5 }, { σ: 'b', w: 0.5 }];
   const target = [{ σ: 'a', w: 0.25 }, { σ: 'b', w: 0.75 }];
   const messy = [{ σ: 'b', w: 0.25 }, { σ: 'a', w: 0.25 }, { σ: 'b', w: 0.25 }, { σ: 'a', w: 0.25 }];
   const axisTarget = [{ σ: 'a', w: 0.4 }, { σ: 'b', w: 0.4 }, { σ: 'c', w: 0.2 }];
+  const kernelClosedGap = K.gap(current, current, 'diagnostic:closed-gap');
   const kernelWeightGap = K.gap(current, target, 'diagnostic:weight');
   const kernelAxisGap = K.gap(current, axisTarget, 'diagnostic:axis');
   const kernelCorrection = K.correction(current, target, 'diagnostic:correction');
@@ -102,6 +108,18 @@ function main() {
   const kernelConvergence = K.converge(current, target, { steps: 4 });
   const kernelFormalGround = K.ground(current);
   const kernelObservedGround = K.ground(current, [{ source: 'diagnostic', value: current }]);
+  const kernelLexicon = K.deriveLexicon([
+    kernelClosedGap,
+    kernelClosedDiscrepancy,
+    kernelCorrection,
+    kernelProof,
+    kernelConvergence,
+    kernelFormalGround,
+    kernelObservedGround,
+    kernelEquivalentSame,
+    kernelEquivalentDifferent
+  ]);
+  const kernelResolvedClosedGap = K.resolveLexeme('Λ:Δ0', kernelLexicon);
 
   const kernelLogic = {
     definitions: K.definitions(),
@@ -109,7 +127,9 @@ function main() {
     invariant_field: K.invariantField(),
     valid_field: K.validateField([{ σ: 'a', w: 1 }]),
     invalid_unit_field: K.validateField([{ σ: 'a', w: 0.25 }]),
+    closed_discrepancy: kernelClosedDiscrepancy,
     discrepancy: kernelDiscrepancy,
+    closed_gap: kernelClosedGap,
     weight_gap: kernelWeightGap,
     axis_gap: kernelAxisGap,
     correction: kernelCorrection,
@@ -121,6 +141,8 @@ function main() {
     convergence: kernelConvergence,
     ground_formal: kernelFormalGround,
     ground_observed: kernelObservedGround,
+    lexicon: kernelLexicon,
+    resolve_closed_gap: kernelResolvedClosedGap,
     Ξ: ''
   };
 
@@ -147,7 +169,9 @@ function main() {
       invariant_field_unit: K.l1(kernelLogic.invariant_field),
       valid_field_ok: kernelLogic.valid_field.ok,
       invalid_unit_field_ok: kernelLogic.invalid_unit_field.ok,
-      discrepancy: { φ: kernelDiscrepancy.φ, ω: kernelDiscrepancy.ω, z: kernelDiscrepancy.z, u: kernelDiscrepancy.u, χ: kernelDiscrepancy.χ, Ξ: kernelDiscrepancy.Ξ },
+      closed_discrepancy: { φ: kernelClosedDiscrepancy.φ, ω: kernelClosedDiscrepancy.ω, score: kernelClosedDiscrepancy.score, z: kernelClosedDiscrepancy.z, u: kernelClosedDiscrepancy.u, χ: kernelClosedDiscrepancy.χ, Ξ: kernelClosedDiscrepancy.Ξ },
+      discrepancy: { φ: kernelDiscrepancy.φ, ω: kernelDiscrepancy.ω, score: kernelDiscrepancy.score, z: kernelDiscrepancy.z, u: kernelDiscrepancy.u, χ: kernelDiscrepancy.χ, Ξ: kernelDiscrepancy.Ξ },
+      closed_gap: compactGap(kernelClosedGap),
       weight_gap: compactGap(kernelWeightGap),
       axis_gap: compactGap(kernelAxisGap),
       correction: compactCorrection(kernelCorrection),
@@ -158,7 +182,9 @@ function main() {
       proof: compactProof(kernelProof),
       convergence: compactConvergence(kernelConvergence),
       ground_formal: compactGround(kernelFormalGround),
-      ground_observed: compactGround(kernelObservedGround)
+      ground_observed: compactGround(kernelObservedGround),
+      lexicon: compactLexicon(kernelLexicon),
+      resolve_closed_gap: kernelResolvedClosedGap
     },
     operations: report.proposal.operations.map(op => ({ type: op.type, path: op.path })),
     truth_gate: report.truth_gate,
