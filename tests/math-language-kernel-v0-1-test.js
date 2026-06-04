@@ -124,8 +124,17 @@ ok('lexicon packet is symbolic', lex.φ === 'Λ' && lex.Ξ === '');
 ok('lexicon field is unit-total', lex.u.ok === true && Math.abs(K.l1(lex.Λ) - 1) < 1e-6);
 ok('lexicon derives closed-gap lexeme', lex.entries.some(row => row.σ === 'Λ:Δ0' && row.accepted === true));
 ok('lexicon derives proof and convergence lexemes', lex.entries.some(row => row.σ === 'Λ:⊢1') && lex.entries.some(row => row.σ === 'Λ:lim1'));
+ok('lexicon derives generalized numeric fact lexemes', lex.entries.some(row => row.σ === 'Λ:⊢.after0') && lex.entries.some(row => row.σ === 'Λ:lim.score0'));
+ok('lexicon derives generalized boolean fact lexemes', lex.entries.some(row => row.σ === 'Λ:G.observed0') && lex.entries.some(row => row.σ === 'Λ:G.observed1'));
+ok('lexicon derives generalized distance fact lexeme', lex.entries.some(row => row.σ === 'Λ:≡.distance=0.5'));
 const resolved = K.resolveLexeme('Λ:Δ0', lex);
 ok('lexeme resolver returns exactly one accepted match', resolved.φ === 'Λ?' && resolved.ok === true && resolved.matches.length === 1);
+const resolvedGeneral = K.resolveLexeme('Λ:lim.score0', lex);
+ok('generalized lexeme resolver returns exactly one accepted match', resolvedGeneral.ok === true && resolvedGeneral.matches.length === 1);
+const conflictBase = lex.entries.find(row => row.σ === 'Λ:Δ0');
+const conflictCandidate = Object.assign({}, conflictBase, { ν: 'ν-conflict' });
+const rejectedConflict = K.acceptLexeme(conflictCandidate, [conflictBase]);
+ok('lexeme conflict is rejected', rejectedConflict.accepted === false && rejectedConflict.rejected === true && rejectedConflict.conflict === conflictBase.ν);
 
 const p1 = K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 ok('observation returns packet', p1.φ === 'Ω');
