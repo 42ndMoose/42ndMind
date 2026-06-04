@@ -1,17 +1,161 @@
 # 42ndMind
 
-42ndMind is now centered on a pure math-language kernel.
+42ndMind is an experimental math-language kernel and verification stack.
 
-The active public entrypoint is:
+The current repo is centered on one idea: a structured state should be reducible to normalized symbolic fields, corrected by invariant-preserving transforms, and completed by fixed-point closure rather than by manually adding disconnected modules.
+
+The project is not an English dictionary. English is used to describe the system from outside. The kernel itself works through packets, fields, invariants, gaps, transforms, proofs, convergence, grounding, and derived lexemes.
+
+## Current core
+
+The central invariant is:
 
 ```text
-ui/math-language-lab.html
+∥Ω∥₁ = 1
 ```
 
-The active source files are:
+Every active field is normalized by L1 magnitude unless raw evidence is intentionally preserved for diagnosis.
+
+The current core equation is:
+
+```text
+Ω* = fix(C ⊕ Λ)
+```
+
+Meaning:
+
+```text
+completed state = fixed point of closure plus lexeme derivation
+```
+
+The main kernel lifecycle is:
+
+```text
+F → ν → ≡ → Δ → T → ⊢ → lim → G → Λ → Ω*
+```
+
+Where:
+
+```text
+F     field / packet input
+ν     canonical form
+≡     canonical equivalence relation
+Δ     measured gap field
+T     correction transform
+⊢     proof gate
+lim   convergence packet
+G     grounding status
+Λ     kernel-derived lexeme field
+Ω*    completion fixed point
+χ     invariant set
+Ξ     English output channel, empty at kernel layer
+```
+
+## Main kernel
 
 ```text
 src/math-language-kernel-v0-1.js
+```
+
+Important exported functions:
+
+```text
+K.normalize(...)
+K.canonical(...)
+K.equivalent(...)
+K.gap(...)
+K.correction(...)
+K.proveTransform(...)
+K.converge(...)
+K.ground(...)
+K.deriveLexicon(...)
+K.resolveLexeme(...)
+K.complete(...)
+```
+
+`K.complete(...)` is the current completion engine. It takes seed fields and optional targets or observations, emits packets, derives lexemes, merges the lexicon, and repeats until the state reaches `Ω*` or exposes unresolved gaps or conflicts.
+
+Completion means:
+
+```text
+fixed = true
+χ holds
+Δ? = 0
+conflict_count = 0
+Ξ = ""
+```
+
+## Zero-gap distinction
+
+The kernel distinguishes an empty/null axis from a closed measured gap.
+
+```text
+∅  = empty / absent / null
+Δ0 = closed gap, measured score is zero
+δ0 = closed discrepancy, expected-actual score is zero
+```
+
+This prevents the system from confusing “nothing was measured” with “a measured mismatch is closed.”
+
+## Lexeme derivation
+
+The `Λ` layer is kernel-native. It derives symbolic handles from stable packet facts.
+
+Examples:
+
+```text
+Δ.score=0        → Λ:Δ0
+δ.score=0        → Λ:δ0
+T.reduced=true   → Λ:T↓
+⊢.true=true      → Λ:⊢1
+lim.stable=true  → Λ:lim1
+G.mode=formal    → Λ:Gf
+G.mode=observed  → Λ:Go
+≡.true=true      → Λ:≡1
+≡.true=false     → Λ:≡0
+```
+
+It also derives generalized fact lexemes such as:
+
+```text
+Λ:⊢.after0
+Λ:lim.score0
+Λ:G.observed1
+Λ:≡.distance=0.5
+```
+
+Lexemes are accepted only when they resolve to one canonical rule without conflict.
+
+## Completion scopes currently tested
+
+The repo now tests `K.complete(...)` across normal scopes and edge scopes.
+
+Current completion scopes:
+
+```text
+pure field algebra
+gap / correction algebra
+proof / convergence algebra
+lexeme derivation
+formal grounding
+intention field algebra
+contradiction handling
+```
+
+Current edge scopes:
+
+```text
+raw-unit evidence preservation
+observed grounding
+multi-field closure
+unmeasurable input refusal
+```
+
+These tests force the kernel to either close under `Ω*` or expose the exact missing logic.
+
+## Other active source files
+
+```text
 src/discovery-core-v0-1.js
 src/source-sandbox-v0-1.js
 src/self-edit-loop-v0-1.js
@@ -21,12 +165,28 @@ src/nested-relation-core-v0-1.js
 src/truth-accounting-core-v0-1.js
 ```
 
-The active verification files are:
+Short roles:
+
+```text
+discovery-core          observes raw streams and forms repeated symbolic structure
+source-sandbox          simulates source mutations without touching real source
+self-edit-loop          runs whole-language source checks and patch proposals
+intention-algebra       represents intention as a unit-total field
+language-parser         parses the current symbolic language layer
+nested-relation-core    allows relations over relations
+truth-accounting-core   tracks support, contradiction, unknown, and measurement fields
+```
+
+## Active tests
 
 ```text
 tests/math-language-kernel-v0-1-test.js
+tests/completion-scopes-v0-1-test.js
+tests/completion-edge-scopes-v0-1-test.js
 tests/discovery-core-v0-1-test.js
 tests/source-sandbox-v0-1-test.js
+tests/mathematical-patch-proposer-v0-1-test.js
+tests/operator-synthesis-core-v0-1-test.js
 tests/self-edit-loop-v0-1-test.js
 tests/intention-algebra-v0-1-test.js
 tests/language-parser-v0-1-test.js
@@ -35,270 +195,61 @@ tests/language-v0-1-conformance-test.js
 tests/truth-accounting-core-v0-1-test.js
 ```
 
-The active conformance fixtures are:
+The workflow runs the full core test list and publishes latest artifacts into `artifacts/latest-*`.
+
+## Current public UI entrypoint
 
 ```text
-tests/fixtures/language-v0-1/conformance-fixtures.json
+ui/math-language-lab.html
 ```
 
-The active language draft is:
+## Running locally
 
-```text
-docs/language-standard-v0-1.md
+Run the main kernel test:
+
+```bash
+node tests/math-language-kernel-v0-1-test.js
 ```
 
-## Core rule
+Run the completion scope tests:
 
-```text
-∥Ω∥₁ = 1
+```bash
+node tests/completion-scopes-v0-1-test.js
+node tests/completion-edge-scopes-v0-1-test.js
 ```
 
-Every active subdivision is also unit-total:
-
-```text
-∥τ∥₁ = 1
-∥ρ∥₁ = 1
-∥μ∥₁ = 1
-∥ε∥₁ = 1
-∥λ∥₁ = 1
-∥ι∥₁ = 1
-∥κ∥₁ = 1
-∥ν∥₁ = 1
-∥θ∥₁ = 1
-∥Ωd∥₁ = 1
-∥ΩL∥₁ = 1
-```
-
-Where:
-
-```text
-τ = raw pattern tokens
-ρ = token relations
-μ = candidate bindings
-ε = error / uncertainty pressure
-λ = internal language field
-ι = intention field
-κ = constraint field
-ν = nested relation field
-θ = truth-accounting field
-Ωd = discovery state field
-ΩL = whole-language self-edit state field
-Ω = whole active math state
-Ξ = English output channel
-```
-
-`Ξ` must stay empty at this layer.
-
-## Current direction
-
-The repo should not treat English as the language of the kernel.
-
-English may describe the kernel from outside, but the kernel state itself is expressed as normalized symbolic fields.
-
-Current flow:
-
-```text
-Σ raw input
-  -> Ωd discovery
-  -> ΩL whole-language stack calculation
-  -> sandboxed source mutation proposal
-  -> tests and validators
-  -> accepted virtual state or rejected chaos report
-  -> τ repeated pattern tokens
-  -> ρ token relations
-  -> μ candidate bindings
-  -> ε error / uncertainty
-  -> λ internal language
-  -> ι intention
-  -> ν nested relations
-  -> θ truth accounting
-  -> Ω whole state
-```
-
-Each new observation readjusts the active fields by normalization instead of appending an uncontrolled module.
-
-## Discovery core
-
-The discovery core is the first non-dictionary growth operator.
-
-It does not define meanings. It observes raw streams, compresses repeated structure, forms candidate distinctions, births stable symbols, tracks relations, exposes contradiction and unknown pressure, and keeps the discovery state unit-total.
-
-```text
-Σ -> α -> π -> Δ -> β -> ν -> χ/υ -> Ωd
-```
-
-## Source sandbox and self-edit loop
-
-The source sandbox is the protected self-edit layer.
-
-The self-edit loop calculates the whole declared language stack as one unit-total state, detects manifest-level gaps, generates one batch proposal, simulates the proposal in the virtual source sandbox, runs tests and validators, and returns a full accepted/rejected report.
-
-```text
-base source
-  -> whole-language field ΩL
-  -> gap field Γ
-  -> batch mutation proposal
-  -> virtual source simulation
-  -> tests / validators
-  -> accepted virtual state OR rejected chaos report
-```
-
-Real source patching remains outside the sandbox and requires an external write gate.
-
-Run the loop locally:
+Run the self-edit loop:
 
 ```bash
 node scripts/run-self-edit-loop-v0-1.js
 ```
 
-It writes:
+The self-edit loop writes:
 
 ```text
 artifacts/self-edit-loop-report-v0-1.json
+artifacts/self-edit-loop-summary-v0-1.json
 ```
 
-## Intention algebra
+## Current project direction
 
-The current intention algebra is:
+The next phase is to keep feeding `K.complete(...)` broader and stricter scopes.
+
+Each new scope should either:
 
 ```text
-ι = N(0.18τ + 0.16ρ + 0.18μ + 0.18λ + 0.15ε↓ + 0.10ε↑ + 0.05κ)
+close under Ω*
 ```
 
-This is project-official as version `0.1.0`, but not yet a frozen public language standard.
-
-## Nested relations
-
-The nested relation core allows relations to point to other relations.
-
-Example:
+or expose a precise kernel weakness:
 
 ```text
-ν1 = rel(a,b)
-ν2 = rel(ν1,c)
-ν3 = rel(ν2,ν1)
+unresolved Δ?
+lexeme conflict
+broken invariant
+lost raw evidence
+bad grounding distinction
+failed convergence
 ```
 
-This is the first layer needed for complex structure: evidence about evidence, contradiction about a relation, support between claims, and scope over another relation.
-
-The nested graph also has a unit-total relation field:
-
-```text
-∥ν∥₁ = 1
-```
-
-Cycles are rejected by validation.
-
-## Truth accounting
-
-The truth-accounting core ports the old truth-field pressure logic into pure math fields.
-
-```text
-σ = scope field
-δ = definition field
-ο = observation field
-η = support/counter field
-χ = contradiction field
-υ = unknown field
-μ = measurement field
-θ = truth accounting field
-```
-
-The truth gate opens only when support is complete and every error/unknown/contradiction channel is zero.
-
-```text
-θT = 1 only if:
-η+ = 1
-χ! = 0
-υ? = 0
-σ! = 0
-δ! = 0
-ο! = 0
-μ! = 0
-```
-
-## Packet grammar
-
-The parser accepts packets like:
-
-```text
-Ω{τ[τ1=1];ρ[ρ∅=1];μ[μ1=0.7,μ2=0.3];ε[ε↓=0.8,ε↑=0.2];λ[λ1=1];ι[ιτ=0.5,ιμ=0.5];κ[κλ=1];Ω[λ:λ1=0.5,ι:ιτ=0.5]}
-```
-
-The canonical round trip is:
-
-```text
-source packet -> parse -> canonical packet -> serialize -> parse -> same canonical packet
-```
-
-Nested relation graphs serialize separately as:
-
-```text
-Ν{nodes[...];relations[...]}
-```
-
-Truth-accounting packets serialize separately as:
-
-```text
-Θ{σ[...];δ[...];ο[...];η[...];χ[...];υ[...];μ[...];θ[...]}
-```
-
-## Conformance
-
-The conformance suite defines what independent implementations must accept and reject.
-
-It includes:
-
-```text
-valid packets
-invalid packets
-valid nested graphs
-invalid nested graphs
-intention fixtures
-canonical round-trip checks
-```
-
-Run:
-
-```bash
-node tests/language-v0-1-conformance-test.js
-```
-
-## Main API
-
-```js
-const L = require('./src/self-edit-loop-v0-1.js');
-const report = L.run(files, { rawInput: '...' });
-console.log(report.accepted, report.state.fields.ΩL, report.sandbox_report.chaos);
-```
-
-## Run verification
-
-```bash
-node tests/math-language-kernel-v0-1-test.js
-node tests/discovery-core-v0-1-test.js
-node tests/source-sandbox-v0-1-test.js
-node tests/self-edit-loop-v0-1-test.js
-node tests/intention-algebra-v0-1-test.js
-node tests/language-parser-v0-1-test.js
-node tests/nested-relation-core-v0-1-test.js
-node tests/language-v0-1-conformance-test.js
-node tests/truth-accounting-core-v0-1-test.js
-```
-
-Expected result: all PASS lines.
-
-## Boundaries
-
-```text
-No LLM calls.
-No English output as internal language.
-No semantic label shortcut as the main learning layer.
-No direct real-source writing from sandbox simulation.
-No final truth promotion without truth-accounting closure.
-No claim that unit-total fields alone prove understanding.
-```
-
-## Archived / experimental layers
-
-Older infant, brain, alive-math, and bridge files may remain in the repository as recoverable experimental history, but they are no longer the default project center.
+The goal is a small, disciplined kernel with stronger logic, not a large pile of disconnected modules.
