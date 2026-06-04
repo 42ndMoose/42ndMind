@@ -162,6 +162,29 @@ PASS contradiction scope detects lexeme conflict
 PASS contradiction scope refuses complete flag
 PASS contradiction scope still preserves unit-total
 exit_code=0
+## tests/completion-edge-scopes-v0-1-test.js
+node:internal/assert/utils:281
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: raw-unit scope retains raw unit mismatch evidence
+    at ok (/home/runner/work/42ndMind/42ndMind/tests/completion-edge-scopes-v0-1-test.js:7:10)
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/completion-edge-scopes-v0-1-test.js:28:1)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '=='
+}
+
+Node.js v20.20.2
+exit_code=1
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
