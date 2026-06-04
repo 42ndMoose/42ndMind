@@ -468,7 +468,10 @@
       for (let i = 0; i < fields.length; i += 1) {
         packets.push(canonical(fields[i]));
         packets.push(ground(fields[i]));
-        for (let j = i; j < fields.length; j += 1) packets.push(gap(fields[i], fields[j], 'Ω*'));
+        for (let j = i; j < fields.length; j += 1) {
+          packets.push(gap(fields[i], fields[j], 'Ω*'));
+          packets.push(equivalent(fields[i], fields[j]));
+        }
         if (target) {
           const t = correction(fields[i], target, 'Ω*');
           const p = proveTransform(t, fields[i], target, 'Ω*');
