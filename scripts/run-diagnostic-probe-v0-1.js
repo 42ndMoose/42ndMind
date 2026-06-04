@@ -32,15 +32,7 @@ function collectFiles() {
 }
 
 function compactGap(packet) {
-  return {
-    φ: packet.φ,
-    ω: packet.ω,
-    score: packet.score,
-    z: packet.z,
-    u: packet.u,
-    χ: packet.χ,
-    Ξ: packet.Ξ
-  };
+  return { φ: packet.φ, ω: packet.ω, score: packet.score, z: packet.z, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
 }
 
 function compactCorrection(packet) {
@@ -59,6 +51,30 @@ function compactCorrection(packet) {
   };
 }
 
+function compactCanonical(packet) {
+  return { φ: packet.φ, id: packet.id, F: packet.F, body: packet.body, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
+}
+
+function compactEquivalence(packet) {
+  return { φ: packet.φ, true: packet.true, distance: packet.distance, a: packet.a, b: packet.b, χ: packet.χ, Ξ: packet.Ξ };
+}
+
+function compactClosure(packet) {
+  return { φ: packet.φ, field_count: packet.fields.length, fields: packet.fields, gaps: packet.gaps, transforms: packet.transforms, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
+}
+
+function compactProof(packet) {
+  return { φ: packet.φ, true: packet.true, valid: packet.valid, reduced: packet.reduced, before: packet.before, after: packet.after, transform: packet.transform, χ: packet.χ, Ξ: packet.Ξ };
+}
+
+function compactConvergence(packet) {
+  return { φ: packet.φ, stable: packet.stable, score: packet.score, final: packet.final, trace: packet.trace, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
+}
+
+function compactGround(packet) {
+  return { φ: packet.φ, mode: packet.mode, formal: packet.formal, observed: packet.observed, true: packet.true, id: packet.id, χ: packet.χ, Ξ: packet.Ξ };
+}
+
 function main() {
   const files = collectFiles();
   files[PROBE_TEST] = [
@@ -68,19 +84,25 @@ function main() {
   ].join('\n');
 
   const rawInput = Object.keys(files).sort().map(key => '--- ' + key + '\n' + files[key]).join('\n');
-  const report = L.run(files, {
-    rawInput,
-    tests: [PROBE_TEST],
-    sandboxOptions: { allowDelete: false, maxPatchBytes: 5_000_000 }
-  });
+  const report = L.run(files, { rawInput, tests: [PROBE_TEST], sandboxOptions: { allowDelete: false, maxPatchBytes: 5_000_000 } });
 
   const kernelDiscrepancy = K.discrepancy(0, 1, 'tests/diagnostic-probe-v0-1-test.js');
   const current = [{ σ: 'a', w: 0.5 }, { σ: 'b', w: 0.5 }];
   const target = [{ σ: 'a', w: 0.25 }, { σ: 'b', w: 0.75 }];
+  const messy = [{ σ: 'b', w: 0.25 }, { σ: 'a', w: 0.25 }, { σ: 'b', w: 0.25 }, { σ: 'a', w: 0.25 }];
   const axisTarget = [{ σ: 'a', w: 0.4 }, { σ: 'b', w: 0.4 }, { σ: 'c', w: 0.2 }];
   const kernelWeightGap = K.gap(current, target, 'diagnostic:weight');
   const kernelAxisGap = K.gap(current, axisTarget, 'diagnostic:axis');
   const kernelCorrection = K.correction(current, target, 'diagnostic:correction');
+  const kernelCanonical = K.canonical(messy);
+  const kernelEquivalentSame = K.equivalent(messy, current);
+  const kernelEquivalentDifferent = K.equivalent(current, target);
+  const kernelClosure = K.close([current], { target });
+  const kernelProof = K.proveTransform(kernelCorrection, current, target, 'diagnostic:proof');
+  const kernelConvergence = K.converge(current, target, { steps: 4 });
+  const kernelFormalGround = K.ground(current);
+  const kernelObservedGround = K.ground(current, [{ source: 'diagnostic', value: current }]);
+
   const kernelLogic = {
     definitions: K.definitions(),
     invariants: K.invariants(),
@@ -91,6 +113,14 @@ function main() {
     weight_gap: kernelWeightGap,
     axis_gap: kernelAxisGap,
     correction: kernelCorrection,
+    canonical: kernelCanonical,
+    equivalent_same: kernelEquivalentSame,
+    equivalent_different: kernelEquivalentDifferent,
+    closure: kernelClosure,
+    proof: kernelProof,
+    convergence: kernelConvergence,
+    ground_formal: kernelFormalGround,
+    ground_observed: kernelObservedGround,
     Ξ: ''
   };
 
@@ -117,17 +147,18 @@ function main() {
       invariant_field_unit: K.l1(kernelLogic.invariant_field),
       valid_field_ok: kernelLogic.valid_field.ok,
       invalid_unit_field_ok: kernelLogic.invalid_unit_field.ok,
-      discrepancy: {
-        φ: kernelDiscrepancy.φ,
-        ω: kernelDiscrepancy.ω,
-        z: kernelDiscrepancy.z,
-        u: kernelDiscrepancy.u,
-        χ: kernelDiscrepancy.χ,
-        Ξ: kernelDiscrepancy.Ξ
-      },
+      discrepancy: { φ: kernelDiscrepancy.φ, ω: kernelDiscrepancy.ω, z: kernelDiscrepancy.z, u: kernelDiscrepancy.u, χ: kernelDiscrepancy.χ, Ξ: kernelDiscrepancy.Ξ },
       weight_gap: compactGap(kernelWeightGap),
       axis_gap: compactGap(kernelAxisGap),
-      correction: compactCorrection(kernelCorrection)
+      correction: compactCorrection(kernelCorrection),
+      canonical: compactCanonical(kernelCanonical),
+      equivalent_same: compactEquivalence(kernelEquivalentSame),
+      equivalent_different: compactEquivalence(kernelEquivalentDifferent),
+      closure: compactClosure(kernelClosure),
+      proof: compactProof(kernelProof),
+      convergence: compactConvergence(kernelConvergence),
+      ground_formal: compactGround(kernelFormalGround),
+      ground_observed: compactGround(kernelObservedGround)
     },
     operations: report.proposal.operations.map(op => ({ type: op.type, path: op.path })),
     truth_gate: report.truth_gate,
