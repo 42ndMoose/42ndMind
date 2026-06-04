@@ -41,9 +41,10 @@
       "≡": "canonical equivalence relation",
       "⊢": "invariant-preserving proof gate",
       "G": "grounding status packet",
-      "Λ": "kernel-derived lexeme over a stable packet pattern"
+      "Λ": "kernel-derived lexeme over a stable packet pattern",
+      "Ω*": "fixed-point completion packet under C and Λ while χ holds"
     },
-    "invariant_count": 7,
+    "invariant_count": 8,
     "invariant_field_unit": 1,
     "valid_field_ok": true,
     "invalid_unit_field_ok": false,

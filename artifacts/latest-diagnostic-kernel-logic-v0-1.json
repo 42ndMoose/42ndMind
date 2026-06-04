@@ -12,26 +12,27 @@
     "≡": "canonical equivalence relation",
     "⊢": "invariant-preserving proof gate",
     "G": "grounding status packet",
-    "Λ": "kernel-derived lexeme over a stable packet pattern"
+    "Λ": "kernel-derived lexeme over a stable packet pattern",
+    "Ω*": "fixed-point completion packet under C and Λ while χ holds"
   },
   "invariants": [
     {
       "id": "χ_unit_total",
       "row": "∥F∥₁=1",
       "axis": "∥",
-      "weight": 0.27
+      "weight": 0.25
     },
     {
       "id": "χ_finite_weight",
       "row": "∀w∈F:Number.isFinite(w)",
       "axis": "w",
-      "weight": 0.16
+      "weight": 0.15
     },
     {
       "id": "χ_axis_defined",
       "row": "∀σ∈F:σ≠∅",
       "axis": "σ",
-      "weight": 0.13
+      "weight": 0.12
     },
     {
       "id": "χ_canonical_order",
@@ -43,45 +44,55 @@
       "id": "χ_zero_gap",
       "row": "Δ.score=0⇒Δ=Δ0",
       "axis": "Δ0",
-      "weight": 0.1
+      "weight": 0.09
     },
     {
       "id": "χ_no_english",
       "row": "Ξ=\"\"",
       "axis": "Ξ",
-      "weight": 0.1
+      "weight": 0.09
     },
     {
       "id": "χ_local_minimality",
       "row": "T*=argmin(score(Δ(T(F),G))+cost(T))",
       "axis": "T",
-      "weight": 0.12
+      "weight": 0.1
+    },
+    {
+      "id": "χ_completion_fixed_point",
+      "row": "Ω*=fix(C⊕Λ)",
+      "axis": "Ω*",
+      "weight": 0.08
     }
   ],
   "invariant_field": [
     {
       "σ": "T",
-      "w": 0.12
+      "w": 0.1
     },
     {
       "σ": "w",
-      "w": 0.16
+      "w": 0.15
     },
     {
       "σ": "Δ0",
-      "w": 0.1
+      "w": 0.09
     },
     {
       "σ": "Ξ",
-      "w": 0.1
+      "w": 0.09
+    },
+    {
+      "σ": "Ω*",
+      "w": 0.08
     },
     {
       "σ": "σ",
-      "w": 0.13
+      "w": 0.12
     },
     {
       "σ": "∥",
-      "w": 0.27
+      "w": 0.25
     },
     {
       "σ": "≡",
