@@ -81,9 +81,7 @@
     });
   }
 
-  function l1(field) {
-    return R(A(field).reduce((sum, row) => sum + Math.abs(rowWeight(row)), 0));
-  }
+  function l1(field) { return R(A(field).reduce((sum, row) => sum + Math.abs(rowWeight(row)), 0)); }
 
   function fieldMap(field) {
     const out = {};
@@ -91,9 +89,7 @@
     return out;
   }
 
-  function rowsFromMap(map) {
-    return Object.keys(map || {}).sort().map(key => ({ σ: key, w: map[key] }));
-  }
+  function rowsFromMap(map) { return Object.keys(map || {}).sort().map(key => ({ σ: key, w: map[key] })); }
 
   function blend(fields) {
     const out = {};
@@ -121,14 +117,8 @@
     }, 0));
   }
 
-  function scalar(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  function scalarOk(value) {
-    return Number.isFinite(Number(value));
-  }
+  function scalar(value) { const n = Number(value); return Number.isFinite(n) ? n : 0; }
+  function scalarOk(value) { return Number.isFinite(Number(value)); }
 
   function unitGap(value) {
     if (Array.isArray(value)) return Math.abs(l1(value) - 1);
@@ -183,12 +173,15 @@
     return { φ: 'χ', v: VERSION, χ, ok: unit && finite && axisDefined, z: { '∥': unit ? 0 : R(Math.abs(l1(rows) - 1)), w: finite ? 0 : 1, σ: axisDefined ? 0 : 1, Ξ: 0 }, Ξ: '' };
   }
 
+  function rawGapScore(packet) {
+    const z = packet && packet.z || {};
+    return R(Object.keys(z).reduce((sum, key) => sum + Math.abs(Number(z[key]) || 0), 0));
+  }
+
   function discrepancy(expected, actual, scope) {
     const eOk = scalarOk(expected);
     const aOk = scalarOk(actual);
-    const e = scalar(expected);
-    const a = scalar(actual);
-    const contractGap = eOk && aOk ? Math.abs(e - a) : 1;
+    const contractGap = eOk && aOk ? Math.abs(scalar(expected) - scalar(actual)) : 1;
     const totalGap = unitGap(actual);
     const measureGap = eOk && aOk ? 0 : 1;
     const z = { 'δ=': R(contractGap), 'δ∥': R(totalGap), 'δ?': R(measureGap) };
@@ -226,11 +219,6 @@
     return R(keys.filter(key => !amap[key] || !bmap[key]).length / Math.max(1, keys.length));
   }
 
-  function rawGapScore(packet) {
-    const z = packet && packet.z || {};
-    return R(Object.keys(z).reduce((sum, key) => sum + Math.abs(Number(z[key]) || 0), 0));
-  }
-
   function gap(a, b, scope) {
     const af = comparableField(a);
     const bf = comparableField(b);
@@ -250,8 +238,7 @@
 
   function weightProjectedField(current, target) {
     const tm = fieldMap(target);
-    const keys = Object.keys(tm).sort();
-    return normalize(keys.map(key => ({ σ: key, w: tm[key] })));
+    return normalize(Object.keys(tm).sort().map(key => ({ σ: key, w: tm[key] })));
   }
 
   function candidateTransform(name, cost, field) { return { name, cost, field: normalize(field) }; }
@@ -280,8 +267,7 @@
     const opts = options || {};
     if (isField(value) || scalarOk(value)) {
       const raw = rawComparableField(value);
-      const F = opts.raw ? mergeRows(raw) : normalize(raw);
-      return { kind: 'F', F };
+      return { kind: 'F', F: opts.raw ? mergeRows(raw) : normalize(raw) };
     }
     if (value && typeof value === 'object') {
       const fields = {};
@@ -368,23 +354,49 @@
 
   function lexeme(σ, rule, packet, gain) {
     const target = canonical({ φ: 'Λχ', χ: [rule] });
-    return { φ: 'Λ', v: VERSION, σ, rule, ν: target.id, source: packet && packet.φ || '∅', c: R(gain || 0), accepted: false, χ: ['Λ=derive(packet pattern)', 'Λν=canonical(rule)', 'Ξ=""'], Ξ: '' };
+    return { φ: 'Λ', v: VERSION, σ, rule, ν: target.id, source: packet && packet.φ || '∅', c: R(gain || 0), accepted: false, χ: ['Λ=derive(packet fact)', 'Λν=canonical(rule)', 'Ξ=""'], Ξ: '' };
   }
 
-  function lexemeCandidates(packet) {
+  function packetFacts(packet) {
     if (!packet || typeof packet !== 'object') return [];
+    const φ = String(packet.φ || 'Π');
     const out = [];
-    if (packet.φ === 'Δ' && Number(packet.score) <= EPS) out.push(lexeme('Λ:Δ0', 'Δ.score=0', packet, 1));
-    if (packet.φ === 'δ' && Number(packet.score) <= EPS) out.push(lexeme('Λ:δ0', 'δ.score=0', packet, 1));
-    if (packet.φ === 'T' && packet.reduced === true) out.push(lexeme('Λ:T↓', 'T.reduced=true', packet, 0.8));
-    if (packet.φ === '⊢' && packet.true === true) out.push(lexeme('Λ:⊢1', '⊢.true=true', packet, 0.9));
-    if (packet.φ === 'lim' && packet.stable === true) out.push(lexeme('Λ:lim1', 'lim.stable=true', packet, 0.9));
-    if (packet.φ === 'G' && packet.mode === 'formal') out.push(lexeme('Λ:Gf', 'G.mode=formal', packet, 0.4));
-    if (packet.φ === 'G' && packet.mode === 'observed') out.push(lexeme('Λ:Go', 'G.mode=observed', packet, 0.5));
-    if (packet.φ === '≡' && packet.true === true) out.push(lexeme('Λ:≡1', '≡.true=true', packet, 0.7));
-    if (packet.φ === '≡' && packet.true === false) out.push(lexeme('Λ:≡0', '≡.true=false', packet, 0.7));
+    function walk(value, path) {
+      if (Array.isArray(value)) return;
+      if (value && typeof value === 'object') {
+        Object.keys(value).sort().forEach(key => {
+          if (key === 'χ' || key === 'Ξ' || key === 'v') return;
+          walk(value[key], path.concat(key));
+        });
+        return;
+      }
+      if (!path.length || path[0] === 'φ') return;
+      const p = path.join('.');
+      if (typeof value === 'boolean') out.push({ φ, path: p, value, rule: φ + '.' + p + '=' + String(value), gain: 0.7 });
+      else if (typeof value === 'number' && Number.isFinite(value)) out.push({ φ, path: p, value: Math.abs(value) <= EPS ? 0 : R(value), rule: φ + '.' + p + '=' + (Math.abs(value) <= EPS ? '0' : String(R(value))), gain: Math.abs(value) <= EPS ? 1 : 0.25 });
+      else if (typeof value === 'string' && value !== '') out.push({ φ, path: p, value, rule: φ + '.' + p + '=' + value, gain: 0.4 });
+    }
+    walk(packet, []);
     return out;
   }
+
+  function lexemeSymbol(fact) {
+    if (fact.φ === 'Δ' && fact.path === 'score' && fact.value === 0) return 'Λ:Δ0';
+    if (fact.φ === 'δ' && fact.path === 'score' && fact.value === 0) return 'Λ:δ0';
+    if (fact.φ === 'T' && fact.path === 'reduced' && fact.value === true) return 'Λ:T↓';
+    if (fact.φ === '⊢' && fact.path === 'true' && fact.value === true) return 'Λ:⊢1';
+    if (fact.φ === 'lim' && fact.path === 'stable' && fact.value === true) return 'Λ:lim1';
+    if (fact.φ === 'G' && fact.path === 'mode' && fact.value === 'formal') return 'Λ:Gf';
+    if (fact.φ === 'G' && fact.path === 'mode' && fact.value === 'observed') return 'Λ:Go';
+    if (fact.φ === '≡' && fact.path === 'true' && fact.value === true) return 'Λ:≡1';
+    if (fact.φ === '≡' && fact.path === 'true' && fact.value === false) return 'Λ:≡0';
+    if (fact.value === true) return 'Λ:' + fact.φ + '.' + fact.path + '1';
+    if (fact.value === false) return 'Λ:' + fact.φ + '.' + fact.path + '0';
+    if (fact.value === 0) return 'Λ:' + fact.φ + '.' + fact.path + '0';
+    return 'Λ:' + fact.φ + '.' + fact.path + '=' + String(fact.value);
+  }
+
+  function lexemeCandidates(packet) { return packetFacts(packet).map(fact => lexeme(lexemeSymbol(fact), fact.rule, packet, fact.gain)); }
 
   function acceptLexeme(candidate, registry) {
     const reg = A(registry);
@@ -404,7 +416,7 @@
       if (acc.accepted && !seen[key]) { seen[key] = true; accepted.push(acc); }
     });
     const Λ = normalize(accepted.map(item => ({ σ: item.σ, w: Math.max(EPS, item.c || EPS) })));
-    return { φ: 'Λ', v: VERSION, Λ, entries: accepted, count: accepted.length, u: { Λ: l1(Λ), ok: Math.abs(l1(Λ) - 1) < EPS }, χ: ['Λ=accepted(kernel-derived lexemes)', 'no σ conflict', 'Ξ=""'], Ξ: '' };
+    return { φ: 'Λ', v: VERSION, Λ, entries: accepted, count: accepted.length, u: { Λ: l1(Λ), ok: Math.abs(l1(Λ) - 1) < EPS }, χ: ['Λ=accepted(kernel-derived facts)', 'no σ conflict', 'Ξ=""'], Ξ: '' };
   }
 
   function resolveLexeme(symbol, lexicon) {
@@ -495,7 +507,7 @@
     state.κ = normalize(state.κ);
     state.Λ = normalize(state.Λ || [['Λ∅', 1]]);
     state.Ω = blend([{ field: state.λ.map(row => ({ σ: 'λ:' + row.σ, w: row.w })), gain: 0.32 }, { field: state.ι.map(row => ({ σ: 'ι:' + row.σ, w: row.w })), gain: 0.27 }, { field: state.ε.map(row => ({ σ: 'ε:' + row.σ, w: row.w })), gain: 0.16 }, { field: state.κ.map(row => ({ σ: 'κ:' + row.σ, w: row.w })), gain: 0.14 }, { field: state.Λ.map(row => ({ σ: 'Λ:' + row.σ, w: row.w })), gain: 0.11 }]);
-    state.χ = INVARIANTS.map(row => row.row).concat(['δ.score=0⇒δ=δ0', 'Δ.score=0⇒Δ=Δ0', 'Λ=derive(packet pattern)', 'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)', 'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'ν=canonical(x)', '≡ iff canonical(a)=canonical(b)', 'C=finite_closure(F,Δ,T)', '⊢=invariant_preserving_transform', 'λ=𝒩(τ⊕ρ⊕μ⊕ε)', 'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)', 'Ω=𝒩(λ⊕ι⊕ε⊕κ⊕Λ)']);
+    state.χ = INVARIANTS.map(row => row.row).concat(['δ.score=0⇒δ=δ0', 'Δ.score=0⇒Δ=Δ0', 'Λ=derive(packet fact)', 'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)', 'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'ν=canonical(x)', '≡ iff canonical(a)=canonical(b)', 'C=finite_closure(F,Δ,T)', '⊢=invariant_preserving_transform', 'λ=𝒩(τ⊕ρ⊕μ⊕ε)', 'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)', 'Ω=𝒩(λ⊕ι⊕ε⊕κ⊕Λ)']);
     state.unit = unitReport(state);
     return state;
   }
