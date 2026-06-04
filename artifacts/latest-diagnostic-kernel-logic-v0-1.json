@@ -5,75 +5,87 @@
     "χ": "constraint row that must remain stable under accepted transformations",
     "𝒩": "unit-total normalization by L1 magnitude",
     "Δ": "normalized gap field over measurable mismatch axes",
+    "Δ0": "closed gap: measured gap score is zero",
     "δ": "expected-actual discrepancy field",
     "T": "local unit-preserving correction transform",
     "C": "finite one-step closure over fields, gaps, and transforms",
     "≡": "canonical equivalence relation",
     "⊢": "invariant-preserving proof gate",
-    "G": "grounding status packet"
+    "G": "grounding status packet",
+    "Λ": "kernel-derived lexeme over a stable packet pattern"
   },
   "invariants": [
     {
       "id": "χ_unit_total",
       "row": "∥F∥₁=1",
       "axis": "∥",
-      "weight": 0.3
+      "weight": 0.27
     },
     {
       "id": "χ_finite_weight",
       "row": "∀w∈F:Number.isFinite(w)",
       "axis": "w",
-      "weight": 0.18
+      "weight": 0.16
     },
     {
       "id": "χ_axis_defined",
       "row": "∀σ∈F:σ≠∅",
       "axis": "σ",
-      "weight": 0.14
+      "weight": 0.13
     },
     {
       "id": "χ_canonical_order",
       "row": "canonical(F)=sort(merge(F))",
       "axis": "≡",
-      "weight": 0.13
+      "weight": 0.12
+    },
+    {
+      "id": "χ_zero_gap",
+      "row": "Δ.score=0⇒Δ=Δ0",
+      "axis": "Δ0",
+      "weight": 0.1
     },
     {
       "id": "χ_no_english",
       "row": "Ξ=\"\"",
       "axis": "Ξ",
-      "weight": 0.12
+      "weight": 0.1
     },
     {
       "id": "χ_local_minimality",
       "row": "T*=argmin(score(Δ(T(F),G))+cost(T))",
       "axis": "T",
-      "weight": 0.13
+      "weight": 0.12
     }
   ],
   "invariant_field": [
     {
       "σ": "T",
-      "w": 0.13
-    },
-    {
-      "σ": "w",
-      "w": 0.18
-    },
-    {
-      "σ": "Ξ",
       "w": 0.12
     },
     {
+      "σ": "w",
+      "w": 0.16
+    },
+    {
+      "σ": "Δ0",
+      "w": 0.1
+    },
+    {
+      "σ": "Ξ",
+      "w": 0.1
+    },
+    {
       "σ": "σ",
-      "w": 0.14
+      "w": 0.13
     },
     {
       "σ": "∥",
-      "w": 0.3
+      "w": 0.27
     },
     {
       "σ": "≡",
-      "w": 0.13
+      "w": 0.12
     }
   ],
   "valid_field": {
@@ -145,6 +157,7 @@
       }
     ],
     "ω": "δ=",
+    "score": 1,
     "u": {
       "δ": 1,
       "ok": true
@@ -157,6 +170,7 @@
     "χ": [
       "δ=|e-a|",
       "δ∥=|1-∥a∥₁|",
+      "δ.score=0⇒δ=δ0",
       "δ=𝒩(δ=⊕δ∥⊕δ?)"
     ],
     "Ξ": ""
@@ -186,6 +200,7 @@
     },
     "χ": [
       "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+      "Δ.score=0⇒Δ=Δ0",
       "Δσ=axis gap",
       "Δw=weight gap",
       "Δ∥=unit gap",
@@ -222,6 +237,7 @@
     },
     "χ": [
       "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+      "Δ.score=0⇒Δ=Δ0",
       "Δσ=axis gap",
       "Δw=weight gap",
       "Δ∥=unit gap",
@@ -278,6 +294,7 @@
       },
       "χ": [
         "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+        "Δ.score=0⇒Δ=Δ0",
         "Δσ=axis gap",
         "Δw=weight gap",
         "Δ∥=unit gap",
@@ -291,11 +308,11 @@
       "s": "diagnostic:correction",
       "Δ": [
         {
-          "σ": "∅",
+          "σ": "Δ0",
           "w": 1
         }
       ],
-      "ω": "∅",
+      "ω": "Δ0",
       "score": 0,
       "z": {
         "Δσ": 0,
@@ -310,6 +327,7 @@
       },
       "χ": [
         "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+        "Δ.score=0⇒Δ=Δ0",
         "Δσ=axis gap",
         "Δw=weight gap",
         "Δ∥=unit gap",
@@ -332,7 +350,7 @@
         "T": "Tw",
         "cost": 0.13,
         "score": 0.13,
-        "ω": "∅",
+        "ω": "Δ0",
         "z": {
           "Δσ": 0,
           "Δw": 0,
@@ -483,7 +501,7 @@
     ],
     "gaps": [
       {
-        "ω": "∅",
+        "ω": "Δ0",
         "score": 0,
         "z": {
           "Δσ": 0,
