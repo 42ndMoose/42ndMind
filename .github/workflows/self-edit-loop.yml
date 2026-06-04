@@ -33,6 +33,7 @@ jobs:
           status=0
           for test in \
             tests/math-language-kernel-v0-1-test.js \
+            tests/completion-scopes-v0-1-test.js \
             tests/discovery-core-v0-1-test.js \
             tests/source-sandbox-v0-1-test.js \
             tests/mathematical-patch-proposer-v0-1-test.js \
