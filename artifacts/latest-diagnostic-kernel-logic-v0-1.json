@@ -393,5 +393,201 @@
     ],
     "Ξ": ""
   },
+  "canonical": {
+    "φ": "ν",
+    "v": "0.1.0",
+    "id": "νf44a677c",
+    "body": {
+      "kind": "F",
+      "F": [
+        {
+          "σ": "a",
+          "w": 0.5
+        },
+        {
+          "σ": "b",
+          "w": 0.5
+        }
+      ]
+    },
+    "F": [
+      {
+        "σ": "a",
+        "w": 0.5
+      },
+      {
+        "σ": "b",
+        "w": 0.5
+      }
+    ],
+    "u": {
+      "ν": 1,
+      "ok": true
+    },
+    "χ": [
+      "ν=canonical(x)",
+      "merge duplicate σ",
+      "sort σ",
+      "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "equivalent_same": {
+    "φ": "≡",
+    "v": "0.1.0",
+    "true": true,
+    "distance": 0,
+    "a": "νf44a677c",
+    "b": "νf44a677c",
+    "χ": [
+      "≡ iff canonical(a)=canonical(b)"
+    ],
+    "Ξ": ""
+  },
+  "equivalent_different": {
+    "φ": "≡",
+    "v": "0.1.0",
+    "true": false,
+    "distance": 0.5,
+    "a": "νf44a677c",
+    "b": "νe69571a9",
+    "χ": [
+      "≡ iff canonical(a)=canonical(b)"
+    ],
+    "Ξ": ""
+  },
+  "closure": {
+    "φ": "C",
+    "v": "0.1.0",
+    "fields": [
+      [
+        {
+          "σ": "a",
+          "w": 0.5
+        },
+        {
+          "σ": "b",
+          "w": 0.5
+        }
+      ],
+      [
+        {
+          "σ": "a",
+          "w": 0.25
+        },
+        {
+          "σ": "b",
+          "w": 0.75
+        }
+      ]
+    ],
+    "gaps": [
+      {
+        "ω": "∅",
+        "score": 0,
+        "z": {
+          "Δσ": 0,
+          "Δw": 0,
+          "Δ∥": 0,
+          "Δχ": 0,
+          "Δ?": 0
+        }
+      }
+    ],
+    "transforms": [
+      {
+        "chosen": "Tw",
+        "reduced": true,
+        "after": 0
+      }
+    ],
+    "u": {
+      "C": 1,
+      "ok": true
+    },
+    "χ": [
+      "C=finite_closure(F,Δ,T)",
+      "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "proof": {
+    "φ": "⊢",
+    "v": "0.1.0",
+    "true": true,
+    "valid": true,
+    "reduced": true,
+    "before": 0.25,
+    "after": 0,
+    "transform": "Tw",
+    "χ": [
+      "⊢ iff ∥T(F)∥₁=1 and Δ decreases and Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "convergence": {
+    "φ": "lim",
+    "v": "0.1.0",
+    "stable": true,
+    "final": [
+      {
+        "σ": "a",
+        "w": 0.25
+      },
+      {
+        "σ": "b",
+        "w": 0.75
+      }
+    ],
+    "score": 0,
+    "trace": [
+      {
+        "i": 0,
+        "chosen": "Tw",
+        "before": 0.25,
+        "after": 0,
+        "reduced": true
+      }
+    ],
+    "u": {
+      "lim": 1,
+      "ok": true
+    },
+    "χ": [
+      "lim=iterate(T*) until Δ stops decreasing",
+      "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "ground_formal": {
+    "φ": "G",
+    "v": "0.1.0",
+    "mode": "formal",
+    "formal": true,
+    "observed": false,
+    "true": true,
+    "id": "νf44a677c",
+    "χ": [
+      "formal=internal consistency",
+      "observed=formal + measurement channel",
+      "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "ground_observed": {
+    "φ": "G",
+    "v": "0.1.0",
+    "mode": "observed",
+    "formal": true,
+    "observed": true,
+    "true": true,
+    "id": "νf44a677c",
+    "χ": [
+      "formal=internal consistency",
+      "observed=formal + measurement channel",
+      "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
   "Ξ": ""
 }

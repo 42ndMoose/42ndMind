@@ -5781,7 +5781,7 @@
       {
         "path": "tests/diagnostic-probe-v0-1-test.js",
         "ok": false,
-        "error": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:71:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:143:30)"
+        "error": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:87:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:174:30)"
       }
     ],
     "validators": [
@@ -5815,12 +5815,12 @@
   "operator_synthesis": {
     "packet_type": "42ndMind_operator_synthesis_v0_1",
     "version": "0.1.0",
-    "id": "Ωωab29af93",
+    "id": "Ωω26b8713b",
     "failures": [
       {
         "kind": "test",
         "id": "tests/diagnostic-probe-v0-1-test.js",
-        "text": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:71:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:143:30)"
+        "text": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:87:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:174:30)"
       },
       {
         "kind": "diagnostic",
@@ -5833,7 +5833,7 @@
         "failure": {
           "kind": "test",
           "id": "tests/diagnostic-probe-v0-1-test.js",
-          "text": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:71:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:143:30)"
+          "text": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:199:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:87:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:174:30)"
         },
         "rules": [
           "strict_equal_failed",
@@ -5843,7 +5843,7 @@
     ],
     "candidates": [
       {
-        "id": "ω9586a323",
+        "id": "ω7490cb00",
         "rule": "strict_equal_failed",
         "operator": "expected_actual_alignment_operator",
         "target": "test_contract",
@@ -5853,7 +5853,7 @@
         "implementation_status": "candidate_not_implemented"
       },
       {
-        "id": "ωdc6096dd",
+        "id": "ω457bc42a",
         "rule": "unit_failed",
         "operator": "unit_restoration_operator",
         "target": "field_normalization",
@@ -5915,7 +5915,7 @@
   "virtual_summary": {
     "artifacts/operator-synthesis-v0-1.json": {
       "bytes": 3853,
-      "checksum": "93913a7"
+      "checksum": "f77a775d"
     },
     "src/discovery-core-v0-1.js": {
       "bytes": 8821,
