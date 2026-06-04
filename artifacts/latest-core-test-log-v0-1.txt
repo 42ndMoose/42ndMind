@@ -99,28 +99,69 @@ PASS irregular stream tolerated
 PASS irregular stream still has no English
 exit_code=0
 ## tests/completion-scopes-v0-1-test.js
-node:internal/assert/utils:281
-    throw err;
-    ^
-
-AssertionError [ERR_ASSERTION]: pure field scope derives canonical equality lexeme
-    at ok (/home/runner/work/42ndMind/42ndMind/tests/completion-scopes-v0-1-test.js:7:10)
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/completion-scopes-v0-1-test.js:33:1)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-    at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
-    at node:internal/main/run_main_module:28:49 {
-  generatedMessage: false,
-  code: 'ERR_ASSERTION',
-  actual: false,
-  expected: true,
-  operator: '=='
-}
-
-Node.js v20.20.2
-exit_code=1
+PASS pure field algebra scope packet is Ω*
+PASS pure field algebra scope reaches fixed point
+PASS pure field algebra scope completes under current constraints
+PASS pure field algebra scope preserves unit-total
+PASS pure field algebra scope has no unresolved gap
+PASS pure field algebra scope has no lexeme conflict
+PASS pure field algebra scope emits lexicon
+PASS pure field scope derives canonical equality lexeme
+PASS pure field scope derives closed gap lexeme
+PASS gap correction algebra scope packet is Ω*
+PASS gap correction algebra scope reaches fixed point
+PASS gap correction algebra scope completes under current constraints
+PASS gap correction algebra scope preserves unit-total
+PASS gap correction algebra scope has no unresolved gap
+PASS gap correction algebra scope has no lexeme conflict
+PASS gap correction algebra scope emits lexicon
+PASS gap correction scope derives reducing transform lexeme
+PASS gap correction scope derives closed target gap lexeme
+PASS gap correction scope contains transformed target field
+PASS proof convergence algebra scope packet is Ω*
+PASS proof convergence algebra scope reaches fixed point
+PASS proof convergence algebra scope completes under current constraints
+PASS proof convergence algebra scope preserves unit-total
+PASS proof convergence algebra scope has no unresolved gap
+PASS proof convergence algebra scope has no lexeme conflict
+PASS proof convergence algebra scope emits lexicon
+PASS proof convergence scope derives proof lexeme
+PASS proof convergence scope derives stable convergence lexeme
+PASS proof convergence scope derives generalized proof after-zero lexeme
+PASS proof convergence scope derives generalized convergence score-zero lexeme
+PASS lexeme derivation scope packet is Ω*
+PASS lexeme derivation scope reaches fixed point
+PASS lexeme derivation scope completes under current constraints
+PASS lexeme derivation scope preserves unit-total
+PASS lexeme derivation scope has no unresolved gap
+PASS lexeme derivation scope has no lexeme conflict
+PASS lexeme derivation scope emits lexicon
+PASS lexeme derivation scope derives generalized numeric facts
+PASS lexeme derivation scope resolves stable convergence lexeme
+PASS formal grounding scope packet is Ω*
+PASS formal grounding scope reaches fixed point
+PASS formal grounding scope completes under current constraints
+PASS formal grounding scope preserves unit-total
+PASS formal grounding scope has no unresolved gap
+PASS formal grounding scope has no lexeme conflict
+PASS formal grounding scope emits lexicon
+PASS formal grounding scope derives formal mode lexeme
+PASS formal grounding scope derives not-observed fact lexeme
+PASS intention field scope packet is Ω*
+PASS intention field scope reaches fixed point
+PASS intention field scope completes under current constraints
+PASS intention field scope preserves unit-total
+PASS intention field scope has no unresolved gap
+PASS intention field scope has no lexeme conflict
+PASS intention field scope emits lexicon
+PASS intention scope preserves unit-total fields
+PASS intention scope closes toward intention target
+PASS intention scope derives completion lexemes
+PASS contradiction scope remains symbolic
+PASS contradiction scope detects lexeme conflict
+PASS contradiction scope refuses complete flag
+PASS contradiction scope still preserves unit-total
+exit_code=0
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
