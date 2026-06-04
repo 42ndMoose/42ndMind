@@ -12,14 +12,17 @@ const s = K.create();
 ok('kernel loads', K.VERSION === '0.1.0');
 ok('lambda starts unit-total', Math.abs(K.l1(s.λ) - 1) < 1e-6);
 ok('intention starts unit-total', Math.abs(K.l1(s.ι) - 1) < 1e-6);
+ok('lexeme field starts unit-total', Math.abs(K.l1(s.Λ) - 1) < 1e-6);
 ok('whole state starts unit-total', Math.abs(K.l1(s.Ω) - 1) < 1e-6);
 ok('no English output channel', s.Ξ === '');
 
 const defs = K.definitions();
 ok('kernel defines sigma weight and constraint rows', !!defs.σ && !!defs.w && !!defs.χ);
 ok('kernel defines closure and equivalence symbols', !!defs.C && !!defs['≡'] && !!defs['⊢'] && !!defs.G);
+ok('kernel defines zero-gap and lexeme symbols', !!defs.Δ0 && !!defs.Λ);
 const inv = K.invariants();
 ok('kernel has invariant registry beyond unit-total', inv.length >= 4 && inv.some(row => row.id === 'χ_no_english'));
+ok('kernel has zero-gap invariant', inv.some(row => row.id === 'χ_zero_gap'));
 ok('invariant field is unit-total', Math.abs(K.l1(K.invariantField()) - 1) < 1e-6);
 ok('valid field passes invariant validator', K.validateField([{ σ: 'a', w: 1 }]).ok === true);
 ok('bad unit field fails invariant validator', K.validateField([{ σ: 'a', w: 0.25 }]).ok === false);
@@ -29,7 +32,12 @@ ok('packet is symbolic', p0.φ === 'Ω' && p0.Ξ === '');
 ok('packet carries invariant list', p0.χ.includes('∥F∥₁=1') && p0.χ.includes('Ξ=""'));
 ok('packet carries discrepancy invariant', p0.χ.some(row => row.indexOf('δ=') >= 0));
 ok('packet carries gap invariant', p0.χ.some(row => row.indexOf('Δ=') >= 0));
+ok('packet carries zero-gap invariant', p0.χ.some(row => row.indexOf('Δ.score=0') >= 0));
 ok('packet carries closure invariant rows', p0.χ.some(row => row.indexOf('ν=') >= 0) && p0.χ.some(row => row.indexOf('C=') >= 0));
+ok('packet carries lexeme field', Array.isArray(p0.Λ) && Math.abs(K.l1(p0.Λ) - 1) < 1e-6);
+
+const dClosed = K.discrepancy(1, 1, 'closed');
+ok('closed discrepancy uses δ0', dClosed.ω === 'δ0' && dClosed.δ[0].σ === 'δ0');
 
 const d0 = K.discrepancy(1, 0, 'unit');
 ok('discrepancy packet is symbolic', d0.φ === 'δ' && d0.Ξ === '');
@@ -53,6 +61,7 @@ ok('gap field is unit-total', g0.u.ok === true && Math.abs(K.l1(g0.Δ) - 1) < 1e
 ok('same fields have no axis gap', g0.z['Δσ'] === 0);
 ok('same fields have no weight gap', g0.z['Δw'] === 0);
 ok('same fields have no unit gap', g0.z['Δ∥'] === 0);
+ok('closed gap uses Δ0 instead of empty axis', g0.ω === 'Δ0' && g0.Δ[0].σ === 'Δ0');
 
 const g1 = K.gap(fA, fC, 'weight');
 ok('weight gap is measured', g1.z['Δw'] > 0);
@@ -109,6 +118,14 @@ const formalGround = K.ground(fA);
 const observedGround = K.ground(fA, [{ source: 'measurement', value: fA }]);
 ok('grounding distinguishes formal mode', formalGround.φ === 'G' && formalGround.mode === 'formal' && formalGround.Ξ === '');
 ok('grounding distinguishes observed mode', observedGround.mode === 'observed' && observedGround.observed === true);
+
+const lex = K.deriveLexicon([g0, repair, proof, lim, formalGround, observedGround, eq0, eq1]);
+ok('lexicon packet is symbolic', lex.φ === 'Λ' && lex.Ξ === '');
+ok('lexicon field is unit-total', lex.u.ok === true && Math.abs(K.l1(lex.Λ) - 1) < 1e-6);
+ok('lexicon derives closed-gap lexeme', lex.entries.some(row => row.σ === 'Λ:Δ0' && row.accepted === true));
+ok('lexicon derives proof and convergence lexemes', lex.entries.some(row => row.σ === 'Λ:⊢1') && lex.entries.some(row => row.σ === 'Λ:lim1'));
+const resolved = K.resolveLexeme('Λ:Δ0', lex);
+ok('lexeme resolver returns exactly one accepted match', resolved.φ === 'Λ?' && resolved.ok === true && resolved.matches.length === 1);
 
 const p1 = K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 ok('observation returns packet', p1.φ === 'Ω');
