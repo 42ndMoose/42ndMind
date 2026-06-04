@@ -144,6 +144,37 @@
     },
     "Ξ": ""
   },
+  "closed_discrepancy": {
+    "φ": "δ",
+    "v": "0.1.0",
+    "s": "diagnostic:closed-discrepancy",
+    "e": 1,
+    "a": 1,
+    "δ": [
+      {
+        "σ": "δ0",
+        "w": 1
+      }
+    ],
+    "ω": "δ0",
+    "score": 0,
+    "u": {
+      "δ": 1,
+      "ok": true
+    },
+    "z": {
+      "δ=": 0,
+      "δ∥": 0,
+      "δ?": 0
+    },
+    "χ": [
+      "δ=|e-a|",
+      "δ∥=|1-∥a∥₁|",
+      "δ.score=0⇒δ=δ0",
+      "δ=𝒩(δ=⊕δ∥⊕δ?)"
+    ],
+    "Ξ": ""
+  },
   "discrepancy": {
     "φ": "δ",
     "v": "0.1.0",
@@ -172,6 +203,39 @@
       "δ∥=|1-∥a∥₁|",
       "δ.score=0⇒δ=δ0",
       "δ=𝒩(δ=⊕δ∥⊕δ?)"
+    ],
+    "Ξ": ""
+  },
+  "closed_gap": {
+    "φ": "Δ",
+    "v": "0.1.0",
+    "s": "diagnostic:closed-gap",
+    "Δ": [
+      {
+        "σ": "Δ0",
+        "w": 1
+      }
+    ],
+    "ω": "Δ0",
+    "score": 0,
+    "z": {
+      "Δσ": 0,
+      "Δw": 0,
+      "Δ∥": 0,
+      "Δχ": 0,
+      "Δ?": 0
+    },
+    "u": {
+      "Δ": 1,
+      "ok": true
+    },
+    "χ": [
+      "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
+      "Δ.score=0⇒Δ=Δ0",
+      "Δσ=axis gap",
+      "Δw=weight gap",
+      "Δ∥=unit gap",
+      "Δχ=invariant gap"
     ],
     "Ξ": ""
   },
@@ -604,6 +668,253 @@
       "formal=internal consistency",
       "observed=formal + measurement channel",
       "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "lexicon": {
+    "φ": "Λ",
+    "v": "0.1.0",
+    "Λ": [
+      {
+        "σ": "Λ:Gf",
+        "w": 0.057971
+      },
+      {
+        "σ": "Λ:Go",
+        "w": 0.072464
+      },
+      {
+        "σ": "Λ:T↓",
+        "w": 0.115942
+      },
+      {
+        "σ": "Λ:lim1",
+        "w": 0.130435
+      },
+      {
+        "σ": "Λ:Δ0",
+        "w": 0.144928
+      },
+      {
+        "σ": "Λ:δ0",
+        "w": 0.144928
+      },
+      {
+        "σ": "Λ:≡0",
+        "w": 0.101449
+      },
+      {
+        "σ": "Λ:≡1",
+        "w": 0.101449
+      },
+      {
+        "σ": "Λ:⊢1",
+        "w": 0.130434
+      }
+    ],
+    "entries": [
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:≡0",
+        "rule": "≡.true=false",
+        "ν": "ν9888807e",
+        "source": "≡",
+        "c": 0.7,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:≡1",
+        "rule": "≡.true=true",
+        "ν": "ν230f75f9",
+        "source": "≡",
+        "c": 0.7,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:⊢1",
+        "rule": "⊢.true=true",
+        "ν": "νd44a90ce",
+        "source": "⊢",
+        "c": 0.9,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:Gf",
+        "rule": "G.mode=formal",
+        "ν": "νd62a291",
+        "source": "G",
+        "c": 0.4,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:Go",
+        "rule": "G.mode=observed",
+        "ν": "νa7736c78",
+        "source": "G",
+        "c": 0.5,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:lim1",
+        "rule": "lim.stable=true",
+        "ν": "νaafc71b9",
+        "source": "lim",
+        "c": 0.9,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:T↓",
+        "rule": "T.reduced=true",
+        "ν": "ν56fd6f0",
+        "source": "T",
+        "c": 0.8,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:δ0",
+        "rule": "δ.score=0",
+        "ν": "ν3016bbf4",
+        "source": "δ",
+        "c": 1,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      },
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:Δ0",
+        "rule": "Δ.score=0",
+        "ν": "νf76e7654",
+        "source": "Δ",
+        "c": 1,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      }
+    ],
+    "count": 9,
+    "u": {
+      "Λ": 1,
+      "ok": true
+    },
+    "χ": [
+      "Λ=accepted(kernel-derived lexemes)",
+      "no σ conflict",
+      "Ξ=\"\""
+    ],
+    "Ξ": ""
+  },
+  "resolve_closed_gap": {
+    "φ": "Λ?",
+    "v": "0.1.0",
+    "σ": "Λ:Δ0",
+    "ok": true,
+    "matches": [
+      {
+        "φ": "Λ",
+        "v": "0.1.0",
+        "σ": "Λ:Δ0",
+        "rule": "Δ.score=0",
+        "ν": "νf76e7654",
+        "source": "Δ",
+        "c": 1,
+        "accepted": true,
+        "χ": [
+          "Λ=derive(packet pattern)",
+          "Λν=canonical(rule)",
+          "Ξ=\"\""
+        ],
+        "Ξ": "",
+        "rejected": false,
+        "conflict": null
+      }
+    ],
+    "χ": [
+      "Λ? resolves iff exactly one accepted σ"
     ],
     "Ξ": ""
   },
