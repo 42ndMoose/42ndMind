@@ -456,7 +456,8 @@
     const opts = options || {};
     const max = Math.max(1, Number(opts.steps || 8));
     const target = opts.target ? canonical(opts.target).F : null;
-    let fields = uniqueFields(A(seed).length ? seed : [invariantField()]);
+    const rawSeeds = A(seed).length ? A(seed) : [invariantField()];
+    let fields = uniqueFields(rawSeeds);
     let registry = uniqueLexemes(opts.registry || []);
     let previous = '';
     let fixed = false;
@@ -465,9 +466,13 @@
     for (let stepIndex = 0; stepIndex < max; stepIndex += 1) {
       packets = [];
       const nextFields = fields.slice();
+      for (let r = 0; r < rawSeeds.length; r += 1) {
+        packets.push(gap(rawSeeds[r], rawSeeds[r], 'Ω*:raw'));
+        if (target) packets.push(gap(rawSeeds[r], target, 'Ω*:raw'));
+      }
       for (let i = 0; i < fields.length; i += 1) {
         packets.push(canonical(fields[i]));
-        packets.push(ground(fields[i]));
+        packets.push(ground(fields[i], opts.observations));
         for (let j = i; j < fields.length; j += 1) {
           packets.push(gap(fields[i], fields[j], 'Ω*'));
           packets.push(equivalent(fields[i], fields[j]));
