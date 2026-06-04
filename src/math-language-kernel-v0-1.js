@@ -6,7 +6,7 @@
 
   const VERSION = '0.1.0';
   const EPS = 1e-6;
-  const FIELD_KEYS = Object.freeze(['τ', 'ρ', 'μ', 'ε', 'λ', 'ι', 'κ', 'Ω', 'δ', 'Δ']);
+  const FIELD_KEYS = Object.freeze(['τ', 'ρ', 'μ', 'ε', 'λ', 'ι', 'κ', 'Ω', 'δ', 'Δ', 'Λ']);
   const A = value => Array.isArray(value) ? value : [];
   const R = value => Number((Number(value) || 0).toFixed(6));
   const C = value => JSON.parse(JSON.stringify(value == null ? null : value));
@@ -17,21 +17,24 @@
     χ: 'constraint row that must remain stable under accepted transformations',
     '𝒩': 'unit-total normalization by L1 magnitude',
     Δ: 'normalized gap field over measurable mismatch axes',
+    Δ0: 'closed gap: measured gap score is zero',
     δ: 'expected-actual discrepancy field',
     T: 'local unit-preserving correction transform',
     C: 'finite one-step closure over fields, gaps, and transforms',
     '≡': 'canonical equivalence relation',
     '⊢': 'invariant-preserving proof gate',
-    G: 'grounding status packet'
+    G: 'grounding status packet',
+    Λ: 'kernel-derived lexeme over a stable packet pattern'
   });
 
   const INVARIANTS = Object.freeze([
-    { id: 'χ_unit_total', row: '∥F∥₁=1', axis: '∥', weight: 0.30 },
-    { id: 'χ_finite_weight', row: '∀w∈F:Number.isFinite(w)', axis: 'w', weight: 0.18 },
-    { id: 'χ_axis_defined', row: '∀σ∈F:σ≠∅', axis: 'σ', weight: 0.14 },
-    { id: 'χ_canonical_order', row: 'canonical(F)=sort(merge(F))', axis: '≡', weight: 0.13 },
-    { id: 'χ_no_english', row: 'Ξ=""', axis: 'Ξ', weight: 0.12 },
-    { id: 'χ_local_minimality', row: 'T*=argmin(score(Δ(T(F),G))+cost(T))', axis: 'T', weight: 0.13 }
+    { id: 'χ_unit_total', row: '∥F∥₁=1', axis: '∥', weight: 0.27 },
+    { id: 'χ_finite_weight', row: '∀w∈F:Number.isFinite(w)', axis: 'w', weight: 0.16 },
+    { id: 'χ_axis_defined', row: '∀σ∈F:σ≠∅', axis: 'σ', weight: 0.13 },
+    { id: 'χ_canonical_order', row: 'canonical(F)=sort(merge(F))', axis: '≡', weight: 0.12 },
+    { id: 'χ_zero_gap', row: 'Δ.score=0⇒Δ=Δ0', axis: 'Δ0', weight: 0.10 },
+    { id: 'χ_no_english', row: 'Ξ=""', axis: 'Ξ', weight: 0.10 },
+    { id: 'χ_local_minimality', row: 'T*=argmin(score(Δ(T(F),G))+cost(T))', axis: 'T', weight: 0.12 }
   ]);
 
   function rowAxis(row) {
@@ -188,8 +191,10 @@
     const contractGap = eOk && aOk ? Math.abs(e - a) : 1;
     const totalGap = unitGap(actual);
     const measureGap = eOk && aOk ? 0 : 1;
-    const δ = normalize([['δ=', Math.max(EPS, contractGap)], ['δ∥', Math.max(EPS, totalGap)], ['δ?', Math.max(EPS, measureGap)]]);
-    return { φ: 'δ', v: VERSION, s: scope == null ? '∅' : String(scope), e: C(expected), a: C(actual), δ, ω: dominant(δ), u: { δ: l1(δ), ok: Math.abs(l1(δ) - 1) < EPS }, z: { 'δ=': R(contractGap), 'δ∥': R(totalGap), 'δ?': R(measureGap) }, χ: ['δ=|e-a|', 'δ∥=|1-∥a∥₁|', 'δ=𝒩(δ=⊕δ∥⊕δ?)'], Ξ: '' };
+    const z = { 'δ=': R(contractGap), 'δ∥': R(totalGap), 'δ?': R(measureGap) };
+    const score = rawGapScore({ z });
+    const δ = score <= EPS ? [{ σ: 'δ0', w: 1 }] : normalize([['δ=', Math.max(EPS, z['δ='])], ['δ∥', Math.max(EPS, z['δ∥'])], ['δ?', Math.max(EPS, z['δ?'])]]);
+    return { φ: 'δ', v: VERSION, s: scope == null ? '∅' : String(scope), e: C(expected), a: C(actual), δ, ω: score <= EPS ? 'δ0' : dominant(δ), score, u: { δ: l1(δ), ok: Math.abs(l1(δ) - 1) < EPS }, z, χ: ['δ=|e-a|', 'δ∥=|1-∥a∥₁|', 'δ.score=0⇒δ=δ0', 'δ=𝒩(δ=⊕δ∥⊕δ?)'], Ξ: '' };
   }
 
   function axisMismatch(a, b) {
@@ -231,8 +236,9 @@
     const bf = comparableField(b);
     const measurable = A(af).length && A(bf).length;
     const z = { 'Δσ': axisMismatch(af, bf), 'Δw': weightMismatch(af, bf), 'Δ∥': unitMismatch(rawComparableField(a), rawComparableField(b)), 'Δχ': invariantMismatch(a, b), 'Δ?': measurable ? 0 : 1 };
-    const Δ = normalize([['Δσ', Math.max(EPS, z['Δσ'])], ['Δw', Math.max(EPS, z['Δw'])], ['Δ∥', Math.max(EPS, z['Δ∥'])], ['Δχ', Math.max(EPS, z['Δχ'])], ['Δ?', Math.max(EPS, z['Δ?'])]]);
-    return { φ: 'Δ', v: VERSION, s: scope == null ? '∅' : String(scope), Δ, ω: dominant(Δ), score: rawGapScore({ z }), z, u: { Δ: l1(Δ), ok: Math.abs(l1(Δ) - 1) < EPS }, χ: ['Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'Δσ=axis gap', 'Δw=weight gap', 'Δ∥=unit gap', 'Δχ=invariant gap'], Ξ: '' };
+    const score = rawGapScore({ z });
+    const Δ = score <= EPS ? [{ σ: 'Δ0', w: 1 }] : normalize([['Δσ', Math.max(EPS, z['Δσ'])], ['Δw', Math.max(EPS, z['Δw'])], ['Δ∥', Math.max(EPS, z['Δ∥'])], ['Δχ', Math.max(EPS, z['Δχ'])], ['Δ?', Math.max(EPS, z['Δ?'])]]);
+    return { φ: 'Δ', v: VERSION, s: scope == null ? '∅' : String(scope), Δ, ω: score <= EPS ? 'Δ0' : dominant(Δ), score, z, u: { Δ: l1(Δ), ok: Math.abs(l1(Δ) - 1) < EPS }, χ: ['Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'Δ.score=0⇒Δ=Δ0', 'Δσ=axis gap', 'Δw=weight gap', 'Δ∥=unit gap', 'Δχ=invariant gap'], Ξ: '' };
   }
 
   function axisUnionField(current, target) {
@@ -360,6 +366,53 @@
     return { φ: 'G', v: VERSION, mode: hasObservation ? 'observed' : 'formal', formal, observed: hasObservation, true: formal && (hasObservation || true), id: c.id, χ: ['formal=internal consistency', 'observed=formal + measurement channel', 'Ξ=""'], Ξ: '' };
   }
 
+  function lexeme(σ, rule, packet, gain) {
+    const target = canonical({ φ: 'Λχ', χ: [rule] });
+    return { φ: 'Λ', v: VERSION, σ, rule, ν: target.id, source: packet && packet.φ || '∅', c: R(gain || 0), accepted: false, χ: ['Λ=derive(packet pattern)', 'Λν=canonical(rule)', 'Ξ=""'], Ξ: '' };
+  }
+
+  function lexemeCandidates(packet) {
+    if (!packet || typeof packet !== 'object') return [];
+    const out = [];
+    if (packet.φ === 'Δ' && Number(packet.score) <= EPS) out.push(lexeme('Λ:Δ0', 'Δ.score=0', packet, 1));
+    if (packet.φ === 'δ' && Number(packet.score) <= EPS) out.push(lexeme('Λ:δ0', 'δ.score=0', packet, 1));
+    if (packet.φ === 'T' && packet.reduced === true) out.push(lexeme('Λ:T↓', 'T.reduced=true', packet, 0.8));
+    if (packet.φ === '⊢' && packet.true === true) out.push(lexeme('Λ:⊢1', '⊢.true=true', packet, 0.9));
+    if (packet.φ === 'lim' && packet.stable === true) out.push(lexeme('Λ:lim1', 'lim.stable=true', packet, 0.9));
+    if (packet.φ === 'G' && packet.mode === 'formal') out.push(lexeme('Λ:Gf', 'G.mode=formal', packet, 0.4));
+    if (packet.φ === 'G' && packet.mode === 'observed') out.push(lexeme('Λ:Go', 'G.mode=observed', packet, 0.5));
+    if (packet.φ === '≡' && packet.true === true) out.push(lexeme('Λ:≡1', '≡.true=true', packet, 0.7));
+    if (packet.φ === '≡' && packet.true === false) out.push(lexeme('Λ:≡0', '≡.true=false', packet, 0.7));
+    return out;
+  }
+
+  function acceptLexeme(candidate, registry) {
+    const reg = A(registry);
+    const conflict = reg.find(item => item && item.φ === 'Λ' && item.σ === candidate.σ && item.ν !== candidate.ν);
+    const ok = candidate && candidate.φ === 'Λ' && candidate.Ξ === '' && !conflict;
+    return Object.assign({}, C(candidate), { accepted: !!ok, rejected: !ok, conflict: conflict ? conflict.ν : null });
+  }
+
+  function deriveLexicon(packets, registry) {
+    const reg = A(registry);
+    const raw = A(packets).reduce((list, packet) => list.concat(lexemeCandidates(packet)), []);
+    const accepted = [];
+    const seen = {};
+    raw.sort((a, b) => a.σ.localeCompare(b.σ) || a.rule.localeCompare(b.rule)).forEach(candidate => {
+      const acc = acceptLexeme(candidate, reg.concat(accepted));
+      const key = acc.σ + '|' + acc.ν;
+      if (acc.accepted && !seen[key]) { seen[key] = true; accepted.push(acc); }
+    });
+    const Λ = normalize(accepted.map(item => ({ σ: item.σ, w: Math.max(EPS, item.c || EPS) })));
+    return { φ: 'Λ', v: VERSION, Λ, entries: accepted, count: accepted.length, u: { Λ: l1(Λ), ok: Math.abs(l1(Λ) - 1) < EPS }, χ: ['Λ=accepted(kernel-derived lexemes)', 'no σ conflict', 'Ξ=""'], Ξ: '' };
+  }
+
+  function resolveLexeme(symbol, lexicon) {
+    const entries = lexicon && A(lexicon.entries) || A(lexicon);
+    const matches = entries.filter(item => item && item.φ === 'Λ' && item.σ === symbol && item.accepted === true);
+    return { φ: 'Λ?', v: VERSION, σ: symbol, ok: matches.length === 1, matches: C(matches), χ: ['Λ? resolves iff exactly one accepted σ'], Ξ: '' };
+  }
+
   function countMap(list) {
     const out = {};
     A(list).forEach(item => { out[item] = (out[item] || 0) + 1; });
@@ -390,7 +443,7 @@
   }
 
   function create(seed) {
-    const state = { version: VERSION, rule: '∥Ω∥₁=1', time: 0, params: Object.assign({ max_ngram: 4, min_repeat: 2, max_tokens: 144, max_relations: 288 }, seed && seed.params || {}), memory: { seen: 0, tokens: [], token_index: {}, relation_counts: {}, relations: [] }, input: null, τ: normalize([['∅', 1]]), ρ: normalize([['∅', 1]]), μ: normalize([['∅', 1]]), ε: normalize([['ε₀', 1]]), λ: normalize([['∅', 1]]), ι: normalize([['ι□', 1]]), κ: normalize([['κ₀', 1]]), Ω: normalize([['λ', 1]]), χ: [], Ξ: '', trace: [] };
+    const state = { version: VERSION, rule: '∥Ω∥₁=1', time: 0, params: Object.assign({ max_ngram: 4, min_repeat: 2, max_tokens: 144, max_relations: 288 }, seed && seed.params || {}), memory: { seen: 0, tokens: [], token_index: {}, relation_counts: {}, relations: [] }, input: null, τ: normalize([['∅', 1]]), ρ: normalize([['∅', 1]]), μ: normalize([['∅', 1]]), ε: normalize([['ε₀', 1]]), λ: normalize([['∅', 1]]), ι: normalize([['ι□', 1]]), κ: normalize([['κ₀', 1]]), Ω: normalize([['λ', 1]]), Λ: normalize([['Λ∅', 1]]), χ: [], Ξ: '', trace: [] };
     rebalance(state);
     return state;
   }
@@ -440,26 +493,27 @@
     state.ι = normalize(state.ι);
     state.ε = normalize(state.ε);
     state.κ = normalize(state.κ);
-    state.Ω = blend([{ field: state.λ.map(row => ({ σ: 'λ:' + row.σ, w: row.w })), gain: 0.36 }, { field: state.ι.map(row => ({ σ: 'ι:' + row.σ, w: row.w })), gain: 0.30 }, { field: state.ε.map(row => ({ σ: 'ε:' + row.σ, w: row.w })), gain: 0.18 }, { field: state.κ.map(row => ({ σ: 'κ:' + row.σ, w: row.w })), gain: 0.16 }]);
-    state.χ = INVARIANTS.map(row => row.row).concat(['δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)', 'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'ν=canonical(x)', '≡ iff canonical(a)=canonical(b)', 'C=finite_closure(F,Δ,T)', '⊢=invariant_preserving_transform', 'λ=𝒩(τ⊕ρ⊕μ⊕ε)', 'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)', 'Ω=𝒩(λ⊕ι⊕ε⊕κ)']);
+    state.Λ = normalize(state.Λ || [['Λ∅', 1]]);
+    state.Ω = blend([{ field: state.λ.map(row => ({ σ: 'λ:' + row.σ, w: row.w })), gain: 0.32 }, { field: state.ι.map(row => ({ σ: 'ι:' + row.σ, w: row.w })), gain: 0.27 }, { field: state.ε.map(row => ({ σ: 'ε:' + row.σ, w: row.w })), gain: 0.16 }, { field: state.κ.map(row => ({ σ: 'κ:' + row.σ, w: row.w })), gain: 0.14 }, { field: state.Λ.map(row => ({ σ: 'Λ:' + row.σ, w: row.w })), gain: 0.11 }]);
+    state.χ = INVARIANTS.map(row => row.row).concat(['δ.score=0⇒δ=δ0', 'Δ.score=0⇒Δ=Δ0', 'Λ=derive(packet pattern)', 'δ=𝒩(|e-a|⊕|1-∥a∥₁|⊕δ?)', 'Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)', 'ν=canonical(x)', '≡ iff canonical(a)=canonical(b)', 'C=finite_closure(F,Δ,T)', '⊢=invariant_preserving_transform', 'λ=𝒩(τ⊕ρ⊕μ⊕ε)', 'ι=𝒩(λτ⊕λρ⊕λμ⊕λε)', 'Ω=𝒩(λ⊕ι⊕ε⊕κ⊕Λ)']);
     state.unit = unitReport(state);
     return state;
   }
 
   function unitReport(state) {
-    return { τ: l1(state.τ), ρ: l1(state.ρ), μ: l1(state.μ), ε: l1(state.ε), λ: l1(state.λ), ι: l1(state.ι), κ: l1(state.κ), Ω: l1(state.Ω), ok: [state.τ, state.ρ, state.μ, state.ε, state.λ, state.ι, state.κ, state.Ω].every(field => Math.abs(l1(field) - 1) < EPS) };
+    return { τ: l1(state.τ), ρ: l1(state.ρ), μ: l1(state.μ), ε: l1(state.ε), λ: l1(state.λ), ι: l1(state.ι), κ: l1(state.κ), Λ: l1(state.Λ), Ω: l1(state.Ω), ok: [state.τ, state.ρ, state.μ, state.ε, state.λ, state.ι, state.κ, state.Λ, state.Ω].every(field => Math.abs(l1(field) - 1) < EPS) };
   }
 
   function observe(state, raw) {
-    const before = C({ λ: state.λ, ι: state.ι, Ω: state.Ω });
+    const before = C({ λ: state.λ, ι: state.ι, Ω: state.Ω, Λ: state.Λ });
     const sensory = sense(raw);
     const candidates = remember(state, sensory);
     state.input = { count: sensory.count, distinct: sensory.distinct, checksum: sensory.checksum };
     state.time += 1;
     updateFields(state, sensory, candidates);
     rebalance(state);
-    const after = C({ λ: state.λ, ι: state.ι, Ω: state.Ω });
-    state.trace.unshift({ t: state.time, Δλ: distance(before.λ, after.λ), Δι: distance(before.ι, after.ι), ΔΩ: distance(before.Ω, after.Ω), τ: state.memory.tokens.length, ρ: state.memory.relations.length, u: state.unit.ok });
+    const after = C({ λ: state.λ, ι: state.ι, Ω: state.Ω, Λ: state.Λ });
+    state.trace.unshift({ t: state.time, Δλ: distance(before.λ, after.λ), Δι: distance(before.ι, after.ι), ΔΩ: distance(before.Ω, after.Ω), ΔΛ: distance(before.Λ, after.Λ), τ: state.memory.tokens.length, ρ: state.memory.relations.length, u: state.unit.ok });
     state.trace = state.trace.slice(0, 128);
     return packet(state);
   }
@@ -467,10 +521,10 @@
   function step(state, raw) { return observe(state, raw); }
 
   function packet(state) {
-    return { φ: 'Ω', v: VERSION, t: state.time, λ: C(state.λ), ι: C(state.ι), τ: C(state.τ), ρ: C(state.ρ), μ: C(state.μ), ε: C(state.ε), κ: C(state.κ), Ω: C(state.Ω), χ: C(state.χ), u: C(state.unit), d: { Hλ: entropy(state.λ), Hι: entropy(state.ι), HΩ: entropy(state.Ω) }, Ξ: '' };
+    return { φ: 'Ω', v: VERSION, t: state.time, λ: C(state.λ), ι: C(state.ι), τ: C(state.τ), ρ: C(state.ρ), μ: C(state.μ), ε: C(state.ε), κ: C(state.κ), Λ: C(state.Λ), Ω: C(state.Ω), χ: C(state.χ), u: C(state.unit), d: { Hλ: entropy(state.λ), Hι: entropy(state.ι), HΛ: entropy(state.Λ), HΩ: entropy(state.Ω) }, Ξ: '' };
   }
 
   function snapshot(state) { return C(state); }
 
-  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, rebalance, unitReport });
+  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, rebalance, unitReport });
 });
