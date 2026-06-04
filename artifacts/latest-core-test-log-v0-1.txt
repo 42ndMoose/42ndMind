@@ -2,11 +2,14 @@
 PASS kernel loads
 PASS lambda starts unit-total
 PASS intention starts unit-total
+PASS lexeme field starts unit-total
 PASS whole state starts unit-total
 PASS no English output channel
 PASS kernel defines sigma weight and constraint rows
 PASS kernel defines closure and equivalence symbols
+PASS kernel defines zero-gap and lexeme symbols
 PASS kernel has invariant registry beyond unit-total
+PASS kernel has zero-gap invariant
 PASS invariant field is unit-total
 PASS valid field passes invariant validator
 PASS bad unit field fails invariant validator
@@ -14,7 +17,10 @@ PASS packet is symbolic
 PASS packet carries invariant list
 PASS packet carries discrepancy invariant
 PASS packet carries gap invariant
+PASS packet carries zero-gap invariant
 PASS packet carries closure invariant rows
+PASS packet carries lexeme field
+PASS closed discrepancy uses δ0
 PASS discrepancy packet is symbolic
 PASS discrepancy field is unit-total
 PASS expected-actual gap is classified
@@ -25,6 +31,7 @@ PASS gap field is unit-total
 PASS same fields have no axis gap
 PASS same fields have no weight gap
 PASS same fields have no unit gap
+PASS closed gap uses Δ0 instead of empty axis
 PASS weight gap is measured
 PASS weight gap has no axis mismatch
 PASS weight gap remains unit-total
@@ -56,6 +63,11 @@ PASS convergence remains unit-total
 PASS convergence reaches or approaches lower gap
 PASS grounding distinguishes formal mode
 PASS grounding distinguishes observed mode
+PASS lexicon packet is symbolic
+PASS lexicon field is unit-total
+PASS lexicon derives closed-gap lexeme
+PASS lexicon derives proof and convergence lexemes
+PASS lexeme resolver returns exactly one accepted match
 PASS observation returns packet
 PASS tokens form from repeated raw symbols
 PASS lambda remains unit-total after observation
