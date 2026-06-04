@@ -20,9 +20,11 @@ const defs = K.definitions();
 ok('kernel defines sigma weight and constraint rows', !!defs.σ && !!defs.w && !!defs.χ);
 ok('kernel defines closure and equivalence symbols', !!defs.C && !!defs['≡'] && !!defs['⊢'] && !!defs.G);
 ok('kernel defines zero-gap and lexeme symbols', !!defs.Δ0 && !!defs.Λ);
+ok('kernel defines completion fixed-point symbol', !!defs['Ω*']);
 const inv = K.invariants();
 ok('kernel has invariant registry beyond unit-total', inv.length >= 4 && inv.some(row => row.id === 'χ_no_english'));
 ok('kernel has zero-gap invariant', inv.some(row => row.id === 'χ_zero_gap'));
+ok('kernel has completion fixed-point invariant', inv.some(row => row.id === 'χ_completion_fixed_point'));
 ok('invariant field is unit-total', Math.abs(K.l1(K.invariantField()) - 1) < 1e-6);
 ok('valid field passes invariant validator', K.validateField([{ σ: 'a', w: 1 }]).ok === true);
 ok('bad unit field fails invariant validator', K.validateField([{ σ: 'a', w: 0.25 }]).ok === false);
@@ -34,6 +36,7 @@ ok('packet carries discrepancy invariant', p0.χ.some(row => row.indexOf('δ=') 
 ok('packet carries gap invariant', p0.χ.some(row => row.indexOf('Δ=') >= 0));
 ok('packet carries zero-gap invariant', p0.χ.some(row => row.indexOf('Δ.score=0') >= 0));
 ok('packet carries closure invariant rows', p0.χ.some(row => row.indexOf('ν=') >= 0) && p0.χ.some(row => row.indexOf('C=') >= 0));
+ok('packet carries completion invariant row', p0.χ.some(row => row.indexOf('Ω*=') >= 0));
 ok('packet carries lexeme field', Array.isArray(p0.Λ) && Math.abs(K.l1(p0.Λ) - 1) < 1e-6);
 
 const dClosed = K.discrepancy(1, 1, 'closed');
@@ -135,6 +138,16 @@ const conflictBase = lex.entries.find(row => row.σ === 'Λ:Δ0');
 const conflictCandidate = Object.assign({}, conflictBase, { ν: 'ν-conflict' });
 const rejectedConflict = K.acceptLexeme(conflictCandidate, [conflictBase]);
 ok('lexeme conflict is rejected', rejectedConflict.accepted === false && rejectedConflict.rejected === true && rejectedConflict.conflict === conflictBase.ν);
+
+const completion = K.complete([fA], { target: fC, steps: 8 });
+ok('completion packet is symbolic', completion.φ === 'Ω*' && completion.Ξ === '');
+ok('completion reaches fixed point', completion.fixed === true);
+ok('completion is complete under current constraints', completion.complete === true);
+ok('completion preserves unit-total whole field', completion.u.ok === true && Math.abs(K.l1(completion.Ω) - 1) < 1e-6);
+ok('completion has no unresolved gap or conflict', completion.unresolved_count === 0 && completion.conflict_count === 0);
+ok('completion emits unit-total lexicon', completion.lexicon.u.ok === true && Math.abs(K.l1(completion.lexicon.Λ) - 1) < 1e-6);
+ok('completion lexicon contains fixed-point derived entries', completion.lexicon.entries.some(row => row.σ === 'Λ:lim1') && completion.lexicon.entries.some(row => row.σ === 'Λ:Δ0'));
+ok('completion trace records stable iteration', completion.trace.length >= 2 && completion.trace[completion.trace.length - 1].id === completion.trace[completion.trace.length - 2].id);
 
 const p1 = K.observe(s, 'abababab cdcdcdcd ababab cdcdcdcd');
 ok('observation returns packet', p1.φ === 'Ω');
