@@ -487,44 +487,386 @@
       "φ": "Λ",
       "Λ": [
         {
+          "σ": "Λ:G.formal1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:G.id=νf44a677c",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:G.observed0",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:G.observed1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:G.true1",
+          "w": 0.015251
+        },
+        {
           "σ": "Λ:Gf",
-          "w": 0.057971
+          "w": 0.008715
         },
         {
           "σ": "Λ:Go",
-          "w": 0.072464
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.after.s=diagnostic:correction",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.after.score0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.after.u.ok1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:T.after.u.Δ=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:T.after.z.Δ?0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.after.z.Δw0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.after.z.Δσ0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.after.z.Δχ0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.after.z.Δ∥0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.after.φ=Δ",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.after.ω=Δ0",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.before.s=diagnostic:correction",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.before.score=0.25",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:T.before.u.ok1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:T.before.u.Δ=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:T.before.z.Δ?0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.before.z.Δw=0.25",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:T.before.z.Δσ0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.before.z.Δχ0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.before.z.Δ∥0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:T.before.φ=Δ",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.before.ω=Δw",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.chosen=Tw",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.method=finite_local_argmin",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.s=diagnostic:correction",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:T.u.T=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:T.u.ok1",
+          "w": 0.015251
         },
         {
           "σ": "Λ:T↓",
-          "w": 0.115942
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:lim.score0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:lim.u.lim=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:lim.u.ok1",
+          "w": 0.015251
         },
         {
           "σ": "Λ:lim1",
-          "w": 0.130435
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:Δ.s=diagnostic:closed-gap",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:Δ.u.ok1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:Δ.u.Δ=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:Δ.z.Δ?0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:Δ.z.Δw0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:Δ.z.Δσ0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:Δ.z.Δχ0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:Δ.z.Δ∥0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:Δ.ω=Δ0",
+          "w": 0.008715
         },
         {
           "σ": "Λ:Δ0",
-          "w": 0.144928
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:δ.a=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:δ.e=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:δ.s=diagnostic:closed-discrepancy",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:δ.u.ok1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:δ.u.δ=1",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:δ.z.δ=0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:δ.z.δ?0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:δ.z.δ∥0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:δ.ω=δ0",
+          "w": 0.008715
         },
         {
           "σ": "Λ:δ0",
-          "w": 0.144928
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:≡.a=νf44a677c",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:≡.b=νe69571a9",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:≡.b=νf44a677c",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:≡.distance0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:≡.distance=0.5",
+          "w": 0.005447
         },
         {
           "σ": "Λ:≡0",
-          "w": 0.101449
+          "w": 0.015251
         },
         {
           "σ": "Λ:≡1",
-          "w": 0.101449
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:⊢.after0",
+          "w": 0.021786
+        },
+        {
+          "σ": "Λ:⊢.before=0.25",
+          "w": 0.005447
+        },
+        {
+          "σ": "Λ:⊢.reduced1",
+          "w": 0.015251
+        },
+        {
+          "σ": "Λ:⊢.transform=Tw",
+          "w": 0.008715
+        },
+        {
+          "σ": "Λ:⊢.valid1",
+          "w": 0.015251
         },
         {
           "σ": "Λ:⊢1",
-          "w": 0.130434
+          "w": 0.015242
         }
       ],
-      "count": 9,
+      "count": 72,
       "entries": [
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:≡.a=νf44a677c",
+          "rule": "≡.a=νf44a677c",
+          "ν": "ν60e33c27",
+          "source": "≡",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:≡.b=νe69571a9",
+          "rule": "≡.b=νe69571a9",
+          "ν": "ν5d9b9f65",
+          "source": "≡",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:≡.b=νf44a677c",
+          "rule": "≡.b=νf44a677c",
+          "ν": "νfcf818b4",
+          "source": "≡",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:≡.distance=0.5",
+          "rule": "≡.distance=0.5",
+          "ν": "ν384b35fd",
+          "source": "≡",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:≡.distance0",
+          "rule": "≡.distance=0",
+          "ν": "ν9d680e66",
+          "source": "≡",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
         {
           "φ": "Λ",
           "v": "0.1.0",
@@ -535,7 +877,7 @@
           "c": 0.7,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -553,7 +895,97 @@
           "c": 0.7,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:⊢.after0",
+          "rule": "⊢.after=0",
+          "ν": "ν80e10cf2",
+          "source": "⊢",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:⊢.before=0.25",
+          "rule": "⊢.before=0.25",
+          "ν": "νc40c25ec",
+          "source": "⊢",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:⊢.reduced1",
+          "rule": "⊢.reduced=true",
+          "ν": "νf7581ba2",
+          "source": "⊢",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:⊢.transform=Tw",
+          "rule": "⊢.transform=Tw",
+          "ν": "ν4c06b463",
+          "source": "⊢",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:⊢.valid1",
+          "rule": "⊢.valid=true",
+          "ν": "ν8898f28e",
+          "source": "⊢",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -568,10 +1000,100 @@
           "rule": "⊢.true=true",
           "ν": "νd44a90ce",
           "source": "⊢",
-          "c": 0.9,
+          "c": 0.7,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:G.formal1",
+          "rule": "G.formal=true",
+          "ν": "ν4c919078",
+          "source": "G",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:G.id=νf44a677c",
+          "rule": "G.id=νf44a677c",
+          "ν": "ν4bbda5af",
+          "source": "G",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:G.observed0",
+          "rule": "G.observed=false",
+          "ν": "ν9a441438",
+          "source": "G",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:G.observed1",
+          "rule": "G.observed=true",
+          "ν": "ν5656a1f3",
+          "source": "G",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:G.true1",
+          "rule": "G.true=true",
+          "ν": "ν9023d1f3",
+          "source": "G",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -589,7 +1111,7 @@
           "c": 0.4,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -604,10 +1126,64 @@
           "rule": "G.mode=observed",
           "ν": "νa7736c78",
           "source": "G",
-          "c": 0.5,
+          "c": 0.4,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:lim.score0",
+          "rule": "lim.score=0",
+          "ν": "ν6fff1536",
+          "source": "lim",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:lim.u.lim=1",
+          "rule": "lim.u.lim=1",
+          "ν": "νf5eee730",
+          "source": "lim",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:lim.u.ok1",
+          "rule": "lim.u.ok=true",
+          "ν": "νb3848edb",
+          "source": "lim",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -622,10 +1198,496 @@
           "rule": "lim.stable=true",
           "ν": "νaafc71b9",
           "source": "lim",
-          "c": 0.9,
+          "c": 0.7,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.s=diagnostic:correction",
+          "rule": "T.after.s=diagnostic:correction",
+          "ν": "ν8d65b350",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.score0",
+          "rule": "T.after.score=0",
+          "ν": "ν1c3084",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.u.ok1",
+          "rule": "T.after.u.ok=true",
+          "ν": "ν6377d921",
+          "source": "T",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.u.Δ=1",
+          "rule": "T.after.u.Δ=1",
+          "ν": "ν513cbf60",
+          "source": "T",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.z.Δ?0",
+          "rule": "T.after.z.Δ?=0",
+          "ν": "ν1b8d62ef",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.z.Δ∥0",
+          "rule": "T.after.z.Δ∥=0",
+          "ν": "νdac89b0d",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.z.Δw0",
+          "rule": "T.after.z.Δw=0",
+          "ν": "ν9fafec07",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.z.Δσ0",
+          "rule": "T.after.z.Δσ=0",
+          "ν": "νa8b53273",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.z.Δχ0",
+          "rule": "T.after.z.Δχ=0",
+          "ν": "νeed2a257",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.φ=Δ",
+          "rule": "T.after.φ=Δ",
+          "ν": "νc97eb4e4",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.after.ω=Δ0",
+          "rule": "T.after.ω=Δ0",
+          "ν": "νa7ea9469",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.s=diagnostic:correction",
+          "rule": "T.before.s=diagnostic:correction",
+          "ν": "ν9c518ffd",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.score=0.25",
+          "rule": "T.before.score=0.25",
+          "ν": "νc079c5ce",
+          "source": "T",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.u.ok1",
+          "rule": "T.before.u.ok=true",
+          "ν": "νff537e84",
+          "source": "T",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.u.Δ=1",
+          "rule": "T.before.u.Δ=1",
+          "ν": "νa8fcdab5",
+          "source": "T",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.z.Δ?0",
+          "rule": "T.before.z.Δ?=0",
+          "ν": "ν5f32cf8",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.z.Δ∥0",
+          "rule": "T.before.z.Δ∥=0",
+          "ν": "ν5db39772",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.z.Δw=0.25",
+          "rule": "T.before.z.Δw=0.25",
+          "ν": "νf492c575",
+          "source": "T",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.z.Δσ0",
+          "rule": "T.before.z.Δσ=0",
+          "ν": "ν18fc49ac",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.z.Δχ0",
+          "rule": "T.before.z.Δχ=0",
+          "ν": "ν5e7be8d0",
+          "source": "T",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.φ=Δ",
+          "rule": "T.before.φ=Δ",
+          "ν": "ν45e225d5",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.before.ω=Δw",
+          "rule": "T.before.ω=Δw",
+          "ν": "ν83d190c1",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.chosen=Tw",
+          "rule": "T.chosen=Tw",
+          "ν": "ν91219539",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.method=finite_local_argmin",
+          "rule": "T.method=finite_local_argmin",
+          "ν": "ν8afe5bdb",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.s=diagnostic:correction",
+          "rule": "T.s=diagnostic:correction",
+          "ν": "ν9b80e360",
+          "source": "T",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.u.ok1",
+          "rule": "T.u.ok=true",
+          "ν": "νb7b7ed11",
+          "source": "T",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:T.u.T=1",
+          "rule": "T.u.T=1",
+          "ν": "νa151a430",
+          "source": "T",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -640,10 +1702,334 @@
           "rule": "T.reduced=true",
           "ν": "ν56fd6f0",
           "source": "T",
-          "c": 0.8,
+          "c": 0.7,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.a=1",
+          "rule": "δ.a=1",
+          "ν": "ν45dcaa32",
+          "source": "δ",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.e=1",
+          "rule": "δ.e=1",
+          "ν": "νa219a296",
+          "source": "δ",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.s=diagnostic:closed-discrepancy",
+          "rule": "δ.s=diagnostic:closed-discrepancy",
+          "ν": "νf324a2c6",
+          "source": "δ",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.s=diagnostic:closed-gap",
+          "rule": "Δ.s=diagnostic:closed-gap",
+          "ν": "νab500d5f",
+          "source": "Δ",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.u.ok1",
+          "rule": "δ.u.ok=true",
+          "ν": "νe3484871",
+          "source": "δ",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.u.ok1",
+          "rule": "Δ.u.ok=true",
+          "ν": "νd718acd1",
+          "source": "Δ",
+          "c": 0.7,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.u.δ=1",
+          "rule": "δ.u.δ=1",
+          "ν": "ν24a6fb70",
+          "source": "δ",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.u.Δ=1",
+          "rule": "Δ.u.Δ=1",
+          "ν": "ν84d240b0",
+          "source": "Δ",
+          "c": 0.25,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.z.δ?0",
+          "rule": "δ.z.δ?=0",
+          "ν": "νbf3348bf",
+          "source": "δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.z.Δ?0",
+          "rule": "Δ.z.Δ?=0",
+          "ν": "ν313a97bf",
+          "source": "Δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.z.δ=0",
+          "rule": "δ.z.δ==0",
+          "ν": "ν739f6f95",
+          "source": "δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.z.δ∥0",
+          "rule": "δ.z.δ∥=0",
+          "ν": "νdb631efd",
+          "source": "δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.z.Δ∥0",
+          "rule": "Δ.z.Δ∥=0",
+          "ν": "ν4d6a6dfd",
+          "source": "Δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.z.Δw0",
+          "rule": "Δ.z.Δw=0",
+          "ν": "νc85e8f97",
+          "source": "Δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.z.Δσ0",
+          "rule": "Δ.z.Δσ=0",
+          "ν": "νeab2d363",
+          "source": "Δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.z.Δχ0",
+          "rule": "Δ.z.Δχ=0",
+          "ν": "νd11bbd47",
+          "source": "Δ",
+          "c": 1,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:δ.ω=δ0",
+          "rule": "δ.ω=δ0",
+          "ν": "ν26bc9279",
+          "source": "δ",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
+            "Λν=canonical(rule)",
+            "Ξ=\"\""
+          ],
+          "Ξ": "",
+          "rejected": false,
+          "conflict": null
+        },
+        {
+          "φ": "Λ",
+          "v": "0.1.0",
+          "σ": "Λ:Δ.ω=Δ0",
+          "rule": "Δ.ω=Δ0",
+          "ν": "νb81a1939",
+          "source": "Δ",
+          "c": 0.4,
+          "accepted": true,
+          "χ": [
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -661,7 +2047,7 @@
           "c": 1,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -679,7 +2065,7 @@
           "c": 1,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
@@ -693,7 +2079,7 @@
         "ok": true
       },
       "χ": [
-        "Λ=accepted(kernel-derived lexemes)",
+        "Λ=accepted(kernel-derived facts)",
         "no σ conflict",
         "Ξ=\"\""
       ],
@@ -715,7 +2101,7 @@
           "c": 1,
           "accepted": true,
           "χ": [
-            "Λ=derive(packet pattern)",
+            "Λ=derive(packet fact)",
             "Λν=canonical(rule)",
             "Ξ=\"\""
           ],
