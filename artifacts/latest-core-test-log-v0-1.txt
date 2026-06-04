@@ -8,8 +8,10 @@ PASS no English output channel
 PASS kernel defines sigma weight and constraint rows
 PASS kernel defines closure and equivalence symbols
 PASS kernel defines zero-gap and lexeme symbols
+PASS kernel defines completion fixed-point symbol
 PASS kernel has invariant registry beyond unit-total
 PASS kernel has zero-gap invariant
+PASS kernel has completion fixed-point invariant
 PASS invariant field is unit-total
 PASS valid field passes invariant validator
 PASS bad unit field fails invariant validator
@@ -19,6 +21,7 @@ PASS packet carries discrepancy invariant
 PASS packet carries gap invariant
 PASS packet carries zero-gap invariant
 PASS packet carries closure invariant rows
+PASS packet carries completion invariant row
 PASS packet carries lexeme field
 PASS closed discrepancy uses δ0
 PASS discrepancy packet is symbolic
@@ -73,6 +76,14 @@ PASS lexicon derives generalized distance fact lexeme
 PASS lexeme resolver returns exactly one accepted match
 PASS generalized lexeme resolver returns exactly one accepted match
 PASS lexeme conflict is rejected
+PASS completion packet is symbolic
+PASS completion reaches fixed point
+PASS completion is complete under current constraints
+PASS completion preserves unit-total whole field
+PASS completion has no unresolved gap or conflict
+PASS completion emits unit-total lexicon
+PASS completion lexicon contains fixed-point derived entries
+PASS completion trace records stable iteration
 PASS observation returns packet
 PASS tokens form from repeated raw symbols
 PASS lambda remains unit-total after observation
