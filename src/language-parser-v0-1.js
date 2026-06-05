@@ -180,6 +180,23 @@
     return canonical(packet);
   }
 
+  function toKernelFields(input, options) {
+    const packet = typeof input === 'string' ? parse(input, options) : canonical(input);
+    const fields = sourceFields(packet);
+    return ORDER.map(key => A(fields[key]).map(row => ({ σ: key + ':' + axis(row), w: weight(row) })));
+  }
+
+  function toKernelSeed(input, options) {
+    return toKernelFields(input, options).reduce((rows, field) => rows.concat(field), []);
+  }
+
+  function toKernelCompletion(input, kernel, options) {
+    if (!kernel || typeof kernel.complete !== 'function') throw new Error('Kernel with complete(...) is required');
+    const opts = options || {};
+    const seed = opts.whole === true ? [toKernelSeed(input, opts.parse)] : toKernelFields(input, opts.parse);
+    return kernel.complete(seed, opts.complete || {});
+  }
+
   function validate(source) {
     try {
       const result = roundTrip(source);
@@ -197,6 +214,9 @@
     canonical,
     roundTrip,
     fromKernelPacket,
+    toKernelFields,
+    toKernelSeed,
+    toKernelCompletion,
     validate,
     normalize,
     l1,
