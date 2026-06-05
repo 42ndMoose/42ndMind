@@ -55,6 +55,13 @@ function reportDetail(report) {
   }, null, 2);
 }
 
+function executeCommonJs(source) {
+  const module = { exports: {} };
+  const fn = new Function('module', 'exports', source);
+  fn(module, module.exports);
+  return module.exports;
+}
+
 const completeFiles = buildCompleteFiles();
 
 ok('self-edit loop loads', L.VERSION === '0.1.0');
@@ -106,5 +113,13 @@ ok('meta-completion proposes candidate patch', meta.decision.code === 'propose_c
 ok('meta-completion mutates virtual source', meta.virtual_summary['src/language-parser-v0-1.js'].checksum !== meta.base_summary['src/language-parser-v0-1.js'].checksum);
 ok('meta-completion leaves base source unchanged', liveFiles['src/language-parser-v0-1.js'].indexOf('solveLinearEquation') < 0 && liveFiles['src/language-parser-v0-1.js'].indexOf('checkProofStep') < 0);
 ok('meta-completion fields are unit-total', meta.unit.ok === true && Math.abs(L.l1(meta.fields.Δ) - 1) < 1e-6 && Math.abs(L.l1(meta.fields.Ωmeta) - 1) < 1e-6);
+
+const parserPatch = meta.proposal.operations.find(op => op.path === 'src/language-parser-v0-1.js');
+ok('meta-completion proposes executable parser source', !!parserPatch && parserPatch.content.indexOf('function solveLinearEquation') >= 0 && parserPatch.content.indexOf('function checkProofStep') >= 0, reportDetail(meta));
+const synthesizedParser = executeCommonJs(parserPatch.content);
+ok('synthesized parser exports solveLinearEquation', typeof synthesizedParser.solveLinearEquation === 'function');
+ok('synthesized parser exports checkProofStep', typeof synthesizedParser.checkProofStep === 'function');
+ok('synthesized solveLinearEquation solves x + 1 = 3', synthesizedParser.solveLinearEquation('x + 1 = 3').value === 2);
+ok('synthesized checkProofStep verifies modus ponens', synthesizedParser.checkProofStep('if A => B and A, then B').ok === true);
 
 console.log(rows.join('\n'));
