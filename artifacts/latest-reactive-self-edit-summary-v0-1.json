@@ -1,0 +1,42 @@
+{
+  "safe_to_propose": true,
+  "initial_pressure": 3,
+  "accepted_delta": -3,
+  "rejected_delta": 0,
+  "rejected_causal": [
+    "pressure_unchanged"
+  ],
+  "accepted_causal": [
+    "pressure_reduced"
+  ],
+  "search_decision": {
+    "code": "propose_best_candidate",
+    "confidence": 0.9,
+    "summary": "Closed-loop sandbox search found a candidate that improved the simulated language state after rejecting harmful attempts."
+  },
+  "search_trace": [
+    {
+      "variant": "marker_only",
+      "accepted": false,
+      "reverted": true,
+      "score": -2,
+      "before_gaps": 2,
+      "after_gaps": 2
+    },
+    {
+      "variant": "synthesized_implementation",
+      "accepted": true,
+      "reverted": false,
+      "score": 1,
+      "before_gaps": 2,
+      "after_gaps": 0
+    }
+  ],
+  "candidate_path": "src/language-parser-v0-1.js",
+  "added_needles": [
+    "solveLinearEquation",
+    "checkProofStep"
+  ],
+  "report_artifact": "artifacts/reactive-self-edit-report-v0-1.json",
+  "summary_artifact": "artifacts/reactive-self-edit-summary-v0-1.json"
+}
