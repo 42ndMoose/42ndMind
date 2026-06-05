@@ -35,7 +35,6 @@
   const A = value => Array.isArray(value) ? value : [];
   const R = value => Number((Number(value) || 0).toFixed(6));
   const C = value => JSON.parse(JSON.stringify(value == null ? null : value));
-
   function axis(row) { return Array.isArray(row) ? String(row[0] == null ? '∅' : row[0]) : String((row && (row.σ ?? row.axis ?? row.dimension)) ?? '∅'); }
   function weight(row) { return Array.isArray(row) ? Number(row[1]) || 0 : Number(row && (row.w ?? row.weight)) || 0; }
   function normalize(rows, fallback) {
@@ -93,12 +92,7 @@
       ['ΩL:discovery', discovery && discovery.unit && discovery.unit.ok ? 1 : 0.0001],
       ['ΩL:source', Object.keys(files || {}).length || 0.0001]
     ], 'ΩL∅');
-    return {
-      packet_type: '42ndMind_whole_language_state_v0_1', version: VERSION,
-      manifest: C(manifest || DEFAULT_MANIFEST), layers: inspection.layers, gaps: inspection.gaps,
-      math_patch: mathPatch, fields: { Λ, Γ, Π, ΩL }, discovery: discovery && D.packet ? D.packet(discovery) : null,
-      unit: { Λ: l1(Λ), Γ: l1(Γ), Π: l1(Π), ΩL: l1(ΩL), ok: Math.abs(l1(Λ) - 1) < EPS && Math.abs(l1(Γ) - 1) < EPS && Math.abs(l1(Π) - 1) < EPS && Math.abs(l1(ΩL) - 1) < EPS }, ξ: ''
-    };
+    return { packet_type: '42ndMind_whole_language_state_v0_1', version: VERSION, manifest: C(manifest || DEFAULT_MANIFEST), layers: inspection.layers, gaps: inspection.gaps, math_patch: mathPatch, fields: { Λ, Γ, Π, ΩL }, discovery: discovery && D.packet ? D.packet(discovery) : null, unit: { Λ: l1(Λ), Γ: l1(Γ), Π: l1(Π), ΩL: l1(ΩL), ok: Math.abs(l1(Λ) - 1) < EPS && Math.abs(l1(Γ) - 1) < EPS && Math.abs(l1(Π) - 1) < EPS && Math.abs(l1(ΩL) - 1) < EPS }, ξ: '' };
   }
 
   function validatorsForWholeState(expectedState) {
@@ -150,38 +144,29 @@
 
   function implementationForNeedle(needle) {
     const name = String(needle || '').replace(/[^a-z0-9_$]/gi, '');
-    if (name === 'solveLinearEquation') return {
-      name,
-      code: "function solveLinearEquation(input) {\n" +
-        "  const text = typeof input === 'string' ? input.replace(/\\s+/g, '') : String(input && input.equation || '').replace(/\\s+/g, '');\n" +
-        "  const m = /^([a-zA-Z])([+\\-*/])(-?\\d+(?:\\.\\d+)?)=(-?\\d+(?:\\.\\d+)?)$/.exec(text);\n" +
-        "  if (!m) return { ok: false, reason: 'unsupported_linear_form' };\n" +
-        "  const variable = m[1]; const op = m[2]; const a = Number(m[3]); const b = Number(m[4]);\n" +
-        "  let value;\n" +
-        "  if (op === '+') value = b - a;\n" +
-        "  else if (op === '-') value = b + a;\n" +
-        "  else if (op === '*') value = b / a;\n" +
-        "  else if (op === '/') value = b * a;\n" +
-        "  if (!Number.isFinite(value)) return { ok: false, reason: 'non_finite_solution' };\n" +
-        "  return { ok: true, variable, value, relation: '=', steps: ['parse-linear-one-step', 'apply-inverse-operation'] };\n" +
-        "}\n"
-    };
-    if (name === 'checkProofStep') return {
-      name,
-      code: "function checkProofStep(input) {\n" +
-        "  const data = typeof input === 'string' ? { text: input } : (input || {});\n" +
-        "  const text = String(data.text || '').replace(/\\s+/g, '');\n" +
-        "  const premises = Array.isArray(data.premises) ? data.premises.map(String) : [];\n" +
-        "  const conclusion = String(data.conclusion || '');\n" +
-        "  const joined = premises.join('&').replace(/\\s+/g, '');\n" +
-        "  const src = text || (joined + '=>' + conclusion.replace(/\\s+/g, ''));\n" +
-        "  const m = /(?:if)?([A-Z])(?:=>|⇒)([A-Z])(?:and|&)(\\1)(?:,?then|=>)(\\2)/i.exec(src);\n" +
-        "  if (m) return { ok: true, rule: 'modus-ponens', conclusion: m[2].toUpperCase() };\n" +
-        "  const implication = premises.find(p => /(?:=>|⇒)/.test(p));\n" +
-        "  if (implication) { const r = /^\\s*([A-Z])\\s*(?:=>|⇒)\\s*([A-Z])\\s*$/i.exec(implication); if (r && premises.map(p => p.trim().toUpperCase()).includes(r[1].toUpperCase()) && conclusion.trim().toUpperCase() === r[2].toUpperCase()) return { ok: true, rule: 'modus-ponens', conclusion: r[2].toUpperCase() }; }\n" +
-        "  return { ok: false, reason: 'unsupported_proof_step' };\n" +
-        "}\n"
-    };
+    if (name === 'solveLinearEquation') return { name, code: "function solveLinearEquation(input) {\n" +
+      "  const text = typeof input === 'string' ? input.replace(/\\s+/g, '') : String(input && input.equation || '').replace(/\\s+/g, '');\n" +
+      "  const m = /^([a-zA-Z])([+\\-*/])(-?\\d+(?:\\.\\d+)?)=(-?\\d+(?:\\.\\d+)?)$/.exec(text);\n" +
+      "  if (!m) return { ok: false, reason: 'unsupported_linear_form' };\n" +
+      "  const variable = m[1]; const op = m[2]; const a = Number(m[3]); const b = Number(m[4]);\n" +
+      "  let value;\n" +
+      "  if (op === '+') value = b - a; else if (op === '-') value = b + a; else if (op === '*') value = b / a; else if (op === '/') value = b * a;\n" +
+      "  if (!Number.isFinite(value)) return { ok: false, reason: 'non_finite_solution' };\n" +
+      "  return { ok: true, variable, value, relation: '=', steps: ['parse-linear-one-step', 'apply-inverse-operation'] };\n" +
+      "}\n" };
+    if (name === 'checkProofStep') return { name, code: "function checkProofStep(input) {\n" +
+      "  const data = typeof input === 'string' ? { text: input } : (input || {});\n" +
+      "  const text = String(data.text || '').replace(/\\s+/g, '');\n" +
+      "  const premises = Array.isArray(data.premises) ? data.premises.map(String) : [];\n" +
+      "  const conclusion = String(data.conclusion || '');\n" +
+      "  const joined = premises.join('&').replace(/\\s+/g, '');\n" +
+      "  const src = text || (joined + '=>' + conclusion.replace(/\\s+/g, ''));\n" +
+      "  const m = /(?:if)?([A-Z])(?:=>|⇒)([A-Z])(?:and|&)(\\1)(?:,?then|=>)(\\2)/i.exec(src);\n" +
+      "  if (m) return { ok: true, rule: 'modus-ponens', conclusion: m[2].toUpperCase() };\n" +
+      "  const implication = premises.find(p => /(?:=>|⇒)/.test(p));\n" +
+      "  if (implication) { const r = /^\\s*([A-Z])\\s*(?:=>|⇒)\\s*([A-Z])\\s*$/i.exec(implication); if (r && premises.map(p => p.trim().toUpperCase()).includes(r[1].toUpperCase()) && conclusion.trim().toUpperCase() === r[2].toUpperCase()) return { ok: true, rule: 'modus-ponens', conclusion: r[2].toUpperCase() }; }\n" +
+      "  return { ok: false, reason: 'unsupported_proof_step' };\n" +
+      "}\n" };
     return null;
   }
 
@@ -207,20 +192,19 @@
     A(gaps).forEach(gap => {
       if (!gap || !gap.needle || current.indexOf(gap.needle) >= 0) return;
       const impl = implementationForNeedle(gap.needle);
-      if (impl && current.indexOf('function ' + impl.name + '(') < 0) {
-        current += '\n' + impl.code;
-        functions.push(impl.name);
-      } else if (!impl) {
-        fallback.push('// meta-complete candidate: ' + gap.id + ' requires ' + gap.needle);
-      }
+      if (impl && current.indexOf('function ' + impl.name + '(') < 0) { current += '\n' + impl.code; functions.push(impl.name); }
+      else if (!impl) fallback.push('// meta-complete candidate: ' + gap.id + ' requires ' + gap.needle);
     });
     if (fallback.length) current += '\n' + fallback.join('\n') + '\n';
     return injectExports(current, functions);
   }
 
-  function capabilityOperations(files, patch) {
-    const ops = [];
-    A(patch && patch.proposal && patch.proposal.operations).forEach(op => ops.push(C(op)));
+  function markerSource(files, path, gaps) {
+    const base = has(files, path) ? String(files[path] == null ? '' : files[path]) : manifestSourceScaffold({ layer: path });
+    return base + '\n' + A(gaps).map(g => '// meta-search marker-only candidate: ' + g.id + ' requires ' + g.needle).join('\n') + '\n';
+  }
+
+  function groupedGaps(patch) {
     const grouped = {};
     A(patch && patch.gaps).forEach(gap => {
       if (!gap || gap.reason === 'missing_file') return;
@@ -228,8 +212,29 @@
       if (!grouped[path]) grouped[path] = [];
       grouped[path].push(gap);
     });
+    return grouped;
+  }
+
+  function capabilityOperations(files, patch) {
+    const ops = [];
+    A(patch && patch.proposal && patch.proposal.operations).forEach(op => ops.push(C(op)));
+    const grouped = groupedGaps(patch);
     Object.keys(grouped).sort().forEach(path => ops.push({ type: has(files, path) ? 'replace' : 'create', path, content: synthesizeSource(files, path, grouped[path]) }));
     return ops;
+  }
+
+  function markerOperations(files, patch) {
+    const ops = [];
+    const grouped = groupedGaps(patch);
+    Object.keys(grouped).sort().forEach(path => ops.push({ type: has(files, path) ? 'replace' : 'create', path, content: markerSource(files, path, grouped[path]) }));
+    return ops;
+  }
+
+  function metaValidators(axes, beforePatch) {
+    return [
+      function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_gap_nonincrease', ok: A(after.gaps).length <= A(beforePatch.gaps).length, before: A(beforePatch.gaps).length, after: A(after.gaps).length }; },
+      function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_unit_total', ok: after.unit && after.unit.ok === true, unit: after.unit }; }
+    ];
   }
 
   function metaFields(beforePatch, afterPatch, report, score) {
@@ -240,6 +245,14 @@
     return { Δ, Ωmeta };
   }
 
+  function scoreReport(beforePatch, afterPatch, report) {
+    const beforeGapCount = A(beforePatch && beforePatch.gaps).length;
+    const afterGapCount = A(afterPatch && afterPatch.gaps).length;
+    const improvement = beforeGapCount - afterGapCount;
+    const testPenalty = A(report.tests).filter(t => !t.ok).length + A(report.validators).filter(v => !v.ok).length;
+    return R(Math.max(0, improvement / Math.max(1, beforeGapCount) - testPenalty));
+  }
+
   function metaComplete(files, goal, options) {
     const opts = Object.assign({ tests: [], sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
     const baseFiles = C(files || {});
@@ -248,24 +261,52 @@
     const operations = capabilityOperations(baseFiles, beforePatch);
     const proposalSeed = { id: 'meta_completion_' + checksum({ goal, beforePatch }).slice(0, 10), kind: 'meta_completion_candidate_patch', goal: C(goal || {}), operations: operations.concat([artifactOperation('artifacts/meta-completion-v0-1.json', { goal, before: beforePatch })]), expected: { before_gap_count: A(beforePatch && beforePatch.gaps).length, target_gap_count: 0 } };
     const sandbox = X.create(baseFiles, opts.sandboxOptions);
-    const validators = [
-      function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_gap_nonincrease', ok: A(after.gaps).length <= A(beforePatch.gaps).length, before: A(beforePatch.gaps).length, after: A(after.gaps).length }; },
-      function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_unit_total', ok: after.unit && after.unit.ok === true, unit: after.unit }; }
-    ];
-    const report = X.simulate(sandbox, proposalSeed, opts.tests || [], validators);
+    const report = X.simulate(sandbox, proposalSeed, opts.tests || [], metaValidators(axes, beforePatch));
     const afterPatch = M && M.propose ? M.propose(sandbox.virtual, { axes }) : null;
     const beforeGapCount = A(beforePatch && beforePatch.gaps).length;
     const afterGapCount = A(afterPatch && afterPatch.gaps).length;
     const improvement = beforeGapCount - afterGapCount;
-    const testPenalty = A(report.tests).filter(t => !t.ok).length + A(report.validators).filter(v => !v.ok).length;
-    const score = R(Math.max(0, improvement / Math.max(1, beforeGapCount) - testPenalty));
+    const score = scoreReport(beforePatch, afterPatch, report);
     const fields = metaFields(beforePatch, afterPatch, report, score);
     const operatorSynthesis = O && O.synthesize ? O.synthesize(report, { goal, beforePatch, afterPatch }) : null;
-    const decision = report.accepted && improvement > 0
-      ? { code: 'propose_candidate_patch', confidence: R(Math.min(0.99, 0.55 + score * 0.4)), summary: 'Sandbox simulation improved declared language gaps; candidate patch is ready for external review.' }
-      : (report.accepted ? { code: 'no_improvement', confidence: 0.65, summary: 'Sandbox simulation passed but did not improve declared gaps.' } : { code: 'reject_candidate_patch', confidence: 0.8, summary: 'Sandbox simulation rejected the candidate patch.' });
+    const decision = report.accepted && improvement > 0 ? { code: 'propose_candidate_patch', confidence: R(Math.min(0.99, 0.55 + score * 0.4)), summary: 'Sandbox simulation improved declared language gaps; candidate patch is ready for external review.' } : (report.accepted ? { code: 'no_improvement', confidence: 0.65, summary: 'Sandbox simulation passed but did not improve declared gaps.' } : { code: 'reject_candidate_patch', confidence: 0.8, summary: 'Sandbox simulation rejected the candidate patch.' });
     return { packet_type: '42ndMind_meta_completion_report_v0_1', version: VERSION, goal: C(goal || {}), axes, before_patch: beforePatch, proposal: proposalSeed, sandbox_report: report, after_patch: afterPatch, improvement: { before_gaps: beforeGapCount, after_gaps: afterGapCount, closed: improvement, score }, fields, unit: { Δ: l1(fields.Δ), Ωmeta: l1(fields.Ωmeta), ok: Math.abs(l1(fields.Δ) - 1) < EPS && Math.abs(l1(fields.Ωmeta) - 1) < EPS }, operator_synthesis: operatorSynthesis, decision, virtual_summary: X.summarize(sandbox.virtual), base_summary: X.summarize(sandbox.base), ξ: '' };
   }
 
-  return Object.freeze({ VERSION, DEFAULT_MANIFEST: C(DEFAULT_MANIFEST), run, metaComplete, goalAxes, wholeState, inspect, normalize, l1 });
+  function operationsForVariant(kind, files, patch) {
+    if (kind === 'marker_only') return markerOperations(files, patch);
+    return capabilityOperations(files, patch);
+  }
+
+  function metaSearch(files, goal, options) {
+    const opts = Object.assign({ tests: [], variants: ['marker_only', 'synthesized_implementation'], maxIterations: 4, sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
+    const baseFiles = C(files || {});
+    const axes = goalAxes(goal);
+    const sandbox = X.create(baseFiles, opts.sandboxOptions);
+    const initialPatch = M.propose(baseFiles, { axes });
+    const trace = [];
+    let best = null;
+    for (let i = 0; i < Math.min(opts.maxIterations, A(opts.variants).length); i += 1) {
+      const variant = opts.variants[i];
+      const beforePatch = M.propose(sandbox.virtual, { axes });
+      const beforeGaps = A(beforePatch.gaps).length;
+      const operations = operationsForVariant(variant, sandbox.virtual, beforePatch);
+      const proposal = { id: 'meta_search_' + variant + '_' + checksum({ goal, i, beforePatch }).slice(0, 8), kind: 'closed_loop_self_edit_candidate', variant, operations: operations.concat([artifactOperation('artifacts/meta-search-attempt-v0-1.json', { variant, before: beforePatch })]) };
+      const report = X.simulate(sandbox, proposal, opts.tests || [], metaValidators(axes, beforePatch));
+      const afterPatch = M.propose(sandbox.virtual, { axes });
+      const afterGaps = A(afterPatch.gaps).length;
+      const score = report.accepted ? scoreReport(beforePatch, afterPatch, report) : R(-1 - A(report.chaos).length);
+      const entry = { iteration: i + 1, variant, accepted: report.accepted === true, reverted: report.accepted !== true, chaos: C(report.chaos || []), before_gaps: beforeGaps, after_gaps: afterGaps, score, changed: C(report.changed || []), reason: report.accepted ? 'accepted_virtual_state' : 'rejected_and_rolled_back' };
+      trace.push(entry);
+      if (report.accepted && (!best || score > best.score)) best = { iteration: i + 1, variant, score, proposal, report, after_patch: afterPatch };
+      if (report.accepted && afterGaps === 0) break;
+    }
+    const finalPatch = M.propose(sandbox.virtual, { axes });
+    const closed = A(initialPatch.gaps).length - A(finalPatch.gaps).length;
+    const Δloop = normalize([['Δloop:initial_gaps', A(initialPatch.gaps).length || 0.0001], ['Δloop:final_gaps', A(finalPatch.gaps).length || 0.0001], ['Δloop:closed', Math.max(0.0001, closed)], ['Δloop:rejected', trace.filter(t => t.reverted).length || 0.0001]], 'Δloop0');
+    const Ωloop = normalize([['Ωloop:attempts', trace.length || 0.0001], ['Ωloop:best_score', best ? Math.max(0.0001, best.score) : 0.0001], ['Ωloop:rollback', trace.some(t => t.reverted) ? 1 : 0.0001], ['Ωloop:accepted', best ? 1 : 0.0001]], 'Ωloop∅');
+    return { packet_type: '42ndMind_closed_loop_meta_search_v0_1', version: VERSION, goal: C(goal || {}), axes, initial_patch: initialPatch, final_patch: finalPatch, trace, best: best ? { iteration: best.iteration, variant: best.variant, score: best.score, proposal: best.proposal, changed: C(best.report.changed || []) } : null, improvement: { initial_gaps: A(initialPatch.gaps).length, final_gaps: A(finalPatch.gaps).length, closed, score: best ? best.score : 0 }, fields: { Δloop, Ωloop }, unit: { Δloop: l1(Δloop), Ωloop: l1(Ωloop), ok: Math.abs(l1(Δloop) - 1) < EPS && Math.abs(l1(Ωloop) - 1) < EPS }, decision: best && closed > 0 ? { code: 'propose_best_candidate', confidence: R(Math.min(0.99, 0.6 + best.score * 0.3)), summary: 'Closed-loop sandbox search found a candidate that improved the simulated language state after rejecting harmful attempts.' } : { code: 'no_safe_improvement', confidence: 0.7, summary: 'Closed-loop sandbox search found no accepted candidate that improved the simulated language state.' }, virtual_summary: X.summarize(sandbox.virtual), base_summary: X.summarize(sandbox.base), ξ: '' };
+  }
+
+  return Object.freeze({ VERSION, DEFAULT_MANIFEST: C(DEFAULT_MANIFEST), run, metaComplete, metaSearch, goalAxes, wholeState, inspect, normalize, l1 });
 });
