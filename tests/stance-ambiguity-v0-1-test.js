@@ -8,23 +8,51 @@ function ok(name, condition) {
   assert.ok(condition, name);
 }
 
-const stance = P.compileClaim("women shouldn't vote");
-ok('unspecified normative stance emits gamma packet', stance.φ === 'Γ' && stance.mode === 'stance' && stance.Ξ === '');
-ok('stance stores subject relation object', stance.subject === 'women' && stance.relation === 'should-not' && stance.object === 'vote');
-ok('stance does not infer all quantifier', stance.quantifier !== 'all');
-ok('stance does not infer some quantifier', stance.quantifier !== 'some');
-ok('stance marks quantifier unspecified', stance.quantifier === 'unspecified');
-ok('stance requires elaboration when quantifier missing', stance.elaboration_required === true && stance.elaboration_reason === 'missing_quantifier');
-ok('stance field is unit-total', Math.abs(K.l1(stance.Γ) - 1) < 1e-6);
-ok('stance field contains elaboration-required axis', stance.Γ.some(row => row.σ === 'elaboration:required'));
+function requireUnspecifiedStance(text, subject, relation, object) {
+  const stance = P.compileClaim(text);
+  ok(text + ' emits gamma stance packet', stance.φ === 'Γ' && stance.mode === 'stance' && stance.Ξ === '');
+  ok(text + ' stores subject relation object', stance.subject === subject && stance.relation === relation && stance.object === object);
+  ok(text + ' does not infer all quantifier', stance.quantifier !== 'all');
+  ok(text + ' does not infer some quantifier', stance.quantifier !== 'some');
+  ok(text + ' marks quantifier unspecified', stance.quantifier === 'unspecified');
+  ok(text + ' requires elaboration', stance.elaboration_required === true && stance.elaboration_reason === 'missing_quantifier');
+  ok(text + ' field is unit-total', Math.abs(K.l1(stance.Γ) - 1) < 1e-6);
+  ok(text + ' field contains elaboration-required axis', stance.Γ.some(row => row.σ === 'elaboration:required'));
+  return stance;
+}
 
-const allStance = P.compileClaim("all women shouldn't vote");
-ok('all quantified stance is explicit', allStance.quantifier === 'all' && allStance.elaboration_required === false);
-ok('all quantified stance differs from unspecified stance', allStance.key !== stance.key);
+function requireExplicitStance(text, quantifier, subject, relation, object) {
+  const stance = P.compileClaim(text);
+  ok(text + ' emits explicit stance packet', stance.φ === 'Γ' && stance.mode === 'stance' && stance.Ξ === '');
+  ok(text + ' stores explicit quantifier', stance.quantifier === quantifier && stance.elaboration_required === false);
+  ok(text + ' stores subject relation object', stance.subject === subject && stance.relation === relation && stance.object === object);
+  ok(text + ' field is unit-total', Math.abs(K.l1(stance.Γ) - 1) < 1e-6);
+  return stance;
+}
 
-const someStance = P.compileClaim("some women shouldn't vote");
-ok('some quantified stance is explicit', someStance.quantifier === 'some' && someStance.elaboration_required === false);
-ok('some quantified stance differs from all stance', someStance.key !== allStance.key);
+const stance = requireUnspecifiedStance("women shouldn't vote", 'women', 'should-not', 'vote');
+const allStance = requireExplicitStance("all women shouldn't vote", 'all', 'women', 'should-not', 'vote');
+const someStance = requireExplicitStance("some women shouldn't vote", 'some', 'women', 'should-not', 'vote');
+ok('unspecified/all/some stance keys are separate', stance.key !== allStance.key && stance.key !== someStance.key && allStance.key !== someStance.key);
+
+const genericCases = [
+  ["immigrants should leave", 'immigrants', 'should', 'leave'],
+  ["men should fight", 'men', 'should', 'fight'],
+  ["children should obey", 'children', 'should', 'obey'],
+  ["politicians shouldn't lie", 'politicians', 'should-not', 'lie']
+];
+genericCases.forEach(([text, subject, relation, object]) => {
+  requireUnspecifiedStance(text, subject, relation, object);
+});
+
+const explicitCases = [
+  ["all immigrants should leave", 'all', 'immigrants', 'should', 'leave'],
+  ["some men should fight", 'some', 'men', 'should', 'fight'],
+  ["all politicians shouldn't lie", 'all', 'politicians', 'should-not', 'lie']
+];
+explicitCases.forEach(([text, quantifier, subject, relation, object]) => {
+  requireExplicitStance(text, quantifier, subject, relation, object);
+});
 
 const accepted = K.acceptClaim(stance, []);
 ok('kernel can store ambiguous stance as speaker stance', accepted.accepted === true && accepted.elaboration_required === true);
