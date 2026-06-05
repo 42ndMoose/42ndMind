@@ -362,6 +362,43 @@ PASS base stance without quantifier does not falsely resolve quantified claims
 PASS ambiguous stance closes under omega-star
 PASS ambiguous stance has no unresolved gap
 exit_code=0
+## tests/formal-math-v0-1-test.js
+PASS x > 0 emits math packet
+PASS x > 0 math field is unit-total
+PASS x > 0 keeps variable x
+PASS x > 0 keeps relation greater-than
+PASS x > 0 marks domain unspecified
+PASS x > 0 marks quantifier unspecified
+PASS x > 0 requires elaboration
+PASS x > 0 carries missing domain axis
+PASS x > 0 carries missing quantifier axis
+PASS ∀x ∈ ℝ, x² ≥ 0 emits math packet
+PASS ∀x ∈ ℝ, x² ≥ 0 math field is unit-total
+PASS real square theorem has all quantifier
+PASS real square theorem has real domain
+PASS real square theorem does not require elaboration
+PASS real square theorem keeps operator square
+PASS real square theorem keeps relation greater-equal
+PASS x + 1 = 3 emits math packet
+PASS x + 1 = 3 math field is unit-total
+PASS equation keeps variable x
+PASS equation keeps plus operator
+PASS equation keeps equality relation
+PASS equation is not falsely solved
+PASS a/b is undefined when b = 0 emits math packet
+PASS a/b is undefined when b = 0 math field is unit-total
+PASS division undefined rule keeps division operator
+PASS division undefined rule keeps condition
+PASS division undefined rule marks undefined result
+PASS if A => B and A, then B emits math packet
+PASS if A => B and A, then B math field is unit-total
+PASS modus ponens keeps implication operator
+PASS modus ponens has proof rule id
+PASS modus ponens has no missing domain elaboration
+PASS math packet closes under omega-star
+PASS math packet has no unresolved gap
+PASS non-math text is rejected by math compiler
+exit_code=0
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
