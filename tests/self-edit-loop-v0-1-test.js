@@ -122,4 +122,16 @@ ok('synthesized parser exports checkProofStep', typeof synthesizedParser.checkPr
 ok('synthesized solveLinearEquation solves x + 1 = 3', synthesizedParser.solveLinearEquation('x + 1 = 3').value === 2);
 ok('synthesized checkProofStep verifies modus ponens', synthesizedParser.checkProofStep('if A => B and A, then B').ok === true);
 
+const searchFiles = Object.assign({}, liveFiles);
+searchFiles['tests/language-parser-v0-1-test.js'] = "const assert = require('assert'); const P = require('../src/language-parser-v0-1.js'); assert.strictEqual(P.VERSION, '0.1.0'); assert.strictEqual(P.solveLinearEquation('x + 1 = 3').value, 2); assert.strictEqual(P.checkProofStep('if A => B and A, then B').ok, true);";
+const search = L.metaSearch(searchFiles, goal, { tests: ['tests/language-parser-v0-1-test.js'], variants: ['marker_only', 'synthesized_implementation'] });
+ok('closed-loop search emits packet', search.packet_type === '42ndMind_closed_loop_meta_search_v0_1' && search.ξ === '');
+ok('closed-loop search records multiple attempts', search.trace.length >= 2);
+ok('closed-loop search rejects harmful marker-only attempt', search.trace.some(row => row.variant === 'marker_only' && row.reverted === true), JSON.stringify(search.trace, null, 2));
+ok('closed-loop search accepts synthesized implementation attempt', search.trace.some(row => row.variant === 'synthesized_implementation' && row.accepted === true), JSON.stringify(search.trace, null, 2));
+ok('closed-loop search improves final gaps', search.improvement.final_gaps < search.improvement.initial_gaps, JSON.stringify(search.improvement, null, 2));
+ok('closed-loop search proposes best candidate', search.decision.code === 'propose_best_candidate');
+ok('closed-loop search fields are unit-total', search.unit.ok === true && Math.abs(L.l1(search.fields.Δloop) - 1) < 1e-6 && Math.abs(L.l1(search.fields.Ωloop) - 1) < 1e-6);
+ok('closed-loop search leaves base source unchanged', searchFiles['src/language-parser-v0-1.js'].indexOf('solveLinearEquation') < 0 && searchFiles['src/language-parser-v0-1.js'].indexOf('checkProofStep') < 0);
+
 console.log(rows.join('\n'));
