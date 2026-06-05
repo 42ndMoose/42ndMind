@@ -496,6 +496,14 @@ PASS synthesized parser exports solveLinearEquation
 PASS synthesized parser exports checkProofStep
 PASS synthesized solveLinearEquation solves x + 1 = 3
 PASS synthesized checkProofStep verifies modus ponens
+PASS closed-loop search emits packet
+PASS closed-loop search records multiple attempts
+PASS closed-loop search rejects harmful marker-only attempt
+PASS closed-loop search accepts synthesized implementation attempt
+PASS closed-loop search improves final gaps
+PASS closed-loop search proposes best candidate
+PASS closed-loop search fields are unit-total
+PASS closed-loop search leaves base source unchanged
 exit_code=0
 ## tests/intention-algebra-v0-1-test.js
 PASS intention algebra loads
