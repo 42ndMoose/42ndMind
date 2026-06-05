@@ -86,4 +86,25 @@ ok('missing run does not mutate base source', !missingReport.base_summary['src/t
 ok('missing run mutates virtual source', !!missingReport.virtual_summary['src/truth-accounting-core-v0-1.js']);
 ok('accepted scaffold repair has truth accounting output', !!missingReport.truth_gate, reportDetail(missingReport));
 
+const liveFiles = Object.assign({}, completeFiles);
+liveFiles['src/language-parser-v0-1.js'] = "module.exports = { VERSION: '0.1.0' };\n// compileMath\n";
+liveFiles['tests/language-parser-v0-1-test.js'] = moduleTest('src/language-parser-v0-1.js');
+const goal = {
+  id: 'formal_math_solver_growth',
+  axes: [
+    { id: 'parser_solve_linear_equation', file: 'src/language-parser-v0-1.js', needle: 'solveLinearEquation', class: 'operator', w: 1 },
+    { id: 'parser_proof_check_step', file: 'src/language-parser-v0-1.js', needle: 'checkProofStep', class: 'operator', w: 1 }
+  ]
+};
+const meta = L.metaComplete(liveFiles, goal, { tests: ['tests/language-parser-v0-1-test.js'] });
+ok('meta-completion emits report packet', meta.packet_type === '42ndMind_meta_completion_report_v0_1' && meta.ξ === '');
+ok('meta-completion detects declared capability gaps', meta.improvement.before_gaps === 2);
+ok('meta-completion simulates candidate in sandbox', meta.sandbox_report && meta.sandbox_report.accepted === true, reportDetail(meta));
+ok('meta-completion improves declared gaps', meta.improvement.after_gaps < meta.improvement.before_gaps, reportDetail(meta));
+ok('meta-completion produces positive score', meta.improvement.score > 0, reportDetail(meta));
+ok('meta-completion proposes candidate patch', meta.decision.code === 'propose_candidate_patch');
+ok('meta-completion mutates virtual source', meta.virtual_summary['src/language-parser-v0-1.js'].checksum !== meta.base_summary['src/language-parser-v0-1.js'].checksum);
+ok('meta-completion leaves base source unchanged', liveFiles['src/language-parser-v0-1.js'].indexOf('solveLinearEquation') < 0 && liveFiles['src/language-parser-v0-1.js'].indexOf('checkProofStep') < 0);
+ok('meta-completion fields are unit-total', meta.unit.ok === true && Math.abs(L.l1(meta.fields.Δ) - 1) < 1e-6 && Math.abs(L.l1(meta.fields.Ωmeta) - 1) < 1e-6);
+
 console.log(rows.join('\n'));
