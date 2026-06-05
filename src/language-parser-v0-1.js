@@ -151,6 +151,27 @@
     return { φ: mode === 'query' ? 'Γ?' : 'Γ', v: VERSION, mode, subject, relation, object: object || null, source, scope, Γ, key: subject + '.' + relation, statement: σ, u: { Γ: l1(Γ), ok: Math.abs(l1(Γ) - 1) < EPS }, Ξ: '' };
   }
 
+
+  function stancePacket(quantifier, subject, relation, object) {
+    const q = claimObject(quantifier || 'unspecified');
+    const subj = claimObject(subject);
+    const rel = claimObject(relation);
+    const obj = claimObject(object);
+    const key = subj + '.' + rel + '.q=' + q;
+    const baseKey = subj + '.' + rel + '=' + obj;
+    const σ = 'Γ:' + key + '=' + obj;
+    const Γ = normalize([
+      { σ, w: 0.34 },
+      { σ: 'subject:' + subj, w: 0.13 },
+      { σ: 'relation:' + rel, w: 0.13 },
+      { σ: 'object:' + obj, w: 0.13 },
+      { σ: 'quantifier:' + q, w: 0.12 },
+      { σ: 'source:speaker-stance', w: 0.08 },
+      { σ: q === 'unspecified' ? 'elaboration:required' : 'elaboration:not-required', w: 0.07 }
+    ], 'Γ∅');
+    return { φ: 'Γ', v: VERSION, mode: 'stance', subject: subj, relation: rel, object: obj, quantifier: q, source: 'speaker_stance', scope: 'normative', elaboration_required: q === 'unspecified', elaboration_reason: q === 'unspecified' ? 'missing_quantifier' : null, key, base_key: baseKey, statement: σ, u: { Γ: l1(Γ), ok: Math.abs(l1(Γ) - 1) < EPS }, Γ, Ξ: '' };
+  }
+
   function compileClaim(source, options) {
     const opts = options || {};
     const text = String(source == null ? '' : source).trim();
@@ -162,6 +183,10 @@
     if (/^(what is my name|who am i)\??$/i.test(lower)) return claimPacket('query', 'self', 'name', null, 'user_query', 'identity');
     m = /^what is my\s+([a-z0-9_-]+)\??$/i.exec(lower);
     if (m) return claimPacket('query', 'self', claimObject(m[1]), null, 'user_query', 'self_attribute');
+    m = /^(all|some)\s+([a-z0-9][a-z0-9 _-]*?)\s+should(?:n't|n’t| not)\s+(.+?)[.!?]*$/i.exec(text);
+    if (m) return stancePacket(claimObject(m[1]), m[2], 'should-not', m[3]);
+    m = /^([a-z0-9][a-z0-9 _-]*?)\s+should(?:n't|n’t| not)\s+(.+?)[.!?]*$/i.exec(text);
+    if (m) return stancePacket('unspecified', m[1], 'should-not', m[2]);
     throw new Error('No deterministic claim pattern matched');
   }
 
