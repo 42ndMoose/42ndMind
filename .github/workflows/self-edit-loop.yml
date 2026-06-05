@@ -40,6 +40,7 @@ jobs:
             tests/raw-to-kernel-v0-1-test.js \
             tests/claim-memory-v0-1-test.js \
             tests/stance-ambiguity-v0-1-test.js \
+            tests/formal-math-v0-1-test.js \
             tests/discovery-core-v0-1-test.js \
             tests/source-sandbox-v0-1-test.js \
             tests/mathematical-patch-proposer-v0-1-test.js \
