@@ -88,7 +88,7 @@ jobs:
       - name: Ensure report placeholders exist
         run: |
           mkdir -p artifacts
-          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json
+          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json
           do
             if [ ! -f "artifacts/$file" ]; then
               printf '{\n  "missing": true,\n  "file": "%s"\n}\n' "$file" > "artifacts/$file"
@@ -104,6 +104,10 @@ jobs:
           echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/self-edit-loop-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Reactive Self-Edit Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/reactive-self-edit-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "## 42ndMind Growth Probe Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
@@ -124,6 +128,8 @@ jobs:
           cp artifacts/diagnostic-probe-status-v0-1.json artifacts/latest-diagnostic-probe-status-v0-1.json
           cp artifacts/self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-report-v0-1.json
           cp artifacts/self-edit-loop-summary-v0-1.json artifacts/latest-self-edit-loop-summary-v0-1.json
+          cp artifacts/reactive-self-edit-report-v0-1.json artifacts/latest-reactive-self-edit-report-v0-1.json
+          cp artifacts/reactive-self-edit-summary-v0-1.json artifacts/latest-reactive-self-edit-summary-v0-1.json
           cp artifacts/growth-probe-report-v0-1.json artifacts/latest-growth-probe-report-v0-1.json
           cp artifacts/growth-probe-summary-v0-1.json artifacts/latest-growth-probe-summary-v0-1.json
           cp artifacts/diagnostic-probe-report-v0-1.json artifacts/latest-diagnostic-probe-report-v0-1.json
