@@ -294,18 +294,67 @@ PASS accepted claim field closes under omega-star
 PASS accepted claim completion has no unresolved gap
 exit_code=0
 ## tests/stance-ambiguity-v0-1-test.js
-PASS unspecified normative stance emits gamma packet
-PASS stance stores subject relation object
-PASS stance does not infer all quantifier
-PASS stance does not infer some quantifier
-PASS stance marks quantifier unspecified
-PASS stance requires elaboration when quantifier missing
-PASS stance field is unit-total
-PASS stance field contains elaboration-required axis
-PASS all quantified stance is explicit
-PASS all quantified stance differs from unspecified stance
-PASS some quantified stance is explicit
-PASS some quantified stance differs from all stance
+PASS women shouldn't vote emits gamma stance packet
+PASS women shouldn't vote stores subject relation object
+PASS women shouldn't vote does not infer all quantifier
+PASS women shouldn't vote does not infer some quantifier
+PASS women shouldn't vote marks quantifier unspecified
+PASS women shouldn't vote requires elaboration
+PASS women shouldn't vote field is unit-total
+PASS women shouldn't vote field contains elaboration-required axis
+PASS all women shouldn't vote emits explicit stance packet
+PASS all women shouldn't vote stores explicit quantifier
+PASS all women shouldn't vote stores subject relation object
+PASS all women shouldn't vote field is unit-total
+PASS some women shouldn't vote emits explicit stance packet
+PASS some women shouldn't vote stores explicit quantifier
+PASS some women shouldn't vote stores subject relation object
+PASS some women shouldn't vote field is unit-total
+PASS unspecified/all/some stance keys are separate
+PASS immigrants should leave emits gamma stance packet
+PASS immigrants should leave stores subject relation object
+PASS immigrants should leave does not infer all quantifier
+PASS immigrants should leave does not infer some quantifier
+PASS immigrants should leave marks quantifier unspecified
+PASS immigrants should leave requires elaboration
+PASS immigrants should leave field is unit-total
+PASS immigrants should leave field contains elaboration-required axis
+PASS men should fight emits gamma stance packet
+PASS men should fight stores subject relation object
+PASS men should fight does not infer all quantifier
+PASS men should fight does not infer some quantifier
+PASS men should fight marks quantifier unspecified
+PASS men should fight requires elaboration
+PASS men should fight field is unit-total
+PASS men should fight field contains elaboration-required axis
+PASS children should obey emits gamma stance packet
+PASS children should obey stores subject relation object
+PASS children should obey does not infer all quantifier
+PASS children should obey does not infer some quantifier
+PASS children should obey marks quantifier unspecified
+PASS children should obey requires elaboration
+PASS children should obey field is unit-total
+PASS children should obey field contains elaboration-required axis
+PASS politicians shouldn't lie emits gamma stance packet
+PASS politicians shouldn't lie stores subject relation object
+PASS politicians shouldn't lie does not infer all quantifier
+PASS politicians shouldn't lie does not infer some quantifier
+PASS politicians shouldn't lie marks quantifier unspecified
+PASS politicians shouldn't lie requires elaboration
+PASS politicians shouldn't lie field is unit-total
+PASS politicians shouldn't lie field contains elaboration-required axis
+PASS all immigrants should leave emits explicit stance packet
+PASS all immigrants should leave stores explicit quantifier
+PASS all immigrants should leave stores subject relation object
+PASS all immigrants should leave field is unit-total
+PASS some men should fight emits explicit stance packet
+PASS some men should fight stores explicit quantifier
+PASS some men should fight stores subject relation object
+PASS some men should fight field is unit-total
+PASS all politicians shouldn't lie emits explicit stance packet
+PASS all politicians shouldn't lie stores explicit quantifier
+PASS all politicians shouldn't lie stores subject relation object
+PASS all politicians shouldn't lie field is unit-total
 PASS kernel can store ambiguous stance as speaker stance
 PASS explicit all stance does not overwrite unspecified stance
 PASS unspecified stance resolves separately by exact key
