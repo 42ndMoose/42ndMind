@@ -54,10 +54,7 @@
   function checksum(value) {
     const text = typeof value === 'string' ? value : JSON.stringify(value || null);
     let hash = 2166136261;
-    for (let i = 0; i < text.length; i += 1) {
-      hash ^= text.charCodeAt(i);
-      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-    }
+    for (let i = 0; i < text.length; i += 1) { hash ^= text.charCodeAt(i); hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24); }
     return (hash >>> 0).toString(16);
   }
   function has(files, path) { return Object.prototype.hasOwnProperty.call(files || {}, path); }
@@ -198,60 +195,13 @@
     if (fallback.length) current += '\n' + fallback.join('\n') + '\n';
     return injectExports(current, functions);
   }
-
-  function markerSource(files, path, gaps) {
-    const base = has(files, path) ? String(files[path] == null ? '' : files[path]) : manifestSourceScaffold({ layer: path });
-    return base + '\n' + A(gaps).map(g => '// meta-search marker-only candidate: ' + g.id + ' requires ' + g.needle).join('\n') + '\n';
-  }
-
-  function groupedGaps(patch) {
-    const grouped = {};
-    A(patch && patch.gaps).forEach(gap => {
-      if (!gap || gap.reason === 'missing_file') return;
-      const path = gap.file;
-      if (!grouped[path]) grouped[path] = [];
-      grouped[path].push(gap);
-    });
-    return grouped;
-  }
-
-  function capabilityOperations(files, patch) {
-    const ops = [];
-    A(patch && patch.proposal && patch.proposal.operations).forEach(op => ops.push(C(op)));
-    const grouped = groupedGaps(patch);
-    Object.keys(grouped).sort().forEach(path => ops.push({ type: has(files, path) ? 'replace' : 'create', path, content: synthesizeSource(files, path, grouped[path]) }));
-    return ops;
-  }
-
-  function markerOperations(files, patch) {
-    const ops = [];
-    const grouped = groupedGaps(patch);
-    Object.keys(grouped).sort().forEach(path => ops.push({ type: has(files, path) ? 'replace' : 'create', path, content: markerSource(files, path, grouped[path]) }));
-    return ops;
-  }
-
-  function metaValidators(axes, beforePatch) {
-    return [
-      function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_gap_nonincrease', ok: A(after.gaps).length <= A(beforePatch.gaps).length, before: A(beforePatch.gaps).length, after: A(after.gaps).length }; },
-      function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_unit_total', ok: after.unit && after.unit.ok === true, unit: after.unit }; }
-    ];
-  }
-
-  function metaFields(beforePatch, afterPatch, report, score) {
-    const beforeGaps = A(beforePatch && beforePatch.gaps).length;
-    const afterGaps = A(afterPatch && afterPatch.gaps).length;
-    const Δ = normalize([['Δmeta:before_gaps', beforeGaps || 0.0001], ['Δmeta:after_gaps', afterGaps || 0.0001], ['Δmeta:improvement', Math.max(0.0001, beforeGaps - afterGaps)]], 'Δmeta0');
-    const Ωmeta = normalize([['Ωmeta:sandbox', report && report.accepted ? 1 : 0.0001], ['Ωmeta:score', Math.max(0.0001, score)], ['Ωmeta:gaps_closed', beforeGaps > afterGaps ? 1 : 0.0001], ['Ωmeta:tests', A(report && report.tests).every(t => t.ok) ? 1 : 0.0001]], 'Ωmeta∅');
-    return { Δ, Ωmeta };
-  }
-
-  function scoreReport(beforePatch, afterPatch, report) {
-    const beforeGapCount = A(beforePatch && beforePatch.gaps).length;
-    const afterGapCount = A(afterPatch && afterPatch.gaps).length;
-    const improvement = beforeGapCount - afterGapCount;
-    const testPenalty = A(report.tests).filter(t => !t.ok).length + A(report.validators).filter(v => !v.ok).length;
-    return R(Math.max(0, improvement / Math.max(1, beforeGapCount) - testPenalty));
-  }
+  function markerSource(files, path, gaps) { const base = has(files, path) ? String(files[path] == null ? '' : files[path]) : manifestSourceScaffold({ layer: path }); return base + '\n' + A(gaps).map(g => '// meta-search marker-only candidate: ' + g.id + ' requires ' + g.needle).join('\n') + '\n'; }
+  function groupedGaps(patch) { const grouped = {}; A(patch && patch.gaps).forEach(gap => { if (!gap || gap.reason === 'missing_file') return; const path = gap.file; if (!grouped[path]) grouped[path] = []; grouped[path].push(gap); }); return grouped; }
+  function capabilityOperations(files, patch) { const ops = []; A(patch && patch.proposal && patch.proposal.operations).forEach(op => ops.push(C(op))); const grouped = groupedGaps(patch); Object.keys(grouped).sort().forEach(path => ops.push({ type: has(files, path) ? 'replace' : 'create', path, content: synthesizeSource(files, path, grouped[path]) })); return ops; }
+  function markerOperations(files, patch) { const ops = []; const grouped = groupedGaps(patch); Object.keys(grouped).sort().forEach(path => ops.push({ type: has(files, path) ? 'replace' : 'create', path, content: markerSource(files, path, grouped[path]) })); return ops; }
+  function metaValidators(axes, beforePatch) { return [ function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_gap_nonincrease', ok: A(after.gaps).length <= A(beforePatch.gaps).length, before: A(beforePatch.gaps).length, after: A(after.gaps).length }; }, function(candidateFiles) { const after = M.propose(candidateFiles, { axes }); return { id: 'meta_unit_total', ok: after.unit && after.unit.ok === true, unit: after.unit }; } ]; }
+  function metaFields(beforePatch, afterPatch, report, score) { const beforeGaps = A(beforePatch && beforePatch.gaps).length; const afterGaps = A(afterPatch && afterPatch.gaps).length; const Δ = normalize([['Δmeta:before_gaps', beforeGaps || 0.0001], ['Δmeta:after_gaps', afterGaps || 0.0001], ['Δmeta:improvement', Math.max(0.0001, beforeGaps - afterGaps)]], 'Δmeta0'); const Ωmeta = normalize([['Ωmeta:sandbox', report && report.accepted ? 1 : 0.0001], ['Ωmeta:score', Math.max(0.0001, score)], ['Ωmeta:gaps_closed', beforeGaps > afterGaps ? 1 : 0.0001], ['Ωmeta:tests', A(report && report.tests).every(t => t.ok) ? 1 : 0.0001]], 'Ωmeta∅'); return { Δ, Ωmeta }; }
+  function scoreReport(beforePatch, afterPatch, report) { const beforeGapCount = A(beforePatch && beforePatch.gaps).length; const afterGapCount = A(afterPatch && afterPatch.gaps).length; const improvement = beforeGapCount - afterGapCount; const testPenalty = A(report.tests).filter(t => !t.ok).length + A(report.validators).filter(v => !v.ok).length; return R(Math.max(0, improvement / Math.max(1, beforeGapCount) - testPenalty)); }
 
   function metaComplete(files, goal, options) {
     const opts = Object.assign({ tests: [], sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
@@ -273,11 +223,7 @@
     return { packet_type: '42ndMind_meta_completion_report_v0_1', version: VERSION, goal: C(goal || {}), axes, before_patch: beforePatch, proposal: proposalSeed, sandbox_report: report, after_patch: afterPatch, improvement: { before_gaps: beforeGapCount, after_gaps: afterGapCount, closed: improvement, score }, fields, unit: { Δ: l1(fields.Δ), Ωmeta: l1(fields.Ωmeta), ok: Math.abs(l1(fields.Δ) - 1) < EPS && Math.abs(l1(fields.Ωmeta) - 1) < EPS }, operator_synthesis: operatorSynthesis, decision, virtual_summary: X.summarize(sandbox.virtual), base_summary: X.summarize(sandbox.base), ξ: '' };
   }
 
-  function operationsForVariant(kind, files, patch) {
-    if (kind === 'marker_only') return markerOperations(files, patch);
-    return capabilityOperations(files, patch);
-  }
-
+  function operationsForVariant(kind, files, patch) { if (kind === 'marker_only') return markerOperations(files, patch); return capabilityOperations(files, patch); }
   function metaSearch(files, goal, options) {
     const opts = Object.assign({ tests: [], variants: ['marker_only', 'synthesized_implementation'], maxIterations: 4, sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
     const baseFiles = C(files || {});
@@ -308,5 +254,72 @@
     return { packet_type: '42ndMind_closed_loop_meta_search_v0_1', version: VERSION, goal: C(goal || {}), axes, initial_patch: initialPatch, final_patch: finalPatch, trace, best: best ? { iteration: best.iteration, variant: best.variant, score: best.score, proposal: best.proposal, changed: C(best.report.changed || []) } : null, improvement: { initial_gaps: A(initialPatch.gaps).length, final_gaps: A(finalPatch.gaps).length, closed, score: best ? best.score : 0 }, fields: { Δloop, Ωloop }, unit: { Δloop: l1(Δloop), Ωloop: l1(Ωloop), ok: Math.abs(l1(Δloop) - 1) < EPS && Math.abs(l1(Ωloop) - 1) < EPS }, decision: best && closed > 0 ? { code: 'propose_best_candidate', confidence: R(Math.min(0.99, 0.6 + best.score * 0.3)), summary: 'Closed-loop sandbox search found a candidate that improved the simulated language state after rejecting harmful attempts.' } : { code: 'no_safe_improvement', confidence: 0.7, summary: 'Closed-loop sandbox search found no accepted candidate that improved the simulated language state.' }, virtual_summary: X.summarize(sandbox.virtual), base_summary: X.summarize(sandbox.base), ξ: '' };
   }
 
-  return Object.freeze({ VERSION, DEFAULT_MANIFEST: C(DEFAULT_MANIFEST), run, metaComplete, metaSearch, goalAxes, wholeState, inspect, normalize, l1 });
+  function dependencyProjection(files, axes, tests) {
+    const rows = [];
+    A(axes).forEach(ax => { rows.push(['dep:' + ax.file + '->' + ax.needle, has(files, ax.file) && String(files[ax.file]).indexOf(ax.needle) >= 0 ? 0.0001 : 1]); });
+    A(tests).forEach(test => rows.push(['test:' + test, has(files, test) ? 0.0001 : 1]));
+    return normalize(rows.length ? rows : [['dep:closed', 0.0001]], 'dep0');
+  }
+
+  function runHealth(files, tests) {
+    const results = X.runTests(files, tests || []);
+    const failures = results.filter(r => !r.ok);
+    return { results, failures, pressure: failures.length };
+  }
+
+  function pressureOf(files, goal, options) {
+    const opts = options || {};
+    const axes = goalAxes(goal);
+    const patch = M.propose(files, { axes });
+    const health = runHealth(files, opts.tests || []);
+    const dependency = dependencyProjection(files, axes, opts.tests || []);
+    const Pfield = normalize([
+      ['P:capability_gaps', A(patch.gaps).length || 0.0001],
+      ['P:test_failures', health.failures.length || 0.0001],
+      ['P:dependency', dependency.reduce ? l1(dependency) : 1],
+      ['P:unit', patch.unit && patch.unit.ok ? 0.0001 : 1]
+    ], 'P0');
+    const scalar = R(A(patch.gaps).length + health.failures.length + (patch.unit && patch.unit.ok ? 0 : 1));
+    return { scalar, patch, health, dependency, fields: { P: Pfield, D: dependency }, unit: { P: l1(Pfield), D: l1(dependency), ok: Math.abs(l1(Pfield) - 1) < EPS && Math.abs(l1(dependency) - 1) < EPS } };
+  }
+
+  function reactiveState(files, goal, options) {
+    const opts = Object.assign({ tests: [] }, options || {});
+    const baseFiles = C(files || {});
+    const axes = goalAxes(goal);
+    const pressure = pressureOf(baseFiles, goal, opts);
+    const whole = wholeState(baseFiles, Object.keys(baseFiles).join('\n'), opts.manifest || DEFAULT_MANIFEST);
+    const Rfield = normalize([
+      ['R:pressure', pressure.scalar || 0.0001],
+      ['R:whole', whole.unit.ok ? 0.0001 : 1],
+      ['R:axes', axes.length || 0.0001],
+      ['R:source', Object.keys(baseFiles).length || 0.0001]
+    ], 'R0');
+    return { packet_type: '42ndMind_reactive_state_v0_1', version: VERSION, goal: C(goal || {}), axes, files: baseFiles, whole, pressure, fields: { R: Rfield, P: pressure.fields.P, D: pressure.fields.D }, unit: { R: l1(Rfield), P: l1(pressure.fields.P), D: l1(pressure.fields.D), ok: Math.abs(l1(Rfield) - 1) < EPS && pressure.unit.ok }, history: [], ξ: '' };
+  }
+
+  function reactiveMutate(state, proposal, options) {
+    const opts = Object.assign({ tests: [], allowNeutral: false }, options || {});
+    const beforeFiles = C(state.files || {});
+    const beforePressure = pressureOf(beforeFiles, state.goal, opts);
+    let nextFiles = beforeFiles;
+    let blocked = null;
+    try { nextFiles = X.applyProposal(beforeFiles, proposal, { allowDelete: false, maxPatchBytes: 2000000 }); }
+    catch (err) { blocked = String(err && err.message || err); }
+    const afterPressure = blocked ? beforePressure : pressureOf(nextFiles, state.goal, opts);
+    const delta = R(afterPressure.scalar - beforePressure.scalar);
+    const accepted = !blocked && (delta < 0 || (opts.allowNeutral && delta === 0));
+    const causal = [];
+    if (blocked) causal.push('blocked:' + blocked);
+    if (afterPressure.patch.gaps.length > beforePressure.patch.gaps.length) causal.push('capability_gaps_increased');
+    if (afterPressure.health.failures.length > beforePressure.health.failures.length) causal.push('test_failures_increased');
+    if (afterPressure.scalar < beforePressure.scalar) causal.push('pressure_reduced');
+    if (afterPressure.scalar === beforePressure.scalar) causal.push('pressure_unchanged');
+    if (afterPressure.scalar > beforePressure.scalar) causal.push('pressure_increased');
+    const nextState = reactiveState(accepted ? nextFiles : beforeFiles, state.goal, opts);
+    nextState.history = A(state.history).concat([{ id: proposal && proposal.id || 'mutation_' + (A(state.history).length + 1), accepted, reverted: !accepted, before_pressure: beforePressure.scalar, after_pressure: afterPressure.scalar, delta, causal, changed: blocked ? [] : Object.keys(nextFiles).filter(path => !beforeFiles[path] || checksum(beforeFiles[path]) !== checksum(nextFiles[path])) }]);
+    return { packet_type: '42ndMind_reactive_mutation_report_v0_1', version: VERSION, accepted, reverted: !accepted, delta, causal, before: beforePressure, after: afterPressure, state: nextState, ξ: '' };
+  }
+
+  return Object.freeze({ VERSION, DEFAULT_MANIFEST: C(DEFAULT_MANIFEST), run, metaComplete, metaSearch, reactiveState, reactiveMutate, pressureOf, goalAxes, wholeState, inspect, normalize, l1 });
 });
