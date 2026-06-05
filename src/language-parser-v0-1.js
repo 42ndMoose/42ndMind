@@ -199,6 +199,96 @@
     catch (err) { return []; }
   }
 
+  function relationSymbol(value) {
+    return String(value || '').replace('≥', '>=').replace('≤', '<=').replace('⇒', '=>').trim();
+  }
+
+  function domainSymbol(value) {
+    const raw = String(value || '').trim().toLowerCase();
+    if (raw === 'ℝ' || raw === 'r' || raw === 'real' || raw === 'reals') return 'real';
+    if (raw === 'ℤ' || raw === 'z' || raw === 'integer' || raw === 'integers') return 'integer';
+    if (raw === 'ℕ' || raw === 'n' || raw === 'natural' || raw === 'naturals') return 'natural';
+    return claimObject(raw || 'unspecified');
+  }
+
+  function mathVars(text) {
+    const found = String(text || '').match(/\b[a-zA-Z]\b/g) || [];
+    const seen = {};
+    return found.filter(v => { const key = v.toLowerCase(); if (seen[key]) return false; seen[key] = true; return true; }).map(v => v.toLowerCase());
+  }
+
+  function mathOperators(text) {
+    const raw = String(text || '');
+    const ops = [];
+    if (/\+/.test(raw)) ops.push('+');
+    if (/-/.test(raw) && !/=>/.test(raw)) ops.push('-');
+    if (/\//.test(raw)) ops.push('/');
+    if (/\*/.test(raw)) ops.push('*');
+    if (/[²^]2/.test(raw) || /²/.test(raw)) ops.push('square');
+    if (/(=>|⇒)/.test(raw)) ops.push('=>');
+    return ops;
+  }
+
+  function mathPacket(data) {
+    const variables = A(data.variables);
+    const operators = A(data.operators);
+    const domain = data.domain || 'unspecified';
+    const quantifier = data.quantifier || 'unspecified';
+    const relation = data.relation || 'none';
+    const rows = [
+      { σ: 'mode:' + claimObject(data.mode), w: 0.16 },
+      { σ: 'relation:' + claimObject(relation), w: 0.13 },
+      { σ: 'quantifier:' + claimObject(quantifier), w: 0.12 },
+      { σ: 'domain:' + claimObject(domain), w: 0.12 },
+      { σ: data.elaboration_required ? 'elaboration:required' : 'elaboration:not-required', w: 0.10 }
+    ];
+    variables.forEach(v => rows.push({ σ: 'var:' + claimObject(v), w: 0.07 }));
+    operators.forEach(op => rows.push({ σ: 'op:' + claimObject(op), w: 0.07 }));
+    if (data.left) rows.push({ σ: 'left:' + claimObject(data.left), w: 0.07 });
+    if (data.right) rows.push({ σ: 'right:' + claimObject(data.right), w: 0.07 });
+    if (data.condition) rows.push({ σ: 'condition:' + claimObject(data.condition), w: 0.07 });
+    if (data.result) rows.push({ σ: 'result:' + claimObject(data.result), w: 0.07 });
+    if (data.rule) rows.push({ σ: 'rule:' + claimObject(data.rule), w: 0.07 });
+    const M = normalize(rows, 'M∅');
+    return Object.assign({ φ: 'M', v: VERSION, source: 'formal_math', M, u: { M: l1(M), ok: Math.abs(l1(M) - 1) < EPS }, Ξ: '' }, data, { domain, quantifier, relation, variables, operators });
+  }
+
+  function compileMath(source) {
+    const text = String(source == null ? '' : source).trim();
+    let m = /^∀\s*([a-zA-Z])\s*(?:∈|in)\s*(ℝ|R|real|reals|ℤ|Z|integer|integers|ℕ|N|natural|naturals)\s*,\s*(.+?)\s*(≥|>=|≤|<=|>|<|=)\s*(.+)$/i.exec(text);
+    if (m) {
+      const left = m[3].trim();
+      const right = m[5].trim();
+      return mathPacket({ mode: 'theorem', raw: text, variables: [m[1].toLowerCase()], operators: mathOperators(left + right), quantifier: 'all', domain: domainSymbol(m[2]), relation: relationSymbol(m[4]), left, right, elaboration_required: false, solved: false });
+    }
+    m = /^([a-zA-Z])\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)\s*=\s*(-?\d+(?:\.\d+)?)$/.exec(text);
+    if (m) return mathPacket({ mode: 'equation', raw: text, variables: [m[1].toLowerCase()], operators: [m[2]], quantifier: 'unspecified', domain: 'unspecified', relation: '=', left: m[1] + m[2] + m[3], right: m[4], elaboration_required: true, solved: false });
+    m = /^([a-zA-Z])\s*\/\s*([a-zA-Z])\s+is\s+undefined\s+when\s+([a-zA-Z])\s*=\s*0$/i.exec(text);
+    if (m) return mathPacket({ mode: 'constraint', raw: text, variables: [m[1].toLowerCase(), m[2].toLowerCase()], operators: ['/'], quantifier: 'all', domain: 'unspecified', relation: 'undefined-when', left: m[1] + '/' + m[2], right: 'undefined', condition: m[3].toLowerCase() + '=0', result: 'undefined', elaboration_required: false, solved: false });
+    m = /^if\s+([a-zA-Z])\s*(?:=>|⇒)\s*([a-zA-Z])\s+and\s+\1\s*,?\s*then\s+\2$/i.exec(text);
+    if (m) return mathPacket({ mode: 'proof-rule', raw: text, variables: [m[1].toUpperCase(), m[2].toUpperCase()], operators: ['=>'], quantifier: 'rule', domain: 'logic', relation: 'therefore', left: m[1].toUpperCase() + '=>'+ m[2].toUpperCase(), right: m[2].toUpperCase(), rule: 'modus-ponens', elaboration_required: false, solved: false });
+    m = /^([a-zA-Z])\s*(≥|>=|≤|<=|>|<|=)\s*(-?\d+(?:\.\d+)?)$/.exec(text);
+    if (m) return mathPacket({ mode: 'relation', raw: text, variables: [m[1].toLowerCase()], operators: [], quantifier: 'unspecified', domain: 'unspecified', relation: relationSymbol(m[2]), left: m[1].toLowerCase(), right: m[3], elaboration_required: true, solved: false });
+    throw new Error('No deterministic math pattern matched');
+  }
+
+  function mathToKernelFields(input) {
+    const packet = typeof input === 'string' ? compileMath(input) : input;
+    return [A(packet.M).map(row => ({ σ: 'M:' + axis(row), w: weight(row) }))];
+  }
+
+  function mathToKernelSeed(input) {
+    return mathToKernelFields(input).reduce((rows, field) => rows.concat(field), []);
+  }
+
+  function mathToKernelCompletion(input, kernel, options) {
+    if (!kernel || typeof kernel.complete !== 'function') throw new Error('Kernel with complete(...) is required');
+    const opts = options || {};
+    const completeOpts = Object.assign({}, opts.complete || opts);
+    delete completeOpts.math;
+    return kernel.complete(mathToKernelFields(input), completeOpts);
+  }
+
   function parseRows(body) {
     const rows = [];
     if (!body.trim()) return rows;
@@ -363,6 +453,10 @@
     rawToSymbolic,
     compileClaim,
     rawToClaimCandidates,
+    compileMath,
+    mathToKernelFields,
+    mathToKernelSeed,
+    mathToKernelCompletion,
     toKernelFields,
     toKernelSeed,
     toKernelCompletion,
