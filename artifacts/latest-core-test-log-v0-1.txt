@@ -233,6 +233,24 @@ PASS mixed scope derives observed grounding
 PASS mixed scope derives observed fact
 PASS mixed scope emits equality closure
 exit_code=0
+## tests/compiler-to-kernel-v0-1-test.js
+PASS compiler emits one kernel field per language layer
+PASS compiled fields are unit-total
+PASS compiled fields preserve layer-prefixed axes
+PASS compiler emits whole seed field
+PASS whole seed can normalize in kernel
+PASS compiled source closes under Ω*
+PASS compiled source emits formal grounding
+PASS compiled source emits canonical equality
+PASS compiled source has no unresolved gap
+PASS compiled source closes against compiled target
+PASS compiled target completion derives observed grounding
+PASS compiled target completion derives correction and proof
+PASS compiled target completion reaches target seed
+PASS loose symbolic source fills missing layers and closes
+PASS loose symbolic source emits closed gap
+PASS non-packet raw input is rejected by compiler path
+exit_code=0
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
