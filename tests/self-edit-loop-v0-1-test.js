@@ -134,4 +134,29 @@ ok('closed-loop search proposes best candidate', search.decision.code === 'propo
 ok('closed-loop search fields are unit-total', search.unit.ok === true && Math.abs(L.l1(search.fields.Δloop) - 1) < 1e-6 && Math.abs(L.l1(search.fields.Ωloop) - 1) < 1e-6);
 ok('closed-loop search leaves base source unchanged', searchFiles['src/language-parser-v0-1.js'].indexOf('solveLinearEquation') < 0 && searchFiles['src/language-parser-v0-1.js'].indexOf('checkProofStep') < 0);
 
+const reactive = L.reactiveState(searchFiles, goal, { tests: ['tests/language-parser-v0-1-test.js'] });
+ok('reactive state emits packet', reactive.packet_type === '42ndMind_reactive_state_v0_1' && reactive.ξ === '');
+ok('reactive state sees initial pressure', reactive.pressure.scalar > 0);
+ok('reactive state fields are unit-total', reactive.unit.ok === true && Math.abs(L.l1(reactive.fields.R) - 1) < 1e-6 && Math.abs(L.l1(reactive.fields.P) - 1) < 1e-6 && Math.abs(L.l1(reactive.fields.D) - 1) < 1e-6);
+
+const badMutation = L.reactiveMutate(reactive, {
+  id: 'bad_marker_mutation',
+  operations: [{ type: 'replace', path: 'src/language-parser-v0-1.js', content: searchFiles['src/language-parser-v0-1.js'] + '\n// bad marker only\n' }]
+}, { tests: ['tests/language-parser-v0-1-test.js'] });
+ok('reactive mutation rejects non-improving edit', badMutation.accepted === false && badMutation.reverted === true, JSON.stringify(badMutation.causal, null, 2));
+ok('reactive rejected mutation keeps pressure non-lower', badMutation.delta >= 0);
+ok('reactive rejected mutation keeps original simulated file', badMutation.state.files['src/language-parser-v0-1.js'] === searchFiles['src/language-parser-v0-1.js']);
+ok('reactive rejection reports causal pressure', badMutation.causal.includes('pressure_unchanged') || badMutation.causal.includes('pressure_increased'));
+
+const goodMutation = L.reactiveMutate(reactive, {
+  id: 'good_synthesized_mutation',
+  operations: [parserPatch]
+}, { tests: ['tests/language-parser-v0-1-test.js'] });
+ok('reactive mutation accepts pressure-reducing edit', goodMutation.accepted === true && goodMutation.reverted === false, JSON.stringify(goodMutation.causal, null, 2));
+ok('reactive accepted mutation lowers pressure', goodMutation.delta < 0);
+ok('reactive accepted mutation keeps synthesized functions in state', goodMutation.state.files['src/language-parser-v0-1.js'].indexOf('function solveLinearEquation') >= 0 && goodMutation.state.files['src/language-parser-v0-1.js'].indexOf('function checkProofStep') >= 0);
+ok('reactive accepted mutation reports pressure reduced', goodMutation.causal.includes('pressure_reduced'));
+ok('reactive accepted state remains unit-total', goodMutation.state.unit.ok === true);
+ok('reactive accepted mutation does not mutate base object', searchFiles['src/language-parser-v0-1.js'].indexOf('solveLinearEquation') < 0 && searchFiles['src/language-parser-v0-1.js'].indexOf('checkProofStep') < 0);
+
 console.log(rows.join('\n'));
