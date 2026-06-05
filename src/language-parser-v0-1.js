@@ -107,7 +107,7 @@
     const rows = [];
     if (/[?]/.test(text)) rows.push({ σ: 'intent:question', w: 1 });
     if (/\b(please|can|could|would|make|do|show|give|check|fix|finish)\b/.test(lower)) rows.push({ σ: 'intent:request', w: 1 });
-    if (/\b(is|are|was|were|does|did|because|therefore|so|means|implies)\b/.test(lower)) rows.push({ σ: 'intent:claim', w: 1 });
+    if (/\b(is|are|was|were|does|do|did|because|therefore|so|means|implies|should)\b/.test(lower)) rows.push({ σ: 'intent:claim', w: 1 });
     if (/!/.test(text)) rows.push({ σ: 'intent:emphasis', w: 0.5 });
     if (!rows.length && A(tokens).length) rows.push({ σ: 'intent:statement', w: 1 });
     return rows;
@@ -151,7 +151,6 @@
     return { φ: mode === 'query' ? 'Γ?' : 'Γ', v: VERSION, mode, subject, relation, object: object || null, source, scope, Γ, key: subject + '.' + relation, statement: σ, u: { Γ: l1(Γ), ok: Math.abs(l1(Γ) - 1) < EPS }, Ξ: '' };
   }
 
-
   function stancePacket(quantifier, subject, relation, object) {
     const q = claimObject(quantifier || 'unspecified');
     const subj = claimObject(subject);
@@ -183,10 +182,15 @@
     if (/^(what is my name|who am i)\??$/i.test(lower)) return claimPacket('query', 'self', 'name', null, 'user_query', 'identity');
     m = /^what is my\s+([a-z0-9_-]+)\??$/i.exec(lower);
     if (m) return claimPacket('query', 'self', claimObject(m[1]), null, 'user_query', 'self_attribute');
+
     m = /^(all|some)\s+([a-z0-9][a-z0-9 _-]*?)\s+should(?:n't|n’t| not)\s+(.+?)[.!?]*$/i.exec(text);
     if (m) return stancePacket(claimObject(m[1]), m[2], 'should-not', m[3]);
+    m = /^(all|some)\s+([a-z0-9][a-z0-9 _-]*?)\s+should\s+(.+?)[.!?]*$/i.exec(text);
+    if (m) return stancePacket(claimObject(m[1]), m[2], 'should', m[3]);
     m = /^([a-z0-9][a-z0-9 _-]*?)\s+should(?:n't|n’t| not)\s+(.+?)[.!?]*$/i.exec(text);
     if (m) return stancePacket('unspecified', m[1], 'should-not', m[2]);
+    m = /^([a-z0-9][a-z0-9 _-]*?)\s+should\s+(.+?)[.!?]*$/i.exec(text);
+    if (m) return stancePacket('unspecified', m[1], 'should', m[2]);
     throw new Error('No deterministic claim pattern matched');
   }
 
