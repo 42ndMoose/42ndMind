@@ -482,6 +482,15 @@ PASS missing run accepted virtual scaffold proposal
 PASS missing run does not mutate base source
 PASS missing run mutates virtual source
 PASS accepted scaffold repair has truth accounting output
+PASS meta-completion emits report packet
+PASS meta-completion detects declared capability gaps
+PASS meta-completion simulates candidate in sandbox
+PASS meta-completion improves declared gaps
+PASS meta-completion produces positive score
+PASS meta-completion proposes candidate patch
+PASS meta-completion mutates virtual source
+PASS meta-completion leaves base source unchanged
+PASS meta-completion fields are unit-total
 exit_code=0
 ## tests/intention-algebra-v0-1-test.js
 PASS intention algebra loads
