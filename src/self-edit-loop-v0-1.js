@@ -233,10 +233,129 @@
     };
   }
 
+  function goalAxes(goal) {
+    const g = goal || {};
+    const axes = A(g.axes).length ? A(g.axes) : A(g.capabilities);
+    return axes.map((item, index) => {
+      const id = String(item.id || item.name || ('goal_' + (index + 1))).replace(/[^a-z0-9_:-]/gi, '_');
+      return {
+        id,
+        symbol: item.symbol || ('Π:goal:' + id),
+        w: Number(item.w) || 1,
+        needle: String(item.needle || item.name || id),
+        file: String(item.file || item.path || 'src/language-parser-v0-1.js'),
+        class: item.class || item.kind || 'operator'
+      };
+    });
+  }
+
+  function sourceCandidateOperation(files, gap) {
+    const path = gap && gap.file;
+    if (!path) return null;
+    if (!has(files, path)) {
+      return { type: 'create', path, content: manifestSourceScaffold({ layer: gap.id || 'goal' }) + '// meta-complete candidate: ' + (gap.needle || gap.id) + '\n' };
+    }
+    const current = String(files[path] == null ? '' : files[path]);
+    if (current.indexOf(gap.needle) >= 0) return null;
+    const marker = '\n// meta-complete candidate: ' + gap.id + ' requires ' + gap.needle + '\n';
+    return { type: 'replace', path, content: current + marker };
+  }
+
+  function capabilityOperations(files, patch) {
+    const ops = [];
+    A(patch && patch.proposal && patch.proposal.operations).forEach(op => ops.push(C(op)));
+    const existing = new Set(ops.map(op => op && op.path).filter(Boolean));
+    A(patch && patch.gaps).forEach(gap => {
+      if (!gap || gap.reason === 'missing_file') return;
+      const op = sourceCandidateOperation(files, gap);
+      if (op && !existing.has(op.path + ':' + op.type + ':' + (op.content || '').length)) {
+        ops.push(op);
+        existing.add(op.path + ':' + op.type + ':' + (op.content || '').length);
+      }
+    });
+    return ops;
+  }
+
+  function metaFields(beforePatch, afterPatch, report, score) {
+    const beforeGaps = A(beforePatch && beforePatch.gaps).length;
+    const afterGaps = A(afterPatch && afterPatch.gaps).length;
+    const Δ = normalize([
+      ['Δmeta:before_gaps', beforeGaps || 0.0001],
+      ['Δmeta:after_gaps', afterGaps || 0.0001],
+      ['Δmeta:improvement', Math.max(0.0001, beforeGaps - afterGaps)]
+    ], 'Δmeta0');
+    const Ωmeta = normalize([
+      ['Ωmeta:sandbox', report && report.accepted ? 1 : 0.0001],
+      ['Ωmeta:score', Math.max(0.0001, score)],
+      ['Ωmeta:gaps_closed', beforeGaps > afterGaps ? 1 : 0.0001],
+      ['Ωmeta:tests', A(report && report.tests).every(t => t.ok) ? 1 : 0.0001]
+    ], 'Ωmeta∅');
+    return { Δ, Ωmeta };
+  }
+
+  function metaComplete(files, goal, options) {
+    const opts = Object.assign({ tests: [], sandboxOptions: { allowDelete: false, maxPatchBytes: 2000000 } }, options || {});
+    const baseFiles = C(files || {});
+    const axes = goalAxes(goal);
+    const beforePatch = M && M.propose ? M.propose(baseFiles, { axes }) : null;
+    const operations = capabilityOperations(baseFiles, beforePatch);
+    const proposalSeed = {
+      id: 'meta_completion_' + checksum({ goal, beforePatch }).slice(0, 10),
+      kind: 'meta_completion_candidate_patch',
+      goal: C(goal || {}),
+      operations: operations.concat([artifactOperation('artifacts/meta-completion-v0-1.json', { goal, before: beforePatch })]),
+      expected: { before_gap_count: A(beforePatch && beforePatch.gaps).length, target_gap_count: 0 }
+    };
+    const sandbox = X.create(baseFiles, opts.sandboxOptions);
+    const validators = [
+      function(candidateFiles) {
+        const after = M.propose(candidateFiles, { axes });
+        return { id: 'meta_gap_nonincrease', ok: A(after.gaps).length <= A(beforePatch.gaps).length, before: A(beforePatch.gaps).length, after: A(after.gaps).length };
+      },
+      function(candidateFiles) {
+        const after = M.propose(candidateFiles, { axes });
+        return { id: 'meta_unit_total', ok: after.unit && after.unit.ok === true, unit: after.unit };
+      }
+    ];
+    const report = X.simulate(sandbox, proposalSeed, opts.tests || [], validators);
+    const afterPatch = M && M.propose ? M.propose(sandbox.virtual, { axes }) : null;
+    const beforeGapCount = A(beforePatch && beforePatch.gaps).length;
+    const afterGapCount = A(afterPatch && afterPatch.gaps).length;
+    const improvement = beforeGapCount - afterGapCount;
+    const testPenalty = A(report.tests).filter(t => !t.ok).length + A(report.validators).filter(v => !v.ok).length;
+    const score = R(Math.max(0, improvement / Math.max(1, beforeGapCount) - testPenalty));
+    const fields = metaFields(beforePatch, afterPatch, report, score);
+    const operatorSynthesis = O && O.synthesize ? O.synthesize(report, { goal, beforePatch, afterPatch }) : null;
+    const decision = report.accepted && improvement > 0
+      ? { code: 'propose_candidate_patch', confidence: R(Math.min(0.99, 0.55 + score * 0.4)), summary: 'Sandbox simulation improved declared language gaps; candidate patch is ready for external review.' }
+      : (report.accepted ? { code: 'no_improvement', confidence: 0.65, summary: 'Sandbox simulation passed but did not improve declared gaps.' } : { code: 'reject_candidate_patch', confidence: 0.8, summary: 'Sandbox simulation rejected the candidate patch.' });
+
+    return {
+      packet_type: '42ndMind_meta_completion_report_v0_1',
+      version: VERSION,
+      goal: C(goal || {}),
+      axes,
+      before_patch: beforePatch,
+      proposal: proposalSeed,
+      sandbox_report: report,
+      after_patch: afterPatch,
+      improvement: { before_gaps: beforeGapCount, after_gaps: afterGapCount, closed: improvement, score },
+      fields,
+      unit: { Δ: l1(fields.Δ), Ωmeta: l1(fields.Ωmeta), ok: Math.abs(l1(fields.Δ) - 1) < EPS && Math.abs(l1(fields.Ωmeta) - 1) < EPS },
+      operator_synthesis: operatorSynthesis,
+      decision,
+      virtual_summary: X.summarize(sandbox.virtual),
+      base_summary: X.summarize(sandbox.base),
+      ξ: ''
+    };
+  }
+
   return Object.freeze({
     VERSION,
     DEFAULT_MANIFEST: C(DEFAULT_MANIFEST),
     run,
+    metaComplete,
+    goalAxes,
     wholeState,
     inspect,
     normalize,
