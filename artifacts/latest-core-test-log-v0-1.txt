@@ -293,6 +293,26 @@ PASS non-claim raw input produces no deterministic claim
 PASS accepted claim field closes under omega-star
 PASS accepted claim completion has no unresolved gap
 exit_code=0
+## tests/stance-ambiguity-v0-1-test.js
+PASS unspecified normative stance emits gamma packet
+PASS stance stores subject relation object
+PASS stance does not infer all quantifier
+PASS stance does not infer some quantifier
+PASS stance marks quantifier unspecified
+PASS stance requires elaboration when quantifier missing
+PASS stance field is unit-total
+PASS stance field contains elaboration-required axis
+PASS all quantified stance is explicit
+PASS all quantified stance differs from unspecified stance
+PASS some quantified stance is explicit
+PASS some quantified stance differs from all stance
+PASS kernel can store ambiguous stance as speaker stance
+PASS explicit all stance does not overwrite unspecified stance
+PASS unspecified stance resolves separately by exact key
+PASS base stance without quantifier does not falsely resolve quantified claims
+PASS ambiguous stance closes under omega-star
+PASS ambiguous stance has no unresolved gap
+exit_code=0
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
