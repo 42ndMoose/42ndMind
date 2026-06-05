@@ -134,6 +134,42 @@
     return serialize(compileRaw(source, options));
   }
 
+  function claimObject(value) {
+    return safeSymbol(String(value == null ? '' : value).replace(/[?.!]+$/g, ''), 'unknown');
+  }
+
+  function claimPacket(mode, subject, relation, object, source, scope) {
+    const σ = mode === 'query' ? 'Γ?:' + subject + '.' + relation : 'Γ:' + subject + '.' + relation + '=' + object;
+    const Γ = normalize([
+      { σ, w: 0.40 },
+      { σ: 'subject:' + subject, w: 0.15 },
+      { σ: 'relation:' + relation, w: 0.15 },
+      { σ: 'object:' + (object || '?'), w: 0.15 },
+      { σ: 'source:' + source, w: 0.10 },
+      { σ: 'scope:' + scope, w: 0.05 }
+    ], 'Γ∅');
+    return { φ: mode === 'query' ? 'Γ?' : 'Γ', v: VERSION, mode, subject, relation, object: object || null, source, scope, Γ, key: subject + '.' + relation, statement: σ, u: { Γ: l1(Γ), ok: Math.abs(l1(Γ) - 1) < EPS }, Ξ: '' };
+  }
+
+  function compileClaim(source, options) {
+    const opts = options || {};
+    const text = String(source == null ? '' : source).trim();
+    const lower = text.toLowerCase().replace(/\s+/g, ' ').trim();
+    let m = /^(?:my name is|i am|i'm|call me)\s+([a-z0-9][a-z0-9_-]*)[.!?]*$/i.exec(text);
+    if (m) return claimPacket('assert', 'self', 'name', claimObject(m[1]), 'self_report', 'identity');
+    m = /^my\s+([a-z0-9_-]+)\s+is\s+(.+?)[.!?]*$/i.exec(text);
+    if (m) return claimPacket('assert', 'self', claimObject(m[1]), claimObject(m[2]), 'self_report', opts.scope || 'self_attribute');
+    if (/^(what is my name|who am i)\??$/i.test(lower)) return claimPacket('query', 'self', 'name', null, 'user_query', 'identity');
+    m = /^what is my\s+([a-z0-9_-]+)\??$/i.exec(lower);
+    if (m) return claimPacket('query', 'self', claimObject(m[1]), null, 'user_query', 'self_attribute');
+    throw new Error('No deterministic claim pattern matched');
+  }
+
+  function rawToClaimCandidates(source, options) {
+    try { return [compileClaim(source, options)]; }
+    catch (err) { return []; }
+  }
+
   function parseRows(body) {
     const rows = [];
     if (!body.trim()) return rows;
@@ -296,6 +332,8 @@
     fromKernelPacket,
     compileRaw,
     rawToSymbolic,
+    compileClaim,
+    rawToClaimCandidates,
     toKernelFields,
     toKernelSeed,
     toKernelCompletion,

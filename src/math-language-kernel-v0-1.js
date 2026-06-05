@@ -505,6 +505,40 @@
     return { φ: 'Ω*', v: VERSION, fixed, complete: fixed && unresolved.length === 0 && conflicts.length === 0 && unitOk, fields: C(fields), lexicon: { φ: 'Λ', v: VERSION, Λ, entries: C(registry), count: registry.length, u: { Λ: l1(Λ), ok: Math.abs(l1(Λ) - 1) < EPS }, χ: ['Λ=Ω*.lexicon', 'Ξ=""'], Ξ: '' }, Ω, trace, unresolved_count: unresolved.length, conflict_count: conflicts.length, u: { Ω: l1(Ω), ok: unitOk }, χ: ['Ω*=fix(C⊕Λ)', 'Ω* complete iff fixed and χ holds and Δ?=0 and conflicts=0', 'Ξ=""'], Ξ: '' };
   }
 
+
+  function claimKey(claim) {
+    return String((claim && claim.key) || ((claim && claim.subject || '∅') + '.' + (claim && claim.relation || '∅')));
+  }
+
+  function claimValue(claim) {
+    return String(claim && claim.object != null ? claim.object : '?');
+  }
+
+  function claimField(claim) {
+    if (Array.isArray(claim)) return normalize(claim);
+    if (claim && Array.isArray(claim.Γ)) return normalize(claim.Γ);
+    return normalize([{ σ: 'Γ∅', w: 1 }]);
+  }
+
+  function acceptClaim(candidate, ledger) {
+    const reg = A(ledger);
+    const key = claimKey(candidate);
+    const value = claimValue(candidate);
+    const prior = reg.find(item => item && item.φ === 'Γ' && item.accepted === true && claimKey(item) === key && claimValue(item) !== value);
+    const query = candidate && candidate.φ === 'Γ?';
+    const ok = candidate && (candidate.φ === 'Γ' || candidate.φ === 'Γ?') && candidate.Ξ === '' && (query || !prior);
+    return Object.assign({}, C(candidate), { accepted: !!ok && !query, query: !!query, rejected: !ok && !query, conflict: prior ? prior.statement || claimValue(prior) : null, Γ: claimField(candidate), χ: ['Γ accepted iff no same-key different-object conflict', 'Γ? query does not mutate ledger', 'Ξ=""'], Ξ: '' });
+  }
+
+  function resolveClaim(query, ledger) {
+    const key = typeof query === 'string' ? query : claimKey(query);
+    const matches = A(ledger).filter(item => item && item.φ === 'Γ' && item.accepted === true && claimKey(item) === key);
+    const unique = [];
+    const seen = {};
+    matches.forEach(item => { const v = claimValue(item); if (!seen[v]) { seen[v] = true; unique.push(item); } });
+    return { φ: 'Γ?', v: VERSION, key, ok: unique.length === 1, value: unique.length === 1 ? claimValue(unique[0]) : null, matches: C(unique), conflict: unique.length > 1, Γ: normalize(unique.length ? unique.reduce((rows, item) => rows.concat(claimField(item)), []) : [{ σ: 'Γ?:' + key, w: 1 }]), χ: ['Γ? resolves iff exactly one accepted Γ matches key', 'Ξ=""'], Ξ: '' };
+  }
+
   function countMap(list) {
     const out = {};
     A(list).forEach(item => { out[item] = (out[item] || 0) + 1; });
@@ -618,5 +652,5 @@
 
   function snapshot(state) { return C(state); }
 
-  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, complete, rebalance, unitReport });
+  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, acceptClaim, resolveClaim, complete, rebalance, unitReport });
 });
