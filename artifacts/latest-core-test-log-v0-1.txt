@@ -504,6 +504,19 @@ PASS closed-loop search improves final gaps
 PASS closed-loop search proposes best candidate
 PASS closed-loop search fields are unit-total
 PASS closed-loop search leaves base source unchanged
+PASS reactive state emits packet
+PASS reactive state sees initial pressure
+PASS reactive state fields are unit-total
+PASS reactive mutation rejects non-improving edit
+PASS reactive rejected mutation keeps pressure non-lower
+PASS reactive rejected mutation keeps original simulated file
+PASS reactive rejection reports causal pressure
+PASS reactive mutation accepts pressure-reducing edit
+PASS reactive accepted mutation lowers pressure
+PASS reactive accepted mutation keeps synthesized functions in state
+PASS reactive accepted mutation reports pressure reduced
+PASS reactive accepted state remains unit-total
+PASS reactive accepted mutation does not mutate base object
 exit_code=0
 ## tests/intention-algebra-v0-1-test.js
 PASS intention algebra loads
