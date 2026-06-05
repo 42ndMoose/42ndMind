@@ -273,6 +273,26 @@ PASS raw target completion derives observed grounding
 PASS raw target completion derives correction and proof
 PASS empty raw input is rejected
 exit_code=0
+## tests/claim-memory-v0-1-test.js
+PASS claim compiler emits gamma packet
+PASS name claim has self name key
+PASS name claim field is unit-total
+PASS kernel accepts first self name claim
+PASS claim compiler emits query packet
+PASS kernel resolves accepted name claim
+PASS resolved claim field is unit-total
+PASS kernel accepts duplicate same-value name claim
+PASS duplicate same-value claims still resolve uniquely
+PASS kernel rejects conflicting same-key different-value claim
+PASS rejected conflict does not overwrite accepted claim
+PASS claim compiler handles self attribute
+PASS kernel accepts non-conflicting self attribute
+PASS claim compiler handles self attribute query
+PASS kernel resolves self attribute query
+PASS non-claim raw input produces no deterministic claim
+PASS accepted claim field closes under omega-star
+PASS accepted claim completion has no unresolved gap
+exit_code=0
 ## tests/discovery-core-v0-1-test.js
 PASS discovery core loads
 PASS initial discovery state is unit-total
