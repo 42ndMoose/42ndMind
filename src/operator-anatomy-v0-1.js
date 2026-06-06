@@ -7,6 +7,9 @@
   const VERSION = '0.1.0';
   const R = value => Number((Number(value) || 0).toFixed(6));
   const A = value => Array.isArray(value) ? value : [];
+  let MathAstCore = null;
+  try { if (typeof require === 'function') MathAstCore = require('./math-ast-core-v0-1.js'); } catch (_) { MathAstCore = null; }
+
 
   const CATALOG = Object.freeze({
     affine_equation: Object.freeze({
@@ -117,8 +120,23 @@
     return String(source || '').indexOf(String(needle || '')) >= 0;
   }
 
+  function astSurfaceIds(samples) {
+    if (!MathAstCore || typeof MathAstCore.classify !== 'function') return [];
+    const rows = Array.isArray(samples) ? samples : [
+      '2x + 1 = 7',
+      '2x + 1',
+      'x >= 3 with x = 5',
+      'x/y is undefined when y = 0',
+      '∀x ∈ ℝ, x^2 >= 0',
+      'A=>B, B=>C',
+      'A, not A'
+    ];
+    return Array.from(new Set(rows.map(sample => MathAstCore.classify(sample).anatomy_id).filter(Boolean))).sort();
+  }
+
   function availableSurfaces(parserSource) {
     const source = String(parserSource || '');
+    const astIds = astSurfaceIds(arguments[1] && arguments[1].samples);
     const out = [];
     if (has(source, 'compileMath')) out.push('statement_classification');
     if (has(source, 'checkProofStep') || has(source, 'checkHypotheticalSyllogism')) out.push('implication_chain');
@@ -128,13 +146,13 @@
     if (has(source, 'compileMath') && has(source, "mode: 'relation'")) out.push('linear_relation_truth');
     if (has(source, 'compileMath') && has(source, 'undefined-when')) out.push('division_constraint');
     if (has(source, 'compileMath') && has(source, 'square') && (/\^2|²/.test(source))) out.push('square_nonnegative');
-    return Array.from(new Set(out)).sort();
+    return Array.from(new Set(out.concat(astIds))).sort();
   }
 
   function closureGaps(parserSource, options) {
     const opts = Object.assign({ file: 'src/language-parser-v0-1.js' }, options || {});
     const source = String(parserSource || '');
-    return availableSurfaces(source)
+    return availableSurfaces(source, opts)
       .map(id => CATALOG[id])
       .filter(anatomy => anatomy && !has(source, anatomy.closure_operator))
       .map(anatomy => ({

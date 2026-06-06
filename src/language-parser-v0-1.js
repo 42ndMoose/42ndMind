@@ -10,6 +10,9 @@
   const EMPTY = { τ: 'τ∅', ρ: 'ρ∅', μ: 'μ∅', ε: 'ε∅', λ: 'λ∅', ι: 'ι∅', κ: 'κ∅', Ω: 'Ω∅' };
   const A = value => Array.isArray(value) ? value : [];
   const R = value => Number((Number(value) || 0).toFixed(6));
+  let MathAstCore = null;
+  try { if (typeof require === 'function') MathAstCore = require('./math-ast-core-v0-1.js'); } catch (_) { MathAstCore = null; }
+
 
   function axis(row) {
     if (Array.isArray(row)) return String(row[0] == null ? '∅' : row[0]).trim();
@@ -485,6 +488,25 @@
     const seed = opts.whole === true ? [toKernelSeed(packet)] : toKernelFields(packet);
     return kernel.complete(seed, opts.complete || {});
   }
+  function parseMathAst(input) {
+    if (MathAstCore && typeof MathAstCore.parse === 'function') return MathAstCore.parse(input);
+    return { type: 'MathProgram', ok: false, body: { type: 'Unknown', raw: String(input == null ? '' : input) }, source: input };
+  }
+  function classifyMathAst(input) {
+    if (MathAstCore && typeof MathAstCore.classify === 'function') return MathAstCore.classify(input);
+    return { ok: false, type: 'Unknown', class: 'unknown', anatomy_id: null, closure: null };
+  }
+  function mathAstToKernelFields(input) {
+    const ast = typeof input === 'string' || Array.isArray(input) ? parseMathAst(input) : input;
+    const cls = classifyMathAst(ast);
+    const rows = [
+      { σ: 'ast:' + safeSymbol(cls.type || 'unknown'), w: 1 },
+      { σ: 'class:' + safeSymbol(cls.class || 'unknown'), w: 1 },
+      { σ: 'closure:' + safeSymbol(cls.closure || 'none'), w: 1 }
+    ];
+    return [normalize(rows, 'math-ast')];
+  }
+
   function mathToKernelFields(input) { const packet = typeof input === 'string' ? compileMath(input) : input; return [A(packet.M).map(row => ({ σ: 'M:' + axis(row), w: weight(row) }))]; }
   function mathToKernelSeed(input) { return mathToKernelFields(input).reduce((rows, field) => rows.concat(field), []); }
   function mathToKernelCompletion(input, kernel, options) {
@@ -508,6 +530,9 @@
     compileClaim,
     rawToClaimCandidates,
     compileMath,
+    parseMathAst,
+    classifyMathAst,
+    mathAstToKernelFields,
     mathToKernelFields,
     mathToKernelSeed,
     mathToKernelCompletion,
