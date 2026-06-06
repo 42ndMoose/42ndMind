@@ -72,6 +72,7 @@
 
   function parseEquation(input) {
     const text = compact(input);
+    if (/(>=|<=|>|<|with)/i.test(text)) return null;
     const m = /^(.+)=(-?\d+(?:\.\d+)?)$/.exec(text);
     if (!m) return null;
     const left = parseAffineExpression(m[1]) || symbol(m[1]);
@@ -151,8 +152,8 @@
     const parsers = [
       parseSquareNonnegative,
       parseDivisionConstraint,
-      parseEquation,
       parseLinearRelation,
+      parseEquation,
       parseImplicationChain,
       parseContradictionPair
     ];
