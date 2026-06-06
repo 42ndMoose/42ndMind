@@ -191,6 +191,22 @@
       "  }\n" +
       "  return { ok: false, reason: 'unsupported_hypothetical_syllogism' };\n" +
       "}\n" };
+    if (name === 'proveSquareNonnegative') return { name, code: "function proveSquareNonnegative(input) {\n" +
+      "  const data = typeof input === 'string' ? { raw: input } : (input || {});\n" +
+      "  const raw = String(data.raw || data.text || '').replace(/\\s+/g, '');\n" +
+      "  const left = String(data.left || '').replace(/\\s+/g, '');\n" +
+      "  const right = String(data.right == null ? '' : data.right).replace(/\\s+/g, '');\n" +
+      "  const relation = String(data.relation || '').replace('≥', '>=').trim();\n" +
+      "  const domain = String(data.domain || '').toLowerCase();\n" +
+      "  const joined = raw || (left + relation + right);\n" +
+      "  const hasSquare = /[a-zA-Z](?:\\^2|²)/.test(joined) || /[a-zA-Z](?:\\^2|²)/.test(left);\n" +
+      "  const nonnegative = /(>=|≥)0$/.test(joined) || (relation === '>=' && right === '0');\n" +
+      "  const realDomain = !domain || domain === 'real' || domain === 'reals' || /(?:∈|in)(?:ℝ|R|real|reals)/i.test(String(data.raw || data.text || ''));\n" +
+      "  if (hasSquare && nonnegative && realDomain) {\n" +
+      "    return { ok: true, rule: 'square-nonnegative-over-reals', conclusion: 'x^2>=0', steps: ['square-as-product', 'same-sign-product-nonnegative'] };\n" +
+      "  }\n" +
+      "  return { ok: false, reason: 'unsupported_square_nonnegative_form' };\n" +
+      "}\n" };
     return null;
   }
 
