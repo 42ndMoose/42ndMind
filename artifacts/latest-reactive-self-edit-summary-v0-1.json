@@ -1,10 +1,22 @@
 {
-  "goal_id": "formal_math_reactive_self_growth_frontier_exhausted",
-  "generated_from": null,
-  "frontier_selected_id": null,
-  "frontier_selected_source": null,
-  "frontier_exhausted": true,
-  "frontier_generated_count": 0,
+  "goal_id": "formal_math_generated_closure_batch_proveDivisionByZeroUndefined_evaluateLinearRelation_classifyMathStatement",
+  "generated_from": {
+    "parsed_forms": [
+      "x/y is undefined when y = 0",
+      "x >= 3 with x = 5",
+      "compileMath packet classification"
+    ],
+    "reason": "Parser semantic surface contains parseable math/proof forms whose implied closure operators are missing.",
+    "missing_operators": [
+      "proveDivisionByZeroUndefined",
+      "evaluateLinearRelation",
+      "classifyMathStatement"
+    ]
+  },
+  "frontier_selected_id": "formal_math_generated_closure_batch_proveDivisionByZeroUndefined_evaluateLinearRelation_classifyMathStatement",
+  "frontier_selected_source": "generated_closure_failure",
+  "frontier_exhausted": false,
+  "frontier_generated_count": 1,
   "frontier_statuses": [
     {
       "id": "formal_math_reactive_self_growth_frontier_linear_and_mp",
@@ -21,17 +33,43 @@
       "closed": true,
       "missing": [],
       "generated_from": null
+    },
+    {
+      "id": "formal_math_generated_closure_batch_proveDivisionByZeroUndefined_evaluateLinearRelation_classifyMathStatement",
+      "source": "generated_closure_failure",
+      "unlocked": true,
+      "closed": false,
+      "missing": [
+        "proveDivisionByZeroUndefined",
+        "evaluateLinearRelation",
+        "classifyMathStatement"
+      ],
+      "generated_from": {
+        "parsed_forms": [
+          "x/y is undefined when y = 0",
+          "x >= 3 with x = 5",
+          "compileMath packet classification"
+        ],
+        "reason": "Parser semantic surface contains parseable math/proof forms whose implied closure operators are missing.",
+        "missing_operators": [
+          "proveDivisionByZeroUndefined",
+          "evaluateLinearRelation",
+          "classifyMathStatement"
+        ]
+      }
     }
   ],
   "closed_previous_goal": true,
-  "safe_to_propose": false,
-  "initial_pressure": 1,
-  "accepted_delta": null,
+  "safe_to_propose": true,
+  "initial_pressure": 4,
+  "accepted_delta": -3,
   "rejected_delta": 0,
   "rejected_causal": [
     "pressure_unchanged"
   ],
-  "accepted_causal": null,
+  "accepted_causal": [
+    "pressure_reduced"
+  ],
   "search_decision": {
     "code": "no_safe_improvement",
     "confidence": 0.7,
@@ -43,20 +81,24 @@
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 0,
-      "after_gaps": 0
+      "before_gaps": 3,
+      "after_gaps": 3
     },
     {
       "variant": "synthesized_implementation",
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 0,
-      "after_gaps": 0
+      "before_gaps": 3,
+      "after_gaps": 3
     }
   ],
-  "candidate_path": null,
-  "added_needles": [],
+  "candidate_path": "src/language-parser-v0-1.js",
+  "added_needles": [
+    "proveDivisionByZeroUndefined",
+    "evaluateLinearRelation",
+    "classifyMathStatement"
+  ],
   "report_artifact": "artifacts/reactive-self-edit-report-v0-1.json",
   "summary_artifact": "artifacts/reactive-self-edit-summary-v0-1.json"
 }
