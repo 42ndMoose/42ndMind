@@ -1,30 +1,57 @@
 {
-  "goal_id": "formal_math_reactive_self_growth_frontier_exhausted",
-  "frontier_selected_id": null,
-  "frontier_exhausted": true,
+  "goal_id": "formal_math_generated_closure_square_nonnegative",
+  "generated_from": {
+    "parsed_form": "∀x ∈ ℝ, x^2 >= 0",
+    "reason": "compileMath recognizes square/nonnegative theorem forms but the parser lacks an executable closure operator for that theorem class.",
+    "missing_operator": "proveSquareNonnegative"
+  },
+  "frontier_selected_id": "formal_math_generated_closure_square_nonnegative",
+  "frontier_selected_source": "generated_closure_failure",
+  "frontier_exhausted": false,
+  "frontier_generated_count": 1,
   "frontier_statuses": [
     {
       "id": "formal_math_reactive_self_growth_frontier_linear_and_mp",
+      "source": "fixed_frontier",
       "unlocked": true,
       "closed": true,
-      "missing": []
+      "missing": [],
+      "generated_from": null
     },
     {
       "id": "formal_math_reactive_self_growth_frontier_two_step_and_chain",
+      "source": "fixed_frontier",
       "unlocked": true,
       "closed": true,
-      "missing": []
+      "missing": [],
+      "generated_from": null
+    },
+    {
+      "id": "formal_math_generated_closure_square_nonnegative",
+      "source": "generated_closure_failure",
+      "unlocked": true,
+      "closed": false,
+      "missing": [
+        "proveSquareNonnegative"
+      ],
+      "generated_from": {
+        "parsed_form": "∀x ∈ ℝ, x^2 >= 0",
+        "reason": "compileMath recognizes square/nonnegative theorem forms but the parser lacks an executable closure operator for that theorem class.",
+        "missing_operator": "proveSquareNonnegative"
+      }
     }
   ],
   "closed_previous_goal": true,
-  "safe_to_propose": false,
-  "initial_pressure": 1,
-  "accepted_delta": null,
+  "safe_to_propose": true,
+  "initial_pressure": 2,
+  "accepted_delta": -1,
   "rejected_delta": 0,
   "rejected_causal": [
     "pressure_unchanged"
   ],
-  "accepted_causal": null,
+  "accepted_causal": [
+    "pressure_reduced"
+  ],
   "search_decision": {
     "code": "no_safe_improvement",
     "confidence": 0.7,
@@ -36,20 +63,22 @@
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 0,
-      "after_gaps": 0
+      "before_gaps": 1,
+      "after_gaps": 1
     },
     {
       "variant": "synthesized_implementation",
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 0,
-      "after_gaps": 0
+      "before_gaps": 1,
+      "after_gaps": 1
     }
   ],
-  "candidate_path": null,
-  "added_needles": [],
+  "candidate_path": "src/language-parser-v0-1.js",
+  "added_needles": [
+    "proveSquareNonnegative"
+  ],
   "report_artifact": "artifacts/reactive-self-edit-report-v0-1.json",
   "summary_artifact": "artifacts/reactive-self-edit-summary-v0-1.json"
 }
