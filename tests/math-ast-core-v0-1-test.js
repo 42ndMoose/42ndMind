@@ -18,6 +18,28 @@ assert.strictEqual(eq2.body.left.coefficient, -3);
 assert.strictEqual(eq2.body.left.offset, -6);
 assert.strictEqual(AST.classify(eq2).closure, 'solveAffineEquation');
 
+const linEq = AST.parse('2x + 1 = x + 4');
+assert.strictEqual(linEq.ok, true);
+assert.strictEqual(linEq.body.type, 'LinearEquation');
+assert.strictEqual(linEq.body.left.coefficient, 2);
+assert.strictEqual(linEq.body.right.coefficient, 1);
+assert.strictEqual(AST.classify(linEq).closure, 'solveLinearEquation');
+
+const subst = AST.parse('2x + 1 with x = 3');
+assert.strictEqual(subst.ok, true);
+assert.strictEqual(subst.body.type, 'SubstitutionEvaluation');
+assert.strictEqual(AST.classify(subst).closure, 'evaluateSubstitution');
+
+const arith = AST.parse('2 + 3 * 4 = 14');
+assert.strictEqual(arith.ok, true);
+assert.strictEqual(arith.body.type, 'ArithmeticRelation');
+assert.strictEqual(AST.classify(arith).closure, 'evaluateArithmeticRelation');
+
+const arithParen = AST.parse('(2 + 3)^2 = 25');
+assert.strictEqual(arithParen.ok, true);
+assert.strictEqual(arithParen.body.type, 'ArithmeticRelation');
+assert.strictEqual(AST.classify(arithParen).anatomy_id, 'arithmetic_relation_truth');
+
 const div = AST.parse('x/y is undefined when y = 0');
 assert.strictEqual(div.ok, true);
 assert.strictEqual(div.body.type, 'DivisionConstraint');
@@ -28,6 +50,18 @@ assert.strictEqual(sq.ok, true);
 assert.strictEqual(sq.body.type, 'QuantifiedStatement');
 assert.strictEqual(sq.body.theorem_class, 'square_nonnegative_over_reals');
 assert.strictEqual(AST.classify(sq).closure, 'proveSquareNonnegative');
+
+const addId = AST.parse('∀x ∈ ℝ, x + 0 = x');
+assert.strictEqual(addId.ok, true);
+assert.strictEqual(addId.body.type, 'QuantifiedStatement');
+assert.strictEqual(addId.body.theorem_class, 'additive_identity_over_reals');
+assert.strictEqual(AST.classify(addId).closure, 'proveAlgebraicIdentity');
+
+const mulId = AST.parse('∀x ∈ ℝ, x * 1 = x');
+assert.strictEqual(mulId.ok, true);
+assert.strictEqual(mulId.body.type, 'QuantifiedStatement');
+assert.strictEqual(mulId.body.theorem_class, 'multiplicative_identity_over_reals');
+assert.strictEqual(AST.classify(mulId).closure, 'proveAlgebraicIdentity');
 
 const chain = AST.parse('A=>B, B=>C');
 assert.strictEqual(chain.ok, true);
