@@ -10,7 +10,7 @@ const start = s.indexOf('  function injectParserFactorySource(source, functions)
 const end = s.indexOf('  function injectExports(source, names) {');
 if (start < 0 || end < 0 || end <= start) throw new Error('injectParserFactorySource block markers not found');
 
-const replacement = `  function injectParserFactorySource(source, functions) {
+const replacement = String.raw`  function injectParserFactorySource(source, functions) {
     const fns = Array.isArray(functions) ? functions : [];
     if (!fns.length) return source;
     let out = String(source || '');
