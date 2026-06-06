@@ -46,4 +46,4 @@ const gap = Closure.close('sqrt(x) is real');
 assert.strictEqual(gap.ok, false);
 assert.strictEqual(gap.gaps[0].id, 'unclassified_math_ast');
 
-console.log('math-language-completion-v0-1 tests passed');
+console.log('math-language-completion-v0-1 tests passed: v0.2 spine, ' + samples.length + ' supported forms, 1 precise unsupported gap');
