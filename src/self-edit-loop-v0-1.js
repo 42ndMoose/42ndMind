@@ -326,6 +326,7 @@
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
+    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     return injectExports(current, functions);
   }
   function markerSource(files, path, gaps) { const base = has(files, path) ? String(files[path] == null ? '' : files[path]) : manifestSourceScaffold({ layer: path }); return base + '\n' + A(gaps).map(g => '// meta-search marker-only candidate: ' + g.id + ' requires ' + g.needle).join('\n') + '\n'; }
