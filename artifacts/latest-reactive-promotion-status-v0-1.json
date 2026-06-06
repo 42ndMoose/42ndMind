@@ -6,9 +6,9 @@
     "report_consistency_ok": false,
     "search_accepted": false,
     "meta_accepted": false,
-    "mutation_accepted": false,
-    "allowed_path": false,
-    "has_candidate_content": false
+    "mutation_accepted": true,
+    "allowed_path": true,
+    "has_candidate_content": true
   },
-  "candidate_path": ""
+  "candidate_path": "src/language-parser-v0-1.js"
 }

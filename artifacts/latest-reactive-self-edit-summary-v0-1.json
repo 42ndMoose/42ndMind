@@ -1,9 +1,26 @@
 {
-  "goal_id": "formal_math_reactive_self_growth_frontier_exhausted",
-  "generated_from": null,
-  "frontier_selected_id": null,
-  "frontier_selected_source": null,
-  "frontier_exhausted": true,
+  "goal_id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_evaluateSubstitution",
+  "generated_from": {
+    "anatomy_ids": [
+      "algebraic_identity",
+      "arithmetic_relation_truth",
+      "substitution_evaluation"
+    ],
+    "parsed_forms": [
+      "∀x ∈ ℝ, x + 0 = x",
+      "2 + 3 * 4 = 14",
+      "2x + 1 with x = 3"
+    ],
+    "reason": "Operator anatomy found representable operation surfaces whose closure operators are missing.",
+    "missing_operators": [
+      "proveAlgebraicIdentity",
+      "evaluateArithmeticRelation",
+      "evaluateSubstitution"
+    ]
+  },
+  "frontier_selected_id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_evaluateSubstitution",
+  "frontier_selected_source": "operator_anatomy_generated_closure_failure",
+  "frontier_exhausted": false,
   "frontier_generated_count": 0,
   "frontier_statuses": [
     {
@@ -21,17 +38,48 @@
       "closed": true,
       "missing": [],
       "generated_from": null
+    },
+    {
+      "id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_evaluateSubstitution",
+      "source": "operator_anatomy_generated_closure_failure",
+      "unlocked": true,
+      "closed": false,
+      "missing": [
+        "proveAlgebraicIdentity",
+        "evaluateArithmeticRelation",
+        "evaluateSubstitution"
+      ],
+      "generated_from": {
+        "anatomy_ids": [
+          "algebraic_identity",
+          "arithmetic_relation_truth",
+          "substitution_evaluation"
+        ],
+        "parsed_forms": [
+          "∀x ∈ ℝ, x + 0 = x",
+          "2 + 3 * 4 = 14",
+          "2x + 1 with x = 3"
+        ],
+        "reason": "Operator anatomy found representable operation surfaces whose closure operators are missing.",
+        "missing_operators": [
+          "proveAlgebraicIdentity",
+          "evaluateArithmeticRelation",
+          "evaluateSubstitution"
+        ]
+      }
     }
   ],
   "closed_previous_goal": true,
   "safe_to_propose": false,
-  "initial_pressure": 1,
-  "accepted_delta": null,
+  "initial_pressure": 4,
+  "accepted_delta": -3,
   "rejected_delta": 0,
   "rejected_causal": [
     "pressure_unchanged"
   ],
-  "accepted_causal": null,
+  "accepted_causal": [
+    "pressure_reduced"
+  ],
   "search_decision": {
     "code": "no_safe_improvement",
     "confidence": 0.7,
@@ -40,7 +88,7 @@
   "report_consistency": {
     "search_accepted": false,
     "meta_accepted": false,
-    "mutation_accepted": false,
+    "mutation_accepted": true,
     "peak_gate_ok": false,
     "transition_ok": false,
     "ok": false
@@ -58,7 +106,7 @@
       "label": "epistemic_collapse"
     },
     "peak_distance": 1,
-    "gate_open_ratio": 0.5,
+    "gate_open_ratio": 0.666667,
     "gates": [
       {
         "name": "anti_delusion",
@@ -70,15 +118,15 @@
       },
       {
         "name": "integration",
-        "open": true
+        "open": false
       },
       {
         "name": "reality_contact",
-        "open": false
+        "open": true
       },
       {
         "name": "scope_clarity",
-        "open": false
+        "open": true
       },
       {
         "name": "self_correction",
@@ -87,8 +135,7 @@
     ],
     "closed_gates": [
       "coherence",
-      "reality_contact",
-      "scope_clarity"
+      "integration"
     ],
     "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
     "ξ": ""
@@ -118,39 +165,39 @@
     "after": {
       "components": {
         "coherence": 0,
-        "reality_contact": 0,
+        "reality_contact": 1,
         "self_correction": 1,
         "anti_delusion": 1,
         "integration": 0,
-        "scope_clarity": 0,
-        "closure": 0
+        "scope_clarity": 1,
+        "closure": 0.75
       },
       "point": {
-        "x": -0.5,
-        "y": -0.25,
-        "z": 0.25,
+        "x": 0,
+        "y": 0.571429,
+        "z": 0.428571,
         "active": true,
         "surface": true
       },
-      "peak_distance": 1
+      "peak_distance": 0.428571
     },
     "delta_components": {
       "anti_delusion": 0.5,
-      "closure": 0,
+      "closure": 0.75,
       "coherence": -0.5,
       "integration": 0,
-      "reality_contact": -0.5,
-      "scope_clarity": 0,
+      "reality_contact": 0.5,
+      "scope_clarity": 1,
       "self_correction": 0.5
     },
-    "delta_peak_distance": 0,
+    "delta_peak_distance": 0.571429,
     "pressure": {
-      "before": 1,
+      "before": 4,
       "after": 1,
-      "delta": 0
+      "delta": -3
     },
     "preference": {
-      "capability_improves": false,
+      "capability_improves": true,
       "peak_distance_preserved_or_improved": true,
       "accept": false,
       "reason": "transition did not both improve capability and preserve/reach the peak-governance proxy"
@@ -163,20 +210,24 @@
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 0,
-      "after_gaps": 0
+      "before_gaps": 3,
+      "after_gaps": 3
     },
     {
       "variant": "synthesized_implementation",
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 0,
-      "after_gaps": 0
+      "before_gaps": 3,
+      "after_gaps": 3
     }
   ],
-  "candidate_path": null,
-  "added_needles": [],
+  "candidate_path": "src/language-parser-v0-1.js",
+  "added_needles": [
+    "proveAlgebraicIdentity",
+    "evaluateArithmeticRelation",
+    "evaluateSubstitution"
+  ],
   "report_artifact": "artifacts/reactive-self-edit-report-v0-1.json",
   "summary_artifact": "artifacts/reactive-self-edit-summary-v0-1.json"
 }
