@@ -497,6 +497,19 @@ SyntaxError: Invalid regular expression: missing /
 
 Node.js v20.20.2
 exit_code=1
+## tests/self-edit-parser-export-fallback-v0-1-test.js
+file:///home/runner/work/42ndMind/42ndMind/tests/self-edit-parser-export-fallback-v0-1-test.js:1
+const assert = require('assert');
+               ^
+
+ReferenceError: require is not defined in ES module scope, you can use import instead
+    at file:///home/runner/work/42ndMind/42ndMind/tests/self-edit-parser-export-fallback-v0-1-test.js:1:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v20.20.2
+exit_code=1
 ## tests/intention-algebra-v0-1-test.js
 PASS intention algebra loads
 PASS intention result is unit-total
