@@ -24,6 +24,9 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 
 Node.js v20.20.2
 exit_code=1
+## tests/math-ast-bridge-v0-1-test.js
+math-ast-bridge-v0-1 tests passed
+exit_code=0
 ## tests/math-language-kernel-v0-1-test.js
 PASS kernel loads
 PASS lambda starts unit-total
