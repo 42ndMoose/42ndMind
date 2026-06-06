@@ -301,6 +301,44 @@
     return { ok: false, reason: 'unsupported_square_nonnegative_form' };
   }
 
+  function proveDivisionByZeroUndefined(input) {
+    const data = typeof input === 'string' ? { raw: input } : (input || {});
+    const raw = String(data.raw || data.text || '').replace(/\s+/g, '');
+    const condition = String(data.condition || '').replace(/\s+/g, '');
+    const left = String(data.left || '').replace(/\s+/g, '');
+    const hasDivision = raw.indexOf('/') >= 0 || left.indexOf('/') >= 0;
+    const denominatorZero = /=0$/.test(raw) || /=0$/.test(condition);
+    const saysUndefined = /undefined/i.test(String(data.raw || data.text || data.result || ''));
+    if (hasDivision && denominatorZero && saysUndefined) {
+      return { ok: true, rule: 'division-by-zero-undefined', conclusion: 'denominator_zero_makes_quotient_undefined', steps: ['detect-quotient', 'detect-zero-denominator', 'reject-field-division-by-zero'] };
+    }
+    return { ok: false, reason: 'unsupported_division_by_zero_form' };
+  }
+
+  function evaluateLinearRelation(input) {
+    const data = typeof input === 'string' ? { relation: input } : (input || {});
+    const relation = String(data.relation || data.raw || data.text || '').replace(/\s+/g, '').replace('≥', '>=').replace('≤', '<=');
+    const value = Number(data.value ?? data.x ?? data.assignment);
+    const m = /^([a-zA-Z])(?:>=|<=|>|<|=)(-?\d+(?:\.\d+)?)$/.exec(relation);
+    const op = relation.includes('>=') ? '>=' : relation.includes('<=') ? '<=' : relation.includes('>') ? '>' : relation.includes('<') ? '<' : relation.includes('=') ? '=' : null;
+    if (!m || !op || !Number.isFinite(value)) return { ok: false, reason: 'unsupported_linear_relation_form' };
+    const target = Number(m[2]);
+    const truth = op === '>=' ? value >= target : op === '<=' ? value <= target : op === '>' ? value > target : op === '<' ? value < target : value === target;
+    return { ok: true, truth, variable: m[1], relation: op, value, target, rule: 'linear-relation-evaluation' };
+  }
+
+  function classifyMathStatement(input) {
+    const packet = typeof input === 'string' && typeof compileMath === 'function' ? compileMath(input) : (input || {});
+    const mode = String(packet.mode || 'unknown');
+    const ops = Array.isArray(packet.operators) ? packet.operators : [];
+    if (mode === 'theorem' && ops.includes('square')) return { ok: true, class: 'square-theorem', closure: 'proveSquareNonnegative' };
+    if (mode === 'constraint' && ops.includes('/')) return { ok: true, class: 'division-constraint', closure: 'proveDivisionByZeroUndefined' };
+    if (mode === 'relation') return { ok: true, class: 'linear-relation', closure: 'evaluateLinearRelation' };
+    if (mode === 'equation') return { ok: true, class: 'equation', closure: 'solveLinearEquation' };
+    if (mode === 'proof-rule') return { ok: true, class: 'proof-rule', closure: 'checkProofStep' };
+    return { ok: false, class: 'unknown', closure: null };
+  }
+
   function parseRows(body) {
     const rows = [];
     if (!body.trim()) return rows;
@@ -420,6 +458,9 @@
     solveTwoStepLinearEquation,
     checkHypotheticalSyllogism,
     proveSquareNonnegative,
+    proveDivisionByZeroUndefined,
+    evaluateLinearRelation,
+    classifyMathStatement,
     toKernelFields,
     toKernelSeed,
     toKernelCompletion,
