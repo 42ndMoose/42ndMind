@@ -479,24 +479,60 @@ PASS clean report has no failures decision
 PASS clean report remains unit-total
 exit_code=0
 ## tests/self-edit-loop-v0-1-test.js
-/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:312
-      if (out.indexOf(marker) >= 0) out = out.replace(marker, '  ' + String(fn.code).replace(/
-                                                                                             ^
-
-SyntaxError: Invalid regular expression: missing /
-    at wrapSafe (node:internal/modules/cjs/loader:1464:18)
-    at Module._compile (node:internal/modules/cjs/loader:1495:20)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-    at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Module.require (node:internal/modules/cjs/loader:1289:19)
-    at require (node:internal/modules/helpers:182:18)
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/self-edit-loop-v0-1-test.js:2:11)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-
-Node.js v20.20.2
-exit_code=1
+PASS self-edit loop loads
+PASS whole language state is unit-total
+PASS complete files have no manifest gaps
+PASS complete files have no mathematical gaps
+PASS whole language fields are unit-total
+PASS complete run accepted artifact-only proposal
+PASS complete run exports self-edit artifact in virtual source
+PASS complete run exports mathematical patch artifact in virtual source
+PASS complete run includes mathematical patch packet
+PASS complete run keeps English empty
+PASS missing files produce manifest gaps
+PASS missing files produce mathematical gaps
+PASS missing run proposes mathematical operations
+PASS missing run proposes gap-filling operations
+PASS missing run accepted virtual scaffold proposal
+PASS missing run does not mutate base source
+PASS missing run mutates virtual source
+PASS accepted scaffold repair has truth accounting output
+PASS meta-completion emits report packet
+PASS meta-completion detects declared capability gaps
+PASS meta-completion simulates candidate in sandbox
+PASS meta-completion improves declared gaps
+PASS meta-completion produces positive score
+PASS meta-completion proposes candidate patch
+PASS meta-completion mutates virtual source
+PASS meta-completion leaves base source unchanged
+PASS meta-completion fields are unit-total
+PASS meta-completion proposes executable parser source
+PASS synthesized parser exports solveLinearEquation
+PASS synthesized parser exports checkProofStep
+PASS synthesized solveLinearEquation solves x + 1 = 3
+PASS synthesized checkProofStep verifies modus ponens
+PASS closed-loop search emits packet
+PASS closed-loop search records multiple attempts
+PASS closed-loop search rejects harmful marker-only attempt
+PASS closed-loop search accepts synthesized implementation attempt
+PASS closed-loop search improves final gaps
+PASS closed-loop search proposes best candidate
+PASS closed-loop search fields are unit-total
+PASS closed-loop search leaves base source unchanged
+PASS reactive state emits packet
+PASS reactive state sees initial pressure
+PASS reactive state fields are unit-total
+PASS reactive mutation rejects non-improving edit
+PASS reactive rejected mutation keeps pressure non-lower
+PASS reactive rejected mutation keeps original simulated file
+PASS reactive rejection reports causal pressure
+PASS reactive mutation accepts pressure-reducing edit
+PASS reactive accepted mutation lowers pressure
+PASS reactive accepted mutation keeps synthesized functions in state
+PASS reactive accepted mutation reports pressure reduced
+PASS reactive accepted state remains unit-total
+PASS reactive accepted mutation does not mutate base object
+exit_code=0
 ## tests/self-edit-parser-export-fallback-v0-1-test.js
 file:///home/runner/work/42ndMind/42ndMind/tests/self-edit-parser-export-fallback-v0-1-test.js:1
 const assert = require('assert');
