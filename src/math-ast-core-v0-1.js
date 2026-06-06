@@ -6,9 +6,13 @@
 
   const VERSION = '0.1.0';
 
-  function R(value) {
-    return Number((Number(value) || 0).toFixed(12));
-  }
+  function R(value) { return Number((Number(value) || 0).toFixed(12)); }
+  function node(type, data) { return Object.assign({ type }, data || {}); }
+  function numberLiteral(value) { return node('NumberLiteral', { value: R(value) }); }
+  function symbol(name) { return node('Symbol', { name: String(name || '').trim() }); }
+  function unary(op, argument) { return node('UnaryExpression', { operator: op, argument }); }
+  function binary(op, left, right) { return node('BinaryExpression', { operator: op, left, right }); }
+  function relation(op, left, right) { return node('Relation', { operator: op, left, right }); }
 
   function normalize(input) {
     return String(input == null ? '' : input)
@@ -19,37 +23,14 @@
       .replace(/∈/g, ' in ')
       .replace(/ℝ/g, 'R')
       .replace(/²/g, '^2')
+      .replace(/×/g, '*')
+      .replace(/÷/g, '/')
       .replace(/\s+/g, ' ')
       .trim();
   }
 
-  function compact(input) {
-    return normalize(input).replace(/\s+/g, '');
-  }
-
-  function node(type, data) {
-    return Object.assign({ type }, data || {});
-  }
-
-  function numberLiteral(value) {
-    return node('NumberLiteral', { value: R(value) });
-  }
-
-  function symbol(name) {
-    return node('Symbol', { name: String(name || '').trim() });
-  }
-
-  function unary(op, argument) {
-    return node('UnaryExpression', { operator: op, argument });
-  }
-
-  function binary(op, left, right) {
-    return node('BinaryExpression', { operator: op, left, right });
-  }
-
-  function relation(op, left, right) {
-    return node('Relation', { operator: op, left, right });
-  }
+  function compact(input) { return normalize(input).replace(/\s+/g, ''); }
+  function hasLetter(text) { return /[a-zA-Z]/.test(String(text || '')); }
 
   function parseAffineExpression(input) {
     const text = compact(input);
@@ -62,58 +43,155 @@
     const offset = sign === '-' ? -Math.abs(magnitude) : magnitude;
     const product = coefficient === 1 ? symbol(variable) : binary('*', numberLiteral(coefficient), symbol(variable));
     if (offset === 0) return node('AffineExpression', { coefficient: R(coefficient), variable, offset: 0, expression: product });
-    return node('AffineExpression', {
-      coefficient: R(coefficient),
-      variable,
-      offset: R(offset),
-      expression: binary(offset < 0 ? '-' : '+', product, numberLiteral(Math.abs(offset)))
-    });
+    return node('AffineExpression', { coefficient: R(coefficient), variable, offset: R(offset), expression: binary(offset < 0 ? '-' : '+', product, numberLiteral(Math.abs(offset))) });
+  }
+
+  function parseAffineSide(input) {
+    const affine = parseAffineExpression(input);
+    if (affine) return affine;
+    const text = compact(input);
+    if (/^[+-]?\d+(?:\.\d+)?$/.test(text)) return node('AffineExpression', { coefficient: 0, variable: null, offset: R(Number(text)), expression: numberLiteral(Number(text)) });
+    return null;
+  }
+
+  function tokenizeArithmetic(input) {
+    const text = compact(input);
+    const tokens = [];
+    let i = 0;
+    while (i < text.length) {
+      const ch = text[i];
+      const prev = tokens[tokens.length - 1];
+      const unaryMinus = ch === '-' && (!prev || prev.type === 'op' || prev.value === '(');
+      if (/\d|\./.test(ch) || unaryMinus) {
+        let j = i + (unaryMinus ? 1 : 0);
+        while (j < text.length && /\d|\./.test(text[j])) j += 1;
+        const raw = text.slice(i, j);
+        if (!/^-?\d+(?:\.\d+)?$/.test(raw)) return null;
+        tokens.push({ type: 'number', value: Number(raw) });
+        i = j;
+        continue;
+      }
+      if ('+-*/^'.includes(ch)) { tokens.push({ type: 'op', value: ch }); i += 1; continue; }
+      if (ch === '(' || ch === ')') { tokens.push({ type: 'paren', value: ch }); i += 1; continue; }
+      return null;
+    }
+    return tokens;
+  }
+
+  function parseArithmeticExpression(input) {
+    const tokens = tokenizeArithmetic(input);
+    if (!tokens || !tokens.length) return null;
+    let pos = 0;
+    function peek() { return tokens[pos]; }
+    function take() { return tokens[pos++]; }
+    function primary() {
+      const t = take();
+      if (!t) return null;
+      if (t.type === 'number') return numberLiteral(t.value);
+      if (t.value === '(') {
+        const e = additive();
+        const close = take();
+        if (!e || !close || close.value !== ')') return null;
+        return e;
+      }
+      return null;
+    }
+    function power() {
+      let left = primary();
+      if (!left) return null;
+      if (peek() && peek().value === '^') { take(); const right = power(); if (!right) return null; left = binary('^', left, right); }
+      return left;
+    }
+    function multiplicative() {
+      let left = power();
+      while (peek() && (peek().value === '*' || peek().value === '/')) { const op = take().value; const right = power(); if (!right) return null; left = binary(op, left, right); }
+      return left;
+    }
+    function additive() {
+      let left = multiplicative();
+      while (peek() && (peek().value === '+' || peek().value === '-')) { const op = take().value; const right = multiplicative(); if (!right) return null; left = binary(op, left, right); }
+      return left;
+    }
+    const ast = additive();
+    return ast && pos === tokens.length ? ast : null;
+  }
+
+  function parseArithmeticRelation(input) {
+    const text = compact(input);
+    if (hasLetter(text)) return null;
+    const m = /^(.+?)(>=|<=|=|>|<)(.+)$/.exec(text);
+    if (!m) return null;
+    const left = parseArithmeticExpression(m[1]);
+    const right = parseArithmeticExpression(m[3]);
+    if (!left || !right) return null;
+    return node('ArithmeticRelation', { relation: relation(m[2], left, right) });
   }
 
   function parseEquation(input) {
     const text = compact(input);
     if (/(>=|<=|>|<|with)/i.test(text)) return null;
     const m = /^(.+)=(-?\d+(?:\.\d+)?)$/.exec(text);
-    if (!m) return null;
-    const left = parseAffineExpression(m[1]) || symbol(m[1]);
+    if (!m || !hasLetter(m[1])) return null;
+    const left = parseAffineExpression(m[1]);
+    if (!left) return null;
     return node('Equation', { left, right: numberLiteral(Number(m[2])), relation: '=' });
+  }
+
+  function parseLinearEquation(input) {
+    const text = compact(input);
+    if (/(>=|<=|>|<|with)/i.test(text)) return null;
+    const m = /^(.+)=(.+)$/.exec(text);
+    if (!m || !hasLetter(text)) return null;
+    const left = parseAffineSide(m[1]);
+    const right = parseAffineSide(m[2]);
+    if (!left || !right) return null;
+    const variable = left.variable || right.variable;
+    if (!variable) return null;
+    if ((left.variable && left.variable !== variable) || (right.variable && right.variable !== variable)) return null;
+    return node('LinearEquation', { left, right, variable, relation: '=' });
+  }
+
+  function parseSubstitutionEvaluation(input) {
+    const text = compact(input);
+    const m = /^(.+)with([a-zA-Z])=(-?\d+(?:\.\d+)?)$/.exec(text);
+    if (!m) return null;
+    const expression = parseAffineExpression(m[1]);
+    if (!expression || expression.variable !== m[2]) return null;
+    return node('SubstitutionEvaluation', { expression, assignment: node('Assignment', { variable: m[2], value: numberLiteral(Number(m[3])) }) });
   }
 
   function parseLinearRelation(input) {
     const text = compact(input);
     const m = /^([a-zA-Z])(>=|<=|>|<|=)(-?\d+(?:\.\d+)?)(?:with\1=(-?\d+(?:\.\d+)?))?$/.exec(text);
     if (!m) return null;
-    return node('LinearRelation', {
-      relation: relation(m[2], symbol(m[1]), numberLiteral(Number(m[3]))),
-      assignment: m[4] === undefined ? null : node('Assignment', { variable: m[1], value: numberLiteral(Number(m[4])) })
-    });
+    return node('LinearRelation', { relation: relation(m[2], symbol(m[1]), numberLiteral(Number(m[3]))), assignment: m[4] === undefined ? null : node('Assignment', { variable: m[1], value: numberLiteral(Number(m[4])) }) });
   }
 
   function parseDivisionConstraint(input) {
-    const text = normalize(input);
-    const raw = compact(text);
+    const raw = compact(input);
     const m = /^([a-zA-Z])\/([a-zA-Z])isundefinedwhen\2=0$/i.exec(raw);
     if (!m) return null;
-    return node('DivisionConstraint', {
-      expression: binary('/', symbol(m[1]), symbol(m[2])),
-      denominator: symbol(m[2]),
-      violation: relation('=', symbol(m[2]), numberLiteral(0)),
-      result: node('Undefined', {})
-    });
+    return node('DivisionConstraint', { expression: binary('/', symbol(m[1]), symbol(m[2])), denominator: symbol(m[2]), violation: relation('=', symbol(m[2]), numberLiteral(0)), result: node('Undefined', {}) });
   }
 
   function parseSquareNonnegative(input) {
-    const text = normalize(input);
-    const raw = compact(text);
+    const raw = compact(input);
     const m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?\1\^2>=0$/i.exec(raw);
     if (!m) return null;
-    return node('QuantifiedStatement', {
-      quantifier: 'forall',
-      variable: symbol(m[1]),
-      domain: symbol('R'),
-      body: relation('>=', binary('^', symbol(m[1]), numberLiteral(2)), numberLiteral(0)),
-      theorem_class: 'square_nonnegative_over_reals'
-    });
+    return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('>=', binary('^', symbol(m[1]), numberLiteral(2)), numberLiteral(0)), theorem_class: 'square_nonnegative_over_reals' });
+  }
+
+  function parseAlgebraicIdentity(input) {
+    const raw = compact(input);
+    let m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?\1\+0=\1$/i.exec(raw);
+    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('+', symbol(m[1]), numberLiteral(0)), symbol(m[1])), theorem_class: 'additive_identity_over_reals' });
+    m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?0\+\1=\1$/i.exec(raw);
+    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('+', numberLiteral(0), symbol(m[1])), symbol(m[1])), theorem_class: 'additive_identity_over_reals' });
+    m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?\1\*1=\1$/i.exec(raw);
+    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('*', symbol(m[1]), numberLiteral(1)), symbol(m[1])), theorem_class: 'multiplicative_identity_over_reals' });
+    m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?1\*\1=\1$/i.exec(raw);
+    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('*', numberLiteral(1), symbol(m[1])), symbol(m[1])), theorem_class: 'multiplicative_identity_over_reals' });
+    return null;
   }
 
   function parseImplicationAtom(input) {
@@ -151,9 +229,13 @@
   function parse(input) {
     const parsers = [
       parseSquareNonnegative,
+      parseAlgebraicIdentity,
       parseDivisionConstraint,
+      parseSubstitutionEvaluation,
       parseLinearRelation,
       parseEquation,
+      parseLinearEquation,
+      parseArithmeticRelation,
       parseImplicationChain,
       parseContradictionPair
     ];
@@ -168,12 +250,18 @@
     const ast = typeof astOrInput === 'string' || Array.isArray(astOrInput) ? parse(astOrInput) : astOrInput;
     const body = ast && ast.type === 'MathProgram' ? ast.body : ast;
     const type = body && body.type;
+    if (type === 'QuantifiedStatement') {
+      if (body.theorem_class === 'square_nonnegative_over_reals') return { ok: true, type, class: 'theorem', anatomy_id: 'square_nonnegative', closure: 'proveSquareNonnegative' };
+      if (/identity_over_reals$/.test(String(body.theorem_class || ''))) return { ok: true, type, class: 'theorem', anatomy_id: 'algebraic_identity', closure: 'proveAlgebraicIdentity' };
+    }
     const map = {
       Equation: { class: 'equation', anatomy_id: 'affine_equation', closure: 'solveAffineEquation' },
+      LinearEquation: { class: 'equation', anatomy_id: 'linear_equation', closure: 'solveLinearEquation' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
+      SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
+      ArithmeticRelation: { class: 'relation', anatomy_id: 'arithmetic_relation_truth', closure: 'evaluateArithmeticRelation' },
       DivisionConstraint: { class: 'constraint', anatomy_id: 'division_constraint', closure: 'proveDivisionByZeroUndefined' },
-      QuantifiedStatement: { class: 'theorem', anatomy_id: 'square_nonnegative', closure: 'proveSquareNonnegative' },
       ImplicationChain: { class: 'proof', anatomy_id: 'implication_chain', closure: 'composeImplicationChain' },
       ContradictionPair: { class: 'proof', anatomy_id: 'contradiction_pair', closure: 'detectContradiction' }
     };
@@ -186,24 +274,10 @@
   }
 
   return Object.freeze({
-    VERSION,
-    normalize,
-    compact,
-    node,
-    numberLiteral,
-    symbol,
-    unary,
-    binary,
-    relation,
-    parseAffineExpression,
-    parseEquation,
-    parseLinearRelation,
-    parseDivisionConstraint,
-    parseSquareNonnegative,
-    parseImplicationChain,
-    parseContradictionPair,
-    parse,
-    classify,
-    canonical
+    VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
+    parseArithmeticExpression, parseArithmeticRelation,
+    parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
+    parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
+    parseImplicationChain, parseContradictionPair, parse, classify, canonical
   });
 });
