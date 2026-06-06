@@ -1,31 +1,17 @@
 ## tests/math-ast-core-v0-1-test.js
-node:assert:90
-  throw new AssertionError(obj);
-  ^
-
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
-
-+ 'Equation'
-- 'LinearRelation'
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/math-ast-core-v0-1-test.js:39:8)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-    at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
-    at node:internal/main/run_main_module:28:49 {
-  generatedMessage: true,
-  code: 'ERR_ASSERTION',
-  actual: 'Equation',
-  expected: 'LinearRelation',
-  operator: 'strictEqual'
-}
-
-Node.js v20.20.2
-exit_code=1
+math-ast-core-v0-1 tests passed
+exit_code=0
 ## tests/math-ast-bridge-v0-1-test.js
 math-ast-bridge-v0-1 tests passed
+exit_code=0
+## tests/proof-calculus-core-v0-1-test.js
+proof-calculus-core-v0-1 tests passed
+exit_code=0
+## tests/math-closure-engine-v0-1-test.js
+math-closure-engine-v0-1 tests passed
+exit_code=0
+## tests/math-language-completion-v0-1-test.js
+math-language-completion-v0-1 tests passed
 exit_code=0
 ## tests/math-language-kernel-v0-1-test.js
 PASS kernel loads
