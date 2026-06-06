@@ -254,10 +254,59 @@
   "candidate_diff": null,
   "proposed_virtual_source": null,
   "safe_to_propose": false,
+  "epistemic_octahedron_gate": {
+    "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
+    "version": "0.1.0",
+    "ok": false,
+    "peak_attractor": false,
+    "plot_kind": "kernel_governance_gate_state",
+    "point": {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "label": "epistemic_collapse"
+    },
+    "peak_distance": 1,
+    "gate_open_ratio": 0.5,
+    "gates": [
+      {
+        "name": "anti_delusion",
+        "open": true
+      },
+      {
+        "name": "coherence",
+        "open": false
+      },
+      {
+        "name": "integration",
+        "open": true
+      },
+      {
+        "name": "reality_contact",
+        "open": false
+      },
+      {
+        "name": "scope_clarity",
+        "open": false
+      },
+      {
+        "name": "self_correction",
+        "open": true
+      }
+    ],
+    "closed_gates": [
+      "coherence",
+      "reality_contact",
+      "scope_clarity"
+    ],
+    "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+    "ξ": ""
+  },
   "report_consistency": {
     "search_accepted": false,
     "meta_accepted": false,
     "mutation_accepted": false,
+    "peak_gate_ok": false,
     "ok": false
   },
   "base_mutated": false,

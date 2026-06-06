@@ -45,6 +45,38 @@
     },
     "ξ": ""
   },
+  "epistemic_octahedron_core": {
+    "packet_type": "42ndMind_epistemic_octahedron_core_v0_1",
+    "version": "0.1.0",
+    "surface_equation": "|x| + |y| + |z| = 1 for active worldview positions",
+    "null_origin": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "label": "pre_philosophical_null_state"
+    },
+    "peak": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "label": "objective_peak_philosophical_maturity"
+    },
+    "collapse": {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "label": "epistemic_collapse"
+    },
+    "kernel_commitment": "maintain peak-governance conditions by rejecting candidate state transitions that close coherence, reality-contact, self-correction, anti-delusion, integration, or scope-clarity gates",
+    "gates": [
+      "coherence",
+      "reality_contact",
+      "self_correction",
+      "anti_delusion",
+      "integration",
+      "scope_clarity"
+    ]
+  },
   "reactive_closed_previous_goal": true,
   "reactive_safe_to_propose": false,
   "reactive_initial_pressure": 1,
