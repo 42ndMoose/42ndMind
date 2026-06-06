@@ -14,9 +14,10 @@ const REACTIVE_SUMMARY_PATH = path.join(ARTIFACT_DIR, 'reactive-self-edit-summar
 const REACTIVE_TEST_PATH = 'tests/meta-reactive-language-parser-v0-1-test.js';
 const PARSER_PATH = 'src/language-parser-v0-1.js';
 
-const FRONTIER = Object.freeze([
+const BASE_FRONTIER = Object.freeze([
   {
     id: 'formal_math_reactive_self_growth_frontier_linear_and_mp',
+    source: 'fixed_frontier',
     requires: [],
     axes: [
       { id: 'parser_solve_linear_equation', file: PARSER_PATH, needle: 'solveLinearEquation', class: 'operator', w: 1 },
@@ -31,6 +32,7 @@ const FRONTIER = Object.freeze([
   },
   {
     id: 'formal_math_reactive_self_growth_frontier_two_step_and_chain',
+    source: 'fixed_frontier',
     requires: ['solveLinearEquation', 'checkProofStep'],
     axes: [
       { id: 'parser_solve_two_step_linear_equation', file: PARSER_PATH, needle: 'solveTwoStepLinearEquation', class: 'operator', w: 1 },
@@ -74,12 +76,53 @@ function collectFiles() {
   return files;
 }
 
+function parserSource(files) {
+  return String(files[PARSER_PATH] || '');
+}
+
 function parserHas(files, needle) {
-  return String(files[PARSER_PATH] || '').indexOf(needle) >= 0;
+  return parserSource(files).indexOf(needle) >= 0;
+}
+
+function parserSupportsSquareNonnegativeTheorem(files) {
+  const source = parserSource(files);
+  return source.indexOf('compileMath') >= 0 &&
+    source.indexOf('square') >= 0 &&
+    (source.indexOf('>=') >= 0 || source.indexOf('≥') >= 0) &&
+    /\^2|²/.test(source);
+}
+
+function generatedClosureFrontier(files) {
+  const nodes = [];
+  if (parserSupportsSquareNonnegativeTheorem(files) && !parserHas(files, 'proveSquareNonnegative')) {
+    nodes.push({
+      id: 'formal_math_generated_closure_square_nonnegative',
+      source: 'generated_closure_failure',
+      generated_from: {
+        parsed_form: '∀x ∈ ℝ, x^2 >= 0',
+        reason: 'compileMath recognizes square/nonnegative theorem forms but the parser lacks an executable closure operator for that theorem class.',
+        missing_operator: 'proveSquareNonnegative'
+      },
+      requires: ['solveLinearEquation', 'checkProofStep', 'solveTwoStepLinearEquation', 'checkHypotheticalSyllogism'],
+      axes: [
+        { id: 'parser_prove_square_nonnegative', file: PARSER_PATH, needle: 'proveSquareNonnegative', class: 'closure_operator', w: 1 }
+      ],
+      assertions: [
+        "assert.strictEqual(typeof P.proveSquareNonnegative, 'function');",
+        "assert.strictEqual(P.proveSquareNonnegative('∀x ∈ ℝ, x^2 >= 0').ok, true);"
+      ]
+    });
+  }
+  return nodes;
+}
+
+function activeFrontier(files) {
+  return BASE_FRONTIER.concat(generatedClosureFrontier(files));
 }
 
 function frontierStatus(files) {
-  const statuses = FRONTIER.map((node, index) => {
+  const frontier = activeFrontier(files);
+  const statuses = frontier.map((node, index) => {
     const requirements_met = node.requires.every(needle => parserHas(files, needle));
     const missing = node.axes.filter(axis => !parserHas(files, axis.needle)).map(axis => axis.needle);
     const closed = missing.length === 0;
@@ -87,6 +130,8 @@ function frontierStatus(files) {
     return {
       index,
       id: node.id,
+      source: node.source || 'unknown',
+      generated_from: node.generated_from || null,
       unlocked,
       closed,
       requirements_met,
@@ -100,7 +145,9 @@ function frontierStatus(files) {
     packet_type: '42ndMind_capability_frontier_v0_1',
     version: L.VERSION,
     selected_id: selected ? selected.id : null,
+    selected_source: selected ? selected.source : null,
     exhausted: selected == null,
+    generated_count: statuses.filter(row => row.source === 'generated_closure_failure').length,
     statuses,
     ξ: ''
   };
@@ -121,6 +168,7 @@ function reactiveGoal(files) {
     id: selected.id,
     frontier,
     selected_frontier: selected,
+    generated_from: selected.generated_from || null,
     closed_previous_goal: frontier.statuses.some(row => row.index < selected.index && row.closed),
     axes: selected.axes
   };
@@ -134,8 +182,9 @@ function addReactivePressureTest(files, goal) {
     "assert.strictEqual(P.VERSION, '0.1.0');"
   ];
   const selected = goal && goal.selected_frontier;
+  const frontier = activeFrontier(files);
   const assertions = selected
-    ? FRONTIER[selected.index].requires.map(needle => "assert.strictEqual(typeof P." + needle + ", 'function');").concat(FRONTIER[selected.index].assertions)
+    ? frontier[selected.index].requires.map(needle => "assert.strictEqual(typeof P." + needle + ", 'function');").concat(frontier[selected.index].assertions)
     : ["assert.ok(true);"];
   next[REACTIVE_TEST_PATH] = base.concat(assertions).join('\n') + '\n';
   return next;
@@ -188,6 +237,7 @@ function makeReactiveReport(files) {
     generated_by: 'scripts/run-self-edit-loop-v0-1.js',
     goal,
     frontier: goal.frontier,
+    generated_from: goal.generated_from || null,
     tests,
     initial_pressure: initial.pressure.scalar,
     meta_completion: {
@@ -229,9 +279,12 @@ function makeReactiveReport(files) {
 
   const summary = {
     goal_id: goal.id,
+    generated_from: goal.generated_from || null,
     frontier_selected_id: goal.frontier ? goal.frontier.selected_id : null,
+    frontier_selected_source: goal.frontier ? goal.frontier.selected_source : null,
     frontier_exhausted: goal.frontier ? goal.frontier.exhausted : false,
-    frontier_statuses: goal.frontier ? goal.frontier.statuses.map(row => ({ id: row.id, unlocked: row.unlocked, closed: row.closed, missing: row.missing })) : [],
+    frontier_generated_count: goal.frontier ? goal.frontier.generated_count : 0,
+    frontier_statuses: goal.frontier ? goal.frontier.statuses.map(row => ({ id: row.id, source: row.source, unlocked: row.unlocked, closed: row.closed, missing: row.missing, generated_from: row.generated_from })) : [],
     closed_previous_goal: goal.closed_previous_goal === true,
     safe_to_propose: report.safe_to_propose,
     initial_pressure: report.initial_pressure,
@@ -279,7 +332,9 @@ function main() {
     reactive_summary_artifact: path.relative(ROOT, REACTIVE_SUMMARY_PATH),
     reactive_goal_id: reactive.summary.goal_id,
     reactive_frontier_selected_id: reactive.summary.frontier_selected_id,
+    reactive_frontier_selected_source: reactive.summary.frontier_selected_source,
     reactive_frontier_exhausted: reactive.summary.frontier_exhausted,
+    reactive_frontier_generated_count: reactive.summary.frontier_generated_count,
     reactive_closed_previous_goal: reactive.summary.closed_previous_goal,
     reactive_safe_to_propose: reactive.summary.safe_to_propose,
     reactive_initial_pressure: reactive.summary.initial_pressure,
