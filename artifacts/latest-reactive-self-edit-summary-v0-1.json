@@ -60,7 +60,7 @@
     }
   ],
   "closed_previous_goal": true,
-  "safe_to_propose": true,
+  "safe_to_propose": false,
   "initial_pressure": 4,
   "accepted_delta": -3,
   "rejected_delta": 0,
@@ -74,6 +74,12 @@
     "code": "no_safe_improvement",
     "confidence": 0.7,
     "summary": "Closed-loop sandbox search found no accepted candidate that improved the simulated language state."
+  },
+  "report_consistency": {
+    "search_accepted": false,
+    "meta_accepted": false,
+    "mutation_accepted": true,
+    "ok": false
   },
   "search_trace": [
     {

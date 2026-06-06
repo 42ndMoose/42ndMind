@@ -24,7 +24,7 @@
   "reactive_frontier_exhausted": false,
   "reactive_frontier_generated_count": 1,
   "reactive_closed_previous_goal": true,
-  "reactive_safe_to_propose": true,
+  "reactive_safe_to_propose": false,
   "reactive_initial_pressure": 4,
   "reactive_accepted_delta": -3,
   "truth_gate": {
