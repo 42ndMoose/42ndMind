@@ -1,7 +1,9 @@
 {
+  "goal_id": "formal_math_reactive_self_growth_stage_2",
+  "closed_previous_goal": true,
   "safe_to_propose": true,
   "initial_pressure": 3,
-  "accepted_delta": -3,
+  "accepted_delta": -2,
   "rejected_delta": 0,
   "rejected_causal": [
     "pressure_unchanged"
@@ -10,9 +12,9 @@
     "pressure_reduced"
   ],
   "search_decision": {
-    "code": "propose_best_candidate",
-    "confidence": 0.9,
-    "summary": "Closed-loop sandbox search found a candidate that improved the simulated language state after rejecting harmful attempts."
+    "code": "no_safe_improvement",
+    "confidence": 0.7,
+    "summary": "Closed-loop sandbox search found no accepted candidate that improved the simulated language state."
   },
   "search_trace": [
     {
@@ -25,17 +27,17 @@
     },
     {
       "variant": "synthesized_implementation",
-      "accepted": true,
-      "reverted": false,
-      "score": 1,
+      "accepted": false,
+      "reverted": true,
+      "score": -2,
       "before_gaps": 2,
-      "after_gaps": 0
+      "after_gaps": 2
     }
   ],
   "candidate_path": "src/language-parser-v0-1.js",
   "added_needles": [
-    "solveLinearEquation",
-    "checkProofStep"
+    "solveTwoStepLinearEquation",
+    "checkHypotheticalSyllogism"
   ],
   "report_artifact": "artifacts/reactive-self-edit-report-v0-1.json",
   "summary_artifact": "artifacts/reactive-self-edit-summary-v0-1.json"
