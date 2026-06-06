@@ -3,7 +3,7 @@
   "closed_previous_goal": true,
   "safe_to_propose": true,
   "initial_pressure": 3,
-  "accepted_delta": -2,
+  "accepted_delta": -3,
   "rejected_delta": 0,
   "rejected_causal": [
     "pressure_unchanged"
@@ -12,9 +12,9 @@
     "pressure_reduced"
   ],
   "search_decision": {
-    "code": "no_safe_improvement",
-    "confidence": 0.7,
-    "summary": "Closed-loop sandbox search found no accepted candidate that improved the simulated language state."
+    "code": "propose_best_candidate",
+    "confidence": 0.9,
+    "summary": "Closed-loop sandbox search found a candidate that improved the simulated language state after rejecting harmful attempts."
   },
   "search_trace": [
     {
@@ -27,11 +27,11 @@
     },
     {
       "variant": "synthesized_implementation",
-      "accepted": false,
-      "reverted": true,
-      "score": -2,
+      "accepted": true,
+      "reverted": false,
+      "score": 1,
       "before_gaps": 2,
-      "after_gaps": 2
+      "after_gaps": 0
     }
   ],
   "candidate_path": "src/language-parser-v0-1.js",

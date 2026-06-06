@@ -22,7 +22,7 @@
   "reactive_closed_previous_goal": true,
   "reactive_safe_to_propose": true,
   "reactive_initial_pressure": 3,
-  "reactive_accepted_delta": -2,
+  "reactive_accepted_delta": -3,
   "truth_gate": {
     "true": false,
     "contested": false,
