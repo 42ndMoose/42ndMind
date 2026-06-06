@@ -46,6 +46,9 @@ jobs:
       - name: Apply report consistency gate
         run: node scripts/apply-report-consistency-gate-v0-1.js
 
+      - name: Apply epistemic octahedron core gate
+        run: node scripts/apply-epistemic-octahedron-core-gate-v0-1.js
+
       - name: Apply proof operator anatomy
         run: node scripts/apply-proof-operator-anatomy-v0-1.js
 
@@ -168,8 +171,8 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js
-          git diff --cached --quiet || git commit -m "Apply proof operator anatomy growth [skip ci]"
+          git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js
+          git diff --cached --quiet || git commit -m "Apply epistemic octahedron core gate [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
