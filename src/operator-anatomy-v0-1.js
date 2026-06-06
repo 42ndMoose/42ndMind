@@ -70,6 +70,31 @@
       examples: ['∀x ∈ ℝ, x^2 >= 0'],
       assertion: "assert.strictEqual(P.proveSquareNonnegative('∀x ∈ ℝ, x^2 >= 0').ok, true);"
     }),
+    implication_chain: Object.freeze({
+      id: 'implication_chain',
+      operation: 'compose',
+      surface: 'A=>B and B=>C gives A=>C',
+      parts: ['antecedent', 'middle', 'consequent'],
+      preconditions: ['first consequent equals second antecedent'],
+      inverse_chain: [],
+      closure_operator: 'composeImplicationChain',
+      closure_result: 'composed_implication',
+      examples: ['A=>B, B=>C'],
+      assertion: "assert.strictEqual(P.composeImplicationChain(['A=>B', 'B=>C']).conclusion, 'A=>C');"
+    }),
+    contradiction_pair: Object.freeze({
+      id: 'contradiction_pair',
+      operation: 'detect',
+      surface: 'A and not A cannot both be true in the same scope',
+      parts: ['claim', 'negated_claim', 'scope'],
+      preconditions: ['same scope', 'same referent'],
+      violations: ['claim and negated claim both asserted'],
+      inverse_chain: [],
+      closure_operator: 'detectContradiction',
+      closure_result: 'contradiction_flag',
+      examples: ['A, not A'],
+      assertion: "assert.strictEqual(P.detectContradiction(['A', 'not A']).contradiction, true);"
+    }),
     statement_classification: Object.freeze({
       id: 'statement_classification',
       operation: 'classify',
@@ -96,6 +121,8 @@
     const source = String(parserSource || '');
     const out = [];
     if (has(source, 'compileMath')) out.push('statement_classification');
+    if (has(source, 'checkProofStep') || has(source, 'checkHypotheticalSyllogism')) out.push('implication_chain');
+    if (has(source, 'checkProofStep') || has(source, 'compileClaim')) out.push('contradiction_pair');
     if (has(source, 'compileMath') && has(source, "mode: 'equation'")) out.push('affine_equation');
     if (has(source, 'compileMath') && has(source, "mode: 'equation'")) out.push('affine_expression');
     if (has(source, 'compileMath') && has(source, "mode: 'relation'")) out.push('linear_relation_truth');

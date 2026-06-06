@@ -365,6 +365,38 @@
     return { ok: true, coefficient, variable, offset, parts: ['coefficient', 'variable', 'offset'] };
   }
 
+  function detectContradiction(input) {
+    const rows = Array.isArray(input) ? input.map(String) : String(input || '').split(/,|and/i);
+    const clean = rows.map(x => String(x).trim()).filter(Boolean);
+    const positives = new Set();
+    const negatives = new Set();
+    clean.forEach(row => {
+      const normalized = row.replace(/\s+/g, ' ').trim();
+      const neg = /^not\s+(.+)$/i.exec(normalized);
+      if (neg) negatives.add(neg[1].trim().toUpperCase());
+      else positives.add(normalized.toUpperCase());
+    });
+    for (const p of positives) {
+      if (negatives.has(p)) return { ok: true, contradiction: true, pair: [p, 'not ' + p], rule: 'non-contradiction' };
+    }
+    return { ok: true, contradiction: false, pair: null, rule: 'non-contradiction' };
+  }
+
+  function composeImplicationChain(input) {
+    const rows = Array.isArray(input) ? input : String(input || '').split(/,|and/i);
+    const implications = rows.map(x => String(x).replace(/\s+/g, '')).map(x => /^([A-Z])(?:=>|⇒)([A-Z])$/i.exec(x)).filter(Boolean);
+    for (const first of implications) {
+      for (const second of implications) {
+        const a = first[1].toUpperCase();
+        const b = first[2].toUpperCase();
+        const b2 = second[1].toUpperCase();
+        const c = second[2].toUpperCase();
+        if (b === b2) return { ok: true, rule: 'implication-chain-composition', conclusion: a + '=>' + c, parts: [a, b, c] };
+      }
+    }
+    return { ok: false, reason: 'no_composable_implication_chain' };
+  }
+
   function parseRows(body) {
     const rows = [];
     if (!body.trim()) return rows;
@@ -489,6 +521,8 @@
     classifyMathStatement,
     solveAffineEquation,
     decomposeAffineExpression,
+    detectContradiction,
+    composeImplicationChain,
     toKernelFields,
     toKernelSeed,
     toKernelCompletion,
