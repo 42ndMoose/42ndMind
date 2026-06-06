@@ -143,6 +143,26 @@
     ],
     "ξ": ""
   },
+  "operator_anatomy_pressure": {
+    "packet_type": "42ndMind_operator_anatomy_pressure_v0_1",
+    "version": "0.1.0",
+    "scalar": 0,
+    "surfaces": [
+      "affine_equation",
+      "affine_expression",
+      "division_constraint",
+      "linear_relation_truth",
+      "square_nonnegative",
+      "statement_classification"
+    ],
+    "gaps": [],
+    "unit": {
+      "surfaces": 1,
+      "gaps": 0,
+      "ok": true
+    },
+    "ξ": ""
+  },
   "generated_from": null,
   "tests": [
     "tests/meta-reactive-language-parser-v0-1-test.js"
