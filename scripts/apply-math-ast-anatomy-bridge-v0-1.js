@@ -33,12 +33,14 @@ if (!s.includes('function astSurfaceIds(samples)')) {
   s = s.replace(marker, block + marker);
 }
 
-if (!s.includes('astSurfaceIds(options && options.samples)')) {
+if (!s.includes('const astIds = astSurfaceIds(arguments[1] && arguments[1].samples);')) {
   const marker = "    const source = String(parserSource || '');\n";
   if (!s.includes(marker)) throw new Error('availableSurfaces source marker not found');
   s = s.replace(marker, marker + "    const astIds = astSurfaceIds(arguments[1] && arguments[1].samples);\n");
-  const returnMarker = "    return Array.from(new Set(out)).sort();";
-  if (!s.includes(returnMarker)) throw new Error('availableSurfaces return marker not found');
+}
+
+const returnMarker = "    return Array.from(new Set(out)).sort();";
+if (s.includes(returnMarker)) {
   s = s.replace(returnMarker, "    return Array.from(new Set(out.concat(astIds))).sort();");
 }
 
