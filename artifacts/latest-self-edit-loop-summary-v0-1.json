@@ -75,7 +75,8 @@
       "anti_delusion",
       "integration",
       "scope_clarity"
-    ]
+    ],
+    "state_transition": "evaluateTransitionField computes before/after components, octahedral proxy points, delta peak distance, and capability pressure delta"
   },
   "reactive_closed_previous_goal": true,
   "reactive_safe_to_propose": false,

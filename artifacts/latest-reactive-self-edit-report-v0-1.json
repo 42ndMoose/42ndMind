@@ -302,11 +302,76 @@
     "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
     "ξ": ""
   },
+  "epistemic_transition_field": {
+    "packet_type": "42ndMind_epistemic_octahedron_transition_field_v0_1",
+    "version": "0.1.0",
+    "plot_kind": "kernel_state_transition_proxy",
+    "before": {
+      "components": {
+        "coherence": 0.5,
+        "reality_contact": 0.5,
+        "self_correction": 0.5,
+        "anti_delusion": 0.5,
+        "integration": 0,
+        "closure": 0
+      },
+      "point": {
+        "x": 0,
+        "y": -0.499999,
+        "z": 0.500001,
+        "active": true,
+        "surface": true
+      },
+      "peak_distance": 1
+    },
+    "after": {
+      "components": {
+        "coherence": 0,
+        "reality_contact": 0,
+        "self_correction": 1,
+        "anti_delusion": 1,
+        "integration": 0,
+        "scope_clarity": 0,
+        "closure": 0
+      },
+      "point": {
+        "x": -0.5,
+        "y": -0.25,
+        "z": 0.25,
+        "active": true,
+        "surface": true
+      },
+      "peak_distance": 1
+    },
+    "delta_components": {
+      "anti_delusion": 0.5,
+      "closure": 0,
+      "coherence": -0.5,
+      "integration": 0,
+      "reality_contact": -0.5,
+      "scope_clarity": 0,
+      "self_correction": 0.5
+    },
+    "delta_peak_distance": 0,
+    "pressure": {
+      "before": 1,
+      "after": 1,
+      "delta": 0
+    },
+    "preference": {
+      "capability_improves": false,
+      "peak_distance_preserved_or_improved": true,
+      "accept": false,
+      "reason": "transition did not both improve capability and preserve/reach the peak-governance proxy"
+    },
+    "ξ": ""
+  },
   "report_consistency": {
     "search_accepted": false,
     "meta_accepted": false,
     "mutation_accepted": false,
     "peak_gate_ok": false,
+    "transition_ok": false,
     "ok": false
   },
   "base_mutated": false,
