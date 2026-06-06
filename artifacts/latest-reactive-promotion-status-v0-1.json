@@ -1,0 +1,21 @@
+{
+  "promoted": true,
+  "reason": "safe_candidate_promoted",
+  "checks": {
+    "safe_to_propose": true,
+    "report_consistency_ok": true,
+    "search_accepted": true,
+    "meta_accepted": true,
+    "mutation_accepted": true,
+    "allowed_path": true,
+    "has_candidate_content": true
+  },
+  "candidate_path": "src/language-parser-v0-1.js",
+  "before_bytes": 24937,
+  "after_bytes": 27894,
+  "added_needles": [
+    "proveDivisionByZeroUndefined",
+    "evaluateLinearRelation",
+    "classifyMathStatement"
+  ]
+}
