@@ -11,6 +11,13 @@ assert.strictEqual(eq.body.left.coefficient, 2);
 assert.strictEqual(eq.body.left.offset, 1);
 assert.strictEqual(AST.classify(eq).closure, 'solveAffineEquation');
 
+const eq2 = AST.parse('-3y - 6 = 9');
+assert.strictEqual(eq2.ok, true);
+assert.strictEqual(eq2.body.type, 'Equation');
+assert.strictEqual(eq2.body.left.coefficient, -3);
+assert.strictEqual(eq2.body.left.offset, -6);
+assert.strictEqual(AST.classify(eq2).closure, 'solveAffineEquation');
+
 const div = AST.parse('x/y is undefined when y = 0');
 assert.strictEqual(div.ok, true);
 assert.strictEqual(div.body.type, 'DivisionConstraint');
