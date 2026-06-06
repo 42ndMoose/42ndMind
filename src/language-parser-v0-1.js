@@ -8,10 +8,8 @@
   const EPS = 1e-6;
   const ORDER = ['τ', 'ρ', 'μ', 'ε', 'λ', 'ι', 'κ', 'Ω'];
   const EMPTY = { τ: 'τ∅', ρ: 'ρ∅', μ: 'μ∅', ε: 'ε∅', λ: 'λ∅', ι: 'ι∅', κ: 'κ∅', Ω: 'Ω∅' };
-
   const A = value => Array.isArray(value) ? value : [];
   const R = value => Number((Number(value) || 0).toFixed(6));
-  const C = value => JSON.parse(JSON.stringify(value == null ? null : value));
 
   function axis(row) {
     if (Array.isArray(row)) return String(row[0] == null ? '∅' : row[0]).trim();
@@ -37,18 +35,11 @@
     });
   }
 
-  function l1(field) {
-    return R(A(field).reduce((sum, row) => sum + Math.abs(weight(row)), 0));
-  }
-
-  function n(value) {
-    const out = R(value);
-    return Object.is(out, -0) ? 0 : out;
-  }
-
-  function formatNumber(value) {
-    const fixed = n(value).toFixed(6);
-    return fixed.replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+  function l1(field) { return R(A(field).reduce((sum, row) => sum + Math.abs(weight(row)), 0)); }
+  function fmt(value) { return R(value).toFixed(6).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1'); }
+  function safeSymbol(value, fallback) {
+    const clean = String(value == null ? '' : value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+    return clean || fallback || 'x';
   }
 
   function splitTopLevel(text, separator) {
@@ -62,40 +53,31 @@
       if (ch === separator && depth === 0) {
         if (current.trim()) parts.push(current.trim());
         current = '';
-      } else {
-        current += ch;
-      }
+      } else current += ch;
     }
     if (current.trim()) parts.push(current.trim());
     return parts;
   }
 
-  function safeSymbol(value, fallback) {
-    const clean = String(value == null ? '' : value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
-    return clean || fallback || 'x';
+  function unitReport(fields) {
+    const report = {};
+    ORDER.forEach(key => { report[key] = l1(fields[key]); });
+    report.ok = ORDER.every(key => Math.abs(report[key] - 1) < EPS);
+    return report;
   }
 
   function countMap(values) {
     const out = {};
-    A(values).forEach(value => {
-      const key = String(value);
-      out[key] = (out[key] || 0) + 1;
-    });
+    A(values).forEach(value => { const key = String(value); out[key] = (out[key] || 0) + 1; });
     return out;
   }
 
   function topCountRows(prefix, values, limit) {
     const counts = countMap(values);
-    return Object.keys(counts)
-      .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b))
-      .slice(0, limit || 12)
-      .map(key => ({ σ: prefix + safeSymbol(key), w: counts[key] }));
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).slice(0, limit || 12).map(key => ({ σ: prefix + safeSymbol(key), w: counts[key] }));
   }
 
-  function rawTokens(text) {
-    return String(text == null ? '' : text).toLowerCase().match(/[a-z0-9]+/g) || [];
-  }
-
+  function rawTokens(text) { return String(text == null ? '' : text).toLowerCase().match(/[a-z0-9]+/g) || []; }
   function rawBigrams(tokens) {
     const out = [];
     for (let i = 0; i < tokens.length - 1; i += 1) out.push(tokens[i] + '-' + tokens[i + 1]);
@@ -127,27 +109,15 @@
     const ι = normalize(rawIntentRows(text, tokens), EMPTY.ι);
     const κ = normalize([{ σ: 'constraint:deterministic-raw-compiler', w: 1 }, { σ: 'constraint:no-llm-semantics', w: 1 }, { σ: 'constraint:unit-total-output', w: 1 }], EMPTY.κ);
     const Ω = normalize([{ σ: 'τ:tokens', w: 0.20 }, { σ: 'ρ:relations', w: 0.16 }, { σ: 'μ:meaning-candidates', w: 0.18 }, { σ: 'ε:raw-evidence', w: 0.14 }, { σ: 'λ:lexical-shape', w: 0.12 }, { σ: 'ι:intent-shape', w: 0.10 }, { σ: 'κ:compiler-constraints', w: 0.10 }], EMPTY.Ω);
-    return { φ: 'Ω', v: VERSION, mode: 'raw_compiled', fields: { τ, ρ, μ, ε, λ, ι, κ, Ω }, raw: { length: text.length, tokens: tokens.length, relations: bigrams.length }, u: unitReport({ τ, ρ, μ, ε, λ, ι, κ, Ω }), Ξ: '' };
+    const fields = { τ, ρ, μ, ε, λ, ι, κ, Ω };
+    return { φ: 'Ω', v: VERSION, mode: 'raw_compiled', fields, raw: { length: text.length, tokens: tokens.length, relations: bigrams.length }, u: unitReport(fields), Ξ: '' };
   }
 
-  function rawToSymbolic(source, options) {
-    return serialize(compileRaw(source, options));
-  }
-
-  function claimObject(value) {
-    return safeSymbol(String(value == null ? '' : value).replace(/[?.!]+$/g, ''), 'unknown');
-  }
+  function claimObject(value) { return safeSymbol(String(value == null ? '' : value).replace(/[?.!]+$/g, ''), 'unknown'); }
 
   function claimPacket(mode, subject, relation, object, source, scope) {
     const σ = mode === 'query' ? 'Γ?:' + subject + '.' + relation : 'Γ:' + subject + '.' + relation + '=' + object;
-    const Γ = normalize([
-      { σ, w: 0.40 },
-      { σ: 'subject:' + subject, w: 0.15 },
-      { σ: 'relation:' + relation, w: 0.15 },
-      { σ: 'object:' + (object || '?'), w: 0.15 },
-      { σ: 'source:' + source, w: 0.10 },
-      { σ: 'scope:' + scope, w: 0.05 }
-    ], 'Γ∅');
+    const Γ = normalize([{ σ, w: 0.40 }, { σ: 'subject:' + subject, w: 0.15 }, { σ: 'relation:' + relation, w: 0.15 }, { σ: 'object:' + (object || '?'), w: 0.15 }, { σ: 'source:' + source, w: 0.10 }, { σ: 'scope:' + scope, w: 0.05 }], 'Γ∅');
     return { φ: mode === 'query' ? 'Γ?' : 'Γ', v: VERSION, mode, subject, relation, object: object || null, source, scope, Γ, key: subject + '.' + relation, statement: σ, u: { Γ: l1(Γ), ok: Math.abs(l1(Γ) - 1) < EPS }, Ξ: '' };
   }
 
@@ -159,15 +129,7 @@
     const key = subj + '.' + rel + '.q=' + q;
     const baseKey = subj + '.' + rel + '=' + obj;
     const σ = 'Γ:' + key + '=' + obj;
-    const Γ = normalize([
-      { σ, w: 0.34 },
-      { σ: 'subject:' + subj, w: 0.13 },
-      { σ: 'relation:' + rel, w: 0.13 },
-      { σ: 'object:' + obj, w: 0.13 },
-      { σ: 'quantifier:' + q, w: 0.12 },
-      { σ: 'source:speaker-stance', w: 0.08 },
-      { σ: q === 'unspecified' ? 'elaboration:required' : 'elaboration:not-required', w: 0.07 }
-    ], 'Γ∅');
+    const Γ = normalize([{ σ, w: 0.34 }, { σ: 'subject:' + subj, w: 0.13 }, { σ: 'relation:' + rel, w: 0.13 }, { σ: 'object:' + obj, w: 0.13 }, { σ: 'quantifier:' + q, w: 0.12 }, { σ: 'source:speaker-stance', w: 0.08 }, { σ: q === 'unspecified' ? 'elaboration:required' : 'elaboration:not-required', w: 0.07 }], 'Γ∅');
     return { φ: 'Γ', v: VERSION, mode: 'stance', subject: subj, relation: rel, object: obj, quantifier: q, source: 'speaker_stance', scope: 'normative', elaboration_required: q === 'unspecified', elaboration_reason: q === 'unspecified' ? 'missing_quantifier' : null, key, base_key: baseKey, statement: σ, u: { Γ: l1(Γ), ok: Math.abs(l1(Γ) - 1) < EPS }, Γ, Ξ: '' };
   }
 
@@ -182,7 +144,6 @@
     if (/^(what is my name|who am i)\??$/i.test(lower)) return claimPacket('query', 'self', 'name', null, 'user_query', 'identity');
     m = /^what is my\s+([a-z0-9_-]+)\??$/i.exec(lower);
     if (m) return claimPacket('query', 'self', claimObject(m[1]), null, 'user_query', 'self_attribute');
-
     m = /^(all|some)\s+([a-z0-9][a-z0-9 _-]*?)\s+should(?:n't|n’t| not)\s+(.+?)[.!?]*$/i.exec(text);
     if (m) return stancePacket(claimObject(m[1]), m[2], 'should-not', m[3]);
     m = /^(all|some)\s+([a-z0-9][a-z0-9 _-]*?)\s+should\s+(.+?)[.!?]*$/i.exec(text);
@@ -194,27 +155,14 @@
     throw new Error('No deterministic claim pattern matched');
   }
 
-  function rawToClaimCandidates(source, options) {
-    try { return [compileClaim(source, options)]; }
-    catch (err) { return []; }
-  }
-
-  function relationSymbol(value) {
-    return String(value || '').replace('≥', '>=').replace('≤', '<=').replace('⇒', '=>').trim();
-  }
-
+  function rawToClaimCandidates(source, options) { try { return [compileClaim(source, options)]; } catch (err) { return []; } }
+  function relationSymbol(value) { return String(value || '').replace('≥', '>=').replace('≤', '<=').replace('⇒', '=>').trim(); }
   function domainSymbol(value) {
     const raw = String(value || '').trim().toLowerCase();
     if (raw === 'ℝ' || raw === 'r' || raw === 'real' || raw === 'reals') return 'real';
     if (raw === 'ℤ' || raw === 'z' || raw === 'integer' || raw === 'integers') return 'integer';
     if (raw === 'ℕ' || raw === 'n' || raw === 'natural' || raw === 'naturals') return 'natural';
     return claimObject(raw || 'unspecified');
-  }
-
-  function mathVars(text) {
-    const found = String(text || '').match(/\b[a-zA-Z]\b/g) || [];
-    const seen = {};
-    return found.filter(v => { const key = v.toLowerCase(); if (seen[key]) return false; seen[key] = true; return true; }).map(v => v.toLowerCase());
   }
 
   function mathOperators(text) {
@@ -235,13 +183,7 @@
     const domain = data.domain || 'unspecified';
     const quantifier = data.quantifier || 'unspecified';
     const relation = data.relation || 'none';
-    const rows = [
-      { σ: 'mode:' + claimObject(data.mode), w: 0.16 },
-      { σ: 'relation:' + claimObject(relation), w: 0.13 },
-      { σ: 'quantifier:' + claimObject(quantifier), w: 0.12 },
-      { σ: 'domain:' + claimObject(domain), w: 0.12 },
-      { σ: data.elaboration_required ? 'elaboration:required' : 'elaboration:not-required', w: 0.10 }
-    ];
+    const rows = [{ σ: 'mode:' + claimObject(data.mode), w: 0.16 }, { σ: 'relation:' + claimObject(relation), w: 0.13 }, { σ: 'quantifier:' + claimObject(quantifier), w: 0.12 }, { σ: 'domain:' + claimObject(domain), w: 0.12 }, { σ: data.elaboration_required ? 'elaboration:required' : 'elaboration:not-required', w: 0.10 }];
     variables.forEach(v => rows.push({ σ: 'var:' + claimObject(v), w: 0.07 }));
     operators.forEach(op => rows.push({ σ: 'op:' + claimObject(op), w: 0.07 }));
     if (data.left) rows.push({ σ: 'left:' + claimObject(data.left), w: 0.07 });
@@ -256,37 +198,50 @@
   function compileMath(source) {
     const text = String(source == null ? '' : source).trim();
     let m = /^∀\s*([a-zA-Z])\s*(?:∈|in)\s*(ℝ|R|real|reals|ℤ|Z|integer|integers|ℕ|N|natural|naturals)\s*,\s*(.+?)\s*(≥|>=|≤|<=|>|<|=)\s*(.+)$/i.exec(text);
-    if (m) {
-      const left = m[3].trim();
-      const right = m[5].trim();
-      return mathPacket({ mode: 'theorem', raw: text, variables: [m[1].toLowerCase()], operators: mathOperators(left + right), quantifier: 'all', domain: domainSymbol(m[2]), relation: relationSymbol(m[4]), left, right, elaboration_required: false, solved: false });
-    }
+    if (m) return mathPacket({ mode: 'theorem', raw: text, variables: [m[1].toLowerCase()], operators: mathOperators(m[3] + m[5]), quantifier: 'all', domain: domainSymbol(m[2]), relation: relationSymbol(m[4]), left: m[3].trim(), right: m[5].trim(), elaboration_required: false, solved: false });
     m = /^([a-zA-Z])\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)\s*=\s*(-?\d+(?:\.\d+)?)$/.exec(text);
     if (m) return mathPacket({ mode: 'equation', raw: text, variables: [m[1].toLowerCase()], operators: [m[2]], quantifier: 'unspecified', domain: 'unspecified', relation: '=', left: m[1] + m[2] + m[3], right: m[4], elaboration_required: true, solved: false });
     m = /^([a-zA-Z])\s*\/\s*([a-zA-Z])\s+is\s+undefined\s+when\s+([a-zA-Z])\s*=\s*0$/i.exec(text);
     if (m) return mathPacket({ mode: 'constraint', raw: text, variables: [m[1].toLowerCase(), m[2].toLowerCase()], operators: ['/'], quantifier: 'all', domain: 'unspecified', relation: 'undefined-when', left: m[1] + '/' + m[2], right: 'undefined', condition: m[3].toLowerCase() + '=0', result: 'undefined', elaboration_required: false, solved: false });
     m = /^if\s+([a-zA-Z])\s*(?:=>|⇒)\s*([a-zA-Z])\s+and\s+\1\s*,?\s*then\s+\2$/i.exec(text);
-    if (m) return mathPacket({ mode: 'proof-rule', raw: text, variables: [m[1].toUpperCase(), m[2].toUpperCase()], operators: ['=>'], quantifier: 'rule', domain: 'logic', relation: 'therefore', left: m[1].toUpperCase() + '=>'+ m[2].toUpperCase(), right: m[2].toUpperCase(), rule: 'modus-ponens', elaboration_required: false, solved: false });
+    if (m) return mathPacket({ mode: 'proof-rule', raw: text, variables: [m[1].toUpperCase(), m[2].toUpperCase()], operators: ['=>'], quantifier: 'rule', domain: 'logic', relation: 'therefore', left: m[1].toUpperCase() + '=>' + m[2].toUpperCase(), right: m[2].toUpperCase(), rule: 'modus-ponens', elaboration_required: false, solved: false });
     m = /^([a-zA-Z])\s*(≥|>=|≤|<=|>|<|=)\s*(-?\d+(?:\.\d+)?)$/.exec(text);
     if (m) return mathPacket({ mode: 'relation', raw: text, variables: [m[1].toLowerCase()], operators: [], quantifier: 'unspecified', domain: 'unspecified', relation: relationSymbol(m[2]), left: m[1].toLowerCase(), right: m[3], elaboration_required: true, solved: false });
     throw new Error('No deterministic math pattern matched');
   }
 
-  function mathToKernelFields(input) {
-    const packet = typeof input === 'string' ? compileMath(input) : input;
-    return [A(packet.M).map(row => ({ σ: 'M:' + axis(row), w: weight(row) }))];
+  function solveLinearEquation(input) {
+    const text = typeof input === 'string' ? input.replace(/\s+/g, '') : String(input && input.equation || '').replace(/\s+/g, '');
+    const m = /^([a-zA-Z])([+\-*/])(-?\d+(?:\.\d+)?)=(-?\d+(?:\.\d+)?)$/.exec(text);
+    if (!m) return { ok: false, reason: 'unsupported_linear_form' };
+    const variable = m[1];
+    const op = m[2];
+    const a = Number(m[3]);
+    const b = Number(m[4]);
+    let value;
+    if (op === '+') value = b - a;
+    else if (op === '-') value = b + a;
+    else if (op === '*') value = b / a;
+    else if (op === '/') value = b * a;
+    if (!Number.isFinite(value)) return { ok: false, reason: 'non_finite_solution' };
+    return { ok: true, variable, value, relation: '=', steps: ['parse-linear-one-step', 'apply-inverse-operation'] };
   }
 
-  function mathToKernelSeed(input) {
-    return mathToKernelFields(input).reduce((rows, field) => rows.concat(field), []);
-  }
-
-  function mathToKernelCompletion(input, kernel, options) {
-    if (!kernel || typeof kernel.complete !== 'function') throw new Error('Kernel with complete(...) is required');
-    const opts = options || {};
-    const completeOpts = Object.assign({}, opts.complete || opts);
-    delete completeOpts.math;
-    return kernel.complete(mathToKernelFields(input), completeOpts);
+  function checkProofStep(input) {
+    const data = typeof input === 'string' ? { text: input } : (input || {});
+    const text = String(data.text || '').replace(/\s+/g, '');
+    const premises = Array.isArray(data.premises) ? data.premises.map(String) : [];
+    const conclusion = String(data.conclusion || '');
+    const joined = premises.join('&').replace(/\s+/g, '');
+    const src = text || (joined + '=>' + conclusion.replace(/\s+/g, ''));
+    const m = /(?:if)?([A-Z])(?:=>|⇒)([A-Z])(?:and|&)(\1)(?:,?then|=>)(\2)/i.exec(src);
+    if (m) return { ok: true, rule: 'modus-ponens', conclusion: m[2].toUpperCase() };
+    const implication = premises.find(p => /(?:=>|⇒)/.test(p));
+    if (implication) {
+      const r = /^\s*([A-Z])\s*(?:=>|⇒)\s*([A-Z])\s*$/i.exec(implication);
+      if (r && premises.map(p => p.trim().toUpperCase()).includes(r[1].toUpperCase()) && conclusion.trim().toUpperCase() === r[2].toUpperCase()) return { ok: true, rule: 'modus-ponens', conclusion: r[2].toUpperCase() };
+    }
+    return { ok: false, reason: 'unsupported_proof_step' };
   }
 
   function parseRows(body) {
@@ -315,41 +270,17 @@
     const compact = String(source == null ? '' : source).replace(/\s+/g, '');
     const match = /^Ω\{(.*)\}$/u.exec(compact);
     if (!match) throw new Error('Packet must match Ω{...}');
-
     const fields = {};
     splitTopLevel(match[1], ';').forEach(part => {
       const field = parseField(part);
       if (fields[field.key]) throw new Error('Duplicate field: ' + field.key);
       fields[field.key] = opts.normalize ? normalize(field.rows, EMPTY[field.key]) : field.rows;
     });
-
-    if (opts.requireAll) {
-      ORDER.forEach(key => {
-        if (!fields[key]) throw new Error('Missing field: ' + key);
-      });
-    }
-
-    ORDER.forEach(key => {
-      if (!fields[key]) fields[key] = normalize([], EMPTY[key]);
-    });
-
-    const unit = unitReport(fields);
-    if (!opts.normalize && !unit.ok) throw new Error('Unit invariant failed');
-
-    return {
-      φ: 'Ω',
-      v: VERSION,
-      fields,
-      u: unit,
-      Ξ: ''
-    };
-  }
-
-  function unitReport(fields) {
-    const report = {};
-    ORDER.forEach(key => { report[key] = l1(fields[key]); });
-    report.ok = ORDER.every(key => Math.abs(report[key] - 1) < EPS);
-    return report;
+    if (opts.requireAll) ORDER.forEach(key => { if (!fields[key]) throw new Error('Missing field: ' + key); });
+    ORDER.forEach(key => { if (!fields[key]) fields[key] = normalize([], EMPTY[key]); });
+    const u = unitReport(fields);
+    if (!opts.normalize && !u.ok) throw new Error('Unit invariant failed');
+    return { φ: 'Ω', v: VERSION, fields, u, Ξ: '' };
   }
 
   function sourceFields(packet) {
@@ -362,68 +293,38 @@
   function canonical(packet) {
     const src = sourceFields(packet || {});
     const fields = {};
-    ORDER.forEach(key => {
-      fields[key] = normalize(src[key], EMPTY[key]).slice().sort((a, b) => axis(a).localeCompare(axis(b)));
-    });
-    return {
-      φ: 'Ω',
-      v: VERSION,
-      fields,
-      u: unitReport(fields),
-      Ξ: ''
-    };
+    ORDER.forEach(key => { fields[key] = normalize(src[key], EMPTY[key]).slice().sort((a, b) => axis(a).localeCompare(axis(b))); });
+    return { φ: 'Ω', v: VERSION, fields, u: unitReport(fields), Ξ: '' };
   }
 
   function serialize(packet) {
     const p = canonical(packet);
-    const body = ORDER.map(key => {
-      const rows = A(p.fields[key]).map(row => axis(row) + '=' + formatNumber(weight(row))).join(',');
-      return key + '[' + rows + ']';
-    }).join(';');
-    return 'Ω{' + body + '}';
+    return 'Ω{' + ORDER.map(key => key + '[' + A(p.fields[key]).map(row => axis(row) + '=' + fmt(weight(row))).join(',') + ']').join(';') + '}';
   }
 
   function roundTrip(source) {
     const parsed = parse(source);
     const text = serialize(parsed);
     const reparsed = parse(text);
-    return {
-      text,
-      parsed,
-      reparsed,
-      same: JSON.stringify(canonical(parsed)) === JSON.stringify(canonical(reparsed))
-    };
+    return { text, parsed, reparsed, same: JSON.stringify(canonical(parsed)) === JSON.stringify(canonical(reparsed)) };
   }
 
-  function fromKernelPacket(packet) {
-    return canonical(packet);
-  }
-
+  function fromKernelPacket(packet) { return canonical(packet); }
+  function rawToSymbolic(source, options) { return serialize(compileRaw(source, options)); }
   function toKernelFields(input, options) {
     const packet = typeof input === 'string' ? parse(input, options) : canonical(input);
     const fields = sourceFields(packet);
     return ORDER.map(key => A(fields[key]).map(row => ({ σ: key + ':' + axis(row), w: weight(row) })));
   }
-
-  function toKernelSeed(input, options) {
-    return toKernelFields(input, options).reduce((rows, field) => rows.concat(field), []);
-  }
-
+  function toKernelSeed(input, options) { return toKernelFields(input, options).reduce((rows, field) => rows.concat(field), []); }
   function toKernelCompletion(input, kernel, options) {
     if (!kernel || typeof kernel.complete !== 'function') throw new Error('Kernel with complete(...) is required');
     const opts = options || {};
     const seed = opts.whole === true ? [toKernelSeed(input, opts.parse)] : toKernelFields(input, opts.parse);
     return kernel.complete(seed, opts.complete || {});
   }
-
-  function rawToKernelFields(input, options) {
-    return toKernelFields(compileRaw(input, options));
-  }
-
-  function rawToKernelSeed(input, options) {
-    return toKernelSeed(compileRaw(input, options));
-  }
-
+  function rawToKernelFields(input, options) { return toKernelFields(compileRaw(input, options)); }
+  function rawToKernelSeed(input, options) { return toKernelSeed(compileRaw(input, options)); }
   function rawToKernelCompletion(input, kernel, options) {
     if (!kernel || typeof kernel.complete !== 'function') throw new Error('Kernel with complete(...) is required');
     const opts = options || {};
@@ -431,15 +332,15 @@
     const seed = opts.whole === true ? [toKernelSeed(packet)] : toKernelFields(packet);
     return kernel.complete(seed, opts.complete || {});
   }
-
-  function validate(source) {
-    try {
-      const result = roundTrip(source);
-      return { ok: true, result, errors: [] };
-    } catch (err) {
-      return { ok: false, result: null, errors: [String(err && err.message || err)] };
-    }
+  function mathToKernelFields(input) { const packet = typeof input === 'string' ? compileMath(input) : input; return [A(packet.M).map(row => ({ σ: 'M:' + axis(row), w: weight(row) }))]; }
+  function mathToKernelSeed(input) { return mathToKernelFields(input).reduce((rows, field) => rows.concat(field), []); }
+  function mathToKernelCompletion(input, kernel, options) {
+    if (!kernel || typeof kernel.complete !== 'function') throw new Error('Kernel with complete(...) is required');
+    const opts = Object.assign({}, (options && (options.complete || options)) || {});
+    delete opts.math;
+    return kernel.complete(mathToKernelFields(input), opts);
   }
+  function validate(source) { try { const result = roundTrip(source); return { ok: true, result, errors: [] }; } catch (err) { return { ok: false, result: null, errors: [String(err && err.message || err)] }; } }
 
   return Object.freeze({
     VERSION,
@@ -457,6 +358,8 @@
     mathToKernelFields,
     mathToKernelSeed,
     mathToKernelCompletion,
+    solveLinearEquation,
+    checkProofStep,
     toKernelFields,
     toKernelSeed,
     toKernelCompletion,
