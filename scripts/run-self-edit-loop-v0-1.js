@@ -295,6 +295,8 @@ function makeReactiveReport(files) {
   const safeToPropose = !!(searchAccepted && metaAccepted && mutationAccepted);
   const epistemicGate = EO && typeof EO.evaluateReactiveGate === 'function' ? EO.evaluateReactiveGate({ initial, meta, search, parserPatch, badMutation, goodMutation }) : null;
   const peakGateOk = !epistemicGate || epistemicGate.ok === true;
+  const epistemicTransition = EO && typeof EO.evaluateTransitionField === 'function' ? EO.evaluateTransitionField({ initial, meta, search, parserPatch, badMutation, goodMutation }) : null;
+  const transitionOk = !epistemicTransition || (epistemicTransition.preference && epistemicTransition.preference.accept === true);
 
   const report = {
     packet_type: '42ndMind_reactive_self_edit_report_v0_1',
@@ -338,14 +340,16 @@ function makeReactiveReport(files) {
       path: parserPatch.path,
       content: parserPatch.content
     } : null,
-    safe_to_propose: !!(safeToPropose && peakGateOk),
+    safe_to_propose: !!(safeToPropose && peakGateOk && transitionOk),
     epistemic_octahedron_gate: epistemicGate,
+    epistemic_transition_field: epistemicTransition,
     report_consistency: {
       search_accepted: searchAccepted,
       meta_accepted: metaAccepted,
       mutation_accepted: mutationAccepted,
       peak_gate_ok: peakGateOk,
-      ok: !!(safeToPropose && peakGateOk)
+      transition_ok: transitionOk,
+      ok: !!(safeToPropose && peakGateOk && transitionOk)
     },
     base_mutated: false,
     ξ: ''
@@ -369,6 +373,7 @@ function makeReactiveReport(files) {
     search_decision: report.closed_loop_search.decision,
     report_consistency: report.report_consistency,
     epistemic_octahedron_gate: report.epistemic_octahedron_gate,
+    epistemic_transition_field: report.epistemic_transition_field,
     search_trace: report.closed_loop_search.trace.map(row => ({ variant: row.variant, accepted: row.accepted, reverted: row.reverted, score: row.score, before_gaps: row.before_gaps, after_gaps: row.after_gaps })),
     candidate_path: candidateDiff ? candidateDiff.path : null,
     added_needles: candidateDiff ? candidateDiff.added_needles : [],
