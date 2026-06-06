@@ -32,11 +32,11 @@ const patch = meta.proposal.operations.find(op => op.path === 'src/language-pars
 assert.ok(patch);
 assert.ok(patch.content.includes('module.exports'));
 
-const module = { exports: {} };
-new Function('module', 'exports', patch.content)(module, module.exports);
-assert.strictEqual(typeof module.exports.solveLinearEquation, 'function');
-assert.strictEqual(typeof module.exports.checkProofStep, 'function');
-assert.strictEqual(module.exports.solveLinearEquation('x + 1 = 3').value, 2);
-assert.strictEqual(module.exports.checkProofStep('if A => B and A, then B').ok, true);
+const simulatedModule = { exports: {} };
+new Function('module', 'exports', patch.content)(simulatedModule, simulatedModule.exports);
+assert.strictEqual(typeof simulatedModule.exports.solveLinearEquation, 'function');
+assert.strictEqual(typeof simulatedModule.exports.checkProofStep, 'function');
+assert.strictEqual(simulatedModule.exports.solveLinearEquation('x + 1 = 3').value, 2);
+assert.strictEqual(simulatedModule.exports.checkProofStep('if A => B and A, then B').ok, true);
 
 console.log('self-edit-parser-export-fallback-v0-1 tests passed');
