@@ -92,28 +92,75 @@ function parserSupportsSquareNonnegativeTheorem(files) {
     /\^2|²/.test(source);
 }
 
+function parserSupportsDivisionConstraint(files) {
+  const source = parserSource(files);
+  return source.indexOf('compileMath') >= 0 &&
+    source.indexOf('undefined-when') >= 0 &&
+    source.indexOf('/') >= 0;
+}
+
+function parserSupportsLinearRelation(files) {
+  const source = parserSource(files);
+  return source.indexOf('compileMath') >= 0 &&
+    source.indexOf("mode: 'relation'") >= 0 &&
+    source.indexOf('relationSymbol') >= 0;
+}
+
+function addClosureGap(gaps, files, capability) {
+  if (!capability || parserHas(files, capability.needle)) return;
+  gaps.push(capability);
+}
+
 function generatedClosureFrontier(files) {
-  const nodes = [];
-  if (parserSupportsSquareNonnegativeTheorem(files) && !parserHas(files, 'proveSquareNonnegative')) {
-    nodes.push({
-      id: 'formal_math_generated_closure_square_nonnegative',
-      source: 'generated_closure_failure',
-      generated_from: {
-        parsed_form: '∀x ∈ ℝ, x^2 >= 0',
-        reason: 'compileMath recognizes square/nonnegative theorem forms but the parser lacks an executable closure operator for that theorem class.',
-        missing_operator: 'proveSquareNonnegative'
-      },
-      requires: ['solveLinearEquation', 'checkProofStep', 'solveTwoStepLinearEquation', 'checkHypotheticalSyllogism'],
-      axes: [
-        { id: 'parser_prove_square_nonnegative', file: PARSER_PATH, needle: 'proveSquareNonnegative', class: 'closure_operator', w: 1 }
-      ],
-      assertions: [
-        "assert.strictEqual(typeof P.proveSquareNonnegative, 'function');",
-        "assert.strictEqual(P.proveSquareNonnegative('∀x ∈ ℝ, x^2 >= 0').ok, true);"
-      ]
+  const gaps = [];
+  if (parserSupportsSquareNonnegativeTheorem(files)) {
+    addClosureGap(gaps, files, {
+      id: 'parser_prove_square_nonnegative',
+      needle: 'proveSquareNonnegative',
+      parsed_form: '∀x ∈ ℝ, x^2 >= 0',
+      reason: 'compileMath recognizes square/nonnegative theorem forms but the parser lacks an executable closure operator for that theorem class.',
+      assertion: "assert.strictEqual(P.proveSquareNonnegative('∀x ∈ ℝ, x^2 >= 0').ok, true);"
     });
   }
-  return nodes;
+  if (parserSupportsDivisionConstraint(files)) {
+    addClosureGap(gaps, files, {
+      id: 'parser_prove_division_by_zero_undefined',
+      needle: 'proveDivisionByZeroUndefined',
+      parsed_form: 'x/y is undefined when y = 0',
+      reason: 'compileMath recognizes division-by-zero undefined constraints but the parser lacks an executable closure operator for that constraint class.',
+      assertion: "assert.strictEqual(P.proveDivisionByZeroUndefined('x/y is undefined when y = 0').ok, true);"
+    });
+  }
+  if (parserSupportsLinearRelation(files)) {
+    addClosureGap(gaps, files, {
+      id: 'parser_evaluate_linear_relation',
+      needle: 'evaluateLinearRelation',
+      parsed_form: 'x >= 3 with x = 5',
+      reason: 'compileMath recognizes linear relation forms but the parser lacks an executable evaluator for relation truth under assignment.',
+      assertion: "assert.strictEqual(P.evaluateLinearRelation({ relation: 'x >= 3', value: 5 }).truth, true);"
+    });
+  }
+  addClosureGap(gaps, files, {
+    id: 'parser_classify_math_statement',
+    needle: 'classifyMathStatement',
+    parsed_form: 'compileMath packet classification',
+    reason: 'The parser has multiple math statement modes but lacks a unified classifier that maps parsed forms to expected closure operators.',
+    assertion: "assert.strictEqual(P.classifyMathStatement('∀x ∈ ℝ, x^2 >= 0').closure, 'proveSquareNonnegative');"
+  });
+
+  if (!gaps.length) return [];
+  return [{
+    id: 'formal_math_generated_closure_batch_' + gaps.map(g => g.needle).join('_'),
+    source: 'generated_closure_failure',
+    generated_from: {
+      parsed_forms: gaps.map(g => g.parsed_form),
+      reason: 'Parser semantic surface contains parseable math/proof forms whose implied closure operators are missing.',
+      missing_operators: gaps.map(g => g.needle)
+    },
+    requires: ['solveLinearEquation', 'checkProofStep', 'solveTwoStepLinearEquation', 'checkHypotheticalSyllogism'],
+    axes: gaps.map(g => ({ id: g.id, file: PARSER_PATH, needle: g.needle, class: 'closure_operator', w: 1 })),
+    assertions: gaps.reduce((rows, g) => rows.concat(["assert.strictEqual(typeof P." + g.needle + ", 'function');", g.assertion]), [])
+  }];
 }
 
 function activeFrontier(files) {
