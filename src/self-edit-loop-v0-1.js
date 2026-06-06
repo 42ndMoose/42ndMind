@@ -309,22 +309,15 @@
       names.push(fn.name);
       if (out.indexOf('function ' + fn.name + '(') >= 0) return;
       const marker = '  function parseRows(body) {';
-      if (out.indexOf(marker) >= 0) out = out.replace(marker, '  ' + String(fn.code).replace(/
-/g, '
-  ').trim() + '
-
-' + marker);
-      else out += '
-' + fn.code + '
-';
+      if (out.indexOf(marker) >= 0) out = out.replace(marker, '  ' + String(fn.code).replace(/\n/g, '\n  ').trim() + '\n\n' + marker);
+      else out += '\n' + fn.code + '\n';
     });
     let factoryExports = false;
     names.forEach(name => {
       if (out.indexOf('    ' + name + ',') >= 0) return;
       const exportMarker = '    toKernelFields,';
       if (out.indexOf(exportMarker) >= 0) {
-        out = out.replace(exportMarker, '    ' + name + ',
-' + exportMarker);
+        out = out.replace(exportMarker, '    ' + name + ',\n' + exportMarker);
         factoryExports = true;
       }
     });
