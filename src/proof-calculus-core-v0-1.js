@@ -38,7 +38,7 @@
     if (node.type === 'Undefined') return 'undefined';
     if (node.type === 'UnaryExpression') return String(node.operator) + ' ' + expressionText(node.argument);
     if (node.type === 'BinaryExpression') return expressionText(node.left) + String(node.operator) + expressionText(node.right);
-    if (node.type === 'AffineExpression') return String(node.coefficient) + '*' + node.variable + (node.offset < 0 ? String(node.offset) : '+' + String(node.offset));
+    if (node.type === 'AffineExpression') return String(node.coefficient) + '*' + (node.variable || '') + (node.offset < 0 ? String(node.offset) : '+' + String(node.offset));
     if (node.type === 'Relation') return expressionText(node.left) + node.operator + expressionText(node.right);
     return JSON.stringify(node);
   }
@@ -47,6 +47,32 @@
     if (node && node.type === 'NumberLiteral') return Number(node.value);
     if (finite(node)) return Number(node);
     return NaN;
+  }
+
+  function evaluateNumericExpression(node) {
+    if (!node) return NaN;
+    if (node.type === 'NumberLiteral') return Number(node.value);
+    if (node.type === 'UnaryExpression' && node.operator === '-') return -evaluateNumericExpression(node.argument);
+    if (node.type !== 'BinaryExpression') return NaN;
+    const left = evaluateNumericExpression(node.left);
+    const right = evaluateNumericExpression(node.right);
+    if (!finite(left) || !finite(right)) return NaN;
+    if (node.operator === '+') return left + right;
+    if (node.operator === '-') return left - right;
+    if (node.operator === '*') return left * right;
+    if (node.operator === '/') return Math.abs(right) <= EPS ? NaN : left / right;
+    if (node.operator === '^') return Math.pow(left, right);
+    return NaN;
+  }
+
+  function compare(left, op, right) {
+    if (!finite(left) || !finite(right)) return null;
+    if (op === '>=') return left >= right;
+    if (op === '<=') return left <= right;
+    if (op === '>') return left > right;
+    if (op === '<') return left < right;
+    if (op === '=') return Math.abs(left - right) <= EPS;
+    return null;
   }
 
   function identity(left, right) {
@@ -58,12 +84,13 @@
 
   function substituteNode(node, assignments) {
     if (!node || typeof node !== 'object') return node;
-    if (node.type === 'Symbol' && Object.prototype.hasOwnProperty.call(assignments, node.name)) {
-      return { type: 'NumberLiteral', value: R(assignments[node.name]) };
-    }
+    if (node.type === 'Symbol' && Object.prototype.hasOwnProperty.call(assignments, node.name)) return { type: 'NumberLiteral', value: R(assignments[node.name]) };
     if (node.type === 'BinaryExpression') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });
     if (node.type === 'UnaryExpression') return Object.assign({}, node, { argument: substituteNode(node.argument, assignments) });
     if (node.type === 'Relation') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });
+    if (node.type === 'AffineExpression') return node.variable && Object.prototype.hasOwnProperty.call(assignments, node.variable)
+      ? { type: 'NumberLiteral', value: R(Number(node.coefficient) * Number(assignments[node.variable]) + Number(node.offset || 0)) }
+      : clone(node);
     return clone(node);
   }
 
@@ -94,13 +121,33 @@
     const shifted = right - Number(left.offset || 0);
     const value = shifted / Number(left.coefficient);
     if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });
-    return verified('inverse-operation', {
-      operator: 'solveAffineEquation',
-      variable: left.variable,
-      value: R(value),
-      conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } },
-      steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient']
-    });
+    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });
+  }
+
+  function solveLinearEquation(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');
+    const left = body.left;
+    const right = body.right;
+    if (!left || !right || left.type !== 'AffineExpression' || right.type !== 'AffineExpression') return gap('linear_equation_not_affine', 'Both sides must reduce to affine expressions.', { equation: clone(body) });
+    const coefficient = Number(left.coefficient || 0) - Number(right.coefficient || 0);
+    const offset = Number(right.offset || 0) - Number(left.offset || 0);
+    if (Math.abs(coefficient) <= EPS) return gap('zero_linear_coefficient', 'Linear equation cannot isolate a unique value when net coefficient is zero.', { equation: clone(body) });
+    const value = offset / coefficient;
+    return verified('linear-equation-solve', { operator: 'solveLinearEquation', variable: body.variable, value: R(value), conclusion: { type: 'Assignment', variable: body.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['collect-variable-terms', 'collect-constant-terms', 'divide-by-net-coefficient'] });
+  }
+
+  function evaluateSubstitution(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'SubstitutionEvaluation') return gap('unsupported_substitution_evaluation', 'Substitution evaluation requires a SubstitutionEvaluation AST node.');
+    const expr = body.expression;
+    const assignment = body.assignment;
+    if (!expr || expr.type !== 'AffineExpression' || !assignment) return gap('substitution_not_affine', 'Only affine substitution is supported for this rule.', { node: clone(body) });
+    if (expr.variable !== assignment.variable) return gap('substitution_variable_mismatch', 'Assignment variable must match expression variable.', { node: clone(body) });
+    const value = valueOf(assignment.value);
+    if (!finite(value)) return gap('non_finite_substitution_value', 'Substitution value must be finite.', { node: clone(body) });
+    const result = Number(expr.coefficient || 0) * value + Number(expr.offset || 0);
+    return verified('substitution-evaluation', { operator: 'evaluateSubstitution', variable: expr.variable, value: R(value), result: R(result), conclusion: { type: 'NumberLiteral', value: R(result) }, steps: ['substitute-assigned-value', 'evaluate-affine-expression'] });
   }
 
   function domainGuard(input) {
@@ -110,22 +157,14 @@
       const denom = symbolName(body.denominator);
       const violation = body.violation && body.violation.type === 'Relation' && body.violation.operator === '=' && valueOf(body.violation.right) === 0;
       if (!denom || !violation) return gap('division_guard_not_triggered', 'Division undefined proof requires a zero denominator violation.', { node: clone(body) });
-      return verified('domain-guard', {
-        operator: 'proveDivisionByZeroUndefined',
-        guard: denom + ' != 0',
-        violation: denom + ' = 0',
-        conclusion: 'undefined',
-        steps: ['detect-quotient', 'detect-zero-denominator', 'apply-division-domain-guard']
-      });
+      return verified('domain-guard', { operator: 'proveDivisionByZeroUndefined', guard: denom + ' != 0', violation: denom + ' = 0', conclusion: 'undefined', steps: ['detect-quotient', 'detect-zero-denominator', 'apply-division-domain-guard'] });
     }
     if (body.type === 'QuantifiedStatement') {
       const q = quantifierScope(body);
       if (!q.ok) return q;
       return verified('domain-guard', { guard: 'variable in ' + q.domain, variable: q.variable, domain: q.domain, conclusion: clone(body.body) });
     }
-    if (body.type === 'Equation') return Math.abs(Number(body.left && body.left.coefficient)) > EPS
-      ? verified('domain-guard', { guard: 'coefficient != 0', conclusion: clone(body) })
-      : gap('zero_coefficient', 'Affine equation violates the nonzero-coefficient solve guard.', { node: clone(body) });
+    if (body.type === 'Equation') return Math.abs(Number(body.left && body.left.coefficient)) > EPS ? verified('domain-guard', { guard: 'coefficient != 0', conclusion: clone(body) }) : gap('zero_coefficient', 'Affine equation violates the nonzero-coefficient solve guard.', { node: clone(body) });
     return gap('unsupported_domain_guard', 'No domain guard is registered for this AST node type.', { type: body.type });
   }
 
@@ -147,14 +186,7 @@
     for (const first of implications) {
       for (const second of implications) {
         if (!first || !second || first === second) continue;
-        if (first.type === 'Implication' && second.type === 'Implication' && atomKey(first.consequent) === atomKey(second.antecedent)) {
-          return verified('implication-chain', {
-            operator: 'composeImplicationChain',
-            conclusion: atomKey(first.antecedent) + '=>' + atomKey(second.consequent),
-            implication: { type: 'Implication', antecedent: clone(first.antecedent), consequent: clone(second.consequent) },
-            steps: ['match-middle-term', 'compose-implications']
-          });
-        }
+        if (first.type === 'Implication' && second.type === 'Implication' && atomKey(first.consequent) === atomKey(second.antecedent)) return verified('implication-chain', { operator: 'composeImplicationChain', conclusion: atomKey(first.antecedent) + '=>' + atomKey(second.consequent), implication: { type: 'Implication', antecedent: clone(first.antecedent), consequent: clone(second.consequent) }, steps: ['match-middle-term', 'compose-implications'] });
       }
     }
     return gap('no_composable_implication_chain', 'Implication chain requires A=>B and B=>C structure.', { implications: clone(implications) });
@@ -165,14 +197,9 @@
     const claims = body && body.type === 'ContradictionPair' ? body.claims : A(input);
     const positives = new Set();
     const negatives = new Set();
-    claims.forEach(claim => {
-      if (claim && claim.type === 'UnaryExpression' && claim.operator === 'not') negatives.add(atomKey(claim.argument));
-      else positives.add(atomKey(claim));
-    });
+    claims.forEach(claim => { if (claim && claim.type === 'UnaryExpression' && claim.operator === 'not') negatives.add(atomKey(claim.argument)); else positives.add(atomKey(claim)); });
     const hit = Array.from(positives).find(key => negatives.has(key));
-    return hit
-      ? verified('contradiction', { operator: 'detectContradiction', contradiction: true, referent: hit, conclusion: 'contradiction:' + hit, steps: ['same-scope-positive', 'same-scope-negation'] })
-      : verified('contradiction', { operator: 'detectContradiction', contradiction: false, referent: null, conclusion: 'consistent-under-current-claims' });
+    return hit ? verified('contradiction', { operator: 'detectContradiction', contradiction: true, referent: hit, conclusion: 'contradiction:' + hit, steps: ['same-scope-positive', 'same-scope-negation'] }) : verified('contradiction', { operator: 'detectContradiction', contradiction: false, referent: null, conclusion: 'consistent-under-current-claims' });
   }
 
   function quantifierScope(input) {
@@ -193,14 +220,29 @@
     const relation = body.body;
     const isSquare = relation && relation.type === 'Relation' && relation.operator === '>=' && relation.left && relation.left.type === 'BinaryExpression' && relation.left.operator === '^' && valueOf(relation.left.right) === 2 && valueOf(relation.right) === 0;
     if (!isSquare) return gap('unsupported_square_nonnegative_body', 'Expected x^2 >= 0 body under universal real scope.', { body: clone(body.body) });
-    return verified('universal-square-nonnegative', {
-      operator: 'proveSquareNonnegative',
-      theorem_class: body.theorem_class,
-      variable: scope.variable,
-      domain: scope.domain,
-      conclusion: expressionText(relation),
-      steps: ['open-universal-scope', 'use-real-domain', 'square-as-same-factor-product', 'same-factor-product-nonnegative']
-    });
+    return verified('universal-square-nonnegative', { operator: 'proveSquareNonnegative', theorem_class: body.theorem_class, variable: scope.variable, domain: scope.domain, conclusion: expressionText(relation), steps: ['open-universal-scope', 'use-real-domain', 'square-as-same-factor-product', 'same-factor-product-nonnegative'] });
+  }
+
+  function algebraicIdentity(input) {
+    const body = bodyOf(input);
+    const scope = quantifierScope(body);
+    if (!scope.ok) return scope;
+    if (String(scope.domain).toUpperCase() !== 'R') return gap('unsupported_identity_domain', 'Algebraic identity proof currently requires the real-number domain.', { domain: scope.domain });
+    const relation = body.body;
+    if (!relation || relation.type !== 'Relation' || relation.operator !== '=') return gap('unsupported_identity_body', 'Algebraic identity requires an equality body.', { body: clone(body.body) });
+    const cls = body.theorem_class;
+    const left = relation.left;
+    const right = relation.right;
+    const rightVar = symbolName(right);
+    if (cls === 'additive_identity_over_reals' && left && left.type === 'BinaryExpression' && left.operator === '+' && rightVar === scope.variable) {
+      const ok = (symbolName(left.left) === scope.variable && valueOf(left.right) === 0) || (valueOf(left.left) === 0 && symbolName(left.right) === scope.variable);
+      if (ok) return verified('algebraic-identity', { operator: 'proveAlgebraicIdentity', theorem_class: cls, conclusion: expressionText(relation), steps: ['open-universal-scope', 'use-additive-identity-axiom'] });
+    }
+    if (cls === 'multiplicative_identity_over_reals' && left && left.type === 'BinaryExpression' && left.operator === '*' && rightVar === scope.variable) {
+      const ok = (symbolName(left.left) === scope.variable && valueOf(left.right) === 1) || (valueOf(left.left) === 1 && symbolName(left.right) === scope.variable);
+      if (ok) return verified('algebraic-identity', { operator: 'proveAlgebraicIdentity', theorem_class: cls, conclusion: expressionText(relation), steps: ['open-universal-scope', 'use-multiplicative-identity-axiom'] });
+    }
+    return gap('unsupported_algebraic_identity', 'The quantified equality is not one of the supported identity forms.', { theorem_class: cls, body: clone(body.body) });
   }
 
   function evaluateLinearRelation(input) {
@@ -213,14 +255,29 @@
     const target = valueOf(body.relation.right);
     const op = body.relation.operator;
     if (!finite(value) || !finite(target)) return gap('non_finite_relation_value', 'Relation evaluation requires finite numeric values.', { node: clone(body) });
-    const truth = op === '>=' ? value >= target : op === '<=' ? value <= target : op === '>' ? value > target : op === '<' ? value < target : value === target;
+    const truth = compare(value, op, target);
     return verified('relation-evaluation', { operator: 'evaluateLinearRelation', truth, variable, value: R(value), relation: op, target: R(target), conclusion: String(R(value)) + op + String(R(target)), steps: ['substitute-assignment', 'compare-finite-values'] });
+  }
+
+  function evaluateArithmeticRelation(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'ArithmeticRelation') return gap('unsupported_arithmetic_relation', 'Arithmetic relation evaluation requires an ArithmeticRelation AST node.');
+    const rel = body.relation;
+    const left = evaluateNumericExpression(rel.left);
+    const right = evaluateNumericExpression(rel.right);
+    const truth = compare(left, rel.operator, right);
+    if (truth == null) return gap('arithmetic_relation_not_finite', 'Arithmetic relation sides must evaluate to finite numbers.', { node: clone(body) });
+    return verified('arithmetic-relation-evaluation', { operator: 'evaluateArithmeticRelation', truth, left: R(left), relation: rel.operator, right: R(right), conclusion: String(R(left)) + rel.operator + String(R(right)), steps: ['evaluate-left-arithmetic-expression', 'evaluate-right-arithmetic-expression', 'compare-finite-values'] });
   }
 
   function prove(input, obligation) {
     const body = bodyOf(input);
     const operator = typeof obligation === 'string' ? obligation : obligation && obligation.operator;
     if (operator === 'solveAffineEquation') return inverseOperation(body);
+    if (operator === 'solveLinearEquation') return solveLinearEquation(body);
+    if (operator === 'evaluateSubstitution') return evaluateSubstitution(body);
+    if (operator === 'evaluateArithmeticRelation') return evaluateArithmeticRelation(body);
+    if (operator === 'proveAlgebraicIdentity') return algebraicIdentity(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -235,6 +292,10 @@
     substitution,
     equivalenceRewrite,
     inverseOperation,
+    solveLinearEquation,
+    evaluateSubstitution,
+    evaluateNumericExpression,
+    evaluateArithmeticRelation,
     domainGuard,
     implication,
     modusPonens,
@@ -242,6 +303,7 @@
     contradiction,
     quantifierScope,
     universalStatement,
+    algebraicIdentity,
     evaluateLinearRelation,
     prove,
     expressionText
