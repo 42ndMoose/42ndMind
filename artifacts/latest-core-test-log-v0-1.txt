@@ -533,7 +533,7 @@ PASS reactive accepted mutation reports pressure reduced
 PASS reactive accepted state remains unit-total
 PASS reactive accepted mutation does not mutate base object
 exit_code=0
-## tests/self-edit-parser-export-fallback-v0-1-test.js
+## tests/self-edit-parser-export-fallback-v0-1-test.cjs
 self-edit-parser-export-fallback-v0-1 tests passed
 exit_code=0
 ## tests/intention-algebra-v0-1-test.js
