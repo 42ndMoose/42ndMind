@@ -278,6 +278,11 @@ function makeReactiveReport(files) {
       .slice(0, 16)
   } : null;
 
+  const searchAccepted = search && search.decision && search.decision.code === 'propose_best_candidate';
+  const metaAccepted = meta && meta.decision && meta.decision.code === 'propose_candidate_patch';
+  const mutationAccepted = !!(goodMutation && goodMutation.accepted && goodMutation.delta < 0 && goodMutation.state.unit.ok);
+  const safeToPropose = !!(searchAccepted && metaAccepted && mutationAccepted);
+
   const report = {
     packet_type: '42ndMind_reactive_self_edit_report_v0_1',
     version: L.VERSION,
@@ -319,7 +324,13 @@ function makeReactiveReport(files) {
       path: parserPatch.path,
       content: parserPatch.content
     } : null,
-    safe_to_propose: !!(goodMutation && goodMutation.accepted && goodMutation.delta < 0 && goodMutation.state.unit.ok),
+    safe_to_propose: safeToPropose,
+    report_consistency: {
+      search_accepted: searchAccepted,
+      meta_accepted: metaAccepted,
+      mutation_accepted: mutationAccepted,
+      ok: safeToPropose
+    },
     base_mutated: false,
     ξ: ''
   };
@@ -340,6 +351,7 @@ function makeReactiveReport(files) {
     rejected_causal: report.reactive_mutations.rejected_attempt.causal,
     accepted_causal: report.reactive_mutations.accepted_attempt ? report.reactive_mutations.accepted_attempt.causal : null,
     search_decision: report.closed_loop_search.decision,
+    report_consistency: report.report_consistency,
     search_trace: report.closed_loop_search.trace.map(row => ({ variant: row.variant, accepted: row.accepted, reverted: row.reverted, score: row.score, before_gaps: row.before_gaps, after_gaps: row.after_gaps })),
     candidate_path: candidateDiff ? candidateDiff.path : null,
     added_needles: candidateDiff ? candidateDiff.added_needles : [],
