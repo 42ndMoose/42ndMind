@@ -14,6 +14,37 @@ const REACTIVE_SUMMARY_PATH = path.join(ARTIFACT_DIR, 'reactive-self-edit-summar
 const REACTIVE_TEST_PATH = 'tests/meta-reactive-language-parser-v0-1-test.js';
 const PARSER_PATH = 'src/language-parser-v0-1.js';
 
+const FRONTIER = Object.freeze([
+  {
+    id: 'formal_math_reactive_self_growth_frontier_linear_and_mp',
+    requires: [],
+    axes: [
+      { id: 'parser_solve_linear_equation', file: PARSER_PATH, needle: 'solveLinearEquation', class: 'operator', w: 1 },
+      { id: 'parser_proof_check_step', file: PARSER_PATH, needle: 'checkProofStep', class: 'operator', w: 1 }
+    ],
+    assertions: [
+      "assert.strictEqual(typeof P.solveLinearEquation, 'function');",
+      "assert.strictEqual(P.solveLinearEquation('x + 1 = 3').value, 2);",
+      "assert.strictEqual(typeof P.checkProofStep, 'function');",
+      "assert.strictEqual(P.checkProofStep('if A => B and A, then B').ok, true);"
+    ]
+  },
+  {
+    id: 'formal_math_reactive_self_growth_frontier_two_step_and_chain',
+    requires: ['solveLinearEquation', 'checkProofStep'],
+    axes: [
+      { id: 'parser_solve_two_step_linear_equation', file: PARSER_PATH, needle: 'solveTwoStepLinearEquation', class: 'operator', w: 1 },
+      { id: 'parser_check_hypothetical_syllogism', file: PARSER_PATH, needle: 'checkHypotheticalSyllogism', class: 'operator', w: 1 }
+    ],
+    assertions: [
+      "assert.strictEqual(typeof P.solveTwoStepLinearEquation, 'function');",
+      "assert.strictEqual(P.solveTwoStepLinearEquation('2x + 1 = 7').value, 3);",
+      "assert.strictEqual(typeof P.checkHypotheticalSyllogism, 'function');",
+      "assert.strictEqual(P.checkHypotheticalSyllogism('if A => B and B => C and A, then C').ok, true);"
+    ]
+  }
+]);
+
 function readIfExists(relativePath) {
   const full = path.join(ROOT, relativePath);
   if (!fs.existsSync(full)) return null;
@@ -47,50 +78,66 @@ function parserHas(files, needle) {
   return String(files[PARSER_PATH] || '').indexOf(needle) >= 0;
 }
 
-function reactiveGoal(files) {
-  const stage1Closed = parserHas(files, 'solveLinearEquation') && parserHas(files, 'checkProofStep');
-  if (!stage1Closed) {
+function frontierStatus(files) {
+  const statuses = FRONTIER.map((node, index) => {
+    const requirements_met = node.requires.every(needle => parserHas(files, needle));
+    const missing = node.axes.filter(axis => !parserHas(files, axis.needle)).map(axis => axis.needle);
+    const closed = missing.length === 0;
+    const unlocked = requirements_met;
     return {
-      id: 'formal_math_reactive_self_growth_stage_1',
-      closed_previous_goal: false,
-      axes: [
-        { id: 'parser_solve_linear_equation', file: PARSER_PATH, needle: 'solveLinearEquation', class: 'operator', w: 1 },
-        { id: 'parser_proof_check_step', file: PARSER_PATH, needle: 'checkProofStep', class: 'operator', w: 1 }
-      ]
+      index,
+      id: node.id,
+      unlocked,
+      closed,
+      requirements_met,
+      requires: node.requires.slice(),
+      missing,
+      axes: node.axes.map(axis => Object.assign({}, axis))
+    };
+  });
+  const selected = statuses.find(row => row.unlocked && !row.closed) || null;
+  return {
+    packet_type: '42ndMind_capability_frontier_v0_1',
+    version: L.VERSION,
+    selected_id: selected ? selected.id : null,
+    exhausted: selected == null,
+    statuses,
+    ξ: ''
+  };
+}
+
+function reactiveGoal(files) {
+  const frontier = frontierStatus(files);
+  const selected = frontier.statuses.find(row => row.id === frontier.selected_id);
+  if (!selected) {
+    return {
+      id: 'formal_math_reactive_self_growth_frontier_exhausted',
+      frontier,
+      closed_previous_goal: true,
+      axes: []
     };
   }
-
   return {
-    id: 'formal_math_reactive_self_growth_stage_2',
-    closed_previous_goal: true,
-    previous_goal: ['solveLinearEquation', 'checkProofStep'],
-    axes: [
-      { id: 'parser_solve_two_step_linear_equation', file: PARSER_PATH, needle: 'solveTwoStepLinearEquation', class: 'operator', w: 1 },
-      { id: 'parser_check_hypothetical_syllogism', file: PARSER_PATH, needle: 'checkHypotheticalSyllogism', class: 'operator', w: 1 }
-    ]
+    id: selected.id,
+    frontier,
+    selected_frontier: selected,
+    closed_previous_goal: frontier.statuses.some(row => row.index < selected.index && row.closed),
+    axes: selected.axes
   };
 }
 
 function addReactivePressureTest(files, goal) {
   const next = Object.assign({}, files);
-  const stage1 = [
+  const base = [
     "const assert = require('assert');",
     "const P = require('../src/language-parser-v0-1.js');",
-    "assert.strictEqual(P.VERSION, '0.1.0');",
-    "assert.strictEqual(typeof P.solveLinearEquation, 'function');",
-    "assert.strictEqual(P.solveLinearEquation('x + 1 = 3').value, 2);",
-    "assert.strictEqual(typeof P.checkProofStep, 'function');",
-    "assert.strictEqual(P.checkProofStep('if A => B and A, then B').ok, true);"
+    "assert.strictEqual(P.VERSION, '0.1.0');"
   ];
-
-  const stage2 = [
-    "assert.strictEqual(typeof P.solveTwoStepLinearEquation, 'function');",
-    "assert.strictEqual(P.solveTwoStepLinearEquation('2x + 1 = 7').value, 3);",
-    "assert.strictEqual(typeof P.checkHypotheticalSyllogism, 'function');",
-    "assert.strictEqual(P.checkHypotheticalSyllogism('if A => B and B => C and A, then C').ok, true);"
-  ];
-
-  next[REACTIVE_TEST_PATH] = stage1.concat(goal.id.endsWith('stage_2') ? stage2 : []).join('\n') + '\n';
+  const selected = goal && goal.selected_frontier;
+  const assertions = selected
+    ? FRONTIER[selected.index].requires.map(needle => "assert.strictEqual(typeof P." + needle + ", 'function');").concat(FRONTIER[selected.index].assertions)
+    : ["assert.ok(true);"];
+  next[REACTIVE_TEST_PATH] = base.concat(assertions).join('\n') + '\n';
   return next;
 }
 
@@ -140,6 +187,7 @@ function makeReactiveReport(files) {
     version: L.VERSION,
     generated_by: 'scripts/run-self-edit-loop-v0-1.js',
     goal,
+    frontier: goal.frontier,
     tests,
     initial_pressure: initial.pressure.scalar,
     meta_completion: {
@@ -181,6 +229,9 @@ function makeReactiveReport(files) {
 
   const summary = {
     goal_id: goal.id,
+    frontier_selected_id: goal.frontier ? goal.frontier.selected_id : null,
+    frontier_exhausted: goal.frontier ? goal.frontier.exhausted : false,
+    frontier_statuses: goal.frontier ? goal.frontier.statuses.map(row => ({ id: row.id, unlocked: row.unlocked, closed: row.closed, missing: row.missing })) : [],
     closed_previous_goal: goal.closed_previous_goal === true,
     safe_to_propose: report.safe_to_propose,
     initial_pressure: report.initial_pressure,
@@ -227,6 +278,8 @@ function main() {
     reactive_artifact: path.relative(ROOT, REACTIVE_REPORT_PATH),
     reactive_summary_artifact: path.relative(ROOT, REACTIVE_SUMMARY_PATH),
     reactive_goal_id: reactive.summary.goal_id,
+    reactive_frontier_selected_id: reactive.summary.frontier_selected_id,
+    reactive_frontier_exhausted: reactive.summary.frontier_exhausted,
     reactive_closed_previous_goal: reactive.summary.closed_previous_goal,
     reactive_safe_to_propose: reactive.summary.safe_to_propose,
     reactive_initial_pressure: reactive.summary.initial_pressure,
