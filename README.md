@@ -1,12 +1,48 @@
 # 42ndMind
 
-42ndMind is an experimental math-language kernel and verification stack.
+42ndMind is an experimental math-language kernel, verification stack, and self-editing research system.
 
-The current repo is centered on one idea: a structured state should be reducible to normalized symbolic fields, corrected by invariant-preserving transforms, and completed by fixed-point closure rather than by manually adding disconnected modules.
+The project is trying to build a small formal substrate where raw input can be reduced into canonical symbolic state, checked against invariants, completed through closure, and extended only when a simulated candidate improves the system without breaking its stability conditions.
 
-The project is not an English dictionary. English is used to describe the system from outside. The kernel itself works through packets, fields, invariants, gaps, transforms, proofs, convergence, grounding, and derived lexemes.
+It is not finished. It is not a mature artificial mind. It is not a general theorem prover yet. The current repo is a working research scaffold for moving toward a unified mathematical language spine.
 
-## Current core
+## Core idea
+
+The long-term target is not to manually add thousands of functions. The target is to build a kernel where new math/logical ability is generated from a shared internal language:
+
+```text
+raw input
+→ canonical AST
+→ semantic classification
+→ operator anatomy
+→ proof / closure obligation
+→ verified output or precise gap
+→ safe self-extension when the missing closure is well-defined
+```
+
+The kernel should prefer state transitions that increase closure while preserving reality contact, self-correction, coherence, and integration.
+
+## Current status
+
+The repo currently has several active layers:
+
+```text
+math-language kernel       normalized Ω packets, gaps, correction, proof, grounding, completion
+math AST core              canonical syntax tree for supported math/proof forms
+language parser            symbolic parser and bridge into the AST layer
+operator anatomy           operation parts, preconditions, violations, inverse chains, closure targets
+proof closures             implication chains, contradiction detection, basic equation/relation closure
+self-edit loop             simulated source mutation, test-backed candidate generation, safe promotion
+epistemic octahedron core  stability geometry for candidate state transitions
+truth accounting           support / contradiction / unknown / measurement accounting
+source sandbox             virtual source editing before real source is touched
+```
+
+The important shift is that the project is moving away from isolated patches and toward one shared math-language spine. The AST layer is now intended to become the structure that parser, anatomy, proof, and self-edit logic consume.
+
+## Completion model
+
+The main kernel still uses normalized symbolic fields and fixed-point completion.
 
 The central invariant is:
 
@@ -14,9 +50,7 @@ The central invariant is:
 ∥Ω∥₁ = 1
 ```
 
-Every active field is normalized by L1 magnitude unless raw evidence is intentionally preserved for diagnosis.
-
-The current core equation is:
+The current completion equation is:
 
 ```text
 Ω* = fix(C ⊕ Λ)
@@ -28,7 +62,7 @@ Meaning:
 completed state = fixed point of closure plus lexeme derivation
 ```
 
-The main kernel lifecycle is:
+The current lifecycle is:
 
 ```text
 F → ν → ≡ → Δ → T → ⊢ → lim → G → Λ → Ω*
@@ -51,30 +85,6 @@ G     grounding status
 Ξ     English output channel, empty at kernel layer
 ```
 
-## Main kernel
-
-```text
-src/math-language-kernel-v0-1.js
-```
-
-Important exported functions:
-
-```text
-K.normalize(...)
-K.canonical(...)
-K.equivalent(...)
-K.gap(...)
-K.correction(...)
-K.proveTransform(...)
-K.converge(...)
-K.ground(...)
-K.deriveLexicon(...)
-K.resolveLexeme(...)
-K.complete(...)
-```
-
-`K.complete(...)` is the current completion engine. It takes seed fields and optional targets or observations, emits packets, derives lexemes, merges the lexicon, and repeats until the state reaches `Ω*` or exposes unresolved gaps or conflicts.
-
 Completion means:
 
 ```text
@@ -85,104 +95,202 @@ conflict_count = 0
 Ξ = ""
 ```
 
-## Zero-gap distinction
+## Math-language spine
 
-The kernel distinguishes an empty/null axis from a closed measured gap.
+The current spine begins in:
 
 ```text
-∅  = empty / absent / null
-Δ0 = closed gap, measured score is zero
-δ0 = closed discrepancy, expected-actual score is zero
+src/math-ast-core-v0-1.js
 ```
 
-This prevents the system from confusing “nothing was measured” with “a measured mismatch is closed.”
-
-## Lexeme derivation
-
-The `Λ` layer is kernel-native. It derives symbolic handles from stable packet facts.
-
-Examples:
+It canonicalizes supported forms into a `MathProgram` AST. Current supported forms include:
 
 ```text
-Δ.score=0        → Λ:Δ0
-δ.score=0        → Λ:δ0
-T.reduced=true   → Λ:T↓
-⊢.true=true      → Λ:⊢1
-lim.stable=true  → Λ:lim1
-G.mode=formal    → Λ:Gf
-G.mode=observed  → Λ:Go
-≡.true=true      → Λ:≡1
-≡.true=false     → Λ:≡0
+2x + 1 = 7
+x/y is undefined when y = 0
+∀x ∈ ℝ, x² ≥ 0
+A=>B, B=>C
+A, not A
+x >= 3 with x = 5
 ```
 
-It also derives generalized fact lexemes such as:
+Current AST nodes include:
 
 ```text
-Λ:⊢.after0
-Λ:lim.score0
-Λ:G.observed1
-Λ:≡.distance=0.5
+MathProgram
+Equation
+AffineExpression
+LinearRelation
+DivisionConstraint
+QuantifiedStatement
+ImplicationChain
+ContradictionPair
 ```
 
-Lexemes are accepted only when they resolve to one canonical rule without conflict.
-
-## Completion scopes currently tested
-
-The repo now tests `K.complete(...)` across normal scopes and edge scopes.
-
-Current completion scopes:
+These classify into closure obligations:
 
 ```text
-pure field algebra
-gap / correction algebra
-proof / convergence algebra
-lexeme derivation
-formal grounding
-intention field algebra
-contradiction handling
+Equation              → solveAffineEquation
+DivisionConstraint    → proveDivisionByZeroUndefined
+QuantifiedStatement   → proveSquareNonnegative
+ImplicationChain      → composeImplicationChain
+ContradictionPair     → detectContradiction
+LinearRelation        → evaluateLinearRelation
 ```
 
-Current edge scopes:
+The parser bridge exposes:
 
 ```text
-raw-unit evidence preservation
-observed grounding
-multi-field closure
-unmeasurable input refusal
+parseMathAst(...)
+classifyMathAst(...)
+mathAstToKernelFields(...)
 ```
 
-These tests force the kernel to either close under `Ω*` or expose the exact missing logic.
+The anatomy bridge lets operator anatomy derive surfaces from AST classifications instead of only from raw source text.
 
-## Other active source files
+## Operator anatomy
+
+Operator anatomy lives in:
 
 ```text
-src/discovery-core-v0-1.js
-src/source-sandbox-v0-1.js
+src/operator-anatomy-v0-1.js
+```
+
+It represents reusable operation structure:
+
+```text
+operation
+surface
+parts
+preconditions
+violations
+inverse_chain
+closure_operator
+closure_result
+examples
+assertion
+```
+
+Current anatomy families include:
+
+```text
+affine_equation
+affine_expression
+linear_relation_truth
+division_constraint
+square_nonnegative
+statement_classification
+implication_chain
+contradiction_pair
+```
+
+The purpose is to stop adding isolated functions and instead make missing functions arise from recognizable operation structure.
+
+## Epistemic Octahedron core
+
+The philosophical stability layer lives in:
+
+```text
+src/epistemic-octahedron-core-v0-1.js
+```
+
+This is not meant to be a morality filter or a decorative rule. It is meant to act as a stability field for kernel growth.
+
+The core coordinates currently include:
+
+```text
+PEAK        = (0,  1, 0)
+COLLAPSE    = (0, -1, 0)
+NULL_ORIGIN = (0,  0, 0)
+```
+
+with the active surface:
+
+```text
+|x| + |y| + |z| = 1
+```
+
+Candidate transitions can be evaluated by:
+
+```text
+before_state
+after_state
+Δpeak_distance
+Δcoherence
+Δreality_contact
+Δself_correction
+Δanti_delusion
+Δintegration
+Δclosure
+pressure before / after
+```
+
+The goal is not to force the kernel to obey a slogan. The goal is to make source-level growth preserve the conditions that make truth-seeking sane: coherence, reality contact, self-correction, resistance to fake closure, scope clarity, and integration.
+
+## Self-edit loop
+
+The self-edit loop lives in:
+
+```text
 src/self-edit-loop-v0-1.js
-src/intention-algebra-v0-1.js
-src/language-parser-v0-1.js
-src/nested-relation-core-v0-1.js
-src/truth-accounting-core-v0-1.js
+scripts/run-self-edit-loop-v0-1.js
 ```
 
-Short roles:
+The loop currently does this:
 
 ```text
-discovery-core          observes raw streams and forms repeated symbolic structure
-source-sandbox          simulates source mutations without touching real source
-self-edit-loop          runs whole-language source checks and patch proposals
-intention-algebra       represents intention as a unit-total field
-language-parser         parses the current symbolic language layer
-nested-relation-core    allows relations over relations
-truth-accounting-core   tracks support, contradiction, unknown, and measurement fields
+collect current source state
+create frontier / gap report
+generate candidate patch in simulation
+reject marker-only or fake improvements
+run test-backed pressure comparison
+apply report consistency gate
+apply epistemic transition checks
+promote only safe candidates
+rerun after promotion
+publish latest artifacts
+```
+
+Promotion is controlled by:
+
+```text
+scripts/promote-safe-reactive-candidate-v0-1.js
+```
+
+A candidate is promoted only when the simulated report says it is safe, consistency gates agree, the path is allowed, and candidate content exists.
+
+## Important source files
+
+```text
+src/math-language-kernel-v0-1.js       core Ω completion kernel
+src/math-ast-core-v0-1.js              canonical math AST spine
+src/language-parser-v0-1.js            symbolic parser + math AST bridge
+src/operator-anatomy-v0-1.js           operation anatomy and closure surfaces
+src/epistemic-octahedron-core-v0-1.js  stability geometry / transition field
+src/self-edit-loop-v0-1.js             self-edit simulation and candidate search
+src/source-sandbox-v0-1.js             virtual source mutation sandbox
+src/discovery-core-v0-1.js             raw stream pattern discovery
+src/intention-algebra-v0-1.js          intention as unit-total field
+src/nested-relation-core-v0-1.js       relations over relations
+src/truth-accounting-core-v0-1.js      support / contradiction / unknown accounting
 ```
 
 ## Active tests
 
+Current core tests include:
+
 ```text
+tests/math-ast-core-v0-1-test.js
+tests/math-ast-bridge-v0-1-test.js
 tests/math-language-kernel-v0-1-test.js
 tests/completion-scopes-v0-1-test.js
 tests/completion-edge-scopes-v0-1-test.js
+tests/completion-frontier-scopes-v0-1-test.js
+tests/compiler-to-kernel-v0-1-test.js
+tests/raw-to-kernel-v0-1-test.js
+tests/claim-memory-v0-1-test.js
+tests/stance-ambiguity-v0-1-test.js
+tests/formal-math-v0-1-test.js
 tests/discovery-core-v0-1-test.js
 tests/source-sandbox-v0-1-test.js
 tests/mathematical-patch-proposer-v0-1-test.js
@@ -195,25 +303,26 @@ tests/language-v0-1-conformance-test.js
 tests/truth-accounting-core-v0-1-test.js
 ```
 
-The workflow runs the full core test list and publishes latest artifacts into `artifacts/latest-*`.
-
-## Current public UI entrypoint
+The workflow publishes latest reports into:
 
 ```text
-ui/math-language-lab.html
+artifacts/latest-*.json
+artifacts/latest-core-test-log-v0-1.txt
 ```
 
 ## Running locally
 
-Run the main kernel test:
+Run the AST tests:
+
+```bash
+node tests/math-ast-core-v0-1-test.js
+node tests/math-ast-bridge-v0-1-test.js
+```
+
+Run the main kernel tests:
 
 ```bash
 node tests/math-language-kernel-v0-1-test.js
-```
-
-Run the completion scope tests:
-
-```bash
 node tests/completion-scopes-v0-1-test.js
 node tests/completion-edge-scopes-v0-1-test.js
 ```
@@ -229,27 +338,24 @@ The self-edit loop writes:
 ```text
 artifacts/self-edit-loop-report-v0-1.json
 artifacts/self-edit-loop-summary-v0-1.json
+artifacts/reactive-self-edit-report-v0-1.json
+artifacts/reactive-self-edit-summary-v0-1.json
 ```
 
-## Current project direction
+## Current direction
 
-The next phase is to keep feeding `K.complete(...)` broader and stricter scopes.
-
-Each new scope should either:
+The immediate direction is to finish wiring the canonical AST spine into every major layer:
 
 ```text
-close under Ω*
+parser → AST
+AST → classification
+classification → operator anatomy
+operator anatomy → closure obligation
+closure obligation → proof engine
+proof engine → verified output or precise gap
+safe self-edit loop → candidate promotion
 ```
 
-or expose a precise kernel weakness:
+The project should be considered successful at this phase when it can take new supported math/proof forms, reduce them into the AST, derive the correct closure obligation, prove or reject the closure, and expose the exact missing structure when it fails.
 
-```text
-unresolved Δ?
-lexeme conflict
-broken invariant
-lost raw evidence
-bad grounding distinction
-failed convergence
-```
-
-The goal is a small, disciplined kernel with stronger logic, not a large pile of disconnected modules.
+The point is a small, disciplined kernel with increasingly general internal logic, not a large pile of disconnected modules.
