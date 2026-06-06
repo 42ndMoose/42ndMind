@@ -87,6 +87,17 @@ jobs:
           printf '{\n  "self_edit_exit_code": %s,\n  "ok": %s\n}\n' "$code" "$([ "$code" -eq 0 ] && echo true || echo false)" > artifacts/self-edit-loop-status-v0-1.json
           echo "SELF_EDIT_STATUS=$code" >> "$GITHUB_ENV"
 
+      - name: Promote safe reactive candidate
+        run: node scripts/promote-safe-reactive-candidate-v0-1.js
+
+      - name: Rerun self-edit loop after promotion
+        run: |
+          set +e
+          node scripts/run-self-edit-loop-v0-1.js > artifacts/self-edit-loop-console-post-promotion-v0-1.txt 2>&1
+          code=$?
+          printf '{\n  "self_edit_post_promotion_exit_code": %s,\n  "ok": %s\n}\n' "$code" "$([ "$code" -eq 0 ] && echo true || echo false)" > artifacts/self-edit-loop-post-promotion-status-v0-1.json
+          echo "SELF_EDIT_POST_PROMOTION_STATUS=$code" >> "$GITHUB_ENV"
+
       - name: Run growth probe and capture status
         run: |
           set +e
@@ -106,7 +117,7 @@ jobs:
       - name: Ensure report placeholders exist
         run: |
           mkdir -p artifacts
-          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json
+          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json
           do
             if [ ! -f "artifacts/$file" ]; then
               printf '{\n  "missing": true,\n  "file": "%s"\n}\n' "$file" > "artifacts/$file"
@@ -127,6 +138,10 @@ jobs:
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/reactive-self-edit-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Reactive Promotion Status" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/reactive-promotion-status-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "## 42ndMind Growth Probe Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/growth-probe-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
@@ -142,10 +157,12 @@ jobs:
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
           git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js
-          git diff --cached --quiet || git commit -m "Apply parser-aware synthesis v0.2 [skip ci]"
+          git diff --cached --quiet || git commit -m "Promote safe reactive candidate [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
+          cp artifacts/self-edit-loop-post-promotion-status-v0-1.json artifacts/latest-self-edit-loop-post-promotion-status-v0-1.json
+          cp artifacts/reactive-promotion-status-v0-1.json artifacts/latest-reactive-promotion-status-v0-1.json
           cp artifacts/growth-probe-status-v0-1.json artifacts/latest-growth-probe-status-v0-1.json
           cp artifacts/diagnostic-probe-status-v0-1.json artifacts/latest-diagnostic-probe-status-v0-1.json
           cp artifacts/self-edit-loop-report-v0-1.json artifacts/latest-self-edit-loop-report-v0-1.json
@@ -175,6 +192,7 @@ jobs:
           status=0
           [ "${CORE_TEST_STATUS:-0}" -eq 0 ] || status=${CORE_TEST_STATUS}
           [ "${SELF_EDIT_STATUS:-0}" -eq 0 ] || status=${SELF_EDIT_STATUS}
+          [ "${SELF_EDIT_POST_PROMOTION_STATUS:-0}" -eq 0 ] || status=${SELF_EDIT_POST_PROMOTION_STATUS}
           [ "${GROWTH_PROBE_STATUS:-0}" -eq 0 ] || status=${GROWTH_PROBE_STATUS}
           [ "${DIAGNOSTIC_PROBE_STATUS:-0}" -eq 0 ] || status=${DIAGNOSTIC_PROBE_STATUS}
           exit "$status"
