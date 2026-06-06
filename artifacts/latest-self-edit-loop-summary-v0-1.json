@@ -30,7 +30,9 @@
     "surfaces": [
       "affine_equation",
       "affine_expression",
+      "contradiction_pair",
       "division_constraint",
+      "implication_chain",
       "linear_relation_truth",
       "square_nonnegative",
       "statement_classification"

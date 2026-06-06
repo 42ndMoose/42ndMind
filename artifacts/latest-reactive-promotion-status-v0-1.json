@@ -1,14 +1,20 @@
 {
-  "promoted": false,
-  "reason": "promotion_gate_failed",
+  "promoted": true,
+  "reason": "safe_candidate_promoted",
   "checks": {
-    "safe_to_propose": false,
-    "report_consistency_ok": false,
-    "search_accepted": false,
-    "meta_accepted": false,
-    "mutation_accepted": false,
-    "allowed_path": false,
-    "has_candidate_content": false
+    "safe_to_propose": true,
+    "report_consistency_ok": true,
+    "search_accepted": true,
+    "meta_accepted": true,
+    "mutation_accepted": true,
+    "allowed_path": true,
+    "has_candidate_content": true
   },
-  "candidate_path": ""
+  "candidate_path": "src/language-parser-v0-1.js",
+  "before_bytes": 29574,
+  "after_bytes": 31134,
+  "added_needles": [
+    "detectContradiction",
+    "composeImplicationChain"
+  ]
 }
