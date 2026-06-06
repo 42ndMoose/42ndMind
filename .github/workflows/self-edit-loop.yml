@@ -49,6 +49,12 @@ jobs:
       - name: Apply epistemic octahedron core gate
         run: node scripts/apply-epistemic-octahedron-core-gate-v0-1.js
 
+      - name: Apply epistemic state field
+        run: node scripts/apply-epistemic-state-field-v0-1.js
+
+      - name: Apply epistemic transition field runner
+        run: node scripts/apply-epistemic-transition-field-runner-v0-1.js
+
       - name: Apply proof operator anatomy
         run: node scripts/apply-proof-operator-anatomy-v0-1.js
 
@@ -172,7 +178,7 @@ jobs:
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
           git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js
-          git diff --cached --quiet || git commit -m "Apply epistemic octahedron core gate [skip ci]"
+          git diff --cached --quiet || git commit -m "Apply epistemic transition field [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
