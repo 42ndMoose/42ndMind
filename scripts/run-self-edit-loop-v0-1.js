@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const L = require('../src/self-edit-loop-v0-1.js');
 const OA = require('../src/operator-anatomy-v0-1.js');
+const EO = require('../src/epistemic-octahedron-core-v0-1.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
@@ -68,6 +69,7 @@ function collectFiles() {
     'docs/language-standard-v0-1.md',
     'src/self-edit-loop-v0-1.js',
     'src/operator-anatomy-v0-1.js',
+    'src/epistemic-octahedron-core-v0-1.js',
     'tests/self-edit-loop-v0-1-test.js',
     'tests/formal-math-v0-1-test.js'
   ].forEach(relativePath => {
@@ -291,6 +293,8 @@ function makeReactiveReport(files) {
   const metaAccepted = meta && meta.decision && meta.decision.code === 'propose_candidate_patch';
   const mutationAccepted = !!(goodMutation && goodMutation.accepted && goodMutation.delta < 0 && goodMutation.state.unit.ok);
   const safeToPropose = !!(searchAccepted && metaAccepted && mutationAccepted);
+  const epistemicGate = EO && typeof EO.evaluateReactiveGate === 'function' ? EO.evaluateReactiveGate({ initial, meta, search, parserPatch, badMutation, goodMutation }) : null;
+  const peakGateOk = !epistemicGate || epistemicGate.ok === true;
 
   const report = {
     packet_type: '42ndMind_reactive_self_edit_report_v0_1',
@@ -334,12 +338,14 @@ function makeReactiveReport(files) {
       path: parserPatch.path,
       content: parserPatch.content
     } : null,
-    safe_to_propose: safeToPropose,
+    safe_to_propose: !!(safeToPropose && peakGateOk),
+    epistemic_octahedron_gate: epistemicGate,
     report_consistency: {
       search_accepted: searchAccepted,
       meta_accepted: metaAccepted,
       mutation_accepted: mutationAccepted,
-      ok: safeToPropose
+      peak_gate_ok: peakGateOk,
+      ok: !!(safeToPropose && peakGateOk)
     },
     base_mutated: false,
     ξ: ''
@@ -362,6 +368,7 @@ function makeReactiveReport(files) {
     accepted_causal: report.reactive_mutations.accepted_attempt ? report.reactive_mutations.accepted_attempt.causal : null,
     search_decision: report.closed_loop_search.decision,
     report_consistency: report.report_consistency,
+    epistemic_octahedron_gate: report.epistemic_octahedron_gate,
     search_trace: report.closed_loop_search.trace.map(row => ({ variant: row.variant, accepted: row.accepted, reverted: row.reverted, score: row.score, before_gaps: row.before_gaps, after_gaps: row.after_gaps })),
     candidate_path: candidateDiff ? candidateDiff.path : null,
     added_needles: candidateDiff ? candidateDiff.added_needles : [],
@@ -405,6 +412,7 @@ function main() {
     reactive_frontier_exhausted: reactive.summary.frontier_exhausted,
     reactive_frontier_generated_count: reactive.summary.frontier_generated_count,
     operator_anatomy_pressure: reactive.report.operator_anatomy_pressure,
+    epistemic_octahedron_core: EO && typeof EO.governanceSummary === 'function' ? EO.governanceSummary() : null,
     reactive_closed_previous_goal: reactive.summary.closed_previous_goal,
     reactive_safe_to_propose: reactive.summary.safe_to_propose,
     reactive_initial_pressure: reactive.summary.initial_pressure,
