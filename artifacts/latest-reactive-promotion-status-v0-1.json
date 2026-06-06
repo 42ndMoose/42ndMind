@@ -1,14 +1,4 @@
 {
   "promoted": false,
-  "reason": "promotion_gate_failed",
-  "checks": {
-    "safe_to_propose": false,
-    "report_consistency_ok": false,
-    "search_accepted": false,
-    "meta_accepted": false,
-    "mutation_accepted": false,
-    "allowed_path": false,
-    "has_candidate_content": false
-  },
-  "candidate_path": ""
+  "reason": "missing_reactive_report"
 }
