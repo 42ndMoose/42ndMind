@@ -79,6 +79,9 @@ jobs:
           for test in \
             tests/math-ast-core-v0-1-test.js \
             tests/math-ast-bridge-v0-1-test.js \
+            tests/proof-calculus-core-v0-1-test.js \
+            tests/math-closure-engine-v0-1-test.js \
+            tests/math-language-completion-v0-1-test.js \
             tests/math-language-kernel-v0-1-test.js \
             tests/completion-scopes-v0-1-test.js \
             tests/completion-edge-scopes-v0-1-test.js \
@@ -185,8 +188,8 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-ast-core-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js
-          git diff --cached --quiet || git commit -m "Wire math AST parser and anatomy bridges [skip ci]"
+          git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js
+          git diff --cached --quiet || git commit -m "Wire proof and closure spine [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
