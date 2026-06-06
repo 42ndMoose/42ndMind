@@ -1,0 +1,52 @@
+const assert = require('assert');
+const AST = require('../src/math-ast-core-v0-1.js');
+const Proof = require('../src/proof-calculus-core-v0-1.js');
+
+assert.strictEqual(Proof.VERSION, '0.1.0');
+assert.strictEqual(Proof.identity(AST.symbol('A'), AST.symbol('A')).ok, true);
+assert.strictEqual(Proof.identity(AST.symbol('A'), AST.symbol('B')).ok, false);
+
+const solved = Proof.inverseOperation(AST.parse('2x + 1 = 7'));
+assert.strictEqual(solved.ok, true);
+assert.strictEqual(solved.variable, 'x');
+assert.strictEqual(solved.value, 3);
+
+const solvedNegative = Proof.inverseOperation(AST.parse('-3y - 6 = 9'));
+assert.strictEqual(solvedNegative.ok, true);
+assert.strictEqual(solvedNegative.variable, 'y');
+assert.strictEqual(solvedNegative.value, -5);
+
+const division = Proof.domainGuard(AST.parse('x/y is undefined when y = 0'));
+assert.strictEqual(division.ok, true);
+assert.strictEqual(division.conclusion, 'undefined');
+
+const universal = Proof.universalStatement(AST.parse('∀x ∈ ℝ, x^2 ≥ 0'));
+assert.strictEqual(universal.ok, true);
+assert.strictEqual(universal.operator, 'proveSquareNonnegative');
+assert.strictEqual(Proof.quantifierScope(AST.parse('∀x ∈ ℝ, x^2 ≥ 0')).domain, 'R');
+
+const imp = AST.parse('A=>B, B=>C').body.implications[0];
+assert.strictEqual(Proof.modusPonens(imp, AST.symbol('A')).ok, true);
+assert.strictEqual(Proof.modusPonens(imp, AST.symbol('A')).conclusion.name, 'B');
+
+const chain = Proof.implicationChain(AST.parse('A=>B, B=>C'));
+assert.strictEqual(chain.ok, true);
+assert.strictEqual(chain.conclusion, 'A=>C');
+
+const contradiction = Proof.contradiction(AST.parse('A, not A'));
+assert.strictEqual(contradiction.ok, true);
+assert.strictEqual(contradiction.contradiction, true);
+
+const relation = Proof.evaluateLinearRelation(AST.parse('x >= 3 with x = 5'));
+assert.strictEqual(relation.ok, true);
+assert.strictEqual(relation.truth, true);
+
+const rewritten = Proof.equivalenceRewrite(AST.symbol('A'), AST.symbol('A'), AST.symbol('B'));
+assert.strictEqual(rewritten.ok, true);
+assert.strictEqual(rewritten.conclusion.name, 'B');
+
+const substituted = Proof.substitution(AST.relation('>=', AST.symbol('x'), AST.numberLiteral(3)), { x: 5 });
+assert.strictEqual(substituted.ok, true);
+assert.strictEqual(substituted.conclusion.left.value, 5);
+
+console.log('proof-calculus-core-v0-1 tests passed');
