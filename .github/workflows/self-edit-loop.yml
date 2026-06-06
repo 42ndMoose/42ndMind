@@ -70,6 +70,9 @@ jobs:
       - name: Apply accepted closure frontier parser candidate
         run: node scripts/apply-accepted-closure-frontier-parser-candidate-v0-1.js
 
+      - name: Apply self-edit parser export fallback
+        run: node scripts/apply-self-edit-parser-export-fallback-v0-1.js
+
       - name: Run core tests and capture status
         run: |
           set +e
@@ -188,7 +191,7 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add scripts/run-self-edit-loop-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js
+          git add scripts/run-self-edit-loop-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js src/self-edit-loop-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js
           git diff --cached --quiet || git commit -m "Wire proof and closure spine [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
