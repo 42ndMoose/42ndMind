@@ -288,10 +288,11 @@
     A(gaps).forEach(gap => {
       if (!gap || !gap.needle || current.indexOf(gap.needle) >= 0) return;
       const impl = implementationForNeedle(gap.needle);
-      if (impl && current.indexOf('function ' + impl.name + '(') < 0) { current += '\n' + impl.code; functions.push(impl.name); }
+      if (impl && current.indexOf('function ' + impl.name + '(') < 0) { functions.push(impl.name); if (String(path) !== 'src/language-parser-v0-1.js') current += '\n' + impl.code; }
       else if (!impl) fallback.push('// meta-complete candidate: ' + gap.id + ' requires ' + gap.needle);
     });
     if (fallback.length) current += '\n' + fallback.join('\n') + '\n';
+    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     return injectExports(current, functions);
