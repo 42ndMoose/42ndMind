@@ -16,6 +16,35 @@ assert.strictEqual(solvedNegative.ok, true);
 assert.strictEqual(solvedNegative.variable, 'y');
 assert.strictEqual(solvedNegative.value, -5);
 
+const solvedBothSides = Proof.solveLinearEquation(AST.parse('2x + 1 = x + 4'));
+assert.strictEqual(solvedBothSides.ok, true);
+assert.strictEqual(solvedBothSides.variable, 'x');
+assert.strictEqual(solvedBothSides.value, 3);
+
+const substitutedEval = Proof.evaluateSubstitution(AST.parse('2x + 1 with x = 3'));
+assert.strictEqual(substitutedEval.ok, true);
+assert.strictEqual(substitutedEval.result, 7);
+
+const arithmetic = Proof.evaluateArithmeticRelation(AST.parse('2 + 3 * 4 = 14'));
+assert.strictEqual(arithmetic.ok, true);
+assert.strictEqual(arithmetic.truth, true);
+assert.strictEqual(arithmetic.left, 14);
+assert.strictEqual(arithmetic.right, 14);
+
+const arithmeticParen = Proof.evaluateArithmeticRelation(AST.parse('(2 + 3)^2 = 25'));
+assert.strictEqual(arithmeticParen.ok, true);
+assert.strictEqual(arithmeticParen.truth, true);
+
+const addIdentity = Proof.algebraicIdentity(AST.parse('∀x ∈ ℝ, x + 0 = x'));
+assert.strictEqual(addIdentity.ok, true);
+assert.strictEqual(addIdentity.operator, 'proveAlgebraicIdentity');
+assert.strictEqual(addIdentity.theorem_class, 'additive_identity_over_reals');
+
+const mulIdentity = Proof.algebraicIdentity(AST.parse('∀x ∈ ℝ, x * 1 = x'));
+assert.strictEqual(mulIdentity.ok, true);
+assert.strictEqual(mulIdentity.operator, 'proveAlgebraicIdentity');
+assert.strictEqual(mulIdentity.theorem_class, 'multiplicative_identity_over_reals');
+
 const division = Proof.domainGuard(AST.parse('x/y is undefined when y = 0'));
 assert.strictEqual(division.ok, true);
 assert.strictEqual(division.conclusion, 'undefined');
