@@ -309,14 +309,26 @@
       names.push(fn.name);
       if (out.indexOf('function ' + fn.name + '(') >= 0) return;
       const marker = '  function parseRows(body) {';
-      if (out.indexOf(marker) >= 0) out = out.replace(marker, '  ' + String(fn.code).replace(/\n/g, '\n  ').trim() + '\n\n' + marker);
-      else out += '\n' + fn.code + '\n';
+      if (out.indexOf(marker) >= 0) out = out.replace(marker, '  ' + String(fn.code).replace(/
+/g, '
+  ').trim() + '
+
+' + marker);
+      else out += '
+' + fn.code + '
+';
     });
+    let factoryExports = false;
     names.forEach(name => {
       if (out.indexOf('    ' + name + ',') >= 0) return;
       const exportMarker = '    toKernelFields,';
-      if (out.indexOf(exportMarker) >= 0) out = out.replace(exportMarker, '    ' + name + ',\n' + exportMarker);
+      if (out.indexOf(exportMarker) >= 0) {
+        out = out.replace(exportMarker, '    ' + name + ',
+' + exportMarker);
+        factoryExports = true;
+      }
     });
+    if (!factoryExports) out = injectExports(out, names);
     return out;
   }
 
@@ -346,32 +358,6 @@
       else if (!impl) fallback.push('// meta-complete candidate: ' + gap.id + ' requires ' + gap.needle);
     });
     if (fallback.length) current += '\n' + fallback.join('\n') + '\n';
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
-    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     return injectExports(current, functions);
   }
