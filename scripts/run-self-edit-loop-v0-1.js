@@ -12,6 +12,7 @@ const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'self-edit-loop-summary-v0-1.json')
 const REACTIVE_REPORT_PATH = path.join(ARTIFACT_DIR, 'reactive-self-edit-report-v0-1.json');
 const REACTIVE_SUMMARY_PATH = path.join(ARTIFACT_DIR, 'reactive-self-edit-summary-v0-1.json');
 const REACTIVE_TEST_PATH = 'tests/meta-reactive-language-parser-v0-1-test.js';
+const PARSER_PATH = 'src/language-parser-v0-1.js';
 
 function readIfExists(relativePath) {
   const full = path.join(ROOT, relativePath);
@@ -42,19 +43,37 @@ function collectFiles() {
   return files;
 }
 
-function reactiveGoal() {
+function parserHas(files, needle) {
+  return String(files[PARSER_PATH] || '').indexOf(needle) >= 0;
+}
+
+function reactiveGoal(files) {
+  const stage1Closed = parserHas(files, 'solveLinearEquation') && parserHas(files, 'checkProofStep');
+  if (!stage1Closed) {
+    return {
+      id: 'formal_math_reactive_self_growth_stage_1',
+      closed_previous_goal: false,
+      axes: [
+        { id: 'parser_solve_linear_equation', file: PARSER_PATH, needle: 'solveLinearEquation', class: 'operator', w: 1 },
+        { id: 'parser_proof_check_step', file: PARSER_PATH, needle: 'checkProofStep', class: 'operator', w: 1 }
+      ]
+    };
+  }
+
   return {
-    id: 'formal_math_reactive_self_growth',
+    id: 'formal_math_reactive_self_growth_stage_2',
+    closed_previous_goal: true,
+    previous_goal: ['solveLinearEquation', 'checkProofStep'],
     axes: [
-      { id: 'parser_solve_linear_equation', file: 'src/language-parser-v0-1.js', needle: 'solveLinearEquation', class: 'operator', w: 1 },
-      { id: 'parser_proof_check_step', file: 'src/language-parser-v0-1.js', needle: 'checkProofStep', class: 'operator', w: 1 }
+      { id: 'parser_solve_two_step_linear_equation', file: PARSER_PATH, needle: 'solveTwoStepLinearEquation', class: 'operator', w: 1 },
+      { id: 'parser_check_hypothetical_syllogism', file: PARSER_PATH, needle: 'checkHypotheticalSyllogism', class: 'operator', w: 1 }
     ]
   };
 }
 
-function addReactivePressureTest(files) {
+function addReactivePressureTest(files, goal) {
   const next = Object.assign({}, files);
-  next[REACTIVE_TEST_PATH] = [
+  const stage1 = [
     "const assert = require('assert');",
     "const P = require('../src/language-parser-v0-1.js');",
     "assert.strictEqual(P.VERSION, '0.1.0');",
@@ -62,19 +81,28 @@ function addReactivePressureTest(files) {
     "assert.strictEqual(P.solveLinearEquation('x + 1 = 3').value, 2);",
     "assert.strictEqual(typeof P.checkProofStep, 'function');",
     "assert.strictEqual(P.checkProofStep('if A => B and A, then B').ok, true);"
-  ].join('\n') + '\n';
+  ];
+
+  const stage2 = [
+    "assert.strictEqual(typeof P.solveTwoStepLinearEquation, 'function');",
+    "assert.strictEqual(P.solveTwoStepLinearEquation('2x + 1 = 7').value, 3);",
+    "assert.strictEqual(typeof P.checkHypotheticalSyllogism, 'function');",
+    "assert.strictEqual(P.checkHypotheticalSyllogism('if A => B and B => C and A, then C').ok, true);"
+  ];
+
+  next[REACTIVE_TEST_PATH] = stage1.concat(goal.id.endsWith('stage_2') ? stage2 : []).join('\n') + '\n';
   return next;
 }
 
 function proposalPatchFor(meta) {
   return meta && meta.proposal && Array.isArray(meta.proposal.operations)
-    ? meta.proposal.operations.find(op => op.path === 'src/language-parser-v0-1.js')
+    ? meta.proposal.operations.find(op => op.path === PARSER_PATH)
     : null;
 }
 
 function makeReactiveReport(files) {
-  const goal = reactiveGoal();
-  const reactiveFiles = addReactivePressureTest(files);
+  const goal = reactiveGoal(files);
+  const reactiveFiles = addReactivePressureTest(files, goal);
   const tests = [REACTIVE_TEST_PATH];
   const initial = L.reactiveState(reactiveFiles, goal, { tests });
   const meta = L.metaComplete(reactiveFiles, goal, { tests });
@@ -85,8 +113,8 @@ function makeReactiveReport(files) {
     id: 'report_bad_marker_mutation',
     operations: [{
       type: 'replace',
-      path: 'src/language-parser-v0-1.js',
-      content: String(reactiveFiles['src/language-parser-v0-1.js'] || '') + '\n// report marker-only mutation\n'
+      path: PARSER_PATH,
+      content: String(reactiveFiles[PARSER_PATH] || '') + '\n// report marker-only mutation\n'
     }]
   }, { tests });
 
@@ -100,9 +128,11 @@ function makeReactiveReport(files) {
     type: parserPatch.type,
     before_bytes: String(reactiveFiles[parserPatch.path] || '').length,
     after_bytes: String(parserPatch.content || '').length,
-    before_checksum: initial.base_summary ? null : undefined,
     added_needles: goal.axes.filter(axis => String(parserPatch.content || '').indexOf(axis.needle) >= 0).map(axis => axis.needle),
-    excerpt: String(parserPatch.content || '').split('\n').filter(line => /function solveLinearEquation|function checkProofStep|module\.exports/.test(line)).slice(0, 12)
+    excerpt: String(parserPatch.content || '')
+      .split('\n')
+      .filter(line => goal.axes.some(axis => line.indexOf(axis.needle) >= 0) || /module\.exports/.test(line))
+      .slice(0, 16)
   } : null;
 
   const report = {
@@ -150,6 +180,8 @@ function makeReactiveReport(files) {
   };
 
   const summary = {
+    goal_id: goal.id,
+    closed_previous_goal: goal.closed_previous_goal === true,
     safe_to_propose: report.safe_to_propose,
     initial_pressure: report.initial_pressure,
     accepted_delta: report.reactive_mutations.accepted_attempt ? report.reactive_mutations.accepted_attempt.delta : null,
@@ -194,6 +226,8 @@ function main() {
     summary_artifact: path.relative(ROOT, SUMMARY_PATH),
     reactive_artifact: path.relative(ROOT, REACTIVE_REPORT_PATH),
     reactive_summary_artifact: path.relative(ROOT, REACTIVE_SUMMARY_PATH),
+    reactive_goal_id: reactive.summary.goal_id,
+    reactive_closed_previous_goal: reactive.summary.closed_previous_goal,
     reactive_safe_to_propose: reactive.summary.safe_to_propose,
     reactive_initial_pressure: reactive.summary.initial_pressure,
     reactive_accepted_delta: reactive.summary.accepted_delta,
