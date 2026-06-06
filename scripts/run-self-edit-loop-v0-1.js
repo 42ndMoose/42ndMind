@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const L = require('../src/self-edit-loop-v0-1.js');
+const OA = require('../src/operator-anatomy-v0-1.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
@@ -66,6 +67,7 @@ function collectFiles() {
     'README.md',
     'docs/language-standard-v0-1.md',
     'src/self-edit-loop-v0-1.js',
+    'src/operator-anatomy-v0-1.js',
     'tests/self-edit-loop-v0-1-test.js',
     'tests/formal-math-v0-1-test.js'
   ].forEach(relativePath => {
@@ -109,6 +111,12 @@ function parserSupportsLinearRelation(files) {
 function addClosureGap(gaps, files, capability) {
   if (!capability || parserHas(files, capability.needle)) return;
   gaps.push(capability);
+}
+
+function operatorAnatomyFrontier(files) {
+  if (!OA || typeof OA.frontierNode !== 'function') return [];
+  const node = OA.frontierNode(parserSource(files), { file: PARSER_PATH });
+  return node ? [node] : [];
 }
 
 function generatedClosureFrontier(files) {
@@ -164,7 +172,8 @@ function generatedClosureFrontier(files) {
 }
 
 function activeFrontier(files) {
-  return BASE_FRONTIER.concat(generatedClosureFrontier(files));
+  const anatomy = operatorAnatomyFrontier(files);
+  return BASE_FRONTIER.concat(anatomy.length ? anatomy : generatedClosureFrontier(files));
 }
 
 function frontierStatus(files) {
@@ -289,6 +298,7 @@ function makeReactiveReport(files) {
     generated_by: 'scripts/run-self-edit-loop-v0-1.js',
     goal,
     frontier: goal.frontier,
+    operator_anatomy_pressure: OA && typeof OA.pressure === 'function' ? OA.pressure(parserSource(files), { file: PARSER_PATH }) : null,
     generated_from: goal.generated_from || null,
     tests,
     initial_pressure: initial.pressure.scalar,
@@ -394,6 +404,7 @@ function main() {
     reactive_frontier_selected_source: reactive.summary.frontier_selected_source,
     reactive_frontier_exhausted: reactive.summary.frontier_exhausted,
     reactive_frontier_generated_count: reactive.summary.frontier_generated_count,
+    operator_anatomy_pressure: reactive.report.operator_anatomy_pressure,
     reactive_closed_previous_goal: reactive.summary.closed_previous_goal,
     reactive_safe_to_propose: reactive.summary.safe_to_propose,
     reactive_initial_pressure: reactive.summary.initial_pressure,

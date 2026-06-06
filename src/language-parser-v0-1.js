@@ -339,6 +339,32 @@
     return { ok: false, class: 'unknown', closure: null };
   }
 
+  function solveAffineEquation(input) {
+    const text = String(input == null ? '' : input).replace(/\s+/g, '');
+    const m = /^(.+)=(-?\d+(?:\.\d+)?)$/.exec(text);
+    if (!m) return { ok: false, reason: 'unsupported_affine_equation' };
+    const left = typeof decomposeAffineExpression === 'function' ? decomposeAffineExpression(m[1]) : null;
+    if (!left || left.ok !== true) return { ok: false, reason: 'left_side_not_affine' };
+    if (left.coefficient === 0) return { ok: false, reason: 'zero_coefficient' };
+    const target = Number(m[2]);
+    const value = (target - left.offset) / left.coefficient;
+    if (!Number.isFinite(value)) return { ok: false, reason: 'non_finite_solution' };
+    return { ok: true, variable: left.variable, value, relation: '=', steps: ['decompose-affine-expression', 'undo-offset', 'undo-coefficient'] };
+  }
+
+  function decomposeAffineExpression(input) {
+    const text = String(input == null ? '' : input).replace(/\s+/g, '');
+    const m = /^(-?\d+(?:\.\d+)?)?([a-zA-Z])(?:(\+|-)(-?\d+(?:\.\d+)?))?$/.exec(text);
+    if (!m) return { ok: false, reason: 'unsupported_affine_expression' };
+    const coefficient = m[1] === undefined || m[1] === '' ? 1 : Number(m[1]);
+    const variable = m[2];
+    const sign = m[3] || '+';
+    const magnitude = m[4] === undefined ? 0 : Number(m[4]);
+    const offset = sign === '-' ? -Math.abs(magnitude) : magnitude;
+    if (!Number.isFinite(coefficient) || !Number.isFinite(offset)) return { ok: false, reason: 'non_finite_affine_part' };
+    return { ok: true, coefficient, variable, offset, parts: ['coefficient', 'variable', 'offset'] };
+  }
+
   function parseRows(body) {
     const rows = [];
     if (!body.trim()) return rows;
@@ -461,6 +487,8 @@
     proveDivisionByZeroUndefined,
     evaluateLinearRelation,
     classifyMathStatement,
+    solveAffineEquation,
+    decomposeAffineExpression,
     toKernelFields,
     toKernelSeed,
     toKernelCompletion,

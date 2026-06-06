@@ -242,6 +242,30 @@
       "  if (mode === 'proof-rule') return { ok: true, class: 'proof-rule', closure: 'checkProofStep' };\n" +
       "  return { ok: false, class: 'unknown', closure: null };\n" +
       "}\n" };
+    if (name === 'decomposeAffineExpression') return { name, code: "function decomposeAffineExpression(input) {\n" +
+      "  const text = String(input == null ? '' : input).replace(/\\s+/g, '');\n" +
+      "  const m = /^(-?\\d+(?:\\.\\d+)?)?([a-zA-Z])(?:(\\+|-)(-?\\d+(?:\\.\\d+)?))?$/.exec(text);\n" +
+      "  if (!m) return { ok: false, reason: 'unsupported_affine_expression' };\n" +
+      "  const coefficient = m[1] === undefined || m[1] === '' ? 1 : Number(m[1]);\n" +
+      "  const variable = m[2];\n" +
+      "  const sign = m[3] || '+';\n" +
+      "  const magnitude = m[4] === undefined ? 0 : Number(m[4]);\n" +
+      "  const offset = sign === '-' ? -Math.abs(magnitude) : magnitude;\n" +
+      "  if (!Number.isFinite(coefficient) || !Number.isFinite(offset)) return { ok: false, reason: 'non_finite_affine_part' };\n" +
+      "  return { ok: true, coefficient, variable, offset, parts: ['coefficient', 'variable', 'offset'] };\n" +
+      "}\n" };
+    if (name === 'solveAffineEquation') return { name, code: "function solveAffineEquation(input) {\n" +
+      "  const text = String(input == null ? '' : input).replace(/\\s+/g, '');\n" +
+      "  const m = /^(.+)=(-?\\d+(?:\\.\\d+)?)$/.exec(text);\n" +
+      "  if (!m) return { ok: false, reason: 'unsupported_affine_equation' };\n" +
+      "  const left = typeof decomposeAffineExpression === 'function' ? decomposeAffineExpression(m[1]) : null;\n" +
+      "  if (!left || left.ok !== true) return { ok: false, reason: 'left_side_not_affine' };\n" +
+      "  if (left.coefficient === 0) return { ok: false, reason: 'zero_coefficient' };\n" +
+      "  const target = Number(m[2]);\n" +
+      "  const value = (target - left.offset) / left.coefficient;\n" +
+      "  if (!Number.isFinite(value)) return { ok: false, reason: 'non_finite_solution' };\n" +
+      "  return { ok: true, variable: left.variable, value, relation: '=', steps: ['decompose-affine-expression', 'undo-offset', 'undo-coefficient'] };\n" +
+      "}\n" };
     return null;
   }
 
@@ -292,6 +316,7 @@
       else if (!impl) fallback.push('// meta-complete candidate: ' + gap.id + ' requires ' + gap.needle);
     });
     if (fallback.length) current += '\n' + fallback.join('\n') + '\n';
+    if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
     if (String(path) === 'src/language-parser-v0-1.js') return injectParserFactorySource(current, functions.map(name => implementationForNeedle(name)).filter(Boolean));
