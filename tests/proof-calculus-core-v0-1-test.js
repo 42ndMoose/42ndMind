@@ -35,6 +35,31 @@ const arithmeticParen = Proof.evaluateArithmeticRelation(AST.parse('(2 + 3)^2 = 
 assert.strictEqual(arithmeticParen.ok, true);
 assert.strictEqual(arithmeticParen.truth, true);
 
+const equalityReflexive = Proof.proveEquality(AST.parse('x = x'));
+assert.strictEqual(equalityReflexive.ok, true);
+assert.strictEqual(equalityReflexive.equality_rule, 'reflexivity');
+assert.strictEqual(equalityReflexive.rule, 'equality-reflexivity');
+
+const equalitySymmetry = Proof.proveEquality(AST.parse('x = y therefore y = x'));
+assert.strictEqual(equalitySymmetry.ok, true);
+assert.strictEqual(equalitySymmetry.equality_rule, 'symmetry');
+assert.strictEqual(equalitySymmetry.rule, 'equality-symmetry');
+
+const equalityTransitivity = Proof.proveEquality(AST.parse('a = b, b = c therefore a = c'));
+assert.strictEqual(equalityTransitivity.ok, true);
+assert.strictEqual(equalityTransitivity.equality_rule, 'transitivity');
+assert.strictEqual(equalityTransitivity.rule, 'equality-transitivity');
+
+const simplifiedAdd = Proof.simplifyExpression(AST.parse('simplify x + 0'));
+assert.strictEqual(simplifiedAdd.ok, true);
+assert.strictEqual(simplifiedAdd.result, 'x');
+assert.strictEqual(simplifiedAdd.changed, true);
+
+const simplifiedMul = Proof.simplifyExpression(AST.parse('simplify x * 1'));
+assert.strictEqual(simplifiedMul.ok, true);
+assert.strictEqual(simplifiedMul.result, 'x');
+assert.strictEqual(simplifiedMul.changed, true);
+
 const addIdentity = Proof.algebraicIdentity(AST.parse('∀x ∈ ℝ, x + 0 = x'));
 assert.strictEqual(addIdentity.ok, true);
 assert.strictEqual(addIdentity.operator, 'proveAlgebraicIdentity');
