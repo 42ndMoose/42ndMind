@@ -31,6 +31,9 @@
     return clean.map(row => ({ id: row.id, w: R(row.w / total) })).sort((a, b) => b.w - a.w || a.id.localeCompare(b.id));
   }
 
+  function l1(rows) { return R(A(rows).reduce((sum, row) => sum + Math.abs(Number(row.w || 0)), 0)); }
+  function unitOk(rows) { return Math.abs(l1(rows) - 1) < 1e-5; }
+
   function emptyMemory() {
     return {
       observations: [],
@@ -43,9 +46,38 @@
     };
   }
 
+  function memoryPressure(memory) {
+    return clamp01((A(memory && memory.observations).length / 16) + (A(memory && memory.successes).length / 64) + (A(memory && memory.failures).length / 64));
+  }
+
+  function actionPressure(state) {
+    if (!state || !state.last) return 0;
+    if (state.last.candidate) return clamp01(state.last.candidate.priority || 0.1);
+    if (state.last.edit) return state.last.edit.decision === 'accept_candidate' ? 0.35 : 0.85;
+    return 0.1;
+  }
+
+  function brainField(state) {
+    return normalizeWeights([
+      { id: 'B:attention', w: A(state && state.attention).length ? 1 : EPS },
+      { id: 'B:memory', w: memoryPressure(state && state.memory) + EPS },
+      { id: 'B:reward', w: clamp01(state && state.reward) + EPS },
+      { id: 'B:pain', w: clamp01(state && state.pain) + EPS },
+      { id: 'B:surprise', w: clamp01(state && state.surprise) + EPS },
+      { id: 'B:integrity', w: clamp01(state && state.integrity) + EPS },
+      { id: 'B:action', w: actionPressure(state) + EPS }
+    ]);
+  }
+
+  function assertBrainOne(state) {
+    state.B = brainField(state);
+    state.brain = { equation: 'brain = 1', invariant: '∥B∥₁=1', unit: l1(state.B), ok: unitOk(state.B) };
+    return state.brain.ok;
+  }
+
   function create(options) {
     const opts = options || {};
-    return {
+    const state = {
       packet_type: '42ndMind_cognitive_organism_state_v0_1',
       version: VERSION,
       t: 0,
@@ -62,6 +94,8 @@
       trace: [],
       Ξ: ''
     };
+    assertBrainOne(state);
+    return state;
   }
 
   function inputSignature(mathPacket) {
@@ -179,6 +213,7 @@
     else state.feeling = 'uncertain';
     state.integrity = R(clamp01(1 - state.pain));
     state.aliveness = R(clamp01((0.28 * state.reward) + (0.22 * state.surprise) + (0.20 * (1 - state.pain)) + (0.15 * (state.attention.length ? 1 : 0)) + (0.15 * (state.memory.observations.length ? 1 : 0))));
+    assertBrainOne(state);
     return state;
   }
 
@@ -201,7 +236,7 @@
     st.attention = attentionFrom(score);
     st.last = { input: String(raw == null ? '' : raw), signature, math: clone(mathPacket), prediction: clone(prediction), score: clone(score), memory: clone(memoryRow), candidate: clone(candidate) };
     updateFeeling(st);
-    st.trace.unshift({ t: st.t, input: st.last.input, ok: score.ok, reward: st.reward, pain: st.pain, surprise: st.surprise, attention_top: st.attention[0] && st.attention[0].id, candidate: candidate.id, feeling: st.feeling });
+    st.trace.unshift({ t: st.t, input: st.last.input, ok: score.ok, reward: st.reward, pain: st.pain, surprise: st.surprise, attention_top: st.attention[0] && st.attention[0].id, candidate: candidate.id, feeling: st.feeling, brain_unit: st.brain.unit });
     st.trace = st.trace.slice(0, 128);
     return packet(st);
   }
@@ -235,12 +270,14 @@
     st.integrity = R(clamp01(1 - st.pain));
     st.aliveness = R(clamp01((0.30 * st.reward) + (0.20 * st.surprise) + (0.25 * st.integrity) + (0.25 * (st.memory.edits.length ? 1 : 0))));
     st.last = { edit: clone(row), candidate: clone(c) };
-    st.trace.unshift({ t: st.t, edit: row.id, decision: row.decision, reward: row.reward, pain: row.pain, feeling: row.feeling });
+    assertBrainOne(st);
+    st.trace.unshift({ t: st.t, edit: row.id, decision: row.decision, reward: row.reward, pain: row.pain, feeling: row.feeling, brain_unit: st.brain.unit });
     st.trace = st.trace.slice(0, 128);
     return { packet_type: '42ndMind_cognitive_organism_self_edit_v0_1', version: VERSION, ok: accept, edit: row, state: packet(st), Ξ: '' };
   }
 
   function packet(state) {
+    assertBrainOne(state);
     return {
       packet_type: '42ndMind_cognitive_organism_state_v0_1',
       version: VERSION,
@@ -251,6 +288,8 @@
       integrity: R(state.integrity),
       aliveness: R(state.aliveness),
       feeling: state.feeling,
+      brain: clone(state.brain),
+      B: clone(state.B),
       attention: clone(state.attention),
       memory_summary: {
         observations: state.memory.observations.length,
@@ -261,7 +300,7 @@
       },
       last: clone(state.last),
       trace: clone(state.trace),
-      χ: ['attention=𝒩(gap⊕contradiction⊕novelty⊕surprise⊕reward_potential⊕integrity)', 'reward=closure_gain+prediction_fit+memory_transfer', 'pain=gap+contradiction+prediction_miss+identity_damage', 'memory updates after every observation', 'Ξ=""'],
+      χ: ['brain=1', '∥B∥₁=1', 'B=𝒩(attention⊕memory⊕reward⊕pain⊕surprise⊕integrity⊕action)', 'attention=𝒩(gap⊕contradiction⊕novelty⊕surprise⊕reward_potential⊕integrity)', 'reward=closure_gain+prediction_fit+memory_transfer', 'pain=gap+contradiction+prediction_miss+identity_damage', 'memory updates after every observation', 'Ξ=""'],
       Ξ: ''
     };
   }
@@ -272,5 +311,5 @@
     return { packet_type: '42ndMind_cognitive_organism_run_v0_1', version: VERSION, final: packet(state), packets, Ξ: '' };
   }
 
-  return Object.freeze({ VERSION, create, observe, packet, run, evaluateSelfEdit, normalizeWeights, inputSignature, scoreObservation, attentionFrom });
+  return Object.freeze({ VERSION, create, observe, packet, run, evaluateSelfEdit, normalizeWeights, inputSignature, scoreObservation, attentionFrom, brainField, assertBrainOne, l1 });
 });
