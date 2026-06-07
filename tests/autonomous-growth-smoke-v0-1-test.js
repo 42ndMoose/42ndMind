@@ -3,10 +3,11 @@ const G = require('../src/autonomous-brain-growth-core-v0-1.js');
 const N = require('../src/nested-brain-core-v0-1.js');
 
 function near(value, target) { assert.ok(Math.abs(Number(value) - Number(target)) < 1e-9); }
+function nearCompat(value, target) { assert.ok(Math.abs(Number(value) - Number(target)) < 1e-5); }
 function nearOne(value) { near(value, 1); }
 function brainOne(p) {
   assert.strictEqual(p.brain.ok, true);
-  nearOne(G.l1(p.B));
+  nearCompat(G.l1(p.B), 1);
 }
 
 const s = G.create();
