@@ -10,6 +10,9 @@
   const A = value => Array.isArray(value) ? value : [];
   const R = value => Number((Number(value) || 0).toFixed(6));
   const C = value => JSON.parse(JSON.stringify(value == null ? null : value));
+  let MathClosureEngine = null;
+  try { if (typeof require === 'function') MathClosureEngine = require('./math-closure-engine-v0-1.js'); } catch (_) { MathClosureEngine = null; }
+
 
   const DEFINITIONS = Object.freeze({
     σ: 'axis identity inside a finite symbolic field',
@@ -650,7 +653,67 @@
     return { φ: 'Ω', v: VERSION, t: state.time, λ: C(state.λ), ι: C(state.ι), τ: C(state.τ), ρ: C(state.ρ), μ: C(state.μ), ε: C(state.ε), κ: C(state.κ), Λ: C(state.Λ), Ω: C(state.Ω), χ: C(state.χ), u: C(state.unit), d: { Hλ: entropy(state.λ), Hι: entropy(state.ι), HΛ: entropy(state.Λ), HΩ: entropy(state.Ω) }, Ξ: '' };
   }
 
+
+  function mathClosureField(closure) {
+    const rows = [];
+    const ok = !!(closure && closure.ok === true);
+    const classification = closure && closure.classification || {};
+    const obligation = closure && closure.obligation || {};
+    const proof = closure && closure.proof || {};
+    rows.push({ σ: ok ? 'M:verified' : 'M:gap', w: 1 });
+    if (classification.anatomy_id) rows.push({ σ: 'M:anatomy:' + classification.anatomy_id, w: 0.9 });
+    if (obligation.operator) rows.push({ σ: 'M:closure:' + obligation.operator, w: 0.9 });
+    if (closure && closure.selected_rule) rows.push({ σ: 'M:rule:' + closure.selected_rule, w: 0.8 });
+    if (proof && proof.operator) rows.push({ σ: 'M:proof:' + proof.operator, w: 0.8 });
+    if (Array.isArray(closure && closure.gaps)) closure.gaps.forEach(g => rows.push({ σ: 'M:gap:' + String(g.id || 'unknown'), w: 0.7 }));
+    return normalize(rows);
+  }
+
+  function math(input, options) {
+    const opts = options || {};
+    const engine = opts.engine || MathClosureEngine;
+    if (!engine || typeof engine.close !== 'function') {
+      const ΩM = normalize([{ σ: 'M:gap:closure_engine_unavailable', w: 1 }]);
+      return { φ: 'M', v: VERSION, ok: false, verified: false, source: String(input == null ? '' : input), ΩM, gap_count: 1, gaps: [{ id: 'closure_engine_unavailable', reason: 'Kernel math path requires math-closure-engine-v0-1.js.' }], χ: ['M=kernel math closure packet', 'M consumes AST→anatomy→proof/closure', 'Ξ=""'], Ξ: '' };
+    }
+    const closure = engine.close(input);
+    const ΩM = mathClosureField(closure);
+    const lex = deriveLexicon([closure, { φ: 'M', ok: closure.ok === true, verified: closure.verified === true, gap_count: Array.isArray(closure.gaps) ? closure.gaps.length : 1, selected_rule: closure.selected_rule || null, Ξ: '' }]);
+    return {
+      φ: 'M',
+      v: VERSION,
+      source: String(input == null ? '' : input),
+      ast_type: closure && closure.classification ? closure.classification.type : 'Unknown',
+      anatomy_id: closure && closure.classification ? closure.classification.anatomy_id : null,
+      closure_operator: closure && closure.obligation ? closure.obligation.operator : null,
+      selected_rule: closure && closure.selected_rule || null,
+      ok: !!(closure && closure.ok === true),
+      verified: !!(closure && closure.verified === true),
+      gap_count: Array.isArray(closure && closure.gaps) ? closure.gaps.length : 1,
+      gaps: C(Array.isArray(closure && closure.gaps) ? closure.gaps : []),
+      closure: C(closure),
+      ΩM,
+      lexicon: lex,
+      u: { ΩM: l1(ΩM), ok: Math.abs(l1(ΩM) - 1) < EPS && lex.u.ok === true },
+      χ: ['M=kernel math closure packet', 'M consumes AST→anatomy→proof/closure', 'M.ok iff closure.ok', 'Ξ=""'],
+      Ξ: ''
+    };
+  }
+
+  function completeMath(input, options) {
+    const opts = options || {};
+    const m = math(input, opts);
+    const Ωstar = complete([m.ΩM], { steps: opts.steps || 4, registry: opts.registry || [] });
+    return Object.assign({}, m, {
+      φ: 'MΩ*',
+      Ωstar,
+      complete: m.verified === true && Ωstar.complete === true,
+      χ: ['MΩ*=math(input)→Ω*', 'complete iff verified and Ω* complete', 'Ξ=""'],
+      Ξ: ''
+    });
+  }
+
   function snapshot(state) { return C(state); }
 
-  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, acceptClaim, resolveClaim, complete, rebalance, unitReport });
+  return Object.freeze({ VERSION, definitions, invariants, invariantField, validateField, create, observe, step, packet, snapshot, normalize, l1, blend, distance, entropy, discrepancy, gap, correction, canonical, equivalent, close, proveTransform, converge, ground, deriveLexicon, acceptLexeme, resolveLexeme, acceptClaim, resolveClaim, complete, math, completeMath, rebalance, unitReport });
 });
