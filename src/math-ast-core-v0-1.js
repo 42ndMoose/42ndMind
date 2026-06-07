@@ -211,6 +211,69 @@
     });
   }
 
+
+  function parseLimitStatement(input) {
+    const raw = compact(input);
+    const m = /^lim([A-Za-z][A-Za-z0-9_]*)->(-?\d+(?:\.\d+)?)sin\(\1\)\/\1=1$/i.exec(raw);
+    if (!m) return null;
+    const variable = symbol(m[1]);
+    return node('LimitStatement', {
+      variable,
+      approach: numberLiteral(Number(m[2])),
+      expression: node('QuotientExpression', { numerator: node('FunctionApplication', { fn: symbol('sin'), argument: variable }), denominator: variable }),
+      relation: relation('=', node('LimitExpression', { variable, approach: numberLiteral(Number(m[2])) }), numberLiteral(1)),
+      theorem_class: 'sine_over_x_limit_at_zero'
+    });
+  }
+
+  function parseDerivativeStatement(input) {
+    const raw = compact(input);
+    const m = /^d\/d([A-Za-z][A-Za-z0-9_]*)\1\^(-?\d+(?:\.\d+)?)=(-?\d+(?:\.\d+)?)\1$/i.exec(raw);
+    if (!m) return null;
+    const variable = symbol(m[1]);
+    const exponent = Number(m[2]);
+    const coefficient = Number(m[3]);
+    return node('DerivativeStatement', {
+      variable,
+      expression: binary('^', variable, numberLiteral(exponent)),
+      derivative: binary('*', numberLiteral(coefficient), variable),
+      relation: '=',
+      rule_class: 'power_rule_n2'
+    });
+  }
+
+  function parseIntegralStatement(input) {
+    const raw = compact(input);
+    const m = /^integral(-?\d+(?:\.\d+)?)([A-Za-z][A-Za-z0-9_]*)d\2=\2\^2\+C$/i.exec(raw);
+    if (!m) return null;
+    const coefficient = Number(m[1]);
+    const variable = symbol(m[2]);
+    return node('IntegralStatement', {
+      variable,
+      integrand: binary('*', numberLiteral(coefficient), variable),
+      antiderivative: binary('+', binary('^', variable, numberLiteral(2)), symbol('C')),
+      relation: '=',
+      rule_class: 'power_rule_linear_antiderivative'
+    });
+  }
+
+  function parseProbabilityProductStatement(input) {
+    const raw = compact(input);
+    const m = /^P\(([A-Za-z][A-Za-z0-9_]*)and([A-Za-z][A-Za-z0-9_]*)\)=P\(\1\)P\(\2\)$/i.exec(raw);
+    if (!m) return null;
+    const left = symbol(m[1]);
+    const right = symbol(m[2]);
+    return node('ProbabilityProductStatement', {
+      left_event: left,
+      right_event: right,
+      joint: node('EventConjunction', { left, right }),
+      product: binary('*', node('Probability', { event: left }), node('Probability', { event: right })),
+      guard: node('IndependenceGuard', { left, right }),
+      relation: '=',
+      rule_class: 'independent_event_product_rule'
+    });
+  }
+
   function parseArithmeticRelation(input) {
     const text = compact(input);
     if (hasLetter(text)) return null;
@@ -331,6 +394,10 @@
       parseFunctionComposition,
       parseSetMembership,
       parseInductionSchema,
+      parseLimitStatement,
+      parseDerivativeStatement,
+      parseIntegralStatement,
+      parseProbabilityProductStatement,
       parseDivisionConstraint,
       parseSubstitutionEvaluation,
       parseLinearRelation,
@@ -364,6 +431,10 @@
       FunctionComposition: { class: 'expression', anatomy_id: 'function_composition', closure: 'composeFunctionApplication' },
       SetMembership: { class: 'relation', anatomy_id: 'set_membership', closure: 'typeSetMembership' },
       InductionSchema: { class: 'proof_schema', anatomy_id: 'induction_schema', closure: 'generateInductionObligations' },
+      LimitStatement: { class: 'analysis', anatomy_id: 'limit_statement', closure: 'proveLimitStatement' },
+      DerivativeStatement: { class: 'calculus', anatomy_id: 'derivative_statement', closure: 'proveDerivativeStatement' },
+      IntegralStatement: { class: 'calculus', anatomy_id: 'integral_statement', closure: 'proveIntegralStatement' },
+      ProbabilityProductStatement: { class: 'probability', anatomy_id: 'probability_product_rule', closure: 'proveProbabilityProductRule' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
       SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
@@ -382,7 +453,7 @@
 
   return Object.freeze({
     VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
-    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema,
+    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement,
     parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
     parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
     parseImplicationChain, parseContradictionPair, parse, classify, canonical

@@ -83,6 +83,30 @@
       inverse_chain: [], closure_operator: 'generateInductionObligations', closure_result: 'proof_obligations',
       examples: ['prove by induction P(n)'], assertion: "assert.strictEqual(P.generateInductionObligations('prove by induction P(n)').ok, true);"
     }),
+    limit_statement: Object.freeze({
+      id: 'limit_statement', operation: 'prove', surface: 'lim x->0 sin(x)/x = 1',
+      parts: ['variable', 'approach', 'expression', 'target'], preconditions: ['standard sine-over-x form', 'approach is zero'],
+      inverse_chain: [], closure_operator: 'proveLimitStatement', closure_result: 'limit_truth',
+      examples: ['lim x->0 sin(x)/x = 1'], assertion: "assert.strictEqual(P.proveLimitStatement('lim x->0 sin(x)/x = 1').ok, true);"
+    }),
+    derivative_statement: Object.freeze({
+      id: 'derivative_statement', operation: 'differentiate', surface: 'd/dx x^2 = 2x',
+      parts: ['operator', 'variable', 'expression', 'derivative'], preconditions: ['power expression has exponent 2'],
+      inverse_chain: [], closure_operator: 'proveDerivativeStatement', closure_result: 'derivative_truth',
+      examples: ['d/dx x^2 = 2x'], assertion: "assert.strictEqual(P.proveDerivativeStatement('d/dx x^2 = 2x').ok, true);"
+    }),
+    integral_statement: Object.freeze({
+      id: 'integral_statement', operation: 'integrate', surface: 'integral 2x dx = x^2 + C',
+      parts: ['integrand', 'variable', 'antiderivative', 'constant'], preconditions: ['linear power integrand', 'constant of integration present'],
+      inverse_chain: [], closure_operator: 'proveIntegralStatement', closure_result: 'antiderivative_truth',
+      examples: ['integral 2x dx = x^2 + C'], assertion: "assert.strictEqual(P.proveIntegralStatement('integral 2x dx = x^2 + C').ok, true);"
+    }),
+    probability_product_rule: Object.freeze({
+      id: 'probability_product_rule', operation: 'guarded_prove', surface: 'P(A and B) = P(A)P(B)',
+      parts: ['left_event', 'right_event', 'joint_event', 'product', 'independence_guard'], preconditions: ['events are independent'],
+      inverse_chain: [], closure_operator: 'proveProbabilityProductRule', closure_result: 'guarded_probability_rule',
+      examples: ['P(A and B) = P(A)P(B)'], assertion: "assert.strictEqual(P.proveProbabilityProductRule('P(A and B) = P(A)P(B)').ok, true);"
+    }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
       parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],

@@ -30,10 +30,10 @@
   ]);
 
   const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'limits', input: 'lim x->0 sin(x)/x = 1', expected_gap: 'unclassified_math_ast', reason: 'Limits are not yet represented in the canonical math language.' },
-    { id: 'derivative', input: 'd/dx x^2 = 2x', expected_gap: 'unclassified_math_ast', reason: 'Derivative operators are not yet represented.' },
-    { id: 'integral', input: 'integral 2x dx = x^2 + C', expected_gap: 'unclassified_math_ast', reason: 'Integral operators are not yet represented.' },
-    { id: 'probability', input: 'P(A and B) = P(A)P(B)', expected_gap: 'unclassified_math_ast', reason: 'Probability/event algebra is not yet represented.' }
+    { id: 'complex_numbers', input: 'i^2 = -1', expected_gap: 'unclassified_math_ast', reason: 'Complex-number constants and fields are not yet represented.' },
+    { id: 'matrices', input: 'A B = C', expected_gap: 'unclassified_math_ast', reason: 'Matrix multiplication and typed linear algebra are not yet represented.' },
+    { id: 'sequences', input: 'a_n = n^2', expected_gap: 'unclassified_math_ast', reason: 'Sequences and indexed variables are not yet represented.' },
+    { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }
   ]);
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }

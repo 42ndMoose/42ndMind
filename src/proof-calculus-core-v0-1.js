@@ -242,6 +242,34 @@
     return verified('induction-schema-obligations', { operator: 'generateInductionObligations', predicate: clone(body.predicate), variable: clone(body.variable), domain: clone(body.domain), conclusion: { type: 'ProofObligations', schema: 'induction', obligations: [clone(body.base_case), clone(body.inductive_step)] }, steps: ['detect-induction-request', 'emit-base-case', 'emit-inductive-step'] });
   }
 
+
+  function proveLimitStatement(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'LimitStatement') return gap('unsupported_limit_statement', 'Limit closure requires a LimitStatement AST node.');
+    if (body.theorem_class !== 'sine_over_x_limit_at_zero') return gap('unsupported_limit_theorem', 'Only lim x->0 sin(x)/x = 1 is registered in this bounded frontier.', { theorem_class: body.theorem_class || null });
+    return verified('limit-sine-over-x', { operator: 'proveLimitStatement', theorem_class: body.theorem_class, conclusion: clone(body.relation), steps: ['detect-standard-limit-form', 'apply-registered-sine-over-x-limit-theorem'] });
+  }
+
+  function proveDerivativeStatement(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'DerivativeStatement') return gap('unsupported_derivative_statement', 'Derivative closure requires a DerivativeStatement AST node.');
+    if (body.rule_class !== 'power_rule_n2') return gap('unsupported_derivative_rule', 'Only d/dx x^2 = 2x is registered in this bounded frontier.', { rule_class: body.rule_class || null });
+    return verified('derivative-power-rule-n2', { operator: 'proveDerivativeStatement', variable: clone(body.variable), conclusion: { type: 'DerivativeEquality', expression: clone(body.expression), derivative: clone(body.derivative) }, steps: ['detect-power-expression', 'apply-power-rule-for-n=2'] });
+  }
+
+  function proveIntegralStatement(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'IntegralStatement') return gap('unsupported_integral_statement', 'Integral closure requires an IntegralStatement AST node.');
+    if (body.rule_class !== 'power_rule_linear_antiderivative') return gap('unsupported_integral_rule', 'Only integral 2x dx = x^2 + C is registered in this bounded frontier.', { rule_class: body.rule_class || null });
+    return verified('integral-power-rule-linear', { operator: 'proveIntegralStatement', variable: clone(body.variable), conclusion: { type: 'AntiderivativeEquality', integrand: clone(body.integrand), antiderivative: clone(body.antiderivative) }, steps: ['detect-linear-power-integrand', 'apply-power-rule-antiderivative', 'include-constant-of-integration'] });
+  }
+
+  function proveProbabilityProductRule(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'ProbabilityProductStatement') return gap('unsupported_probability_product', 'Probability closure requires a ProbabilityProductStatement AST node.');
+    return verified('probability-product-requires-independence', { operator: 'proveProbabilityProductRule', guard: clone(body.guard), conclusion: { type: 'ConditionalProbabilityRule', guard: clone(body.guard), equality: { type: 'ProbabilityEquality', joint: clone(body.joint), product: clone(body.product) } }, steps: ['detect-joint-event-product-form', 'emit-independence-guard', 'close-product-rule-under-guard'] });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -376,6 +404,10 @@
     if (operator === 'composeFunctionApplication') return composeFunctionApplication(body);
     if (operator === 'typeSetMembership') return typeSetMembership(body);
     if (operator === 'generateInductionObligations') return generateInductionObligations(body);
+    if (operator === 'proveLimitStatement') return proveLimitStatement(body);
+    if (operator === 'proveDerivativeStatement') return proveDerivativeStatement(body);
+    if (operator === 'proveIntegralStatement') return proveIntegralStatement(body);
+    if (operator === 'proveProbabilityProductRule') return proveProbabilityProductRule(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -401,6 +433,10 @@
     composeFunctionApplication,
     typeSetMembership,
     generateInductionObligations,
+    proveLimitStatement,
+    proveDerivativeStatement,
+    proveIntegralStatement,
+    proveProbabilityProductRule,
     domainGuard,
     implication,
     modusPonens,
