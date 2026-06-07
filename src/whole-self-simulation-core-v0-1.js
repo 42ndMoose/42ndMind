@@ -32,7 +32,9 @@
     'd/dx x^2 = 2x',
     'integral 2x dx = x^2 + C',
     'P(A and B) = P(A)P(B)',
-    'A B = C'
+    'A B = C',
+    'a_n = n^2',
+    'exists x in R, x^2 = 2'
   ]);
 
   const DEFAULT_FRONTIER_ANCHORS = Object.freeze([]);
