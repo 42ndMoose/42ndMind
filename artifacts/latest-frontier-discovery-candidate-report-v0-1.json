@@ -2196,8 +2196,8 @@
         "checksum": "ad65ecc"
       },
       "src/whole-self-simulation-core-v0-1.js": {
-        "bytes": 11004,
-        "checksum": "15f1e974"
+        "bytes": 10843,
+        "checksum": "5e186bfc"
       }
     },
     "after": {
@@ -2234,8 +2234,8 @@
         "checksum": "ad65ecc"
       },
       "src/whole-self-simulation-core-v0-1.js": {
-        "bytes": 11004,
-        "checksum": "15f1e974"
+        "bytes": 10843,
+        "checksum": "5e186bfc"
       },
       "tests/frontier-candidate-complex-unit-v0-1-test.js": {
         "bytes": 1073,

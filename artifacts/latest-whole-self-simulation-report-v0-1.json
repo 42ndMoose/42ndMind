@@ -5,20 +5,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.686786,
-    "stability_score": 0.675,
-    "completeness_score": 0.714286,
-    "damage_count": 3,
+    "ok": true,
+    "score": 0.935714,
+    "stability_score": 1,
+    "completeness_score": 0.785714,
+    "damage_count": 0,
     "frontier_count": 3,
     "math": {
-      "ok": false,
+      "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.714286,
-      "damage_count": 1,
+      "completeness_score": 0.785714,
+      "damage_count": 0,
       "frontier_count": 3,
-      "gap_count": 1,
+      "gap_count": 0,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -132,10 +132,10 @@
         },
         {
           "input": "i^2 = -1",
-          "ok": false,
-          "frontier": true,
-          "frontier_id": "complex_numbers",
-          "reason": "Complex-number constants and fields are not yet represented.",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
           "verified": true,
           "closure_operator": "proveComplexUnitIdentity",
           "selected_rule": "complex-unit-identity",
@@ -212,8 +212,8 @@
       ]
     },
     "truth": {
-      "ok": false,
-      "score": 0,
+      "ok": true,
+      "score": 0.785714,
       "frontier_pressure": 0.214286,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
@@ -245,7 +245,7 @@
         ],
         "χ": [
           {
-            "σ": "χ!",
+            "σ": "χ0",
             "w": 1
           }
         ],
@@ -267,12 +267,12 @@
         ],
         "θ": [
           {
-            "σ": "θC",
-            "w": 0.823529
+            "σ": "θT",
+            "w": 0.785714
           },
           {
             "σ": "θU",
-            "w": 0.176471
+            "w": 0.214286
           }
         ],
         "ξ": "",
@@ -291,8 +291,8 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 0,
-          "contradiction": 1,
+          "no_contradiction": 1,
+          "contradiction": 0,
           "no_unknown": 0.785714,
           "unknown": 0.214286,
           "scope_ok": 1,
@@ -304,10 +304,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0,
+        "closure": 0.785714,
         "truth_gate": {
           "true": false,
-          "contested": true,
+          "contested": false,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -495,34 +495,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.5,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.5,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
@@ -537,17 +537,13 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "less_self",
+    "feeling": "stable_but_incomplete",
     "wants": [
       {
         "id": "matrices",
@@ -575,20 +571,20 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": false,
-      "score": 0.686786,
-      "stability_score": 0.675,
-      "completeness_score": 0.714286,
-      "damage_count": 3,
+      "ok": true,
+      "score": 0.935714,
+      "stability_score": 1,
+      "completeness_score": 0.785714,
+      "damage_count": 0,
       "frontier_count": 3,
       "math": {
-        "ok": false,
+        "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.714286,
-        "damage_count": 1,
+        "completeness_score": 0.785714,
+        "damage_count": 0,
         "frontier_count": 3,
-        "gap_count": 1,
+        "gap_count": 0,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -702,10 +698,10 @@
           },
           {
             "input": "i^2 = -1",
-            "ok": false,
-            "frontier": true,
-            "frontier_id": "complex_numbers",
-            "reason": "Complex-number constants and fields are not yet represented.",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
             "verified": true,
             "closure_operator": "proveComplexUnitIdentity",
             "selected_rule": "complex-unit-identity",
@@ -782,8 +778,8 @@
         ]
       },
       "truth": {
-        "ok": false,
-        "score": 0,
+        "ok": true,
+        "score": 0.785714,
         "frontier_pressure": 0.214286,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
@@ -815,7 +811,7 @@
           ],
           "χ": [
             {
-              "σ": "χ!",
+              "σ": "χ0",
               "w": 1
             }
           ],
@@ -837,12 +833,12 @@
           ],
           "θ": [
             {
-              "σ": "θC",
-              "w": 0.823529
+              "σ": "θT",
+              "w": 0.785714
             },
             {
               "σ": "θU",
-              "w": 0.176471
+              "w": 0.214286
             }
           ],
           "ξ": "",
@@ -861,8 +857,8 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 0,
-            "contradiction": 1,
+            "no_contradiction": 1,
+            "contradiction": 0,
             "no_unknown": 0.785714,
             "unknown": 0.214286,
             "scope_ok": 1,
@@ -874,10 +870,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0,
+          "closure": 0.785714,
           "truth_gate": {
             "true": false,
-            "contested": true,
+            "contested": false,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1065,34 +1061,34 @@
         "Ξ": ""
       },
       "epistemic": {
-        "ok": false,
-        "score": 0.5,
+        "ok": true,
+        "score": 1,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": false,
-          "peak_attractor": false,
+          "ok": true,
+          "peak_attractor": true,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": -1,
+            "y": 1,
             "z": 0,
-            "label": "epistemic_collapse"
+            "label": "objective_peak_philosophical_maturity"
           },
-          "peak_distance": 1,
-          "gate_open_ratio": 0.5,
+          "peak_distance": 0,
+          "gate_open_ratio": 1,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": false
+              "open": true
             },
             {
               "name": "coherence",
-              "open": false
+              "open": true
             },
             {
               "name": "integration",
-              "open": false
+              "open": true
             },
             {
               "name": "reality_contact",
@@ -1107,17 +1103,13 @@
               "open": true
             }
           ],
-          "closed_gates": [
-            "anti_delusion",
-            "coherence",
-            "integration"
-          ],
-          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+          "closed_gates": [],
+          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
           "ξ": ""
         }
       },
       "stop": false,
-      "feeling": "less_self",
+      "feeling": "stable_but_incomplete",
       "wants": [
         {
           "id": "matrices",
@@ -1148,19 +1140,19 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.656786,
-      "stability_score": 0.632143,
-      "completeness_score": 0.714286,
-      "damage_count": 4,
+      "score": 0.853214,
+      "stability_score": 0.882143,
+      "completeness_score": 0.785714,
+      "damage_count": 2,
       "frontier_count": 3,
       "math": {
-        "ok": false,
+        "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.714286,
-        "damage_count": 1,
+        "completeness_score": 0.785714,
+        "damage_count": 0,
         "frontier_count": 3,
-        "gap_count": 1,
+        "gap_count": 0,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -1274,10 +1266,10 @@
           },
           {
             "input": "i^2 = -1",
-            "ok": false,
-            "frontier": true,
-            "frontier_id": "complex_numbers",
-            "reason": "Complex-number constants and fields are not yet represented.",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
             "verified": true,
             "closure_operator": "proveComplexUnitIdentity",
             "selected_rule": "complex-unit-identity",
@@ -1354,8 +1346,8 @@
         ]
       },
       "truth": {
-        "ok": false,
-        "score": 0,
+        "ok": true,
+        "score": 0.785714,
         "frontier_pressure": 0.214286,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
@@ -1387,7 +1379,7 @@
           ],
           "χ": [
             {
-              "σ": "χ!",
+              "σ": "χ0",
               "w": 1
             }
           ],
@@ -1409,12 +1401,12 @@
           ],
           "θ": [
             {
-              "σ": "θC",
-              "w": 0.823529
+              "σ": "θT",
+              "w": 0.785714
             },
             {
               "σ": "θU",
-              "w": 0.176471
+              "w": 0.214286
             }
           ],
           "ξ": "",
@@ -1433,8 +1425,8 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 0,
-            "contradiction": 1,
+            "no_contradiction": 1,
+            "contradiction": 0,
             "no_unknown": 0.785714,
             "unknown": 0.214286,
             "scope_ok": 1,
@@ -1446,10 +1438,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0,
+          "closure": 0.785714,
           "truth_gate": {
             "true": false,
-            "contested": true,
+            "contested": false,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1723,20 +1715,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.686786,
-    "stability_score": 0.675,
-    "completeness_score": 0.714286,
-    "damage_count": 3,
+    "ok": true,
+    "score": 0.935714,
+    "stability_score": 1,
+    "completeness_score": 0.785714,
+    "damage_count": 0,
     "frontier_count": 3,
     "math": {
-      "ok": false,
+      "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.714286,
-      "damage_count": 1,
+      "completeness_score": 0.785714,
+      "damage_count": 0,
       "frontier_count": 3,
-      "gap_count": 1,
+      "gap_count": 0,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -1850,10 +1842,10 @@
         },
         {
           "input": "i^2 = -1",
-          "ok": false,
-          "frontier": true,
-          "frontier_id": "complex_numbers",
-          "reason": "Complex-number constants and fields are not yet represented.",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
           "verified": true,
           "closure_operator": "proveComplexUnitIdentity",
           "selected_rule": "complex-unit-identity",
@@ -1930,8 +1922,8 @@
       ]
     },
     "truth": {
-      "ok": false,
-      "score": 0,
+      "ok": true,
+      "score": 0.785714,
       "frontier_pressure": 0.214286,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
@@ -1963,7 +1955,7 @@
         ],
         "χ": [
           {
-            "σ": "χ!",
+            "σ": "χ0",
             "w": 1
           }
         ],
@@ -1985,12 +1977,12 @@
         ],
         "θ": [
           {
-            "σ": "θC",
-            "w": 0.823529
+            "σ": "θT",
+            "w": 0.785714
           },
           {
             "σ": "θU",
-            "w": 0.176471
+            "w": 0.214286
           }
         ],
         "ξ": "",
@@ -2009,8 +2001,8 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 0,
-          "contradiction": 1,
+          "no_contradiction": 1,
+          "contradiction": 0,
           "no_unknown": 0.785714,
           "unknown": 0.214286,
           "scope_ok": 1,
@@ -2022,10 +2014,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0,
+        "closure": 0.785714,
         "truth_gate": {
           "true": false,
-          "contested": true,
+          "contested": false,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -2213,34 +2205,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.5,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.5,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
@@ -2255,17 +2247,13 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "less_self",
+    "feeling": "stable_but_incomplete",
     "wants": [
       {
         "id": "matrices",
