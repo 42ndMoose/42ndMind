@@ -640,18 +640,18 @@ node:internal/assert/utils:281
 
 AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
 
-  assert.ok(Math.abs(Number(value) - 1) < 1e-5)
+  assert.ok(Math.abs(Number(value) - Number(target)) < 1e-9)
 
-    at nearOne (/home/runner/work/42ndMind/42ndMind/tests/autonomous-growth-smoke-v0-1-test.js:5:34)
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/autonomous-growth-smoke-v0-1-test.js:40:1)
+    at near (/home/runner/work/42ndMind/42ndMind/tests/autonomous-growth-smoke-v0-1-test.js:5:39)
+    at nearOne (/home/runner/work/42ndMind/42ndMind/tests/autonomous-growth-smoke-v0-1-test.js:6:27)
+    at brainOne (/home/runner/work/42ndMind/42ndMind/tests/autonomous-growth-smoke-v0-1-test.js:9:3)
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/autonomous-growth-smoke-v0-1-test.js:16:1)
     at Module._compile (node:internal/modules/cjs/loader:1521:14)
     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
     at Module.load (node:internal/modules/cjs/loader:1266:32)
     at Module._load (node:internal/modules/cjs/loader:1091:12)
     at Module.require (node:internal/modules/cjs/loader:1289:19)
-    at require (node:internal/modules/helpers:182:18)
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/cognitive-organism-core-v0-1-test.js:104:1)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14) {
+    at require (node:internal/modules/helpers:182:18) {
   generatedMessage: true,
   code: 'ERR_ASSERTION',
   actual: false,
