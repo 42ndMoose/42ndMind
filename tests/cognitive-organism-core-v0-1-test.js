@@ -101,4 +101,6 @@ assert.ok(run.packets[0].last.math.ok === true);
 assert.ok(run.packets[1].last.math.ok === false);
 assert.ok(run.packets[2].last.math.ok === true);
 
-console.log('cognitive-organism-core-v0-1 tests passed with brain=1 invariant');
+require('./autonomous-growth-smoke-v0-1-test.js');
+
+console.log('cognitive-organism-core-v0-1 tests passed with brain=1 invariant and autonomous growth smoke proof');
