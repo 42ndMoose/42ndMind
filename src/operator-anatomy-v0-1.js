@@ -13,15 +13,13 @@
   const CATALOG = Object.freeze({
     affine_equation: Object.freeze({
       id: 'affine_equation', operation: 'solve', surface: 'a*x + b = c',
-      parts: ['coefficient', 'variable', 'offset', 'target'],
-      preconditions: ['coefficient != 0', 'target is finite', 'offset is finite'],
+      parts: ['coefficient', 'variable', 'offset', 'target'], preconditions: ['coefficient != 0', 'target is finite', 'offset is finite'],
       inverse_chain: ['undo-offset', 'undo-coefficient'], closure_operator: 'solveAffineEquation', closure_result: 'variable_value',
       examples: ['2x + 1 = 7', '-3y - 6 = 9'], assertion: "assert.strictEqual(P.solveAffineEquation('2x + 1 = 7').value, 3);"
     }),
     linear_equation: Object.freeze({
       id: 'linear_equation', operation: 'solve', surface: 'a*x + b = c*x + d',
-      parts: ['left_coefficient', 'right_coefficient', 'left_offset', 'right_offset', 'variable'],
-      preconditions: ['net coefficient != 0', 'offsets are finite'],
+      parts: ['left_coefficient', 'right_coefficient', 'left_offset', 'right_offset', 'variable'], preconditions: ['net coefficient != 0', 'offsets are finite'],
       inverse_chain: ['collect-variable-terms', 'collect-constant-terms', 'divide-by-net-coefficient'], closure_operator: 'solveLinearEquation', closure_result: 'variable_value',
       examples: ['2x + 1 = x + 4'], assertion: "assert.strictEqual(P.solveLinearEquation('2x + 1 = x + 4').value, 3);"
     }),
@@ -48,6 +46,18 @@
       parts: ['left_expression', 'relation', 'right_expression'], preconditions: ['both sides evaluate to finite numbers'],
       inverse_chain: [], closure_operator: 'evaluateArithmeticRelation', closure_result: 'truth_value',
       examples: ['2 + 3 * 4 = 14', '(2 + 3)^2 = 25'], assertion: "assert.strictEqual(P.evaluateArithmeticRelation('2 + 3 * 4 = 14').truth, true);"
+    }),
+    equality_proof: Object.freeze({
+      id: 'equality_proof', operation: 'prove', surface: 'equality reflexivity/symmetry/transitivity',
+      parts: ['premises', 'conclusion', 'equality_rule'], preconditions: ['all premises are equalities', 'adjacent chain terms match'],
+      inverse_chain: [], closure_operator: 'proveEquality', closure_result: 'equality_truth',
+      examples: ['x = x', 'x = y therefore y = x', 'a = b, b = c therefore a = c'], assertion: "assert.strictEqual(P.proveEquality('a = b, b = c therefore a = c').ok, true);"
+    }),
+    expression_simplification: Object.freeze({
+      id: 'expression_simplification', operation: 'rewrite', surface: 'simplify identity expression',
+      parts: ['expression', 'rewrite_rule', 'normal_form'], preconditions: ['rewrite is neutral-element preserving'],
+      inverse_chain: [], closure_operator: 'simplifyExpression', closure_result: 'normal_form',
+      examples: ['simplify x + 0', 'simplify x * 1'], assertion: "assert.strictEqual(P.simplifyExpression('simplify x + 0').result, 'x');"
     }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
@@ -93,19 +103,9 @@
   function astSurfaceIds(samples) {
     if (!MathAstCore || typeof MathAstCore.classify !== 'function') return [];
     const rows = Array.isArray(samples) ? samples : [
-      '2x + 1 = 7',
-      '2x + 1',
-      '2x + 1 = x + 4',
-      '2x + 1 with x = 3',
-      'x >= 3 with x = 5',
-      '2 + 3 * 4 = 14',
-      '(2 + 3)^2 = 25',
-      'x/y is undefined when y = 0',
-      '∀x ∈ ℝ, x^2 >= 0',
-      '∀x ∈ ℝ, x + 0 = x',
-      '∀x ∈ ℝ, x * 1 = x',
-      'A=>B, B=>C',
-      'A, not A'
+      '2x + 1 = 7', '2x + 1', '2x + 1 = x + 4', '2x + 1 with x = 3', 'x >= 3 with x = 5',
+      '2 + 3 * 4 = 14', '(2 + 3)^2 = 25', 'x = x', 'x = y therefore y = x', 'a = b, b = c therefore a = c', 'simplify x + 0', 'simplify x * 1',
+      'x/y is undefined when y = 0', '∀x ∈ ℝ, x^2 >= 0', '∀x ∈ ℝ, x + 0 = x', '∀x ∈ ℝ, x * 1 = x', 'A=>B, B=>C', 'A, not A'
     ];
     return Array.from(new Set(rows.map(sample => MathAstCore.classify(sample).anatomy_id).filter(Boolean))).sort();
   }
@@ -143,7 +143,7 @@
         violations: A(anatomy.violations),
         inverse_chain: A(anatomy.inverse_chain),
         parsed_form: anatomy.examples[0] || anatomy.surface,
-        reason: 'Operator anatomy exposes a representable surface whose closure operator is missing.',
+        reason: 'Operator anatomy exposes a representable surface whose closure operators is missing.',
         assertion: anatomy.assertion,
         w: 1
       }));
@@ -155,12 +155,7 @@
     return {
       id: 'formal_math_operator_anatomy_batch_' + gaps.map(g => g.needle).join('_'),
       source: 'operator_anatomy_generated_closure_failure',
-      generated_from: {
-        anatomy_ids: gaps.map(g => g.anatomy_id),
-        parsed_forms: gaps.map(g => g.parsed_form),
-        reason: 'Operator anatomy found representable operation surfaces whose closure operators are missing.',
-        missing_operators: gaps.map(g => g.needle)
-      },
+      generated_from: { anatomy_ids: gaps.map(g => g.anatomy_id), parsed_forms: gaps.map(g => g.parsed_form), reason: 'Operator anatomy found representable operation surfaces whose closure operators are missing.', missing_operators: gaps.map(g => g.needle) },
       requires: ['solveLinearEquation', 'checkProofStep', 'solveTwoStepLinearEquation', 'checkHypotheticalSyllogism'],
       axes: gaps.map(g => ({ id: g.id, file: g.file, needle: g.needle, class: g.class, w: g.w, anatomy_id: g.anatomy_id })),
       assertions: gaps.reduce((rows, g) => rows.concat(["assert.strictEqual(typeof P." + g.needle + ", 'function');", g.assertion]), [])
