@@ -20,6 +20,24 @@ assert.ok(solved.ΩM.some(row => row.σ === 'M:closure:solveLinearEquation'));
 assert.ok(solved.lexicon.entries.some(row => row.σ === 'Λ:M.ok1' && row.accepted === true));
 assert.strictEqual(solved.Ξ, '');
 
+const equality = K.math('a = b, b = c therefore a = c');
+assert.strictEqual(equality.ok, true);
+assert.strictEqual(equality.verified, true);
+assert.strictEqual(equality.ast_type, 'EqualityProof');
+assert.strictEqual(equality.closure_operator, 'proveEquality');
+assert.strictEqual(equality.selected_rule, 'equality-transitivity');
+assert.ok(equality.ΩM.some(row => row.σ === 'M:closure:proveEquality'));
+assert.ok(equality.ΩM.some(row => row.σ === 'M:rule:equality-transitivity'));
+
+const simplified = K.math('simplify x + 0');
+assert.strictEqual(simplified.ok, true);
+assert.strictEqual(simplified.verified, true);
+assert.strictEqual(simplified.ast_type, 'Simplification');
+assert.strictEqual(simplified.closure_operator, 'simplifyExpression');
+assert.strictEqual(simplified.selected_rule, 'expression-simplification');
+assert.ok(simplified.ΩM.some(row => row.σ === 'M:closure:simplifyExpression'));
+assert.ok(simplified.ΩM.some(row => row.σ === 'M:rule:expression-simplification'));
+
 const identity = K.math('∀x ∈ ℝ, x + 0 = x');
 assert.strictEqual(identity.ok, true);
 assert.strictEqual(identity.closure_operator, 'proveAlgebraicIdentity');
@@ -36,7 +54,7 @@ assert.ok(unsupported.ΩM.some(row => row.σ === 'M:gap'));
 assert.ok(unsupported.ΩM.some(row => row.σ === 'M:gap:unclassified_math_ast'));
 assert.strictEqual(unsupported.Ξ, '');
 
-const complete = K.completeMath('2 + 3 * 4 = 14', { steps: 4 });
+const complete = K.completeMath('a = b, b = c therefore a = c', { steps: 4 });
 assert.strictEqual(complete.φ, 'MΩ*');
 assert.strictEqual(complete.ok, true);
 assert.strictEqual(complete.verified, true);
