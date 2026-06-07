@@ -11,7 +11,7 @@ exit_code=0
 math-closure-engine-v0-1 tests passed
 exit_code=0
 ## tests/math-language-completion-v0-1-test.js
-math-language-completion-v0-1 tests passed: 26 stable supported forms, matrix transitional, 1 precise unsupported gap
+math-language-completion-v0-1 tests passed: stable supported forms plus matrix/sequence transition checks, 1 precise unsupported gap
 exit_code=0
 ## tests/math-language-kernel-v0-1-test.js
 PASS kernel loads
