@@ -11,7 +11,7 @@ const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const REPORT_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-candidate-report-v0-1.json');
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-candidate-summary-v0-1.json');
-const TEST_PATH = 'tests/frontier-candidate-matrix-product-v0-1-test.js';
+const TEST_PATH = 'tests/frontier-candidate-complex-unit-v0-1-test.js';
 const MATRIX_INPUT = 'A B = C';
 
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), 'utf8'); }
@@ -30,10 +30,11 @@ function collectFiles() {
     'src/source-edit-reality-feedback-v0-1.js',
     'src/frontier-discovery-core-v0-1.js',
     'src/whole-self-simulation-core-v0-1.js',
-    'src/source-sandbox-v0-1.js'
+    'src/source-sandbox-v0-1.js',
+    TEST_PATH
   ];
   const files = {};
-  rels.forEach(rel => { files[rel] = read(rel); });
+  rels.forEach(rel => { if (fs.existsSync(path.join(ROOT, rel))) files[rel] = read(rel); });
   return files;
 }
 
@@ -164,24 +165,29 @@ function buildTest() {
     "const Proof = require('../src/proof-calculus-core-v0-1.js');",
     "const Closure = require('../src/math-closure-engine-v0-1.js');",
     "const K = require('../src/math-language-kernel-v0-1.js');",
-    "const source = 'A B = C';",
-    "const ast = AST.parse(source);",
-    "assert.strictEqual(ast.ok, true);",
-    "assert.strictEqual(ast.body.type, 'MatrixProductStatement');",
-    "assert.strictEqual(AST.classify(ast).closure, 'typeMatrixProduct');",
-    "const proof = Proof.typeMatrixProduct(ast);",
+    "const complexSource = 'i' + '^' + '2 = -1';",
+    "const complexAst = AST.parse(complexSource);",
+    "assert.strictEqual(complexAst.ok, true);",
+    "assert.strictEqual(complexAst.body.type, 'ComplexUnitIdentityStatement');",
+    "assert.strictEqual(Proof.proveComplexUnitIdentity(complexAst).rule, 'complex-unit-identity');",
+    "const matrixSource = 'A B = C';",
+    "const matrixAst = AST.parse(matrixSource);",
+    "assert.strictEqual(matrixAst.ok, true);",
+    "assert.strictEqual(matrixAst.body.type, 'MatrixProductStatement');",
+    "assert.strictEqual(AST.classify(matrixAst).closure, 'typeMatrixProduct');",
+    "const proof = Proof.typeMatrixProduct(matrixAst);",
     "assert.strictEqual(proof.ok, true);",
     "assert.strictEqual(proof.rule, 'matrix-product-dimension-guard');",
     "assert.strictEqual(proof.conclusion.type, 'GuardedMatrixProductRelation');",
     "assert.strictEqual(proof.conclusion.guard.type, 'DimensionCompatibilityGuard');",
-    "const closed = Closure.close(source);",
+    "const closed = Closure.close(matrixSource);",
     "assert.strictEqual(closed.ok, true);",
     "assert.strictEqual(closed.selected_rule, 'matrix-product-dimension-guard');",
-    "const packet = K.math(source);",
+    "const packet = K.math(matrixSource);",
     "assert.strictEqual(packet.ok, true);",
     "assert.strictEqual(packet.closure_operator, 'typeMatrixProduct');",
     "assert.strictEqual(packet.selected_rule, 'matrix-product-dimension-guard');",
-    "console.log('frontier-candidate-matrix-product-v0-1 tests passed');",
+    "console.log('frontier-candidate-complex-unit-v0-1 tests passed with matrix product guard');",
     ""
   ].join('\n');
 }
@@ -231,7 +237,7 @@ function main() {
       { type: 'replace', path: 'src/operator-anatomy-v0-1.js', content: next['src/operator-anatomy-v0-1.js'] },
       { type: 'replace', path: 'src/source-edit-reality-feedback-v0-1.js', content: next['src/source-edit-reality-feedback-v0-1.js'] },
       { type: 'replace', path: 'src/whole-self-simulation-core-v0-1.js', content: next['src/whole-self-simulation-core-v0-1.js'] },
-      { type: 'create', path: TEST_PATH, content: buildTest() }
+      { type: 'replace', path: TEST_PATH, content: buildTest() }
     ]
   };
 
