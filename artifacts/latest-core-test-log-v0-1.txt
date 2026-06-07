@@ -113,6 +113,9 @@ PASS all active fields still satisfy unit report
 PASS irregular stream tolerated
 PASS irregular stream still has no English
 exit_code=0
+## tests/kernel-math-closure-bridge-v0-1-test.js
+kernel-math-closure-bridge-v0-1 tests passed
+exit_code=0
 ## tests/completion-scopes-v0-1-test.js
 PASS pure field algebra scope packet is Ω*
 PASS pure field algebra scope reaches fixed point
