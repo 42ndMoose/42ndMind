@@ -1,0 +1,246 @@
+## tests/math-ast-core-v0-1-test.js
+math-ast-core-v0-1 tests passed
+exit_code=0
+## tests/math-ast-bridge-v0-1-test.js
+math-ast-bridge-v0-1 tests passed
+exit_code=0
+## tests/proof-calculus-core-v0-1-test.js
+proof-calculus-core-v0-1 tests passed
+exit_code=0
+## tests/math-closure-engine-v0-1-test.js
+math-closure-engine-v0-1 tests passed
+exit_code=0
+## tests/math-language-completion-v0-1-test.js
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/math-language-completion-v0-1-test.js:62:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/math-language-kernel-v0-1-test.js
+PASS kernel loads
+PASS lambda starts unit-total
+PASS intention starts unit-total
+PASS lexeme field starts unit-total
+PASS whole state starts unit-total
+PASS no English output channel
+PASS kernel defines sigma weight and constraint rows
+PASS kernel defines closure and equivalence symbols
+PASS kernel defines zero-gap and lexeme symbols
+PASS kernel defines completion fixed-point symbol
+PASS kernel has invariant registry beyond unit-total
+PASS kernel has zero-gap invariant
+PASS kernel has completion fixed-point invariant
+PASS invariant field is unit-total
+PASS valid field passes invariant validator
+PASS bad unit field fails invariant validator
+PASS packet is symbolic
+PASS packet carries invariant list
+PASS packet carries discrepancy invariant
+PASS packet carries gap invariant
+PASS packet carries zero-gap invariant
+PASS packet carries closure invariant rows
+PASS packet carries completion invariant row
+PASS packet carries lexeme field
+PASS closed discrepancy uses δ0
+PASS discrepancy packet is symbolic
+PASS discrepancy field is unit-total
+PASS expected-actual gap is classified
+PASS unit-total gap is measured by discrepancy for fields
+PASS field discrepancy stays unit-total
+PASS gap packet is symbolic
+PASS gap field is unit-total
+PASS same fields have no axis gap
+PASS same fields have no weight gap
+PASS same fields have no unit gap
+PASS closed gap uses Δ0 instead of empty axis
+PASS weight gap is measured
+PASS weight gap has no axis mismatch
+PASS weight gap remains unit-total
+PASS axis gap is measured
+PASS axis gap remains unit-total
+PASS unit gap is measured by gap from raw fields
+PASS raw invalid unit field is detected by validator
+PASS unit gap remains unit-total
+PASS invariant gap is measured
+PASS unknown gap is reserved when no comparable field exists
+PASS correction packet is symbolic
+PASS correction transform field is unit-total
+PASS correction uses finite local argmin
+PASS correction reduces or preserves measured gap
+PASS correction outputs transformed unit field
+PASS canonical packet is symbolic
+PASS canonical merges sorts and normalizes fields
+PASS canonical field is unit-total
+PASS equivalent detects same canonical field
+PASS equivalent detects different canonical field
+PASS closure packet is symbolic
+PASS closure emits closed fields
+PASS closure fields are unit-total
+PASS closure can emit transforms when target is supplied
+PASS proof gate packet is symbolic
+PASS proof gate accepts unit-preserving reducing transform
+PASS convergence packet is symbolic
+PASS convergence remains unit-total
+PASS convergence reaches or approaches lower gap
+PASS grounding distinguishes formal mode
+PASS grounding distinguishes observed mode
+PASS lexicon packet is symbolic
+PASS lexicon field is unit-total
+PASS lexicon derives closed-gap lexeme
+PASS lexicon derives proof and convergence lexemes
+PASS lexicon derives generalized numeric fact lexemes
+PASS lexicon derives generalized boolean fact lexemes
+PASS lexicon derives generalized distance fact lexeme
+PASS lexeme resolver returns exactly one accepted match
+PASS generalized lexeme resolver returns exactly one accepted match
+PASS lexeme conflict is rejected
+PASS completion packet is symbolic
+PASS completion reaches fixed point
+PASS completion is complete under current constraints
+PASS completion preserves unit-total whole field
+PASS completion has no unresolved gap or conflict
+PASS completion emits unit-total lexicon
+PASS completion lexicon contains fixed-point derived entries
+PASS completion trace records stable iteration
+PASS observation returns packet
+PASS tokens form from repeated raw symbols
+PASS lambda remains unit-total after observation
+PASS intention remains unit-total after observation
+PASS meaning candidates remain unit-total
+PASS whole state remains unit-total
+PASS trace records mathematical deltas
+PASS English remains empty after observation
+PASS new input readjusts lambda
+PASS new input readjusts intention
+PASS all active fields still satisfy unit report
+PASS irregular stream tolerated
+PASS irregular stream still has no English
+exit_code=0
+## tests/kernel-math-closure-bridge-v0-1-test.js
+kernel-math-closure-bridge-v0-1 tests passed
+exit_code=0
+## tests/pure-math-frontier-v0-4-test.js
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/pure-math-frontier-v0-4-test.js:50:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/pure-math-frontier-v0-5-test.js
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/pure-math-frontier-v0-5-test.js:44:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/frontier-discovery-core-v0-1-test.js
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/frontier-discovery-core-v0-1-test.js:19:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/source-edit-reality-feedback-v0-1-test.js
+source-edit-reality-feedback-v0-1 tests passed
+exit_code=0
+## tests/whole-self-simulation-core-v0-1-test.js
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/whole-self-simulation-core-v0-1-test.js:17:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/frontier-candidate-complex-unit-v0-1-test.js
+frontier-candidate-complex-unit-v0-1 tests passed
+exit_code=0
