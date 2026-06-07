@@ -13,6 +13,21 @@
     "confidence": 1,
     "summary": "No failed simulation signatures were available for operator synthesis."
   },
+  "frontier_discovery_proposal_count": 4,
+  "frontier_discovery_proposal_kinds": [
+    "complex_unit_identity",
+    "matrix_multiplication",
+    "sequence_definition",
+    "existential_quantifier"
+  ],
+  "frontier_discovery_closure_operators": [
+    "proveComplexUnitIdentity",
+    "typeMatrixProduct",
+    "defineSequence",
+    "generateExistentialObligations"
+  ],
+  "frontier_discovery_artifact": "artifacts/frontier-discovery-report-v0-1.json",
+  "frontier_discovery_summary_artifact": "artifacts/frontier-discovery-summary-v0-1.json",
   "operations": 2,
   "artifact": "artifacts/self-edit-loop-report-v0-1.json",
   "summary_artifact": "artifacts/self-edit-loop-summary-v0-1.json",
