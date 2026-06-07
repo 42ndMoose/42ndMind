@@ -149,7 +149,7 @@ function buildTest() {
     "assert.strictEqual(AST.classify(ast).closure, 'proveComplexUnitIdentity');",
     "const proof = Proof.proveComplexUnitIdentity(ast);",
     "assert.strictEqual(proof.ok, true);",
-    "assert.strictEqual(proof.selected_rule, 'complex-unit-identity');",
+    "assert.strictEqual(proof.rule, 'complex-unit-identity');",
     "const closed = Closure.close(source);",
     "assert.strictEqual(closed.ok, true);",
     "assert.strictEqual(closed.selected_rule, 'complex-unit-identity');",
