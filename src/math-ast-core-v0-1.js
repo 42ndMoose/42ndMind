@@ -25,6 +25,8 @@
       .replace(/²/g, '^2')
       .replace(/×/g, '*')
       .replace(/÷/g, '/')
+      .replace(/⊢/g, ' therefore ')
+      .replace(/∴/g, ' therefore ')
       .replace(/\s+/g, ' ')
       .trim();
   }
@@ -109,11 +111,60 @@
     }
     function additive() {
       let left = multiplicative();
-      while (peek() && (peek().value === '+' || peek().value === '-')) { const op = take().value; const right = multiplicative(); if (!right) return null; left = binary(op, left, right); }
+      while (peek() && (peek().value === '+' || peek().value === '-')) { const op = take().value; const right = multiplicative(); if (!right) return null; left = binary(op, right ? left : left, right); }
       return left;
     }
     const ast = additive();
     return ast && pos === tokens.length ? ast : null;
+  }
+
+  function parseSymbolicExpression(input) {
+    const text = compact(input);
+    if (/^[A-Za-z][A-Za-z0-9_]*$/.test(text)) return symbol(text);
+    if (/^-?\d+(?:\.\d+)?$/.test(text)) return numberLiteral(Number(text));
+    let m = /^([A-Za-z][A-Za-z0-9_]*)(\+|\*)((-?\d+(?:\.\d+)?))$/.exec(text);
+    if (m) return binary(m[2], symbol(m[1]), numberLiteral(Number(m[3])));
+    m = /^((-?\d+(?:\.\d+)?))(\+|\*)([A-Za-z][A-Za-z0-9_]*)$/.exec(text);
+    if (m) return binary(m[3], numberLiteral(Number(m[1])), symbol(m[4]));
+    return parseArithmeticExpression(text);
+  }
+
+  function termKey(term) { return JSON.stringify(term); }
+
+  function parseEqualityRelation(input) {
+    const text = normalize(input);
+    const m = /^(.+?)=(.+)$/.exec(text.replace(/\s+/g, ''));
+    if (!m) return null;
+    const left = parseSymbolicExpression(m[1]);
+    const right = parseSymbolicExpression(m[2]);
+    if (!left || !right) return null;
+    return relation('=', left, right);
+  }
+
+  function parseEqualityProof(input) {
+    const text = normalize(input);
+    const parts = text.split(/\s+therefore\s+/i);
+    if (parts.length === 1) {
+      const conclusion = parseEqualityRelation(parts[0]);
+      if (!conclusion || termKey(conclusion.left) !== termKey(conclusion.right)) return null;
+      return node('EqualityProof', { rule: 'reflexivity', premises: [], conclusion });
+    }
+    if (parts.length !== 2) return null;
+    const premises = parts[0].split(/,| and /i).map(parseEqualityRelation).filter(Boolean);
+    const conclusion = parseEqualityRelation(parts[1]);
+    if (!premises.length || !conclusion) return null;
+    if (premises.length === 1) return node('EqualityProof', { rule: 'symmetry', premises, conclusion });
+    if (premises.length === 2) return node('EqualityProof', { rule: 'transitivity', premises, conclusion });
+    return node('EqualityProof', { rule: 'equality_chain', premises, conclusion });
+  }
+
+  function parseSimplification(input) {
+    const text = normalize(input);
+    const m = /^simplify\s+(.+)$/i.exec(text);
+    if (!m) return null;
+    const expression = parseSymbolicExpression(m[1]);
+    if (!expression) return null;
+    return node('Simplification', { expression });
   }
 
   function parseArithmeticRelation(input) {
@@ -230,6 +281,8 @@
     const parsers = [
       parseSquareNonnegative,
       parseAlgebraicIdentity,
+      parseEqualityProof,
+      parseSimplification,
       parseDivisionConstraint,
       parseSubstitutionEvaluation,
       parseLinearRelation,
@@ -257,6 +310,8 @@
     const map = {
       Equation: { class: 'equation', anatomy_id: 'affine_equation', closure: 'solveAffineEquation' },
       LinearEquation: { class: 'equation', anatomy_id: 'linear_equation', closure: 'solveLinearEquation' },
+      EqualityProof: { class: 'proof', anatomy_id: 'equality_proof', closure: 'proveEquality' },
+      Simplification: { class: 'rewrite', anatomy_id: 'expression_simplification', closure: 'simplifyExpression' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
       SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
@@ -275,7 +330,7 @@
 
   return Object.freeze({
     VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
-    parseArithmeticExpression, parseArithmeticRelation,
+    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification,
     parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
     parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
     parseImplicationChain, parseContradictionPair, parse, classify, canonical
