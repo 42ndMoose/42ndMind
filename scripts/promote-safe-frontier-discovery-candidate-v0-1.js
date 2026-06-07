@@ -13,7 +13,14 @@ const ALLOWED_PATHS = new Set([
   'src/proof-calculus-core-v0-1.js',
   'src/operator-anatomy-v0-1.js',
   'src/source-edit-reality-feedback-v0-1.js',
-  'tests/frontier-candidate-complex-unit-v0-1-test.js'
+  'src/whole-self-simulation-core-v0-1.js',
+  'tests/frontier-candidate-complex-unit-v0-1-test.js',
+  'tests/frontier-candidate-matrix-product-v0-1-test.js'
+]);
+
+const ALLOWED_CANDIDATES = new Map([
+  ['frontier_candidate_complex_unit_identity_v0_1', 'complex_unit_identity'],
+  ['frontier_candidate_matrix_product_v0_1', 'matrix_multiplication']
 ]);
 
 function writeStatus(status) {
@@ -49,10 +56,17 @@ const exportPatch = report.export_patch || {};
 const operations = Array.isArray(proposal.operations) ? proposal.operations : [];
 const changed = Array.isArray(simulation.changed) ? simulation.changed : [];
 const operationPaths = operations.map(op => text(op.path).trim());
+const expectedKind = ALLOWED_CANDIDATES.get(proposal.id);
+
+const noopAlreadySupported = proposal.id == null && operations.length === 0 && summary.accepted_by_sandbox === true;
+if (noopAlreadySupported) {
+  writeStatus({ promoted: false, reason: 'candidate_already_current_or_noop', checks: { noop_report: true }, discovery_kind: summary.discovery_kind || null });
+  process.exit(0);
+}
 
 const checks = {
-  candidate_id_known: proposal.id === 'frontier_candidate_complex_unit_identity_v0_1',
-  discovery_kind_known: summary.discovery_kind === 'complex_unit_identity',
+  candidate_id_known: ALLOWED_CANDIDATES.has(proposal.id),
+  discovery_kind_known: !!expectedKind && summary.discovery_kind === expectedKind,
   accepted_by_sandbox: summary.accepted_by_sandbox === true && simulation.accepted === true,
   tests_ok: summary.tests_ok === true && Array.isArray(simulation.tests) && simulation.tests.every(row => row && row.ok === true),
   validators_ok: summary.validators_ok === true && Array.isArray(simulation.validators) && simulation.validators.every(row => row && row.ok === true),
@@ -69,6 +83,9 @@ if (!ok) {
     promoted: false,
     reason: 'frontier_candidate_promotion_gate_failed',
     checks,
+    candidate_id: proposal.id || null,
+    expected_kind: expectedKind || null,
+    actual_kind: summary.discovery_kind || null,
     operation_paths: operationPaths,
     changed_paths: changed
   });
