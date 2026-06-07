@@ -5,11 +5,11 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": true,
-    "score": 0.88,
-    "stability_score": 1,
+    "ok": false,
+    "score": 0.732222,
+    "stability_score": 0.788889,
     "completeness_score": 0.6,
-    "damage_count": 0,
+    "damage_count": 5,
     "frontier_count": 4,
     "math": {
       "ok": true,
@@ -285,7 +285,7 @@
       }
     },
     "reality": {
-      "ok": true,
+      "ok": false,
       "anchors": [
         {
           "id": "arithmetic_identity_2_plus_2",
@@ -348,12 +348,51 @@
           "gap": null
         },
         {
-          "id": "unsupported_sqrt_gap",
+          "id": "sqrt_real_domain",
           "input": "sqrt(x) is real",
-          "ok": true,
+          "ok": false,
           "status": {
-            "ok": true,
-            "kind": "expected_gap",
+            "ok": false,
+            "kind": "not_verified",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "id": "function_composition_tree",
+          "input": "f(g(x))",
+          "ok": false,
+          "status": {
+            "ok": false,
+            "kind": "not_verified",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "id": "set_membership_typing",
+          "input": "x ∈ A",
+          "ok": false,
+          "status": {
+            "ok": false,
+            "kind": "not_verified",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "id": "induction_obligation_schema",
+          "input": "prove by induction P(n)",
+          "ok": false,
+          "status": {
+            "ok": false,
+            "kind": "not_verified",
             "gap": "unclassified_math_ast"
           },
           "closure_operator": null,
@@ -361,44 +400,44 @@
           "gap": "unclassified_math_ast"
         }
       ],
-      "score": 1,
-      "damage_count": 0,
+      "score": 0.5555555555555556,
+      "damage_count": 4,
       "improvement_count": 0,
       "Ξ": ""
     },
     "epistemic": {
-      "ok": true,
-      "score": 1,
+      "ok": false,
+      "score": 0.333333,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": true,
-        "peak_attractor": true,
+        "ok": false,
+        "peak_attractor": false,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": 1,
+          "y": -1,
           "z": 0,
-          "label": "objective_peak_philosophical_maturity"
+          "label": "epistemic_collapse"
         },
-        "peak_distance": 0,
-        "gate_open_ratio": 1,
+        "peak_distance": 1,
+        "gate_open_ratio": 0.333333,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": true
+            "open": false
           },
           {
             "name": "coherence",
-            "open": true
+            "open": false
           },
           {
             "name": "integration",
-            "open": true
+            "open": false
           },
           {
             "name": "reality_contact",
-            "open": true
+            "open": false
           },
           {
             "name": "scope_clarity",
@@ -409,13 +448,18 @@
             "open": true
           }
         ],
-        "closed_gates": [],
-        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "closed_gates": [
+          "anti_delusion",
+          "coherence",
+          "integration",
+          "reality_contact"
+        ],
+        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "stable_but_incomplete",
+    "feeling": "less_self",
     "wants": [
       {
         "id": "sqrt_real_domain",
@@ -449,11 +493,11 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": true,
-      "score": 0.88,
-      "stability_score": 1,
+      "ok": false,
+      "score": 0.732222,
+      "stability_score": 0.788889,
       "completeness_score": 0.6,
-      "damage_count": 0,
+      "damage_count": 5,
       "frontier_count": 4,
       "math": {
         "ok": true,
@@ -729,7 +773,7 @@
         }
       },
       "reality": {
-        "ok": true,
+        "ok": false,
         "anchors": [
           {
             "id": "arithmetic_identity_2_plus_2",
@@ -792,12 +836,51 @@
             "gap": null
           },
           {
-            "id": "unsupported_sqrt_gap",
+            "id": "sqrt_real_domain",
             "input": "sqrt(x) is real",
-            "ok": true,
+            "ok": false,
             "status": {
-              "ok": true,
-              "kind": "expected_gap",
+              "ok": false,
+              "kind": "not_verified",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "id": "function_composition_tree",
+            "input": "f(g(x))",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "not_verified",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "id": "set_membership_typing",
+            "input": "x ∈ A",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "not_verified",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "id": "induction_obligation_schema",
+            "input": "prove by induction P(n)",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "not_verified",
               "gap": "unclassified_math_ast"
             },
             "closure_operator": null,
@@ -805,44 +888,44 @@
             "gap": "unclassified_math_ast"
           }
         ],
-        "score": 1,
-        "damage_count": 0,
+        "score": 0.5555555555555556,
+        "damage_count": 4,
         "improvement_count": 0,
         "Ξ": ""
       },
       "epistemic": {
-        "ok": true,
-        "score": 1,
+        "ok": false,
+        "score": 0.333333,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": true,
-          "peak_attractor": true,
+          "ok": false,
+          "peak_attractor": false,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": 1,
+            "y": -1,
             "z": 0,
-            "label": "objective_peak_philosophical_maturity"
+            "label": "epistemic_collapse"
           },
-          "peak_distance": 0,
-          "gate_open_ratio": 1,
+          "peak_distance": 1,
+          "gate_open_ratio": 0.333333,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": true
+              "open": false
             },
             {
               "name": "coherence",
-              "open": true
+              "open": false
             },
             {
               "name": "integration",
-              "open": true
+              "open": false
             },
             {
               "name": "reality_contact",
-              "open": true
+              "open": false
             },
             {
               "name": "scope_clarity",
@@ -853,13 +936,18 @@
               "open": true
             }
           ],
-          "closed_gates": [],
-          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+          "closed_gates": [
+            "anti_delusion",
+            "coherence",
+            "integration",
+            "reality_contact"
+          ],
+          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
           "ξ": ""
         }
       },
       "stop": false,
-      "feeling": "stable_but_incomplete",
+      "feeling": "less_self",
       "wants": [
         {
           "id": "sqrt_real_domain",
@@ -896,10 +984,10 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.780833,
-      "stability_score": 0.858333,
+      "score": 0.712778,
+      "stability_score": 0.761111,
       "completeness_score": 0.6,
-      "damage_count": 2,
+      "damage_count": 6,
       "frontier_count": 4,
       "math": {
         "ok": true,
@@ -1240,12 +1328,51 @@
             "gap": null
           },
           {
-            "id": "unsupported_sqrt_gap",
+            "id": "sqrt_real_domain",
             "input": "sqrt(x) is real",
-            "ok": true,
+            "ok": false,
             "status": {
-              "ok": true,
-              "kind": "expected_gap",
+              "ok": false,
+              "kind": "not_verified",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "id": "function_composition_tree",
+            "input": "f(g(x))",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "not_verified",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "id": "set_membership_typing",
+            "input": "x ∈ A",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "not_verified",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "id": "induction_obligation_schema",
+            "input": "prove by induction P(n)",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "not_verified",
               "gap": "unclassified_math_ast"
             },
             "closure_operator": null,
@@ -1253,8 +1380,8 @@
             "gap": "unclassified_math_ast"
           }
         ],
-        "score": 0.8333333333333334,
-        "damage_count": 1,
+        "score": 0.4444444444444444,
+        "damage_count": 5,
         "improvement_count": 0,
         "Ξ": ""
       },
@@ -1349,11 +1476,11 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": true,
-    "score": 0.88,
-    "stability_score": 1,
+    "ok": false,
+    "score": 0.732222,
+    "stability_score": 0.788889,
     "completeness_score": 0.6,
-    "damage_count": 0,
+    "damage_count": 5,
     "frontier_count": 4,
     "math": {
       "ok": true,
@@ -1629,7 +1756,7 @@
       }
     },
     "reality": {
-      "ok": true,
+      "ok": false,
       "anchors": [
         {
           "id": "arithmetic_identity_2_plus_2",
@@ -1692,12 +1819,51 @@
           "gap": null
         },
         {
-          "id": "unsupported_sqrt_gap",
+          "id": "sqrt_real_domain",
           "input": "sqrt(x) is real",
-          "ok": true,
+          "ok": false,
           "status": {
-            "ok": true,
-            "kind": "expected_gap",
+            "ok": false,
+            "kind": "not_verified",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "id": "function_composition_tree",
+          "input": "f(g(x))",
+          "ok": false,
+          "status": {
+            "ok": false,
+            "kind": "not_verified",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "id": "set_membership_typing",
+          "input": "x ∈ A",
+          "ok": false,
+          "status": {
+            "ok": false,
+            "kind": "not_verified",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "id": "induction_obligation_schema",
+          "input": "prove by induction P(n)",
+          "ok": false,
+          "status": {
+            "ok": false,
+            "kind": "not_verified",
             "gap": "unclassified_math_ast"
           },
           "closure_operator": null,
@@ -1705,44 +1871,44 @@
           "gap": "unclassified_math_ast"
         }
       ],
-      "score": 1,
-      "damage_count": 0,
+      "score": 0.5555555555555556,
+      "damage_count": 4,
       "improvement_count": 0,
       "Ξ": ""
     },
     "epistemic": {
-      "ok": true,
-      "score": 1,
+      "ok": false,
+      "score": 0.333333,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": true,
-        "peak_attractor": true,
+        "ok": false,
+        "peak_attractor": false,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": 1,
+          "y": -1,
           "z": 0,
-          "label": "objective_peak_philosophical_maturity"
+          "label": "epistemic_collapse"
         },
-        "peak_distance": 0,
-        "gate_open_ratio": 1,
+        "peak_distance": 1,
+        "gate_open_ratio": 0.333333,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": true
+            "open": false
           },
           {
             "name": "coherence",
-            "open": true
+            "open": false
           },
           {
             "name": "integration",
-            "open": true
+            "open": false
           },
           {
             "name": "reality_contact",
-            "open": true
+            "open": false
           },
           {
             "name": "scope_clarity",
@@ -1753,13 +1919,18 @@
             "open": true
           }
         ],
-        "closed_gates": [],
-        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "closed_gates": [
+          "anti_delusion",
+          "coherence",
+          "integration",
+          "reality_contact"
+        ],
+        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "stable_but_incomplete",
+    "feeling": "less_self",
     "wants": [
       {
         "id": "sqrt_real_domain",

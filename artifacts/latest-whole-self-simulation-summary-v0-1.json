@@ -4,24 +4,24 @@
   "decision": "keep_current_state",
   "stop": false,
   "best_id": "base",
-  "best_score": 0.88,
-  "best_damage_count": 0,
-  "best_feeling": "stable_but_incomplete",
-  "base_score": 0.88,
-  "base_damage_count": 0,
+  "best_score": 0.732222,
+  "best_damage_count": 5,
+  "best_feeling": "less_self",
+  "base_score": 0.732222,
+  "base_damage_count": 5,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 0.88,
-      "damage_count": 0,
-      "feeling": "stable_but_incomplete",
-      "ok": true,
+      "score": 0.732222,
+      "damage_count": 5,
+      "feeling": "less_self",
+      "ok": false,
       "stop": false
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.780833,
-      "damage_count": 2,
+      "score": 0.712778,
+      "damage_count": 6,
       "feeling": "less_self",
       "ok": false,
       "stop": false
@@ -100,18 +100,23 @@
     }
   ],
   "epistemic": {
-    "ok": true,
-    "score": 1,
-    "closed_gates": []
+    "ok": false,
+    "score": 0.333333,
+    "closed_gates": [
+      "anti_delusion",
+      "coherence",
+      "integration",
+      "reality_contact"
+    ]
   },
   "truth": {
     "ok": true,
     "score": 0.6
   },
   "reality": {
-    "ok": true,
-    "score": 1,
-    "damage_count": 0
+    "ok": false,
+    "score": 0.5555555555555556,
+    "damage_count": 4
   },
   "Ξ": ""
 }
