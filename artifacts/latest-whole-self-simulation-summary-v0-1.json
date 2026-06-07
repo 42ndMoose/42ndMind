@@ -4,23 +4,23 @@
   "decision": "keep_current_state",
   "stop": false,
   "best_id": "base",
-  "best_score": 0.7925,
-  "best_damage_count": 1,
-  "best_feeling": "less_self",
-  "base_score": 0.7925,
-  "base_damage_count": 1,
+  "best_score": 0.88,
+  "best_damage_count": 0,
+  "best_feeling": "stable_but_incomplete",
+  "base_score": 0.88,
+  "base_damage_count": 0,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 0.7925,
-      "damage_count": 1,
-      "feeling": "less_self",
-      "ok": false,
+      "score": 0.88,
+      "damage_count": 0,
+      "feeling": "stable_but_incomplete",
+      "ok": true,
       "stop": false
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.710833,
+      "score": 0.780833,
       "damage_count": 2,
       "feeling": "less_self",
       "ok": false,
@@ -100,11 +100,9 @@
     }
   ],
   "epistemic": {
-    "ok": false,
-    "score": 0.833333,
-    "closed_gates": [
-      "coherence"
-    ]
+    "ok": true,
+    "score": 1,
+    "closed_gates": []
   },
   "truth": {
     "ok": true,
