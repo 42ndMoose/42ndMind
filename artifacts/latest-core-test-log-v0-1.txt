@@ -634,7 +634,8 @@ PASS intention fixture l1: manual intention packet
 PASS intention fixture english empty: manual intention packet
 exit_code=0
 ## tests/truth-accounting-core-v0-1-test.js
-cognitive-organism-core-v0-1 tests passed with brain=1 invariant
+autonomous-growth-smoke-v0-1 tests passed
+cognitive-organism-core-v0-1 tests passed with brain=1 invariant and autonomous growth smoke proof
 PASS truth accounting core loads
 PASS closed claim has unit fields
 PASS closed claim opens truth gate
