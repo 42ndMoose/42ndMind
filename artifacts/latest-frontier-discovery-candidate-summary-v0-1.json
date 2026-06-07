@@ -1,23 +1,17 @@
 {
   "packet_type": "42ndMind_frontier_discovery_candidate_summary_v0_1",
   "version": "0.1.0",
-  "candidate_id": "frontier_candidate_sequence_definition_v0_1",
+  "candidate_id": null,
   "discovery_kind": "sequence_definition",
   "accepted_by_sandbox": true,
-  "changed": [
-    "src/math-ast-core-v0-1.js",
-    "src/operator-anatomy-v0-1.js",
-    "src/proof-calculus-core-v0-1.js",
-    "src/source-edit-reality-feedback-v0-1.js",
-    "src/whole-self-simulation-core-v0-1.js",
-    "tests/frontier-candidate-complex-unit-v0-1-test.js"
-  ],
+  "changed": [],
   "chaos": [],
-  "test_count": 1,
+  "test_count": 0,
   "tests_ok": true,
   "validators_ok": true,
   "export_patch_ok": true,
   "promoted": false,
-  "promotion_policy": "candidate accepted by sandbox only; real source promotion remains separate",
-  "Ξ": ""
+  "promotion_policy": "no candidate generated because target frontier already closes",
+  "Ξ": "",
+  "reason": "sequence_definition_already_supported"
 }
