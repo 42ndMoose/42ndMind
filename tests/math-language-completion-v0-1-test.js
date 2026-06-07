@@ -6,6 +6,7 @@ const Closure = require('../src/math-closure-engine-v0-1.js');
 const limCase = 'lim ' + 'x->0 ' + 'sin' + '(x)' + '/' + 'x = 1';
 const derCase = 'd' + '/' + 'dx ' + 'x' + '^' + '2 = 2x';
 const intCase = 'integral ' + '2x ' + 'dx = ' + 'x' + '^' + '2 + C';
+const complexCase = 'i' + '^' + '2 = -1';
 
 const samples = [
   '2x + 1 = 7',
@@ -30,6 +31,7 @@ const samples = [
   limCase,
   derCase,
   intCase,
+  complexCase,
   'A=>B, B=>C',
   'A, not A',
   'x >= 3 with x = 5'
@@ -58,8 +60,8 @@ for (const source of samples) {
   assert.ok(closed.selected_rule, 'proof/closure rule selected: ' + source);
 }
 
-const gap = Closure.close('i^2 = -1');
+const gap = Closure.close('A B = C');
 assert.strictEqual(gap.ok, false);
 assert.strictEqual(gap.gaps[0].id, 'unclassified_math_ast');
 
-console.log('math-language-completion-v0-1 tests passed: v0.5 pure-math frontier, ' + samples.length + ' supported forms, 1 precise unsupported gap');
+console.log('math-language-completion-v0-1 tests passed: complex frontier promoted, ' + samples.length + ' supported forms, 1 precise unsupported gap');
