@@ -9,19 +9,25 @@
   try { if (typeof require === 'function') Growth = require('./autonomous-brain-growth-core-v0-1.js'); } catch (_) { Growth = null; }
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
-  function R(value) { return Number((Number(value) || 0).toFixed(6)); }
   function A(value) { return Array.isArray(value) ? value : []; }
-  function l1(rows) { return R(A(rows).reduce((sum, row) => sum + Math.abs(Number(row.w || 0)), 0)); }
-  function unitOk(rows) { return Math.abs(l1(rows) - 1) < 1e-5; }
+  function l1(rows) { return A(rows).reduce((sum, row) => sum + Math.abs(Number(row.w || 0)), 0); }
+  function unitOk(rows) { return Math.abs(l1(rows) - 1) < 1e-12; }
   function normalize(rows) {
-    const clean = A(rows).map(row => ({ id: String(row.id || 'unknown'), w: Math.max(1e-9, Number(row.w || 0)) }));
-    const total = clean.reduce((sum, row) => sum + row.w, 0) || 1;
-    return clean.map(row => ({ id: row.id, w: R(row.w / total) })).sort((a, b) => b.w - a.w || a.id.localeCompare(b.id));
+    const clean = A(rows).map(row => ({ id: String(row.id || 'unknown'), raw: Math.max(0, Number(row.w || 0)) }));
+    if (clean.length === 0) return [{ id: 'empty', w: 1 }];
+    const total = clean.reduce((sum, row) => sum + row.raw, 0) || 1;
+    let partial = 0;
+    return clean.map((row, index) => {
+      if (index === clean.length - 1) return { id: row.id, w: 1 - partial };
+      const w = row.raw / total;
+      partial += w;
+      return { id: row.id, w };
+    });
   }
 
   function organ(id, rows) {
     const field = normalize(rows);
-    return { id, equation: id + ' = 1', invariant: 'unit(' + id + ')=1', unit: l1(field), ok: unitOk(field), field };
+    return { id, equation: '|' + id + '| = 1', invariant: '|' + id + '|=1', unit: l1(field), ok: unitOk(field), field };
   }
 
   function stats(state) {
@@ -53,45 +59,57 @@
     const isContradiction = last.contradiction ? 1 : s.contradictions ? 0.5 : 0;
     return {
       perception: organ('perception', [
-        { id: 'claim', w: isClaim + 1e-9 },
-        { id: 'query', w: isQuery + 1e-9 },
-        { id: 'unparsed', w: isUnparsed + 1e-9 },
-        { id: 'recognized', w: isClaim + isQuery + 1e-9 }
+        { id: 'claim', w: isClaim + 1e-12 },
+        { id: 'query', w: isQuery + 1e-12 },
+        { id: 'unparsed', w: isUnparsed + 1e-12 },
+        { id: 'recognized', w: isClaim + isQuery + 1e-12 }
       ]),
       memory: organ('memory', [
-        { id: 'concepts', w: s.concepts + 1e-9 },
-        { id: 'beliefs', w: s.beliefs + 1e-9 },
-        { id: 'questions', w: s.questions + 1e-9 },
-        { id: 'log', w: s.log + 1e-9 }
+        { id: 'concepts', w: s.concepts + 1e-12 },
+        { id: 'beliefs', w: s.beliefs + 1e-12 },
+        { id: 'questions', w: s.questions + 1e-12 },
+        { id: 'log', w: s.log + 1e-12 }
       ]),
       belief: organ('belief', [
-        { id: 'positive', w: s.pos + 1e-9 },
-        { id: 'negative', w: s.neg + 1e-9 },
-        { id: 'confidence', w: s.confidence + 1e-9 },
-        { id: 'contradiction', w: isContradiction + 1e-9 }
+        { id: 'positive', w: s.pos + 1e-12 },
+        { id: 'negative', w: s.neg + 1e-12 },
+        { id: 'confidence', w: s.confidence + 1e-12 },
+        { id: 'contradiction', w: isContradiction + 1e-12 }
       ]),
       valuation: organ('valuation', [
-        { id: 'reward', w: Number(organism.reward || 0) + isAnswered + 1e-9 },
-        { id: 'pain', w: Number(organism.pain || 0) + isContradiction + isUnparsed + 1e-9 },
-        { id: 'surprise', w: Number(organism.surprise || 0) + isUnknown + 1e-9 },
-        { id: 'integrity', w: Number(organism.integrity || 1) + 1e-9 }
+        { id: 'reward', w: Number(organism.reward || 0) + isAnswered + 1e-12 },
+        { id: 'pain', w: Number(organism.pain || 0) + isContradiction + isUnparsed + 1e-12 },
+        { id: 'surprise', w: Number(organism.surprise || 0) + isUnknown + 1e-12 },
+        { id: 'integrity', w: Number(organism.integrity || 1) + 1e-12 }
       ]),
       action: organ('action', [
-        { id: 'answer', w: isAnswered + 1e-9 },
-        { id: 'reinforce', w: isClaim + 1e-9 },
-        { id: 'repair', w: isContradiction + 1e-9 },
-        { id: 'explore', w: isUnparsed + isUnknown + 1e-9 }
+        { id: 'answer', w: isAnswered + 1e-12 },
+        { id: 'reinforce', w: isClaim + 1e-12 },
+        { id: 'repair', w: isContradiction + 1e-12 },
+        { id: 'explore', w: isUnparsed + isUnknown + 1e-12 }
       ])
     };
   }
 
   function build(state) {
     const organs = organsFor(state || {});
-    const B = normalize(Object.keys(organs).map(id => ({ id: 'B:' + id, w: organs[id].ok ? 1 : 0 })));
+    const terms = Object.keys(organs).map(id => ({ id: '|' + id + '|', w: organs[id].unit }));
     const organ_units = {};
-    let ok = unitOk(B);
+    let ok = true;
     Object.keys(organs).forEach(id => { organ_units[id] = organs[id].unit; ok = ok && organs[id].ok; });
-    return { equation: 'brain = 1', invariant: 'whole brain and every organ are unit wholes', unit: l1(B), ok, B, organs, organ_units };
+    const magnitude = l1(terms);
+    const coherence = terms.length ? magnitude / terms.length : 0;
+    return {
+      equation: 'brain = |perception| + |memory| + |belief| + |valuation| + |action|',
+      invariant: 'each organ is its own unit whole; no rounded organ field',
+      organ_count: terms.length,
+      magnitude,
+      coherence,
+      ok: ok && Math.abs(coherence - 1) < 1e-12,
+      B: terms,
+      organs,
+      organ_units
+    };
   }
 
   function optimizedStage(state) {
