@@ -121,6 +121,9 @@ jobs:
           printf '{\n  "core_tests_exit_code": %s,\n  "ok": %s\n}\n' "$status" "$([ "$status" -eq 0 ] && echo true || echo false)" > artifacts/core-test-status-v0-1.json
           echo "CORE_TEST_STATUS=$status" >> "$GITHUB_ENV"
 
+      - name: Run whole-self simulation and capture report
+        run: node scripts/run-whole-self-simulation-v0-1.js > artifacts/whole-self-simulation-console-v0-1.txt 2>&1
+
       - name: Run whole-language self-edit loop and capture status
         run: |
           set +e
@@ -159,7 +162,7 @@ jobs:
       - name: Ensure report placeholders exist
         run: |
           mkdir -p artifacts
-          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json
+          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json whole-self-simulation-report-v0-1.json whole-self-simulation-summary-v0-1.json
           do
             if [ ! -f "artifacts/$file" ]; then
               printf '{\n  "missing": true,\n  "file": "%s"\n}\n' "$file" > "artifacts/$file"
@@ -171,6 +174,10 @@ jobs:
           echo "## 42ndMind Core Test Status" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/core-test-status-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Whole-Self Simulation Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/whole-self-simulation-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
@@ -198,10 +205,12 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add scripts/run-self-edit-loop-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js scripts/apply-kernel-math-closure-bridge-v0-1.js src/self-edit-loop-v0-1.js src/source-edit-reality-feedback-v0-1.js src/whole-self-simulation-core-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-language-kernel-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js tests/self-edit-parser-export-fallback-v0-1-test.cjs
+          git add scripts/run-self-edit-loop-v0-1.js scripts/run-whole-self-simulation-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js scripts/apply-kernel-math-closure-bridge-v0-1.js src/self-edit-loop-v0-1.js src/source-edit-reality-feedback-v0-1.js src/whole-self-simulation-core-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-language-kernel-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js tests/self-edit-parser-export-fallback-v0-1-test.cjs
           git diff --cached --quiet || git commit -m "Wire proof and closure spine [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
+          cp artifacts/whole-self-simulation-report-v0-1.json artifacts/latest-whole-self-simulation-report-v0-1.json
+          cp artifacts/whole-self-simulation-summary-v0-1.json artifacts/latest-whole-self-simulation-summary-v0-1.json
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
           cp artifacts/self-edit-loop-post-promotion-status-v0-1.json artifacts/latest-self-edit-loop-post-promotion-status-v0-1.json
           cp artifacts/reactive-promotion-status-v0-1.json artifacts/latest-reactive-promotion-status-v0-1.json
