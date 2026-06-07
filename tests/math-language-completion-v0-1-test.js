@@ -71,8 +71,8 @@ const sequence = Closure.close(sequenceCase);
 if (sequence.ok) assert.strictEqual(sequence.selected_rule, 'sequence-term-definition');
 else assert.strictEqual(sequence.gaps[0].id, 'unclassified_math_ast');
 
-const gap = Closure.close(existsCase);
-assert.strictEqual(gap.ok, false);
-assert.strictEqual(gap.gaps[0].id, 'unclassified_math_ast');
+const existential = Closure.close(existsCase);
+if (existential.ok) assert.strictEqual(existential.selected_rule, 'existential-witness-obligations');
+else assert.strictEqual(existential.gaps[0].id, 'unclassified_math_ast');
 
-console.log('math-language-completion-v0-1 tests passed: stable supported forms plus matrix/sequence transition checks, 1 precise unsupported gap');
+console.log('math-language-completion-v0-1 tests passed: stable supported forms plus frontier transition checks');
