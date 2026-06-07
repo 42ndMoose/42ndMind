@@ -2,7 +2,7 @@
   "promoted": false,
   "reason": "frontier_candidate_promotion_gate_failed",
   "checks": {
-    "candidate_id_known": true,
+    "candidate_id_known": false,
     "discovery_kind_known": false,
     "accepted_by_sandbox": true,
     "tests_ok": true,
@@ -10,17 +10,23 @@
     "no_chaos": true,
     "export_patch_ok": true,
     "operations_present": true,
-    "all_paths_allowed": true,
-    "changed_paths_allowed": true
+    "all_paths_allowed": false,
+    "changed_paths_allowed": false
   },
   "operation_paths": [
     "src/math-ast-core-v0-1.js",
     "src/proof-calculus-core-v0-1.js",
     "src/operator-anatomy-v0-1.js",
     "src/source-edit-reality-feedback-v0-1.js",
-    "tests/frontier-candidate-complex-unit-v0-1-test.js"
+    "src/whole-self-simulation-core-v0-1.js",
+    "tests/frontier-candidate-matrix-product-v0-1-test.js"
   ],
   "changed_paths": [
-    "tests/frontier-candidate-complex-unit-v0-1-test.js"
+    "src/math-ast-core-v0-1.js",
+    "src/operator-anatomy-v0-1.js",
+    "src/proof-calculus-core-v0-1.js",
+    "src/source-edit-reality-feedback-v0-1.js",
+    "src/whole-self-simulation-core-v0-1.js",
+    "tests/frontier-candidate-matrix-product-v0-1-test.js"
   ]
 }
