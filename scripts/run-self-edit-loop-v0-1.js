@@ -6,6 +6,8 @@ const path = require('path');
 const L = require('../src/self-edit-loop-v0-1.js');
 const OA = require('../src/operator-anatomy-v0-1.js');
 const EO = require('../src/epistemic-octahedron-core-v0-1.js');
+const W = require('../src/whole-self-simulation-core-v0-1.js');
+const FD = require('../src/frontier-discovery-core-v0-1.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
@@ -13,6 +15,8 @@ const REPORT_PATH = path.join(ARTIFACT_DIR, 'self-edit-loop-report-v0-1.json');
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'self-edit-loop-summary-v0-1.json');
 const REACTIVE_REPORT_PATH = path.join(ARTIFACT_DIR, 'reactive-self-edit-report-v0-1.json');
 const REACTIVE_SUMMARY_PATH = path.join(ARTIFACT_DIR, 'reactive-self-edit-summary-v0-1.json');
+const FRONTIER_DISCOVERY_REPORT_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-report-v0-1.json');
+const FRONTIER_DISCOVERY_SUMMARY_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-summary-v0-1.json');
 const REACTIVE_TEST_PATH = 'tests/meta-reactive-language-parser-v0-1-test.js';
 const PARSER_PATH = 'src/language-parser-v0-1.js';
 
@@ -70,8 +74,11 @@ function collectFiles() {
     'src/self-edit-loop-v0-1.js',
     'src/operator-anatomy-v0-1.js',
     'src/epistemic-octahedron-core-v0-1.js',
+    'src/frontier-discovery-core-v0-1.js',
+    'src/whole-self-simulation-core-v0-1.js',
     'tests/self-edit-loop-v0-1-test.js',
-    'tests/formal-math-v0-1-test.js'
+    'tests/formal-math-v0-1-test.js',
+    'tests/frontier-discovery-core-v0-1-test.js'
   ].forEach(relativePath => {
     const content = readIfExists(relativePath);
     if (content != null) files[relativePath] = content;
@@ -254,6 +261,53 @@ function proposalPatchFor(meta) {
     : null;
 }
 
+function makeFrontierDiscoveryReport(files) {
+  const wholeSelf = W && typeof W.evaluateState === 'function' ? W.evaluateState({ id: 'self_edit_frontier_discovery', files }) : null;
+  const discovery = wholeSelf && FD && typeof FD.fromWholeSelf === 'function'
+    ? FD.fromWholeSelf(wholeSelf)
+    : { packet_type: '42ndMind_frontier_discovery_batch_v0_1', version: FD && FD.VERSION || '0.1.0', count: 0, discoveries: [], Ξ: '' };
+  const proposals = [];
+  (discovery.discoveries || []).forEach(row => {
+    (row.proposals || []).forEach(proposal => proposals.push(proposal));
+  });
+  const ledger = FD && typeof FD.createLedger === 'function'
+    ? FD.createLedger(proposals.map(proposal => ({ input: proposal.input, kind: proposal.kind, result: 'proposed', promoted: false, closure_operator: proposal.candidate && proposal.candidate.closure_operator })))
+    : null;
+  const report = {
+    packet_type: '42ndMind_frontier_discovery_report_v0_1',
+    version: FD && FD.VERSION || '0.1.0',
+    generated_by: 'scripts/run-self-edit-loop-v0-1.js',
+    whole_self: wholeSelf ? {
+      ok: wholeSelf.ok,
+      stop: wholeSelf.stop,
+      feeling: wholeSelf.feeling,
+      frontier_count: wholeSelf.frontier_count,
+      wants: wholeSelf.wants
+    } : null,
+    discovery,
+    proposal_count: proposals.length,
+    proposals,
+    ledger,
+    promotion_policy: 'discovery proposes candidate structures only; sandbox, reality feedback, whole-self simulation, and promotion gates decide acceptance',
+    Ξ: ''
+  };
+  const summary = {
+    packet_type: '42ndMind_frontier_discovery_summary_v0_1',
+    version: report.version,
+    frontier_count: wholeSelf ? wholeSelf.frontier_count : 0,
+    want_ids: wholeSelf && Array.isArray(wholeSelf.wants) ? wholeSelf.wants.map(row => row.id) : [],
+    discovery_count: discovery && Array.isArray(discovery.discoveries) ? discovery.discoveries.length : 0,
+    proposal_count: proposals.length,
+    proposal_kinds: proposals.map(row => row.kind),
+    closure_operators: proposals.map(row => row.candidate && row.candidate.closure_operator).filter(Boolean),
+    promoted: false,
+    report_artifact: path.relative(ROOT, FRONTIER_DISCOVERY_REPORT_PATH),
+    summary_artifact: path.relative(ROOT, FRONTIER_DISCOVERY_SUMMARY_PATH),
+    Ξ: ''
+  };
+  return { report, summary };
+}
+
 function makeReactiveReport(files) {
   const goal = reactiveGoal(files);
   const reactiveFiles = addReactivePressureTest(files, goal);
@@ -393,11 +447,13 @@ function main() {
     sandboxOptions: { allowDelete: false, maxPatchBytes: 5_000_000 }
   });
 
+  const frontierDiscovery = makeFrontierDiscoveryReport(files);
   const reactive = makeReactiveReport(files);
 
   fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + '\n');
   fs.writeFileSync(REACTIVE_REPORT_PATH, JSON.stringify(reactive.report, null, 2) + '\n');
+  fs.writeFileSync(FRONTIER_DISCOVERY_REPORT_PATH, JSON.stringify(frontierDiscovery.report, null, 2) + '\n');
 
   const summary = {
     accepted: report.accepted,
@@ -406,6 +462,11 @@ function main() {
     mathematical_gap_count: report.math_patch ? report.math_patch.gaps.length : null,
     operator_candidate_count: report.operator_synthesis && report.operator_synthesis.candidates ? report.operator_synthesis.candidates.length : 0,
     operator_decision: report.operator_synthesis ? report.operator_synthesis.decision : null,
+    frontier_discovery_proposal_count: frontierDiscovery.summary.proposal_count,
+    frontier_discovery_proposal_kinds: frontierDiscovery.summary.proposal_kinds,
+    frontier_discovery_closure_operators: frontierDiscovery.summary.closure_operators,
+    frontier_discovery_artifact: path.relative(ROOT, FRONTIER_DISCOVERY_REPORT_PATH),
+    frontier_discovery_summary_artifact: path.relative(ROOT, FRONTIER_DISCOVERY_SUMMARY_PATH),
     operations: report.proposal.operations.length,
     artifact: path.relative(ROOT, REPORT_PATH),
     summary_artifact: path.relative(ROOT, SUMMARY_PATH),
@@ -428,6 +489,7 @@ function main() {
 
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2) + '\n');
   fs.writeFileSync(REACTIVE_SUMMARY_PATH, JSON.stringify(reactive.summary, null, 2) + '\n');
+  fs.writeFileSync(FRONTIER_DISCOVERY_SUMMARY_PATH, JSON.stringify(frontierDiscovery.summary, null, 2) + '\n');
   console.log(JSON.stringify(summary, null, 2));
 }
 
