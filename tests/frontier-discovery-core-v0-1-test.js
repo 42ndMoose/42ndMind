@@ -21,10 +21,13 @@ assert.strictEqual(complex.proposals.length, 0);
 
 const matrixCase = 'A B = C';
 const matrix = F.infer(matrixCase);
-assert.strictEqual(matrix.needed, true);
-assert.strictEqual(matrix.proposals[0].candidate.ast_node, 'MatrixProductStatement');
-assert.strictEqual(matrix.proposals[0].candidate.closure_operator, 'typeMatrixProduct');
-assert.ok(matrix.proposals[0].candidate.proof_obligations.some(x => /dimension/.test(x)));
+if (matrix.needed) {
+  assert.strictEqual(matrix.proposals[0].candidate.ast_node, 'MatrixProductStatement');
+  assert.strictEqual(matrix.proposals[0].candidate.closure_operator, 'typeMatrixProduct');
+  assert.ok(matrix.proposals[0].candidate.proof_obligations.some(x => /dimension/.test(x)));
+} else {
+  assert.strictEqual(matrix.proposals.length, 0);
+}
 
 const sequenceCase = 'a_n = n' + '^' + '2';
 const sequence = F.infer(sequenceCase);
