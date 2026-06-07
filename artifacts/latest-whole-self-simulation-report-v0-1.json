@@ -5,20 +5,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": true,
-    "score": 0.914286,
-    "stability_score": 1,
+    "ok": false,
+    "score": 0.686786,
+    "stability_score": 0.675,
     "completeness_score": 0.714286,
-    "damage_count": 0,
-    "frontier_count": 4,
+    "damage_count": 3,
+    "frontier_count": 3,
     "math": {
-      "ok": true,
+      "ok": false,
       "score": 1,
       "stability_score": 1,
       "completeness_score": 0.714286,
-      "damage_count": 0,
-      "frontier_count": 4,
-      "gap_count": 0,
+      "damage_count": 1,
+      "frontier_count": 3,
+      "gap_count": 1,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -132,14 +132,14 @@
         },
         {
           "input": "i^2 = -1",
-          "ok": true,
+          "ok": false,
           "frontier": true,
           "frontier_id": "complex_numbers",
           "reason": "Complex-number constants and fields are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "verified": true,
+          "closure_operator": "proveComplexUnitIdentity",
+          "selected_rule": "complex-unit-identity",
+          "gap": null
         },
         {
           "input": "A B = C",
@@ -177,17 +177,6 @@
       ],
       "frontiers": [
         {
-          "input": "i^2 = -1",
-          "ok": true,
-          "frontier": true,
-          "frontier_id": "complex_numbers",
-          "reason": "Complex-number constants and fields are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
-        },
-        {
           "input": "A B = C",
           "ok": true,
           "frontier": true,
@@ -223,9 +212,9 @@
       ]
     },
     "truth": {
-      "ok": true,
-      "score": 0.714286,
-      "frontier_pressure": 0.285714,
+      "ok": false,
+      "score": 0,
+      "frontier_pressure": 0.214286,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -256,18 +245,18 @@
         ],
         "χ": [
           {
-            "σ": "χ0",
+            "σ": "χ!",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.714286
+            "w": 0.785714
           },
           {
             "σ": "υ?",
-            "w": 0.285714
+            "w": 0.214286
           }
         ],
         "μ": [
@@ -278,12 +267,12 @@
         ],
         "θ": [
           {
-            "σ": "θT",
-            "w": 0.714286
+            "σ": "θC",
+            "w": 0.823529
           },
           {
             "σ": "θU",
-            "w": 0.285714
+            "w": 0.176471
           }
         ],
         "ξ": "",
@@ -302,10 +291,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 1,
-          "contradiction": 0,
-          "no_unknown": 0.714286,
-          "unknown": 0.285714,
+          "no_contradiction": 0,
+          "contradiction": 1,
+          "no_unknown": 0.785714,
+          "unknown": 0.214286,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -315,10 +304,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0.714286,
+        "closure": 0,
         "truth_gate": {
           "true": false,
-          "contested": false,
+          "contested": true,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -486,6 +475,18 @@
           "closure_operator": "proveProbabilityProductRule",
           "selected_rule": "probability-product-requires-independence",
           "gap": null
+        },
+        {
+          "id": "complex_unit_identity",
+          "input": "i^2 = -1",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveComplexUnitIdentity",
+          "selected_rule": "complex-unit-identity",
+          "gap": null
         }
       ],
       "score": 1,
@@ -494,34 +495,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": true,
-      "score": 1,
+      "ok": false,
+      "score": 0.5,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": true,
-        "peak_attractor": true,
+        "ok": false,
+        "peak_attractor": false,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": 1,
+          "y": -1,
           "z": 0,
-          "label": "objective_peak_philosophical_maturity"
+          "label": "epistemic_collapse"
         },
-        "peak_distance": 0,
-        "gate_open_ratio": 1,
+        "peak_distance": 1,
+        "gate_open_ratio": 0.5,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": true
+            "open": false
           },
           {
             "name": "coherence",
-            "open": true
+            "open": false
           },
           {
             "name": "integration",
-            "open": true
+            "open": false
           },
           {
             "name": "reality_contact",
@@ -536,20 +537,18 @@
             "open": true
           }
         ],
-        "closed_gates": [],
-        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "closed_gates": [
+          "anti_delusion",
+          "coherence",
+          "integration"
+        ],
+        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "stable_but_incomplete",
+    "feeling": "less_self",
     "wants": [
-      {
-        "id": "complex_numbers",
-        "input": "i^2 = -1",
-        "gap": "unclassified_math_ast",
-        "reason": "Complex-number constants and fields are not yet represented."
-      },
       {
         "id": "matrices",
         "input": "A B = C",
@@ -576,20 +575,20 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": true,
-      "score": 0.914286,
-      "stability_score": 1,
+      "ok": false,
+      "score": 0.686786,
+      "stability_score": 0.675,
       "completeness_score": 0.714286,
-      "damage_count": 0,
-      "frontier_count": 4,
+      "damage_count": 3,
+      "frontier_count": 3,
       "math": {
-        "ok": true,
+        "ok": false,
         "score": 1,
         "stability_score": 1,
         "completeness_score": 0.714286,
-        "damage_count": 0,
-        "frontier_count": 4,
-        "gap_count": 0,
+        "damage_count": 1,
+        "frontier_count": 3,
+        "gap_count": 1,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -703,14 +702,14 @@
           },
           {
             "input": "i^2 = -1",
-            "ok": true,
+            "ok": false,
             "frontier": true,
             "frontier_id": "complex_numbers",
             "reason": "Complex-number constants and fields are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "verified": true,
+            "closure_operator": "proveComplexUnitIdentity",
+            "selected_rule": "complex-unit-identity",
+            "gap": null
           },
           {
             "input": "A B = C",
@@ -748,17 +747,6 @@
         ],
         "frontiers": [
           {
-            "input": "i^2 = -1",
-            "ok": true,
-            "frontier": true,
-            "frontier_id": "complex_numbers",
-            "reason": "Complex-number constants and fields are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
-          },
-          {
             "input": "A B = C",
             "ok": true,
             "frontier": true,
@@ -794,9 +782,9 @@
         ]
       },
       "truth": {
-        "ok": true,
-        "score": 0.714286,
-        "frontier_pressure": 0.285714,
+        "ok": false,
+        "score": 0,
+        "frontier_pressure": 0.214286,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -827,18 +815,18 @@
           ],
           "χ": [
             {
-              "σ": "χ0",
+              "σ": "χ!",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.714286
+              "w": 0.785714
             },
             {
               "σ": "υ?",
-              "w": 0.285714
+              "w": 0.214286
             }
           ],
           "μ": [
@@ -849,12 +837,12 @@
           ],
           "θ": [
             {
-              "σ": "θT",
-              "w": 0.714286
+              "σ": "θC",
+              "w": 0.823529
             },
             {
               "σ": "θU",
-              "w": 0.285714
+              "w": 0.176471
             }
           ],
           "ξ": "",
@@ -873,10 +861,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 1,
-            "contradiction": 0,
-            "no_unknown": 0.714286,
-            "unknown": 0.285714,
+            "no_contradiction": 0,
+            "contradiction": 1,
+            "no_unknown": 0.785714,
+            "unknown": 0.214286,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -886,10 +874,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0.714286,
+          "closure": 0,
           "truth_gate": {
             "true": false,
-            "contested": false,
+            "contested": true,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1057,6 +1045,18 @@
             "closure_operator": "proveProbabilityProductRule",
             "selected_rule": "probability-product-requires-independence",
             "gap": null
+          },
+          {
+            "id": "complex_unit_identity",
+            "input": "i^2 = -1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveComplexUnitIdentity",
+            "selected_rule": "complex-unit-identity",
+            "gap": null
           }
         ],
         "score": 1,
@@ -1065,34 +1065,34 @@
         "Ξ": ""
       },
       "epistemic": {
-        "ok": true,
-        "score": 1,
+        "ok": false,
+        "score": 0.5,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": true,
-          "peak_attractor": true,
+          "ok": false,
+          "peak_attractor": false,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": 1,
+            "y": -1,
             "z": 0,
-            "label": "objective_peak_philosophical_maturity"
+            "label": "epistemic_collapse"
           },
-          "peak_distance": 0,
-          "gate_open_ratio": 1,
+          "peak_distance": 1,
+          "gate_open_ratio": 0.5,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": true
+              "open": false
             },
             {
               "name": "coherence",
-              "open": true
+              "open": false
             },
             {
               "name": "integration",
-              "open": true
+              "open": false
             },
             {
               "name": "reality_contact",
@@ -1107,20 +1107,18 @@
               "open": true
             }
           ],
-          "closed_gates": [],
-          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+          "closed_gates": [
+            "anti_delusion",
+            "coherence",
+            "integration"
+          ],
+          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
           "ξ": ""
         }
       },
       "stop": false,
-      "feeling": "stable_but_incomplete",
+      "feeling": "less_self",
       "wants": [
-        {
-          "id": "complex_numbers",
-          "input": "i^2 = -1",
-          "gap": "unclassified_math_ast",
-          "reason": "Complex-number constants and fields are not yet represented."
-        },
         {
           "id": "matrices",
           "input": "A B = C",
@@ -1150,19 +1148,19 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.830824,
-      "stability_score": 0.880769,
+      "score": 0.656786,
+      "stability_score": 0.632143,
       "completeness_score": 0.714286,
-      "damage_count": 2,
-      "frontier_count": 4,
+      "damage_count": 4,
+      "frontier_count": 3,
       "math": {
-        "ok": true,
+        "ok": false,
         "score": 1,
         "stability_score": 1,
         "completeness_score": 0.714286,
-        "damage_count": 0,
-        "frontier_count": 4,
-        "gap_count": 0,
+        "damage_count": 1,
+        "frontier_count": 3,
+        "gap_count": 1,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -1276,14 +1274,14 @@
           },
           {
             "input": "i^2 = -1",
-            "ok": true,
+            "ok": false,
             "frontier": true,
             "frontier_id": "complex_numbers",
             "reason": "Complex-number constants and fields are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "verified": true,
+            "closure_operator": "proveComplexUnitIdentity",
+            "selected_rule": "complex-unit-identity",
+            "gap": null
           },
           {
             "input": "A B = C",
@@ -1321,17 +1319,6 @@
         ],
         "frontiers": [
           {
-            "input": "i^2 = -1",
-            "ok": true,
-            "frontier": true,
-            "frontier_id": "complex_numbers",
-            "reason": "Complex-number constants and fields are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
-          },
-          {
             "input": "A B = C",
             "ok": true,
             "frontier": true,
@@ -1367,9 +1354,9 @@
         ]
       },
       "truth": {
-        "ok": true,
-        "score": 0.714286,
-        "frontier_pressure": 0.285714,
+        "ok": false,
+        "score": 0,
+        "frontier_pressure": 0.214286,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -1400,18 +1387,18 @@
           ],
           "χ": [
             {
-              "σ": "χ0",
+              "σ": "χ!",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.714286
+              "w": 0.785714
             },
             {
               "σ": "υ?",
-              "w": 0.285714
+              "w": 0.214286
             }
           ],
           "μ": [
@@ -1422,12 +1409,12 @@
           ],
           "θ": [
             {
-              "σ": "θT",
-              "w": 0.714286
+              "σ": "θC",
+              "w": 0.823529
             },
             {
               "σ": "θU",
-              "w": 0.285714
+              "w": 0.176471
             }
           ],
           "ξ": "",
@@ -1446,10 +1433,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 1,
-            "contradiction": 0,
-            "no_unknown": 0.714286,
-            "unknown": 0.285714,
+            "no_contradiction": 0,
+            "contradiction": 1,
+            "no_unknown": 0.785714,
+            "unknown": 0.214286,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -1459,10 +1446,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0.714286,
+          "closure": 0,
           "truth_gate": {
             "true": false,
-            "contested": false,
+            "contested": true,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1632,9 +1619,21 @@
             "closure_operator": "proveProbabilityProductRule",
             "selected_rule": "probability-product-requires-independence",
             "gap": null
+          },
+          {
+            "id": "complex_unit_identity",
+            "input": "i^2 = -1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveComplexUnitIdentity",
+            "selected_rule": "complex-unit-identity",
+            "gap": null
           }
         ],
-        "score": 0.9230769230769231,
+        "score": 0.9285714285714286,
         "damage_count": 1,
         "improvement_count": 0,
         "Ξ": ""
@@ -1696,12 +1695,6 @@
       "feeling": "less_self",
       "wants": [
         {
-          "id": "complex_numbers",
-          "input": "i^2 = -1",
-          "gap": "unclassified_math_ast",
-          "reason": "Complex-number constants and fields are not yet represented."
-        },
-        {
           "id": "matrices",
           "input": "A B = C",
           "gap": "unclassified_math_ast",
@@ -1730,20 +1723,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": true,
-    "score": 0.914286,
-    "stability_score": 1,
+    "ok": false,
+    "score": 0.686786,
+    "stability_score": 0.675,
     "completeness_score": 0.714286,
-    "damage_count": 0,
-    "frontier_count": 4,
+    "damage_count": 3,
+    "frontier_count": 3,
     "math": {
-      "ok": true,
+      "ok": false,
       "score": 1,
       "stability_score": 1,
       "completeness_score": 0.714286,
-      "damage_count": 0,
-      "frontier_count": 4,
-      "gap_count": 0,
+      "damage_count": 1,
+      "frontier_count": 3,
+      "gap_count": 1,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -1857,14 +1850,14 @@
         },
         {
           "input": "i^2 = -1",
-          "ok": true,
+          "ok": false,
           "frontier": true,
           "frontier_id": "complex_numbers",
           "reason": "Complex-number constants and fields are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "verified": true,
+          "closure_operator": "proveComplexUnitIdentity",
+          "selected_rule": "complex-unit-identity",
+          "gap": null
         },
         {
           "input": "A B = C",
@@ -1902,17 +1895,6 @@
       ],
       "frontiers": [
         {
-          "input": "i^2 = -1",
-          "ok": true,
-          "frontier": true,
-          "frontier_id": "complex_numbers",
-          "reason": "Complex-number constants and fields are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
-        },
-        {
           "input": "A B = C",
           "ok": true,
           "frontier": true,
@@ -1948,9 +1930,9 @@
       ]
     },
     "truth": {
-      "ok": true,
-      "score": 0.714286,
-      "frontier_pressure": 0.285714,
+      "ok": false,
+      "score": 0,
+      "frontier_pressure": 0.214286,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -1981,18 +1963,18 @@
         ],
         "χ": [
           {
-            "σ": "χ0",
+            "σ": "χ!",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.714286
+            "w": 0.785714
           },
           {
             "σ": "υ?",
-            "w": 0.285714
+            "w": 0.214286
           }
         ],
         "μ": [
@@ -2003,12 +1985,12 @@
         ],
         "θ": [
           {
-            "σ": "θT",
-            "w": 0.714286
+            "σ": "θC",
+            "w": 0.823529
           },
           {
             "σ": "θU",
-            "w": 0.285714
+            "w": 0.176471
           }
         ],
         "ξ": "",
@@ -2027,10 +2009,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 1,
-          "contradiction": 0,
-          "no_unknown": 0.714286,
-          "unknown": 0.285714,
+          "no_contradiction": 0,
+          "contradiction": 1,
+          "no_unknown": 0.785714,
+          "unknown": 0.214286,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -2040,10 +2022,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0.714286,
+        "closure": 0,
         "truth_gate": {
           "true": false,
-          "contested": false,
+          "contested": true,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -2211,6 +2193,18 @@
           "closure_operator": "proveProbabilityProductRule",
           "selected_rule": "probability-product-requires-independence",
           "gap": null
+        },
+        {
+          "id": "complex_unit_identity",
+          "input": "i^2 = -1",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveComplexUnitIdentity",
+          "selected_rule": "complex-unit-identity",
+          "gap": null
         }
       ],
       "score": 1,
@@ -2219,34 +2213,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": true,
-      "score": 1,
+      "ok": false,
+      "score": 0.5,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": true,
-        "peak_attractor": true,
+        "ok": false,
+        "peak_attractor": false,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": 1,
+          "y": -1,
           "z": 0,
-          "label": "objective_peak_philosophical_maturity"
+          "label": "epistemic_collapse"
         },
-        "peak_distance": 0,
-        "gate_open_ratio": 1,
+        "peak_distance": 1,
+        "gate_open_ratio": 0.5,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": true
+            "open": false
           },
           {
             "name": "coherence",
-            "open": true
+            "open": false
           },
           {
             "name": "integration",
-            "open": true
+            "open": false
           },
           {
             "name": "reality_contact",
@@ -2261,20 +2255,18 @@
             "open": true
           }
         ],
-        "closed_gates": [],
-        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "closed_gates": [
+          "anti_delusion",
+          "coherence",
+          "integration"
+        ],
+        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "stable_but_incomplete",
+    "feeling": "less_self",
     "wants": [
-      {
-        "id": "complex_numbers",
-        "input": "i^2 = -1",
-        "gap": "unclassified_math_ast",
-        "reason": "Complex-number constants and fields are not yet represented."
-      },
       {
         "id": "matrices",
         "input": "A B = C",
@@ -2298,14 +2290,8 @@
   },
   "stop": false,
   "decision": "keep_current_state",
-  "frontier_count": 4,
+  "frontier_count": 3,
   "wants": [
-    {
-      "id": "complex_numbers",
-      "input": "i^2 = -1",
-      "gap": "unclassified_math_ast",
-      "reason": "Complex-number constants and fields are not yet represented."
-    },
     {
       "id": "matrices",
       "input": "A B = C",

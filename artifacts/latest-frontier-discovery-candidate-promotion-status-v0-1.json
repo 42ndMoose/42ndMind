@@ -1,9 +1,9 @@
 {
-  "promoted": true,
-  "reason": "safe_frontier_candidate_promoted",
+  "promoted": false,
+  "reason": "frontier_candidate_promotion_gate_failed",
   "checks": {
     "candidate_id_known": true,
-    "discovery_kind_known": true,
+    "discovery_kind_known": false,
     "accepted_by_sandbox": true,
     "tests_ok": true,
     "validators_ok": true,
@@ -13,46 +13,14 @@
     "all_paths_allowed": true,
     "changed_paths_allowed": true
   },
-  "applied": [
-    {
-      "path": "src/math-ast-core-v0-1.js",
-      "type": "replace",
-      "before_bytes": 22702,
-      "after_bytes": 23335
-    },
-    {
-      "path": "src/proof-calculus-core-v0-1.js",
-      "type": "replace",
-      "before_bytes": 33473,
-      "after_bytes": 34149
-    },
-    {
-      "path": "src/operator-anatomy-v0-1.js",
-      "type": "replace",
-      "before_bytes": 16463,
-      "after_bytes": 16975
-    },
-    {
-      "path": "src/source-edit-reality-feedback-v0-1.js",
-      "type": "replace",
-      "before_bytes": 8311,
-      "after_bytes": 8472
-    },
-    {
-      "path": "tests/frontier-candidate-complex-unit-v0-1-test.js",
-      "type": "create",
-      "before_bytes": 0,
-      "after_bytes": 1073
-    }
-  ],
-  "skipped": [],
-  "candidate_id": "frontier_candidate_complex_unit_identity_v0_1",
-  "discovery_kind": "complex_unit_identity",
-  "changed_paths": [
+  "operation_paths": [
     "src/math-ast-core-v0-1.js",
-    "src/operator-anatomy-v0-1.js",
     "src/proof-calculus-core-v0-1.js",
+    "src/operator-anatomy-v0-1.js",
     "src/source-edit-reality-feedback-v0-1.js",
+    "tests/frontier-candidate-complex-unit-v0-1-test.js"
+  ],
+  "changed_paths": [
     "tests/frontier-candidate-complex-unit-v0-1-test.js"
   ]
 }

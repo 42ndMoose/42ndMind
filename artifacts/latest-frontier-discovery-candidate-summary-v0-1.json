@@ -2,13 +2,9 @@
   "packet_type": "42ndMind_frontier_discovery_candidate_summary_v0_1",
   "version": "0.1.0",
   "candidate_id": "frontier_candidate_complex_unit_identity_v0_1",
-  "discovery_kind": "complex_unit_identity",
+  "discovery_kind": null,
   "accepted_by_sandbox": true,
   "changed": [
-    "src/math-ast-core-v0-1.js",
-    "src/operator-anatomy-v0-1.js",
-    "src/proof-calculus-core-v0-1.js",
-    "src/source-edit-reality-feedback-v0-1.js",
     "tests/frontier-candidate-complex-unit-v0-1-test.js"
   ],
   "chaos": [],

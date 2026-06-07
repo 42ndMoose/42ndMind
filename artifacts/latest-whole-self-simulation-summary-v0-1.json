@@ -4,24 +4,24 @@
   "decision": "keep_current_state",
   "stop": false,
   "best_id": "base",
-  "best_score": 0.914286,
-  "best_damage_count": 0,
-  "best_feeling": "stable_but_incomplete",
-  "base_score": 0.914286,
-  "base_damage_count": 0,
+  "best_score": 0.686786,
+  "best_damage_count": 3,
+  "best_feeling": "less_self",
+  "base_score": 0.686786,
+  "base_damage_count": 3,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 0.914286,
-      "damage_count": 0,
-      "feeling": "stable_but_incomplete",
-      "ok": true,
+      "score": 0.686786,
+      "damage_count": 3,
+      "feeling": "less_self",
+      "ok": false,
       "stop": false
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.830824,
-      "damage_count": 2,
+      "score": 0.656786,
+      "damage_count": 4,
       "feeling": "less_self",
       "ok": false,
       "stop": false
@@ -100,10 +100,10 @@
     },
     {
       "input": "i^2 = -1",
-      "ok": true,
-      "closure_operator": null,
-      "selected_rule": null,
-      "gap": "unclassified_math_ast"
+      "ok": false,
+      "closure_operator": "proveComplexUnitIdentity",
+      "selected_rule": "complex-unit-identity",
+      "gap": null
     },
     {
       "input": "A B = C",
@@ -128,13 +128,17 @@
     }
   ],
   "epistemic": {
-    "ok": true,
-    "score": 1,
-    "closed_gates": []
+    "ok": false,
+    "score": 0.5,
+    "closed_gates": [
+      "anti_delusion",
+      "coherence",
+      "integration"
+    ]
   },
   "truth": {
-    "ok": true,
-    "score": 0.714286
+    "ok": false,
+    "score": 0
   },
   "reality": {
     "ok": true,

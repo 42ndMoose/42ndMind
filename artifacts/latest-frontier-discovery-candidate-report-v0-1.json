@@ -8,76 +8,212 @@
       "version": "0.1.0",
       "Ξ": "",
       "input": "i^2 = -1",
-      "ok": false,
-      "needed": true,
+      "ok": true,
+      "needed": false,
       "gap": {
         "packet_type": "42ndMind_frontier_gap_read_v0_1",
         "version": "0.1.0",
         "Ξ": "",
         "input": "i^2 = -1",
-        "ok": false,
-        "gap_id": "unclassified_math_ast",
-        "gap": {
-          "id": "unclassified_math_ast",
-          "reason": "Input did not reduce into a supported MathProgram AST."
-        },
+        "ok": true,
+        "gap_id": null,
+        "gap": null,
         "kernel_packet": {
           "φ": "M",
           "v": "0.1.0",
           "source": "i^2 = -1",
-          "ast_type": "Unknown",
-          "anatomy_id": null,
-          "closure_operator": null,
-          "selected_rule": null,
-          "ok": false,
-          "verified": false,
-          "gap_count": 1,
-          "gaps": [
-            {
-              "id": "unclassified_math_ast",
-              "reason": "Input did not reduce into a supported MathProgram AST."
-            }
-          ],
+          "ast_type": "ComplexUnitIdentityStatement",
+          "anatomy_id": "complex_unit_identity",
+          "closure_operator": "proveComplexUnitIdentity",
+          "selected_rule": "complex-unit-identity",
+          "ok": true,
+          "verified": true,
+          "gap_count": 0,
+          "gaps": [],
           "closure": {
             "packet_type": "42ndMind_math_closure_v0_1",
             "version": "0.1.0",
             "stage": "closure",
-            "ok": false,
-            "verified": false,
-            "gaps": [
-              {
-                "id": "unclassified_math_ast",
-                "reason": "Input did not reduce into a supported MathProgram AST."
-              }
-            ],
+            "ok": true,
+            "verified": true,
             "ast": {
               "type": "MathProgram",
               "body": {
-                "type": "Unknown",
-                "raw": "i^2 = -1"
+                "type": "ComplexUnitIdentityStatement",
+                "unit": {
+                  "type": "Symbol",
+                  "name": "i"
+                },
+                "domain": {
+                  "type": "Symbol",
+                  "name": "C"
+                },
+                "expression": {
+                  "type": "BinaryExpression",
+                  "operator": "^",
+                  "left": {
+                    "type": "Symbol",
+                    "name": "i"
+                  },
+                  "right": {
+                    "type": "NumberLiteral",
+                    "value": 2
+                  }
+                },
+                "relation": {
+                  "type": "Relation",
+                  "operator": "=",
+                  "left": {
+                    "type": "BinaryExpression",
+                    "operator": "^",
+                    "left": {
+                      "type": "Symbol",
+                      "name": "i"
+                    },
+                    "right": {
+                      "type": "NumberLiteral",
+                      "value": 2
+                    }
+                  },
+                  "right": {
+                    "type": "NumberLiteral",
+                    "value": -1
+                  }
+                },
+                "rule_class": "complex_unit_identity"
               },
               "source": "i^2 = -1",
-              "ok": false
+              "ok": true
             },
             "classification": {
-              "ok": false,
-              "type": "Unknown",
-              "class": "unknown",
-              "anatomy_id": null,
-              "closure": null
+              "ok": true,
+              "type": "ComplexUnitIdentityStatement",
+              "class": "number_system",
+              "anatomy_id": "complex_unit_identity",
+              "closure": "proveComplexUnitIdentity"
             },
-            "anatomy": null,
-            "obligation": null,
+            "anatomy": {
+              "id": "complex_unit_identity",
+              "operation": "prove",
+              "surface": "i^2 = -1 over C",
+              "parts": [
+                "imaginary_unit",
+                "exponent",
+                "negative_one",
+                "complex_domain"
+              ],
+              "preconditions": [
+                "i is typed as imaginary unit",
+                "domain is complex numbers"
+              ],
+              "inverse_chain": [],
+              "closure_operator": "proveComplexUnitIdentity",
+              "closure_result": "complex_unit_truth",
+              "examples": [
+                "i^2 = -1"
+              ],
+              "assertion": "assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);"
+            },
+            "obligation": {
+              "operator": "proveComplexUnitIdentity",
+              "anatomy_id": "complex_unit_identity",
+              "ast_type": "ComplexUnitIdentityStatement",
+              "class": "number_system",
+              "parts": [
+                "imaginary_unit",
+                "exponent",
+                "negative_one",
+                "complex_domain"
+              ],
+              "preconditions": [
+                "i is typed as imaginary unit",
+                "domain is complex numbers"
+              ],
+              "violations": [],
+              "inverse_chain": [],
+              "expected_result": "complex_unit_truth"
+            },
+            "selected_rule": "complex-unit-identity",
+            "proof": {
+              "ok": true,
+              "verified": true,
+              "rule": "complex-unit-identity",
+              "gaps": [],
+              "operator": "proveComplexUnitIdentity",
+              "domain": {
+                "type": "Symbol",
+                "name": "C"
+              },
+              "conclusion": {
+                "type": "Relation",
+                "operator": "=",
+                "left": {
+                  "type": "BinaryExpression",
+                  "operator": "^",
+                  "left": {
+                    "type": "Symbol",
+                    "name": "i"
+                  },
+                  "right": {
+                    "type": "NumberLiteral",
+                    "value": 2
+                  }
+                },
+                "right": {
+                  "type": "NumberLiteral",
+                  "value": -1
+                }
+              },
+              "steps": [
+                "detect-imaginary-unit-symbol",
+                "apply-complex-unit-identity-i-squared-equals-negative-one"
+              ]
+            },
+            "result": {
+              "type": "Relation",
+              "operator": "=",
+              "left": {
+                "type": "BinaryExpression",
+                "operator": "^",
+                "left": {
+                  "type": "Symbol",
+                  "name": "i"
+                },
+                "right": {
+                  "type": "NumberLiteral",
+                  "value": 2
+                }
+              },
+              "right": {
+                "type": "NumberLiteral",
+                "value": -1
+              }
+            },
+            "result_value": null,
+            "gaps": [],
+            "no_unresolved_gap": true,
             "Ξ": ""
           },
           "ΩM": [
             {
-              "σ": "M:gap",
-              "w": 0.588235
+              "σ": "M:anatomy:complex_unit_identity",
+              "w": 0.204545
             },
             {
-              "σ": "M:gap:unclassified_math_ast",
-              "w": 0.411765
+              "σ": "M:closure:proveComplexUnitIdentity",
+              "w": 0.204545
+            },
+            {
+              "σ": "M:proof:proveComplexUnitIdentity",
+              "w": 0.181818
+            },
+            {
+              "σ": "M:rule:complex-unit-identity",
+              "w": 0.181818
+            },
+            {
+              "σ": "M:verified",
+              "w": 0.227274
             }
           ],
           "lexicon": {
@@ -85,78 +221,614 @@
             "v": "0.1.0",
             "Λ": [
               {
-                "σ": "Λ:M.gap_count=1",
-                "w": 0.031056
+                "σ": "Λ:M.gap_count0",
+                "w": 0.029895
               },
               {
-                "σ": "Λ:M.ok0",
-                "w": 0.086957
+                "σ": "Λ:M.ok1",
+                "w": 0.020927
               },
               {
-                "σ": "Λ:M.verified0",
-                "w": 0.086957
+                "σ": "Λ:M.selected_rule=complex-unit-identity",
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.ast.body.raw=i^2 = -1",
-                "w": 0.049689
+                "σ": "Λ:M.verified1",
+                "w": 0.020927
               },
               {
-                "σ": "Λ:Π.ast.body.type=Unknown",
-                "w": 0.049689
+                "σ": "Λ:Π.anatomy.assertion=assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);",
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.ast.ok0",
-                "w": 0.086957
+                "σ": "Λ:Π.anatomy.closure_operator=proveComplexUnitIdentity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.anatomy.closure_result=complex_unit_truth",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.anatomy.id=complex_unit_identity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.anatomy.operation=prove",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.anatomy.surface=i^2 = -1 over C",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.domain.name=C",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.domain.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.expression.left.name=i",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.expression.left.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.expression.operator=^",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.expression.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.expression.right.value=2",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.ast.body.expression.type=BinaryExpression",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.left.left.name=i",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.left.left.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.left.operator=^",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.left.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.left.right.value=2",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.left.type=BinaryExpression",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.operator==",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.right.value=-1",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.ast.body.relation.type=Relation",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.rule_class=complex_unit_identity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.type=ComplexUnitIdentityStatement",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.unit.name=i",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.body.unit.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ast.ok1",
+                "w": 0.020927
               },
               {
                 "σ": "Λ:Π.ast.source=i^2 = -1",
-                "w": 0.049689
+                "w": 0.011958
               },
               {
                 "σ": "Λ:Π.ast.type=MathProgram",
-                "w": 0.049689
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.classification.class=unknown",
-                "w": 0.049689
+                "σ": "Λ:Π.classification.anatomy_id=complex_unit_identity",
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.classification.ok0",
-                "w": 0.086957
+                "σ": "Λ:Π.classification.class=number_system",
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.classification.type=Unknown",
-                "w": 0.049689
+                "σ": "Λ:Π.classification.closure=proveComplexUnitIdentity",
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.ok0",
-                "w": 0.086957
+                "σ": "Λ:Π.classification.ok1",
+                "w": 0.020927
+              },
+              {
+                "σ": "Λ:Π.classification.type=ComplexUnitIdentityStatement",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.no_unresolved_gap1",
+                "w": 0.020927
+              },
+              {
+                "σ": "Λ:Π.obligation.anatomy_id=complex_unit_identity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.obligation.ast_type=ComplexUnitIdentityStatement",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.obligation.class=number_system",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.obligation.expected_result=complex_unit_truth",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.obligation.operator=proveComplexUnitIdentity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.ok1",
+                "w": 0.020927
               },
               {
                 "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
-                "w": 0.049689
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.left.left.name=i",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.left.left.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.left.operator=^",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.left.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.left.right.value=2",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.left.type=BinaryExpression",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.operator==",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.right.value=-1",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.proof.conclusion.type=Relation",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.domain.name=C",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.domain.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.ok1",
+                "w": 0.020927
+              },
+              {
+                "σ": "Λ:Π.proof.operator=proveComplexUnitIdentity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.rule=complex-unit-identity",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.proof.verified1",
+                "w": 0.020927
+              },
+              {
+                "σ": "Λ:Π.result.left.left.name=i",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.left.left.type=Symbol",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.left.operator=^",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.left.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.left.right.value=2",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.result.left.type=BinaryExpression",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.operator==",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.right.type=NumberLiteral",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.result.right.value=-1",
+                "w": 0.007474
+              },
+              {
+                "σ": "Λ:Π.result.type=Relation",
+                "w": 0.011958
+              },
+              {
+                "σ": "Λ:Π.selected_rule=complex-unit-identity",
+                "w": 0.011958
               },
               {
                 "σ": "Λ:Π.stage=closure",
-                "w": 0.049689
+                "w": 0.011958
               },
               {
-                "σ": "Λ:Π.verified0",
-                "w": 0.086957
+                "σ": "Λ:Π.verified1",
+                "w": 0.020927
               },
               {
                 "σ": "Λ:Π.version=0.1.0",
-                "w": 0.04969
+                "w": 0.011964
               }
             ],
             "entries": [
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:M.gap_count=1",
-                "rule": "M.gap_count=1",
-                "ν": "ν14ba0ee",
+                "σ": "Λ:M.gap_count0",
+                "rule": "M.gap_count=0",
+                "ν": "ν6aab259f",
                 "source": "M",
+                "c": 1,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:M.ok1",
+                "rule": "M.ok=true",
+                "ν": "ν1036b98f",
+                "source": "M",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:M.selected_rule=complex-unit-identity",
+                "rule": "M.selected_rule=complex-unit-identity",
+                "ν": "ν75c079d",
+                "source": "M",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:M.verified1",
+                "rule": "M.verified=true",
+                "ν": "ν296dabd9",
+                "source": "M",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.anatomy.assertion=assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);",
+                "rule": "Π.anatomy.assertion=assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);",
+                "ν": "νfe949e03",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.anatomy.closure_operator=proveComplexUnitIdentity",
+                "rule": "Π.anatomy.closure_operator=proveComplexUnitIdentity",
+                "ν": "νcfb15415",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.anatomy.closure_result=complex_unit_truth",
+                "rule": "Π.anatomy.closure_result=complex_unit_truth",
+                "ν": "νf286bc31",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.anatomy.id=complex_unit_identity",
+                "rule": "Π.anatomy.id=complex_unit_identity",
+                "ν": "ν7d05592e",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.anatomy.operation=prove",
+                "rule": "Π.anatomy.operation=prove",
+                "ν": "νf74126ea",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.anatomy.surface=i^2 = -1 over C",
+                "rule": "Π.anatomy.surface=i^2 = -1 over C",
+                "ν": "νd20613d9",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.domain.name=C",
+                "rule": "Π.ast.body.domain.name=C",
+                "ν": "ν9b7f77bc",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.domain.type=Symbol",
+                "rule": "Π.ast.body.domain.type=Symbol",
+                "ν": "νded61b92",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.expression.left.name=i",
+                "rule": "Π.ast.body.expression.left.name=i",
+                "ν": "ν86bc5f39",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.expression.left.type=Symbol",
+                "rule": "Π.ast.body.expression.left.type=Symbol",
+                "ν": "νac39aa9b",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.expression.operator=^",
+                "rule": "Π.ast.body.expression.operator=^",
+                "ν": "ν4e8517be",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.expression.right.type=NumberLiteral",
+                "rule": "Π.ast.body.expression.right.type=NumberLiteral",
+                "ν": "ν2a8fdaf0",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.expression.right.value=2",
+                "rule": "Π.ast.body.expression.right.value=2",
+                "ν": "ν8419933b",
+                "source": "∅",
                 "c": 0.25,
                 "accepted": true,
                 "χ": [
@@ -171,45 +843,9 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:M.ok0",
-                "rule": "M.ok=false",
-                "ν": "ν80f79c5c",
-                "source": "M",
-                "c": 0.7,
-                "accepted": true,
-                "χ": [
-                  "Λ=derive(packet fact)",
-                  "Λν=canonical(rule)",
-                  "Ξ=\"\""
-                ],
-                "Ξ": "",
-                "rejected": false,
-                "conflict": null
-              },
-              {
-                "φ": "Λ",
-                "v": "0.1.0",
-                "σ": "Λ:M.verified0",
-                "rule": "M.verified=false",
-                "ν": "ν333c7dde",
-                "source": "M",
-                "c": 0.7,
-                "accepted": true,
-                "χ": [
-                  "Λ=derive(packet fact)",
-                  "Λν=canonical(rule)",
-                  "Ξ=\"\""
-                ],
-                "Ξ": "",
-                "rejected": false,
-                "conflict": null
-              },
-              {
-                "φ": "Λ",
-                "v": "0.1.0",
-                "σ": "Λ:Π.ast.body.raw=i^2 = -1",
-                "rule": "Π.ast.body.raw=i^2 = -1",
-                "ν": "ν91bbc70c",
+                "σ": "Λ:Π.ast.body.expression.type=BinaryExpression",
+                "rule": "Π.ast.body.expression.type=BinaryExpression",
+                "ν": "νb697ab25",
                 "source": "∅",
                 "c": 0.4,
                 "accepted": true,
@@ -225,9 +861,9 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.ast.body.type=Unknown",
-                "rule": "Π.ast.body.type=Unknown",
-                "ν": "ν3a028650",
+                "σ": "Λ:Π.ast.body.relation.left.left.name=i",
+                "rule": "Π.ast.body.relation.left.left.name=i",
+                "ν": "νc55ca248",
                 "source": "∅",
                 "c": 0.4,
                 "accepted": true,
@@ -243,9 +879,243 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.ast.ok0",
-                "rule": "Π.ast.ok=false",
-                "ν": "νeff30ac5",
+                "σ": "Λ:Π.ast.body.relation.left.left.type=Symbol",
+                "rule": "Π.ast.body.relation.left.left.type=Symbol",
+                "ν": "ν35661c34",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.left.operator=^",
+                "rule": "Π.ast.body.relation.left.operator=^",
+                "ν": "ν905d7701",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.left.right.type=NumberLiteral",
+                "rule": "Π.ast.body.relation.left.right.type=NumberLiteral",
+                "ν": "νeff8ba47",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.left.right.value=2",
+                "rule": "Π.ast.body.relation.left.right.value=2",
+                "ν": "νeaa989a6",
+                "source": "∅",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.left.type=BinaryExpression",
+                "rule": "Π.ast.body.relation.left.type=BinaryExpression",
+                "ν": "ν5254d450",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.operator==",
+                "rule": "Π.ast.body.relation.operator==",
+                "ν": "ν474aa4f",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.right.type=NumberLiteral",
+                "rule": "Π.ast.body.relation.right.type=NumberLiteral",
+                "ν": "νbc524b92",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.right.value=-1",
+                "rule": "Π.ast.body.relation.right.value=-1",
+                "ν": "νfd9719df",
+                "source": "∅",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.relation.type=Relation",
+                "rule": "Π.ast.body.relation.type=Relation",
+                "ν": "νed2a8e7e",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.rule_class=complex_unit_identity",
+                "rule": "Π.ast.body.rule_class=complex_unit_identity",
+                "ν": "ν13a197df",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.type=ComplexUnitIdentityStatement",
+                "rule": "Π.ast.body.type=ComplexUnitIdentityStatement",
+                "ν": "ν90a289f5",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.unit.name=i",
+                "rule": "Π.ast.body.unit.name=i",
+                "ν": "ν5b3a9d18",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.unit.type=Symbol",
+                "rule": "Π.ast.body.unit.type=Symbol",
+                "ν": "νdf827f04",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.ok1",
+                "rule": "Π.ast.ok=true",
+                "ν": "νf365933c",
                 "source": "∅",
                 "c": 0.7,
                 "accepted": true,
@@ -297,9 +1167,9 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.classification.class=unknown",
-                "rule": "Π.classification.class=unknown",
-                "ν": "ν2780ef9c",
+                "σ": "Λ:Π.classification.anatomy_id=complex_unit_identity",
+                "rule": "Π.classification.anatomy_id=complex_unit_identity",
+                "ν": "ν1c5c9fbf",
                 "source": "∅",
                 "c": 0.4,
                 "accepted": true,
@@ -315,9 +1185,45 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.classification.ok0",
-                "rule": "Π.classification.ok=false",
-                "ν": "ν15fcea5b",
+                "σ": "Λ:Π.classification.class=number_system",
+                "rule": "Π.classification.class=number_system",
+                "ν": "ν7864fd9b",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.classification.closure=proveComplexUnitIdentity",
+                "rule": "Π.classification.closure=proveComplexUnitIdentity",
+                "ν": "ν971c76c9",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.classification.ok1",
+                "rule": "Π.classification.ok=true",
+                "ν": "νf96f8bb2",
                 "source": "∅",
                 "c": 0.7,
                 "accepted": true,
@@ -333,9 +1239,9 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.classification.type=Unknown",
-                "rule": "Π.classification.type=Unknown",
-                "ν": "ν8a810da",
+                "σ": "Λ:Π.classification.type=ComplexUnitIdentityStatement",
+                "rule": "Π.classification.type=ComplexUnitIdentityStatement",
+                "ν": "ν4d96d3e3",
                 "source": "∅",
                 "c": 0.4,
                 "accepted": true,
@@ -351,9 +1257,117 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.ok0",
-                "rule": "Π.ok=false",
-                "ν": "ν1e9030cb",
+                "σ": "Λ:Π.no_unresolved_gap1",
+                "rule": "Π.no_unresolved_gap=true",
+                "ν": "ν87e0f9aa",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.obligation.anatomy_id=complex_unit_identity",
+                "rule": "Π.obligation.anatomy_id=complex_unit_identity",
+                "ν": "νac5a22df",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.obligation.ast_type=ComplexUnitIdentityStatement",
+                "rule": "Π.obligation.ast_type=ComplexUnitIdentityStatement",
+                "ν": "νe9488b56",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.obligation.class=number_system",
+                "rule": "Π.obligation.class=number_system",
+                "ν": "ν72c72f3b",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.obligation.expected_result=complex_unit_truth",
+                "rule": "Π.obligation.expected_result=complex_unit_truth",
+                "ν": "ν1809617d",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.obligation.operator=proveComplexUnitIdentity",
+                "rule": "Π.obligation.operator=proveComplexUnitIdentity",
+                "ν": "ν2ad7a2c2",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ok1",
+                "rule": "Π.ok=true",
+                "ν": "ν922f2b02",
                 "source": "∅",
                 "c": 0.7,
                 "accepted": true,
@@ -387,6 +1401,492 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.left.left.name=i",
+                "rule": "Π.proof.conclusion.left.left.name=i",
+                "ν": "ν5460bdd5",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.left.left.type=Symbol",
+                "rule": "Π.proof.conclusion.left.left.type=Symbol",
+                "ν": "ν9b5b899f",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.left.operator=^",
+                "rule": "Π.proof.conclusion.left.operator=^",
+                "ν": "νb0e30faa",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.left.right.type=NumberLiteral",
+                "rule": "Π.proof.conclusion.left.right.type=NumberLiteral",
+                "ν": "ν8a73356c",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.left.right.value=2",
+                "rule": "Π.proof.conclusion.left.right.value=2",
+                "ν": "νd95e150f",
+                "source": "∅",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.left.type=BinaryExpression",
+                "rule": "Π.proof.conclusion.left.type=BinaryExpression",
+                "ν": "ν2923fa69",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.operator==",
+                "rule": "Π.proof.conclusion.operator==",
+                "ν": "νad91ae0e",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.right.type=NumberLiteral",
+                "rule": "Π.proof.conclusion.right.type=NumberLiteral",
+                "ν": "ν1623cf5f",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.right.value=-1",
+                "rule": "Π.proof.conclusion.right.value=-1",
+                "ν": "ν23f76c62",
+                "source": "∅",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.conclusion.type=Relation",
+                "rule": "Π.proof.conclusion.type=Relation",
+                "ν": "νcd4a4e2d",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.domain.name=C",
+                "rule": "Π.proof.domain.name=C",
+                "ν": "νcc14f0de",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.domain.type=Symbol",
+                "rule": "Π.proof.domain.type=Symbol",
+                "ν": "νfbd3227c",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.ok1",
+                "rule": "Π.proof.ok=true",
+                "ν": "ν7350ef32",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.operator=proveComplexUnitIdentity",
+                "rule": "Π.proof.operator=proveComplexUnitIdentity",
+                "ν": "ν9ba54c22",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.rule=complex-unit-identity",
+                "rule": "Π.proof.rule=complex-unit-identity",
+                "ν": "ν2dbe8c2c",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.proof.verified1",
+                "rule": "Π.proof.verified=true",
+                "ν": "νaf659b80",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.left.left.name=i",
+                "rule": "Π.result.left.left.name=i",
+                "ν": "ν9fafd97f",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.left.left.type=Symbol",
+                "rule": "Π.result.left.left.type=Symbol",
+                "ν": "ν7370221d",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.left.operator=^",
+                "rule": "Π.result.left.operator=^",
+                "ν": "νf8c93bf8",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.left.right.type=NumberLiteral",
+                "rule": "Π.result.left.right.type=NumberLiteral",
+                "ν": "ν6c6fac72",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.left.right.value=2",
+                "rule": "Π.result.left.right.value=2",
+                "ν": "ν1af979e1",
+                "source": "∅",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.left.type=BinaryExpression",
+                "rule": "Π.result.left.type=BinaryExpression",
+                "ν": "ν61560bbf",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.operator==",
+                "rule": "Π.result.operator==",
+                "ν": "ν6cdc12a4",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.right.type=NumberLiteral",
+                "rule": "Π.result.right.type=NumberLiteral",
+                "ν": "νb4ddf2a9",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.right.value=-1",
+                "rule": "Π.result.right.value=-1",
+                "ν": "νfbbf7fb8",
+                "source": "∅",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.result.type=Relation",
+                "rule": "Π.result.type=Relation",
+                "ν": "νf1f21f9b",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.selected_rule=complex-unit-identity",
+                "rule": "Π.selected_rule=complex-unit-identity",
+                "ν": "νa131d2d0",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
                 "σ": "Λ:Π.stage=closure",
                 "rule": "Π.stage=closure",
                 "ν": "ν7af384d3",
@@ -405,9 +1905,9 @@
               {
                 "φ": "Λ",
                 "v": "0.1.0",
-                "σ": "Λ:Π.verified0",
-                "rule": "Π.verified=false",
-                "ν": "νecdd32e1",
+                "σ": "Λ:Π.verified1",
+                "rule": "Π.verified=true",
+                "ν": "ν60542250",
                 "source": "∅",
                 "c": 0.7,
                 "accepted": true,
@@ -439,7 +1939,7 @@
                 "conflict": null
               }
             ],
-            "count": 16,
+            "count": 78,
             "u": {
               "Λ": 1,
               "ok": true
@@ -467,80 +1967,169 @@
           "packet_type": "42ndMind_math_closure_v0_1",
           "version": "0.1.0",
           "stage": "closure",
-          "ok": false,
-          "verified": false,
-          "gaps": [
-            {
-              "id": "unclassified_math_ast",
-              "reason": "Input did not reduce into a supported MathProgram AST."
-            }
-          ],
+          "ok": true,
+          "verified": true,
           "ast": {
             "type": "MathProgram",
             "body": {
-              "type": "Unknown",
-              "raw": "i^2 = -1"
+              "type": "ComplexUnitIdentityStatement",
+              "unit": {
+                "type": "Symbol",
+                "name": "i"
+              },
+              "domain": {
+                "type": "Symbol",
+                "name": "C"
+              },
+              "expression": {
+                "type": "BinaryExpression",
+                "operator": "^",
+                "left": {
+                  "type": "Symbol",
+                  "name": "i"
+                },
+                "right": {
+                  "type": "NumberLiteral",
+                  "value": 2
+                }
+              },
+              "relation": {
+                "type": "Relation",
+                "operator": "=",
+                "left": {
+                  "type": "BinaryExpression",
+                  "operator": "^",
+                  "left": {
+                    "type": "Symbol",
+                    "name": "i"
+                  },
+                  "right": {
+                    "type": "NumberLiteral",
+                    "value": 2
+                  }
+                },
+                "right": {
+                  "type": "NumberLiteral",
+                  "value": -1
+                }
+              },
+              "rule_class": "complex_unit_identity"
             },
             "source": "i^2 = -1",
-            "ok": false
+            "ok": true
           },
           "classification": {
-            "ok": false,
-            "type": "Unknown",
-            "class": "unknown",
-            "anatomy_id": null,
-            "closure": null
+            "ok": true,
+            "type": "ComplexUnitIdentityStatement",
+            "class": "number_system",
+            "anatomy_id": "complex_unit_identity",
+            "closure": "proveComplexUnitIdentity"
           },
-          "anatomy": null,
-          "obligation": null,
+          "anatomy": {
+            "id": "complex_unit_identity",
+            "operation": "prove",
+            "surface": "i^2 = -1 over C",
+            "parts": [
+              "imaginary_unit",
+              "exponent",
+              "negative_one",
+              "complex_domain"
+            ],
+            "preconditions": [
+              "i is typed as imaginary unit",
+              "domain is complex numbers"
+            ],
+            "inverse_chain": [],
+            "closure_operator": "proveComplexUnitIdentity",
+            "closure_result": "complex_unit_truth",
+            "examples": [
+              "i^2 = -1"
+            ],
+            "assertion": "assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);"
+          },
+          "obligation": {
+            "operator": "proveComplexUnitIdentity",
+            "anatomy_id": "complex_unit_identity",
+            "ast_type": "ComplexUnitIdentityStatement",
+            "class": "number_system",
+            "parts": [
+              "imaginary_unit",
+              "exponent",
+              "negative_one",
+              "complex_domain"
+            ],
+            "preconditions": [
+              "i is typed as imaginary unit",
+              "domain is complex numbers"
+            ],
+            "violations": [],
+            "inverse_chain": [],
+            "expected_result": "complex_unit_truth"
+          },
+          "selected_rule": "complex-unit-identity",
+          "proof": {
+            "ok": true,
+            "verified": true,
+            "rule": "complex-unit-identity",
+            "gaps": [],
+            "operator": "proveComplexUnitIdentity",
+            "domain": {
+              "type": "Symbol",
+              "name": "C"
+            },
+            "conclusion": {
+              "type": "Relation",
+              "operator": "=",
+              "left": {
+                "type": "BinaryExpression",
+                "operator": "^",
+                "left": {
+                  "type": "Symbol",
+                  "name": "i"
+                },
+                "right": {
+                  "type": "NumberLiteral",
+                  "value": 2
+                }
+              },
+              "right": {
+                "type": "NumberLiteral",
+                "value": -1
+              }
+            },
+            "steps": [
+              "detect-imaginary-unit-symbol",
+              "apply-complex-unit-identity-i-squared-equals-negative-one"
+            ]
+          },
+          "result": {
+            "type": "Relation",
+            "operator": "=",
+            "left": {
+              "type": "BinaryExpression",
+              "operator": "^",
+              "left": {
+                "type": "Symbol",
+                "name": "i"
+              },
+              "right": {
+                "type": "NumberLiteral",
+                "value": 2
+              }
+            },
+            "right": {
+              "type": "NumberLiteral",
+              "value": -1
+            }
+          },
+          "result_value": null,
+          "gaps": [],
+          "no_unresolved_gap": true,
           "Ξ": ""
         }
       },
-      "proposals": [
-        {
-          "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
-          "version": "0.1.0",
-          "Ξ": "",
-          "id": "complex_unit_identity_i_2_1",
-          "kind": "complex_unit_identity",
-          "input": "i^2 = -1",
-          "status": "candidate_structure_only",
-          "promoted": false,
-          "missing": [
-            "complex_unit_symbol",
-            "complex_number_domain",
-            "complex_unit_identity_rule"
-          ],
-          "candidate": {
-            "ast_node": "ComplexUnitIdentityStatement",
-            "anatomy_id": "complex_unit_identity",
-            "closure_operator": "proveComplexUnitIdentity",
-            "classification": {
-              "anatomy_id": "complex_unit_identity",
-              "closure": "proveComplexUnitIdentity"
-            },
-            "proof_obligations": [
-              "represent i as the imaginary unit",
-              "prove or register i^2 = -1 under complex-number domain"
-            ],
-            "reality_anchor": {
-              "id": "complex_unit_identity",
-              "input": "i^2 = -1",
-              "closure_operator": "proveComplexUnitIdentity",
-              "selected_rule": "complex-unit-identity"
-            },
-            "tests": [
-              "AST parses complex unit identity",
-              "closure verifies identity under complex domain",
-              "whole-self wants no longer include complex_numbers"
-            ]
-          },
-          "source_patch": {
-            "ready": false,
-            "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
-          }
-        }
-      ]
+      "proposals": [],
+      "reason": "Input already closes through the current kernel."
     },
     "operations": [
       {
@@ -579,8 +2168,8 @@
         "checksum": "f41a01a5"
       },
       "src/math-ast-core-v0-1.js": {
-        "bytes": 22702,
-        "checksum": "fe3f22d1"
+        "bytes": 23335,
+        "checksum": "44090192"
       },
       "src/math-closure-engine-v0-1.js": {
         "bytes": 4625,
@@ -591,24 +2180,24 @@
         "checksum": "9f4e4ca1"
       },
       "src/operator-anatomy-v0-1.js": {
-        "bytes": 16463,
-        "checksum": "c8ab42db"
+        "bytes": 16975,
+        "checksum": "9c430e38"
       },
       "src/proof-calculus-core-v0-1.js": {
-        "bytes": 33473,
-        "checksum": "6fa9779a"
+        "bytes": 34149,
+        "checksum": "7a24a378"
       },
       "src/source-edit-reality-feedback-v0-1.js": {
-        "bytes": 8311,
-        "checksum": "dea5f9ba"
+        "bytes": 8472,
+        "checksum": "72a17a62"
       },
       "src/source-sandbox-v0-1.js": {
         "bytes": 8534,
         "checksum": "ad65ecc"
       },
       "src/whole-self-simulation-core-v0-1.js": {
-        "bytes": 10988,
-        "checksum": "69f74cca"
+        "bytes": 11004,
+        "checksum": "15f1e974"
       }
     },
     "after": {
@@ -645,8 +2234,8 @@
         "checksum": "ad65ecc"
       },
       "src/whole-self-simulation-core-v0-1.js": {
-        "bytes": 10988,
-        "checksum": "69f74cca"
+        "bytes": 11004,
+        "checksum": "15f1e974"
       },
       "tests/frontier-candidate-complex-unit-v0-1-test.js": {
         "bytes": 1073,
@@ -654,10 +2243,6 @@
       }
     },
     "changed": [
-      "src/math-ast-core-v0-1.js",
-      "src/operator-anatomy-v0-1.js",
-      "src/proof-calculus-core-v0-1.js",
-      "src/source-edit-reality-feedback-v0-1.js",
       "tests/frontier-candidate-complex-unit-v0-1-test.js"
     ],
     "tests": [
@@ -843,6 +2428,18 @@
             "closure_operator": "proveComplexUnitIdentity",
             "selected_rule": "complex-unit-identity",
             "gap": null
+          },
+          {
+            "id": "complex_unit_identity",
+            "input": "i^2 = -1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveComplexUnitIdentity",
+            "selected_rule": "complex-unit-identity",
+            "gap": null
           }
         ]
       }
@@ -855,10 +2452,6 @@
     "ok": true,
     "id": "frontier_candidate_complex_unit_identity_v0_1",
     "changed": [
-      "src/math-ast-core-v0-1.js",
-      "src/operator-anatomy-v0-1.js",
-      "src/proof-calculus-core-v0-1.js",
-      "src/source-edit-reality-feedback-v0-1.js",
       "tests/frontier-candidate-complex-unit-v0-1-test.js"
     ],
     "note": "simulation accepted; real source patch still requires external write gate"
@@ -867,13 +2460,9 @@
     "packet_type": "42ndMind_frontier_discovery_candidate_summary_v0_1",
     "version": "0.1.0",
     "candidate_id": "frontier_candidate_complex_unit_identity_v0_1",
-    "discovery_kind": "complex_unit_identity",
+    "discovery_kind": null,
     "accepted_by_sandbox": true,
     "changed": [
-      "src/math-ast-core-v0-1.js",
-      "src/operator-anatomy-v0-1.js",
-      "src/proof-calculus-core-v0-1.js",
-      "src/source-edit-reality-feedback-v0-1.js",
       "tests/frontier-candidate-complex-unit-v0-1-test.js"
     ],
     "chaos": [],
