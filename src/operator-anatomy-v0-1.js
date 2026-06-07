@@ -113,6 +113,12 @@
       inverse_chain: [], closure_operator: 'proveComplexUnitIdentity', closure_result: 'complex_unit_truth',
       examples: ['i^2 = -1'], assertion: "assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);"
     }),
+    matrix_product: Object.freeze({
+      id: 'matrix_product', operation: 'type', surface: 'A B = C',
+      parts: ['left_matrix', 'right_matrix', 'product_matrix', 'dimension_guard'], preconditions: ['left/right dimensions are compatible', 'product dimensions match declared matrix'],
+      inverse_chain: [], closure_operator: 'typeMatrixProduct', closure_result: 'guarded_matrix_product_relation',
+      examples: ['A B = C'], assertion: "assert.strictEqual(P.typeMatrixProduct('A B = C').ok, true);"
+    }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
       parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],

@@ -287,6 +287,22 @@
     });
   }
 
+
+  function parseMatrixProductStatement(input) {
+    const raw = compact(input);
+    const m = /^([A-Z])([A-Z])=([A-Z])$/.exec(raw);
+    if (!m) return null;
+    return node('MatrixProductStatement', {
+      left_matrix: symbol(m[1]),
+      right_matrix: symbol(m[2]),
+      product_matrix: symbol(m[3]),
+      product: node('MatrixProduct', { left: symbol(m[1]), right: symbol(m[2]) }),
+      relation: relation('=', node('MatrixProduct', { left: symbol(m[1]), right: symbol(m[2]) }), symbol(m[3])),
+      guard: node('DimensionCompatibilityGuard', { left: symbol(m[1]), right: symbol(m[2]), product: symbol(m[3]) }),
+      rule_class: 'matrix_product_dimension_guard'
+    });
+  }
+
   function parseArithmeticRelation(input) {
     const text = compact(input);
     if (hasLetter(text)) return null;
@@ -411,6 +427,7 @@
       parseDerivativeStatement,
       parseIntegralStatement,
       parseProbabilityProductStatement,
+      parseMatrixProductStatement,
       parseComplexUnitIdentity,
       parseDivisionConstraint,
       parseSubstitutionEvaluation,
@@ -450,6 +467,7 @@
       IntegralStatement: { class: 'calculus', anatomy_id: 'integral_statement', closure: 'proveIntegralStatement' },
       ProbabilityProductStatement: { class: 'probability', anatomy_id: 'probability_product_rule', closure: 'proveProbabilityProductRule' },
       ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },
+      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
       SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
@@ -468,7 +486,7 @@
 
   return Object.freeze({
     VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
-    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseComplexUnitIdentity,
+    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseMatrixProductStatement, parseComplexUnitIdentity,
     parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
     parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
     parseImplicationChain, parseContradictionPair, parse, classify, canonical

@@ -282,6 +282,22 @@
     });
   }
 
+
+  function typeMatrixProduct(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'MatrixProductStatement') return gap('unsupported_matrix_product', 'Matrix product typing requires a MatrixProductStatement AST node.');
+    return verified('matrix-product-dimension-guard', {
+      operator: 'typeMatrixProduct',
+      guard: clone(body.guard),
+      conclusion: {
+        type: 'GuardedMatrixProductRelation',
+        guard: clone(body.guard),
+        relation: clone(body.relation)
+      },
+      steps: ['detect-matrix-product-form', 'emit-dimension-compatibility-guard', 'canonicalize-guarded-matrix-product-relation']
+    });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -421,6 +437,7 @@
     if (operator === 'proveIntegralStatement') return proveIntegralStatement(body);
     if (operator === 'proveProbabilityProductRule') return proveProbabilityProductRule(body);
     if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);
+    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -451,6 +468,7 @@
     proveIntegralStatement,
     proveProbabilityProductRule,
     proveComplexUnitIdentity,
+    typeMatrixProduct,
     domainGuard,
     implication,
     modusPonens,
