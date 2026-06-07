@@ -1,21 +1,18 @@
 {
   "packet_type": "42ndMind_frontier_discovery_summary_v0_1",
   "version": "0.1.0",
-  "frontier_count": 3,
+  "frontier_count": 2,
   "want_ids": [
-    "matrices",
     "sequences",
     "logic_quantifier_exists"
   ],
-  "discovery_count": 3,
-  "proposal_count": 3,
+  "discovery_count": 2,
+  "proposal_count": 2,
   "proposal_kinds": [
-    "matrix_multiplication",
     "sequence_definition",
     "existential_quantifier"
   ],
   "closure_operators": [
-    "typeMatrixProduct",
     "defineSequence",
     "generateExistentialObligations"
   ],

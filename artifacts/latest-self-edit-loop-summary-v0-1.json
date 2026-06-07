@@ -13,14 +13,12 @@
     "confidence": 1,
     "summary": "No failed simulation signatures were available for operator synthesis."
   },
-  "frontier_discovery_proposal_count": 3,
+  "frontier_discovery_proposal_count": 2,
   "frontier_discovery_proposal_kinds": [
-    "matrix_multiplication",
     "sequence_definition",
     "existential_quantifier"
   ],
   "frontier_discovery_closure_operators": [
-    "typeMatrixProduct",
     "defineSequence",
     "generateExistentialObligations"
   ],
