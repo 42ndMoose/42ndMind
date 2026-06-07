@@ -1,4 +1,4 @@
 {
-  "core_tests_post_frontier_promotion_exit_code": 0,
-  "ok": true
+  "core_tests_post_frontier_promotion_exit_code": 1,
+  "ok": false
 }

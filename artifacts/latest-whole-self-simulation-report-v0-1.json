@@ -5,20 +5,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": true,
-    "score": 0.935714,
-    "stability_score": 1,
+    "ok": false,
+    "score": 0.708214,
+    "stability_score": 0.675,
     "completeness_score": 0.785714,
-    "damage_count": 0,
-    "frontier_count": 3,
+    "damage_count": 3,
+    "frontier_count": 2,
     "math": {
-      "ok": true,
+      "ok": false,
       "score": 1,
       "stability_score": 1,
       "completeness_score": 0.785714,
-      "damage_count": 0,
-      "frontier_count": 3,
-      "gap_count": 0,
+      "damage_count": 1,
+      "frontier_count": 2,
+      "gap_count": 1,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -143,14 +143,14 @@
         },
         {
           "input": "A B = C",
-          "ok": true,
+          "ok": false,
           "frontier": true,
           "frontier_id": "matrices",
           "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "gap": null
         },
         {
           "input": "a_n = n^2",
@@ -177,17 +177,6 @@
       ],
       "frontiers": [
         {
-          "input": "A B = C",
-          "ok": true,
-          "frontier": true,
-          "frontier_id": "matrices",
-          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
-        },
-        {
           "input": "a_n = n^2",
           "ok": true,
           "frontier": true,
@@ -212,9 +201,9 @@
       ]
     },
     "truth": {
-      "ok": true,
-      "score": 0.785714,
-      "frontier_pressure": 0.214286,
+      "ok": false,
+      "score": 0,
+      "frontier_pressure": 0.142857,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -245,18 +234,18 @@
         ],
         "χ": [
           {
-            "σ": "χ0",
+            "σ": "χ!",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.785714
+            "w": 0.857143
           },
           {
             "σ": "υ?",
-            "w": 0.214286
+            "w": 0.142857
           }
         ],
         "μ": [
@@ -267,12 +256,12 @@
         ],
         "θ": [
           {
-            "σ": "θT",
-            "w": 0.785714
+            "σ": "θC",
+            "w": 0.875
           },
           {
             "σ": "θU",
-            "w": 0.214286
+            "w": 0.125
           }
         ],
         "ξ": "",
@@ -291,10 +280,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 1,
-          "contradiction": 0,
-          "no_unknown": 0.785714,
-          "unknown": 0.214286,
+          "no_contradiction": 0,
+          "contradiction": 1,
+          "no_unknown": 0.857143,
+          "unknown": 0.142857,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -304,10 +293,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0.785714,
+        "closure": 0,
         "truth_gate": {
           "true": false,
-          "contested": false,
+          "contested": true,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -487,6 +476,18 @@
           "closure_operator": "proveComplexUnitIdentity",
           "selected_rule": "complex-unit-identity",
           "gap": null
+        },
+        {
+          "id": "matrix_product_guard",
+          "input": "A B = C",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "typeMatrixProduct",
+          "selected_rule": "matrix-product-dimension-guard",
+          "gap": null
         }
       ],
       "score": 1,
@@ -495,34 +496,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": true,
-      "score": 1,
+      "ok": false,
+      "score": 0.5,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": true,
-        "peak_attractor": true,
+        "ok": false,
+        "peak_attractor": false,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": 1,
+          "y": -1,
           "z": 0,
-          "label": "objective_peak_philosophical_maturity"
+          "label": "epistemic_collapse"
         },
-        "peak_distance": 0,
-        "gate_open_ratio": 1,
+        "peak_distance": 1,
+        "gate_open_ratio": 0.5,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": true
+            "open": false
           },
           {
             "name": "coherence",
-            "open": true
+            "open": false
           },
           {
             "name": "integration",
-            "open": true
+            "open": false
           },
           {
             "name": "reality_contact",
@@ -537,20 +538,18 @@
             "open": true
           }
         ],
-        "closed_gates": [],
-        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "closed_gates": [
+          "anti_delusion",
+          "coherence",
+          "integration"
+        ],
+        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "stable_but_incomplete",
+    "feeling": "less_self",
     "wants": [
-      {
-        "id": "matrices",
-        "input": "A B = C",
-        "gap": "unclassified_math_ast",
-        "reason": "Matrix multiplication and typed linear algebra are not yet represented."
-      },
       {
         "id": "sequences",
         "input": "a_n = n^2",
@@ -571,20 +570,20 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": true,
-      "score": 0.935714,
-      "stability_score": 1,
+      "ok": false,
+      "score": 0.708214,
+      "stability_score": 0.675,
       "completeness_score": 0.785714,
-      "damage_count": 0,
-      "frontier_count": 3,
+      "damage_count": 3,
+      "frontier_count": 2,
       "math": {
-        "ok": true,
+        "ok": false,
         "score": 1,
         "stability_score": 1,
         "completeness_score": 0.785714,
-        "damage_count": 0,
-        "frontier_count": 3,
-        "gap_count": 0,
+        "damage_count": 1,
+        "frontier_count": 2,
+        "gap_count": 1,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -709,14 +708,14 @@
           },
           {
             "input": "A B = C",
-            "ok": true,
+            "ok": false,
             "frontier": true,
             "frontier_id": "matrices",
             "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "gap": null
           },
           {
             "input": "a_n = n^2",
@@ -743,17 +742,6 @@
         ],
         "frontiers": [
           {
-            "input": "A B = C",
-            "ok": true,
-            "frontier": true,
-            "frontier_id": "matrices",
-            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
-          },
-          {
             "input": "a_n = n^2",
             "ok": true,
             "frontier": true,
@@ -778,9 +766,9 @@
         ]
       },
       "truth": {
-        "ok": true,
-        "score": 0.785714,
-        "frontier_pressure": 0.214286,
+        "ok": false,
+        "score": 0,
+        "frontier_pressure": 0.142857,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -811,18 +799,18 @@
           ],
           "χ": [
             {
-              "σ": "χ0",
+              "σ": "χ!",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.785714
+              "w": 0.857143
             },
             {
               "σ": "υ?",
-              "w": 0.214286
+              "w": 0.142857
             }
           ],
           "μ": [
@@ -833,12 +821,12 @@
           ],
           "θ": [
             {
-              "σ": "θT",
-              "w": 0.785714
+              "σ": "θC",
+              "w": 0.875
             },
             {
               "σ": "θU",
-              "w": 0.214286
+              "w": 0.125
             }
           ],
           "ξ": "",
@@ -857,10 +845,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 1,
-            "contradiction": 0,
-            "no_unknown": 0.785714,
-            "unknown": 0.214286,
+            "no_contradiction": 0,
+            "contradiction": 1,
+            "no_unknown": 0.857143,
+            "unknown": 0.142857,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -870,10 +858,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0.785714,
+          "closure": 0,
           "truth_gate": {
             "true": false,
-            "contested": false,
+            "contested": true,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1053,6 +1041,18 @@
             "closure_operator": "proveComplexUnitIdentity",
             "selected_rule": "complex-unit-identity",
             "gap": null
+          },
+          {
+            "id": "matrix_product_guard",
+            "input": "A B = C",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "typeMatrixProduct",
+            "selected_rule": "matrix-product-dimension-guard",
+            "gap": null
           }
         ],
         "score": 1,
@@ -1061,34 +1061,34 @@
         "Ξ": ""
       },
       "epistemic": {
-        "ok": true,
-        "score": 1,
+        "ok": false,
+        "score": 0.5,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": true,
-          "peak_attractor": true,
+          "ok": false,
+          "peak_attractor": false,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": 1,
+            "y": -1,
             "z": 0,
-            "label": "objective_peak_philosophical_maturity"
+            "label": "epistemic_collapse"
           },
-          "peak_distance": 0,
-          "gate_open_ratio": 1,
+          "peak_distance": 1,
+          "gate_open_ratio": 0.5,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": true
+              "open": false
             },
             {
               "name": "coherence",
-              "open": true
+              "open": false
             },
             {
               "name": "integration",
-              "open": true
+              "open": false
             },
             {
               "name": "reality_contact",
@@ -1103,20 +1103,18 @@
               "open": true
             }
           ],
-          "closed_gates": [],
-          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+          "closed_gates": [
+            "anti_delusion",
+            "coherence",
+            "integration"
+          ],
+          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
           "ξ": ""
         }
       },
       "stop": false,
-      "feeling": "stable_but_incomplete",
+      "feeling": "less_self",
       "wants": [
-        {
-          "id": "matrices",
-          "input": "A B = C",
-          "gap": "unclassified_math_ast",
-          "reason": "Matrix multiplication and typed linear algebra are not yet represented."
-        },
         {
           "id": "sequences",
           "input": "a_n = n^2",
@@ -1140,19 +1138,19 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.853214,
-      "stability_score": 0.882143,
+      "score": 0.679047,
+      "stability_score": 0.633333,
       "completeness_score": 0.785714,
-      "damage_count": 2,
-      "frontier_count": 3,
+      "damage_count": 4,
+      "frontier_count": 2,
       "math": {
-        "ok": true,
+        "ok": false,
         "score": 1,
         "stability_score": 1,
         "completeness_score": 0.785714,
-        "damage_count": 0,
-        "frontier_count": 3,
-        "gap_count": 0,
+        "damage_count": 1,
+        "frontier_count": 2,
+        "gap_count": 1,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -1277,14 +1275,14 @@
           },
           {
             "input": "A B = C",
-            "ok": true,
+            "ok": false,
             "frontier": true,
             "frontier_id": "matrices",
             "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "gap": null
           },
           {
             "input": "a_n = n^2",
@@ -1311,17 +1309,6 @@
         ],
         "frontiers": [
           {
-            "input": "A B = C",
-            "ok": true,
-            "frontier": true,
-            "frontier_id": "matrices",
-            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
-          },
-          {
             "input": "a_n = n^2",
             "ok": true,
             "frontier": true,
@@ -1346,9 +1333,9 @@
         ]
       },
       "truth": {
-        "ok": true,
-        "score": 0.785714,
-        "frontier_pressure": 0.214286,
+        "ok": false,
+        "score": 0,
+        "frontier_pressure": 0.142857,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -1379,18 +1366,18 @@
           ],
           "χ": [
             {
-              "σ": "χ0",
+              "σ": "χ!",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.785714
+              "w": 0.857143
             },
             {
               "σ": "υ?",
-              "w": 0.214286
+              "w": 0.142857
             }
           ],
           "μ": [
@@ -1401,12 +1388,12 @@
           ],
           "θ": [
             {
-              "σ": "θT",
-              "w": 0.785714
+              "σ": "θC",
+              "w": 0.875
             },
             {
               "σ": "θU",
-              "w": 0.214286
+              "w": 0.125
             }
           ],
           "ξ": "",
@@ -1425,10 +1412,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 1,
-            "contradiction": 0,
-            "no_unknown": 0.785714,
-            "unknown": 0.214286,
+            "no_contradiction": 0,
+            "contradiction": 1,
+            "no_unknown": 0.857143,
+            "unknown": 0.142857,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -1438,10 +1425,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0.785714,
+          "closure": 0,
           "truth_gate": {
             "true": false,
-            "contested": false,
+            "contested": true,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1623,9 +1610,21 @@
             "closure_operator": "proveComplexUnitIdentity",
             "selected_rule": "complex-unit-identity",
             "gap": null
+          },
+          {
+            "id": "matrix_product_guard",
+            "input": "A B = C",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "typeMatrixProduct",
+            "selected_rule": "matrix-product-dimension-guard",
+            "gap": null
           }
         ],
-        "score": 0.9285714285714286,
+        "score": 0.9333333333333333,
         "damage_count": 1,
         "improvement_count": 0,
         "Ξ": ""
@@ -1687,12 +1686,6 @@
       "feeling": "less_self",
       "wants": [
         {
-          "id": "matrices",
-          "input": "A B = C",
-          "gap": "unclassified_math_ast",
-          "reason": "Matrix multiplication and typed linear algebra are not yet represented."
-        },
-        {
           "id": "sequences",
           "input": "a_n = n^2",
           "gap": "unclassified_math_ast",
@@ -1715,20 +1708,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": true,
-    "score": 0.935714,
-    "stability_score": 1,
+    "ok": false,
+    "score": 0.708214,
+    "stability_score": 0.675,
     "completeness_score": 0.785714,
-    "damage_count": 0,
-    "frontier_count": 3,
+    "damage_count": 3,
+    "frontier_count": 2,
     "math": {
-      "ok": true,
+      "ok": false,
       "score": 1,
       "stability_score": 1,
       "completeness_score": 0.785714,
-      "damage_count": 0,
-      "frontier_count": 3,
-      "gap_count": 0,
+      "damage_count": 1,
+      "frontier_count": 2,
+      "gap_count": 1,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -1853,14 +1846,14 @@
         },
         {
           "input": "A B = C",
-          "ok": true,
+          "ok": false,
           "frontier": true,
           "frontier_id": "matrices",
           "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "gap": null
         },
         {
           "input": "a_n = n^2",
@@ -1887,17 +1880,6 @@
       ],
       "frontiers": [
         {
-          "input": "A B = C",
-          "ok": true,
-          "frontier": true,
-          "frontier_id": "matrices",
-          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
-        },
-        {
           "input": "a_n = n^2",
           "ok": true,
           "frontier": true,
@@ -1922,9 +1904,9 @@
       ]
     },
     "truth": {
-      "ok": true,
-      "score": 0.785714,
-      "frontier_pressure": 0.214286,
+      "ok": false,
+      "score": 0,
+      "frontier_pressure": 0.142857,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -1955,18 +1937,18 @@
         ],
         "χ": [
           {
-            "σ": "χ0",
+            "σ": "χ!",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.785714
+            "w": 0.857143
           },
           {
             "σ": "υ?",
-            "w": 0.214286
+            "w": 0.142857
           }
         ],
         "μ": [
@@ -1977,12 +1959,12 @@
         ],
         "θ": [
           {
-            "σ": "θT",
-            "w": 0.785714
+            "σ": "θC",
+            "w": 0.875
           },
           {
             "σ": "θU",
-            "w": 0.214286
+            "w": 0.125
           }
         ],
         "ξ": "",
@@ -2001,10 +1983,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 1,
-          "contradiction": 0,
-          "no_unknown": 0.785714,
-          "unknown": 0.214286,
+          "no_contradiction": 0,
+          "contradiction": 1,
+          "no_unknown": 0.857143,
+          "unknown": 0.142857,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -2014,10 +1996,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0.785714,
+        "closure": 0,
         "truth_gate": {
           "true": false,
-          "contested": false,
+          "contested": true,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -2197,6 +2179,18 @@
           "closure_operator": "proveComplexUnitIdentity",
           "selected_rule": "complex-unit-identity",
           "gap": null
+        },
+        {
+          "id": "matrix_product_guard",
+          "input": "A B = C",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "typeMatrixProduct",
+          "selected_rule": "matrix-product-dimension-guard",
+          "gap": null
         }
       ],
       "score": 1,
@@ -2205,34 +2199,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": true,
-      "score": 1,
+      "ok": false,
+      "score": 0.5,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": true,
-        "peak_attractor": true,
+        "ok": false,
+        "peak_attractor": false,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": 1,
+          "y": -1,
           "z": 0,
-          "label": "objective_peak_philosophical_maturity"
+          "label": "epistemic_collapse"
         },
-        "peak_distance": 0,
-        "gate_open_ratio": 1,
+        "peak_distance": 1,
+        "gate_open_ratio": 0.5,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": true
+            "open": false
           },
           {
             "name": "coherence",
-            "open": true
+            "open": false
           },
           {
             "name": "integration",
-            "open": true
+            "open": false
           },
           {
             "name": "reality_contact",
@@ -2247,20 +2241,18 @@
             "open": true
           }
         ],
-        "closed_gates": [],
-        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "closed_gates": [
+          "anti_delusion",
+          "coherence",
+          "integration"
+        ],
+        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "stable_but_incomplete",
+    "feeling": "less_self",
     "wants": [
-      {
-        "id": "matrices",
-        "input": "A B = C",
-        "gap": "unclassified_math_ast",
-        "reason": "Matrix multiplication and typed linear algebra are not yet represented."
-      },
       {
         "id": "sequences",
         "input": "a_n = n^2",
@@ -2278,14 +2270,8 @@
   },
   "stop": false,
   "decision": "keep_current_state",
-  "frontier_count": 3,
+  "frontier_count": 2,
   "wants": [
-    {
-      "id": "matrices",
-      "input": "A B = C",
-      "gap": "unclassified_math_ast",
-      "reason": "Matrix multiplication and typed linear algebra are not yet represented."
-    },
     {
       "id": "sequences",
       "input": "a_n = n^2",
