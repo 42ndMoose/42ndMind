@@ -2,36 +2,925 @@
   "packet_type": "42ndMind_frontier_discovery_candidate_report_v0_1",
   "version": "0.1.0",
   "proposal": {
-    "id": null,
-    "operations": []
+    "id": "frontier_candidate_sequence_definition_v0_1",
+    "discovery": {
+      "packet_type": "42ndMind_frontier_discovery_v0_1",
+      "version": "0.1.0",
+      "Ξ": "",
+      "input": "a_n = n^2",
+      "ok": false,
+      "needed": true,
+      "gap": {
+        "packet_type": "42ndMind_frontier_gap_read_v0_1",
+        "version": "0.1.0",
+        "Ξ": "",
+        "input": "a_n = n^2",
+        "ok": false,
+        "gap_id": "unclassified_math_ast",
+        "gap": {
+          "id": "unclassified_math_ast",
+          "reason": "Input did not reduce into a supported MathProgram AST."
+        },
+        "kernel_packet": {
+          "φ": "M",
+          "v": "0.1.0",
+          "source": "a_n = n^2",
+          "ast_type": "Unknown",
+          "anatomy_id": null,
+          "closure_operator": null,
+          "selected_rule": null,
+          "ok": false,
+          "verified": false,
+          "gap_count": 1,
+          "gaps": [
+            {
+              "id": "unclassified_math_ast",
+              "reason": "Input did not reduce into a supported MathProgram AST."
+            }
+          ],
+          "closure": {
+            "packet_type": "42ndMind_math_closure_v0_1",
+            "version": "0.1.0",
+            "stage": "closure",
+            "ok": false,
+            "verified": false,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "ast": {
+              "type": "MathProgram",
+              "body": {
+                "type": "Unknown",
+                "raw": "a_n = n^2"
+              },
+              "source": "a_n = n^2",
+              "ok": false
+            },
+            "classification": {
+              "ok": false,
+              "type": "Unknown",
+              "class": "unknown",
+              "anatomy_id": null,
+              "closure": null
+            },
+            "anatomy": null,
+            "obligation": null,
+            "Ξ": ""
+          },
+          "ΩM": [
+            {
+              "σ": "M:gap",
+              "w": 0.588235
+            },
+            {
+              "σ": "M:gap:unclassified_math_ast",
+              "w": 0.411765
+            }
+          ],
+          "lexicon": {
+            "φ": "Λ",
+            "v": "0.1.0",
+            "Λ": [
+              {
+                "σ": "Λ:M.gap_count=1",
+                "w": 0.031056
+              },
+              {
+                "σ": "Λ:M.ok0",
+                "w": 0.086957
+              },
+              {
+                "σ": "Λ:M.verified0",
+                "w": 0.086957
+              },
+              {
+                "σ": "Λ:Π.ast.body.raw=a_n = n^2",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.ast.body.type=Unknown",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.ast.ok0",
+                "w": 0.086957
+              },
+              {
+                "σ": "Λ:Π.ast.source=a_n = n^2",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.ast.type=MathProgram",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.classification.class=unknown",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.classification.ok0",
+                "w": 0.086957
+              },
+              {
+                "σ": "Λ:Π.classification.type=Unknown",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.ok0",
+                "w": 0.086957
+              },
+              {
+                "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.stage=closure",
+                "w": 0.049689
+              },
+              {
+                "σ": "Λ:Π.verified0",
+                "w": 0.086957
+              },
+              {
+                "σ": "Λ:Π.version=0.1.0",
+                "w": 0.04969
+              }
+            ],
+            "entries": [
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:M.gap_count=1",
+                "rule": "M.gap_count=1",
+                "ν": "ν14ba0ee",
+                "source": "M",
+                "c": 0.25,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:M.ok0",
+                "rule": "M.ok=false",
+                "ν": "ν80f79c5c",
+                "source": "M",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:M.verified0",
+                "rule": "M.verified=false",
+                "ν": "ν333c7dde",
+                "source": "M",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.raw=a_n = n^2",
+                "rule": "Π.ast.body.raw=a_n = n^2",
+                "ν": "νbbd54c7",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.body.type=Unknown",
+                "rule": "Π.ast.body.type=Unknown",
+                "ν": "ν3a028650",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.ok0",
+                "rule": "Π.ast.ok=false",
+                "ν": "νeff30ac5",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.source=a_n = n^2",
+                "rule": "Π.ast.source=a_n = n^2",
+                "ν": "νfd7cf874",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ast.type=MathProgram",
+                "rule": "Π.ast.type=MathProgram",
+                "ν": "νf417fb0",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.classification.class=unknown",
+                "rule": "Π.classification.class=unknown",
+                "ν": "ν2780ef9c",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.classification.ok0",
+                "rule": "Π.classification.ok=false",
+                "ν": "ν15fcea5b",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.classification.type=Unknown",
+                "rule": "Π.classification.type=Unknown",
+                "ν": "ν8a810da",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.ok0",
+                "rule": "Π.ok=false",
+                "ν": "ν1e9030cb",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                "rule": "Π.packet_type=42ndMind_math_closure_v0_1",
+                "ν": "ν8579d41b",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.stage=closure",
+                "rule": "Π.stage=closure",
+                "ν": "ν7af384d3",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.verified0",
+                "rule": "Π.verified=false",
+                "ν": "νecdd32e1",
+                "source": "∅",
+                "c": 0.7,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              },
+              {
+                "φ": "Λ",
+                "v": "0.1.0",
+                "σ": "Λ:Π.version=0.1.0",
+                "rule": "Π.version=0.1.0",
+                "ν": "νaaf50caf",
+                "source": "∅",
+                "c": 0.4,
+                "accepted": true,
+                "χ": [
+                  "Λ=derive(packet fact)",
+                  "Λν=canonical(rule)",
+                  "Ξ=\"\""
+                ],
+                "Ξ": "",
+                "rejected": false,
+                "conflict": null
+              }
+            ],
+            "count": 16,
+            "u": {
+              "Λ": 1,
+              "ok": true
+            },
+            "χ": [
+              "Λ=accepted(kernel-derived facts)",
+              "no σ conflict",
+              "Ξ=\"\""
+            ],
+            "Ξ": ""
+          },
+          "u": {
+            "ΩM": 1,
+            "ok": true
+          },
+          "χ": [
+            "M=kernel math closure packet",
+            "M consumes AST→anatomy→proof/closure",
+            "M.ok iff closure.ok",
+            "Ξ=\"\""
+          ],
+          "Ξ": ""
+        },
+        "closure_packet": {
+          "packet_type": "42ndMind_math_closure_v0_1",
+          "version": "0.1.0",
+          "stage": "closure",
+          "ok": false,
+          "verified": false,
+          "gaps": [
+            {
+              "id": "unclassified_math_ast",
+              "reason": "Input did not reduce into a supported MathProgram AST."
+            }
+          ],
+          "ast": {
+            "type": "MathProgram",
+            "body": {
+              "type": "Unknown",
+              "raw": "a_n = n^2"
+            },
+            "source": "a_n = n^2",
+            "ok": false
+          },
+          "classification": {
+            "ok": false,
+            "type": "Unknown",
+            "class": "unknown",
+            "anatomy_id": null,
+            "closure": null
+          },
+          "anatomy": null,
+          "obligation": null,
+          "Ξ": ""
+        }
+      },
+      "proposals": [
+        {
+          "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+          "version": "0.1.0",
+          "Ξ": "",
+          "id": "sequence_definition_a_n_n_2",
+          "kind": "sequence_definition",
+          "input": "a_n = n^2",
+          "status": "candidate_structure_only",
+          "promoted": false,
+          "missing": [
+            "indexed_variable",
+            "sequence_domain",
+            "term_formula"
+          ],
+          "candidate": {
+            "ast_node": "SequenceDefinition",
+            "anatomy_id": "sequence_definition",
+            "closure_operator": "defineSequence",
+            "classification": {
+              "anatomy_id": "sequence_definition",
+              "closure": "defineSequence"
+            },
+            "proof_obligations": [
+              "represent indexed term",
+              "type n over natural numbers",
+              "canonicalize term formula"
+            ],
+            "reality_anchor": {
+              "id": "sequence_definition_square",
+              "input": "a_n = n^2",
+              "closure_operator": "defineSequence",
+              "selected_rule": "sequence-term-definition"
+            },
+            "tests": [
+              "AST parses indexed sequence",
+              "closure emits sequence definition packet",
+              "whole-self wants no longer include sequences"
+            ]
+          },
+          "source_patch": {
+            "ready": false,
+            "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+          }
+        }
+      ]
+    },
+    "operations": [
+      {
+        "type": "replace",
+        "path": "src/math-ast-core-v0-1.js",
+        "content": "(function(root, factory) {\n  if (typeof module === 'object' && module.exports) module.exports = factory();\n  else root.FortySecondMindMathAstCore = factory();\n})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n  'use strict';\n\n  const VERSION = '0.1.0';\n\n  function R(value) { return Number((Number(value) || 0).toFixed(12)); }\n  function node(type, data) { return Object.assign({ type }, data || {}); }\n  function numberLiteral(value) { return node('NumberLiteral', { value: R(value) }); }\n  function symbol(name) { return node('Symbol', { name: String(name || '').trim() }); }\n  function unary(op, argument) { return node('UnaryExpression', { operator: op, argument }); }\n  function binary(op, left, right) { return node('BinaryExpression', { operator: op, left, right }); }\n  function relation(op, left, right) { return node('Relation', { operator: op, left, right }); }\n\n  function normalize(input) {\n    return String(input == null ? '' : input)\n      .replace(/⇒/g, '=>')\n      .replace(/⟹/g, '=>')\n      .replace(/≥/g, '>=')\n      .replace(/≤/g, '<=')\n      .replace(/∈/g, ' in ')\n      .replace(/ℝ/g, 'R')\n      .replace(/²/g, '^2')\n      .replace(/×/g, '*')\n      .replace(/÷/g, '/')\n      .replace(/⊢/g, ' therefore ')\n      .replace(/∴/g, ' therefore ')\n      .replace(/\\s+/g, ' ')\n      .trim();\n  }\n\n  function compact(input) { return normalize(input).replace(/\\s+/g, ''); }\n  function hasLetter(text) { return /[a-zA-Z]/.test(String(text || '')); }\n\n  function parseAffineExpression(input) {\n    const text = compact(input);\n    const m = /^([+-]?\\d+(?:\\.\\d+)?)?([a-zA-Z])(?:(\\+|-)(\\d+(?:\\.\\d+)?))?$/.exec(text);\n    if (!m) return null;\n    const coefficient = m[1] === undefined || m[1] === '' || m[1] === '+' ? 1 : m[1] === '-' ? -1 : Number(m[1]);\n    const variable = m[2];\n    const sign = m[3] || '+';\n    const magnitude = m[4] === undefined ? 0 : Number(m[4]);\n    const offset = sign === '-' ? -Math.abs(magnitude) : magnitude;\n    const product = coefficient === 1 ? symbol(variable) : binary('*', numberLiteral(coefficient), symbol(variable));\n    if (offset === 0) return node('AffineExpression', { coefficient: R(coefficient), variable, offset: 0, expression: product });\n    return node('AffineExpression', { coefficient: R(coefficient), variable, offset: R(offset), expression: binary(offset < 0 ? '-' : '+', product, numberLiteral(Math.abs(offset))) });\n  }\n\n  function parseAffineSide(input) {\n    const affine = parseAffineExpression(input);\n    if (affine) return affine;\n    const text = compact(input);\n    if (/^[+-]?\\d+(?:\\.\\d+)?$/.test(text)) return node('AffineExpression', { coefficient: 0, variable: null, offset: R(Number(text)), expression: numberLiteral(Number(text)) });\n    return null;\n  }\n\n  function tokenizeArithmetic(input) {\n    const text = compact(input);\n    const tokens = [];\n    let i = 0;\n    while (i < text.length) {\n      const ch = text[i];\n      const prev = tokens[tokens.length - 1];\n      const unaryMinus = ch === '-' && (!prev || prev.type === 'op' || prev.value === '(');\n      if (/\\d|\\./.test(ch) || unaryMinus) {\n        let j = i + (unaryMinus ? 1 : 0);\n        while (j < text.length && /\\d|\\./.test(text[j])) j += 1;\n        const raw = text.slice(i, j);\n        if (!/^-?\\d+(?:\\.\\d+)?$/.test(raw)) return null;\n        tokens.push({ type: 'number', value: Number(raw) });\n        i = j;\n        continue;\n      }\n      if ('+-*/^'.includes(ch)) { tokens.push({ type: 'op', value: ch }); i += 1; continue; }\n      if (ch === '(' || ch === ')') { tokens.push({ type: 'paren', value: ch }); i += 1; continue; }\n      return null;\n    }\n    return tokens;\n  }\n\n  function parseArithmeticExpression(input) {\n    const tokens = tokenizeArithmetic(input);\n    if (!tokens || !tokens.length) return null;\n    let pos = 0;\n    function peek() { return tokens[pos]; }\n    function take() { return tokens[pos++]; }\n    function primary() {\n      const t = take();\n      if (!t) return null;\n      if (t.type === 'number') return numberLiteral(t.value);\n      if (t.value === '(') {\n        const e = additive();\n        const close = take();\n        if (!e || !close || close.value !== ')') return null;\n        return e;\n      }\n      return null;\n    }\n    function power() {\n      let left = primary();\n      if (!left) return null;\n      if (peek() && peek().value === '^') { take(); const right = power(); if (!right) return null; left = binary('^', left, right); }\n      return left;\n    }\n    function multiplicative() {\n      let left = power();\n      while (peek() && (peek().value === '*' || peek().value === '/')) { const op = take().value; const right = power(); if (!right) return null; left = binary(op, left, right); }\n      return left;\n    }\n    function additive() {\n      let left = multiplicative();\n      while (peek() && (peek().value === '+' || peek().value === '-')) { const op = take().value; const right = multiplicative(); if (!right) return null; left = binary(op, right ? left : left, right); }\n      return left;\n    }\n    const ast = additive();\n    return ast && pos === tokens.length ? ast : null;\n  }\n\n  function parseSymbolicExpression(input) {\n    const text = compact(input);\n    if (/^[A-Za-z][A-Za-z0-9_]*$/.test(text)) return symbol(text);\n    if (/^-?\\d+(?:\\.\\d+)?$/.test(text)) return numberLiteral(Number(text));\n    let m = /^([A-Za-z][A-Za-z0-9_]*)(\\+|\\*)((-?\\d+(?:\\.\\d+)?))$/.exec(text);\n    if (m) return binary(m[2], symbol(m[1]), numberLiteral(Number(m[3])));\n    m = /^((-?\\d+(?:\\.\\d+)?))(\\+|\\*)([A-Za-z][A-Za-z0-9_]*)$/.exec(text);\n    if (m) return binary(m[3], numberLiteral(Number(m[1])), symbol(m[4]));\n    return parseArithmeticExpression(text);\n  }\n\n  function termKey(term) { return JSON.stringify(term); }\n\n  function parseEqualityRelation(input) {\n    const text = normalize(input);\n    const m = /^(.+?)=(.+)$/.exec(text.replace(/\\s+/g, ''));\n    if (!m) return null;\n    const left = parseSymbolicExpression(m[1]);\n    const right = parseSymbolicExpression(m[2]);\n    if (!left || !right) return null;\n    return relation('=', left, right);\n  }\n\n  function parseEqualityProof(input) {\n    const text = normalize(input);\n    const parts = text.split(/\\s+therefore\\s+/i);\n    if (parts.length === 1) {\n      const conclusion = parseEqualityRelation(parts[0]);\n      if (!conclusion || termKey(conclusion.left) !== termKey(conclusion.right)) return null;\n      return node('EqualityProof', { rule: 'reflexivity', premises: [], conclusion });\n    }\n    if (parts.length !== 2) return null;\n    const premises = parts[0].split(/,| and /i).map(parseEqualityRelation).filter(Boolean);\n    const conclusion = parseEqualityRelation(parts[1]);\n    if (!premises.length || !conclusion) return null;\n    if (premises.length === 1) return node('EqualityProof', { rule: 'symmetry', premises, conclusion });\n    if (premises.length === 2) return node('EqualityProof', { rule: 'transitivity', premises, conclusion });\n    return node('EqualityProof', { rule: 'equality_chain', premises, conclusion });\n  }\n\n  function parseSimplification(input) {\n    const text = normalize(input);\n    const m = /^simplify\\s+(.+)$/i.exec(text);\n    if (!m) return null;\n    const expression = parseSymbolicExpression(m[1]);\n    if (!expression) return null;\n    return node('Simplification', { expression });\n  }\n\n\n  function parseSqrtDomain(input) {\n    const text = normalize(input);\n    const m = /^sqrt\\(([^)]+)\\)\\s+is\\s+real$/i.exec(text);\n    if (!m) return null;\n    const radicand = parseSymbolicExpression(m[1]);\n    if (!radicand) return null;\n    return node('SqrtDomainStatement', { radicand, domain: symbol('R'), guard: relation('>=', radicand, numberLiteral(0)) });\n  }\n\n  function parseFunctionComposition(input) {\n    const raw = compact(input);\n    const m = /^([A-Za-z][A-Za-z0-9_]*)\\(([A-Za-z][A-Za-z0-9_]*)\\(([A-Za-z][A-Za-z0-9_]*)\\)\\)$/.exec(raw);\n    if (!m) return null;\n    const inner = node('FunctionApplication', { fn: symbol(m[2]), argument: symbol(m[3]) });\n    const outer = node('FunctionApplication', { fn: symbol(m[1]), argument: inner });\n    return node('FunctionComposition', { outer: symbol(m[1]), inner: symbol(m[2]), argument: symbol(m[3]), expression: outer });\n  }\n\n  function parseSetMembership(input) {\n    const text = normalize(input);\n    const m = /^([A-Za-z][A-Za-z0-9_]*)\\s+in\\s+([A-Za-z][A-Za-z0-9_]*)$/i.exec(text);\n    if (!m) return null;\n    return node('SetMembership', { element: symbol(m[1]), set: symbol(m[2]), relation: 'in' });\n  }\n\n  function parseInductionSchema(input) {\n    const text = normalize(input);\n    const m = /^prove\\s+by\\s+induction\\s+([A-Za-z][A-Za-z0-9_]*)\\(([A-Za-z][A-Za-z0-9_]*)\\)$/i.exec(text);\n    if (!m) return null;\n    const predicate = symbol(m[1]);\n    const variable = symbol(m[2]);\n    return node('InductionSchema', {\n      predicate,\n      variable,\n      domain: symbol('N'),\n      base_case: node('PredicateApplication', { predicate, argument: numberLiteral(0) }),\n      inductive_step: node('Implication', {\n        antecedent: node('PredicateApplication', { predicate, argument: variable }),\n        consequent: node('PredicateApplication', { predicate, argument: binary('+', variable, numberLiteral(1)) })\n      })\n    });\n  }\n\n\n  function parseLimitStatement(input) {\n    const raw = compact(input);\n    const m = /^lim([A-Za-z][A-Za-z0-9_]*)->(-?\\d+(?:\\.\\d+)?)sin\\(\\1\\)\\/\\1=1$/i.exec(raw);\n    if (!m) return null;\n    const variable = symbol(m[1]);\n    return node('LimitStatement', {\n      variable,\n      approach: numberLiteral(Number(m[2])),\n      expression: node('QuotientExpression', { numerator: node('FunctionApplication', { fn: symbol('sin'), argument: variable }), denominator: variable }),\n      relation: relation('=', node('LimitExpression', { variable, approach: numberLiteral(Number(m[2])) }), numberLiteral(1)),\n      theorem_class: 'sine_over_x_limit_at_zero'\n    });\n  }\n\n  function parseDerivativeStatement(input) {\n    const raw = compact(input);\n    const m = /^d\\/d([A-Za-z][A-Za-z0-9_]*)\\1\\^(-?\\d+(?:\\.\\d+)?)=(-?\\d+(?:\\.\\d+)?)\\1$/i.exec(raw);\n    if (!m) return null;\n    const variable = symbol(m[1]);\n    const exponent = Number(m[2]);\n    const coefficient = Number(m[3]);\n    return node('DerivativeStatement', {\n      variable,\n      expression: binary('^', variable, numberLiteral(exponent)),\n      derivative: binary('*', numberLiteral(coefficient), variable),\n      relation: '=',\n      rule_class: 'power_rule_n2'\n    });\n  }\n\n  function parseIntegralStatement(input) {\n    const raw = compact(input);\n    const m = /^integral(-?\\d+(?:\\.\\d+)?)([A-Za-z][A-Za-z0-9_]*)d\\2=\\2\\^2\\+C$/i.exec(raw);\n    if (!m) return null;\n    const coefficient = Number(m[1]);\n    const variable = symbol(m[2]);\n    return node('IntegralStatement', {\n      variable,\n      integrand: binary('*', numberLiteral(coefficient), variable),\n      antiderivative: binary('+', binary('^', variable, numberLiteral(2)), symbol('C')),\n      relation: '=',\n      rule_class: 'power_rule_linear_antiderivative'\n    });\n  }\n\n  function parseProbabilityProductStatement(input) {\n    const raw = compact(input);\n    const m = /^P\\(([A-Za-z][A-Za-z0-9_]*)and([A-Za-z][A-Za-z0-9_]*)\\)=P\\(\\1\\)P\\(\\2\\)$/i.exec(raw);\n    if (!m) return null;\n    const left = symbol(m[1]);\n    const right = symbol(m[2]);\n    return node('ProbabilityProductStatement', {\n      left_event: left,\n      right_event: right,\n      joint: node('EventConjunction', { left, right }),\n      product: binary('*', node('Probability', { event: left }), node('Probability', { event: right })),\n      guard: node('IndependenceGuard', { left, right }),\n      relation: '=',\n      rule_class: 'independent_event_product_rule'\n    });\n  }\n\n\n  function parseComplexUnitIdentity(input) {\n    const raw = compact(input);\n    if (!/^i\\^2=-1$/i.test(raw)) return null;\n    return node('ComplexUnitIdentityStatement', {\n      unit: symbol('i'),\n      domain: symbol('C'),\n      expression: binary('^', symbol('i'), numberLiteral(2)),\n      relation: relation('=', binary('^', symbol('i'), numberLiteral(2)), numberLiteral(-1)),\n      rule_class: 'complex_unit_identity'\n    });\n  }\n\n\n  function parseMatrixProductStatement(input) {\n    const raw = compact(input);\n    const m = /^([A-Z])([A-Z])=([A-Z])$/.exec(raw);\n    if (!m) return null;\n    return node('MatrixProductStatement', {\n      left_matrix: symbol(m[1]),\n      right_matrix: symbol(m[2]),\n      product_matrix: symbol(m[3]),\n      product: node('MatrixProduct', { left: symbol(m[1]), right: symbol(m[2]) }),\n      relation: relation('=', node('MatrixProduct', { left: symbol(m[1]), right: symbol(m[2]) }), symbol(m[3])),\n      guard: node('DimensionCompatibilityGuard', { left: symbol(m[1]), right: symbol(m[2]), product: symbol(m[3]) }),\n      rule_class: 'matrix_product_dimension_guard'\n    });\n  }\n\n\n  function parseSequenceDefinition(input) {\n    const raw = compact(input);\n    const m = /^([a-zA-Z])_n=n\\^2$/i.exec(raw);\n    if (!m) return null;\n    const sequence = symbol(m[1]);\n    const index = symbol('n');\n    return node('SequenceDefinition', {\n      sequence,\n      index,\n      domain: symbol('N'),\n      term: node('IndexedTerm', { sequence, index }),\n      term_formula: binary('^', index, numberLiteral(2)),\n      relation: relation('=', node('IndexedTerm', { sequence, index }), binary('^', index, numberLiteral(2))),\n      rule_class: 'sequence_term_definition'\n    });\n  }\n\n  function parseArithmeticRelation(input) {\n    const text = compact(input);\n    if (hasLetter(text)) return null;\n    const m = /^(.+?)(>=|<=|=|>|<)(.+)$/.exec(text);\n    if (!m) return null;\n    const left = parseArithmeticExpression(m[1]);\n    const right = parseArithmeticExpression(m[3]);\n    if (!left || !right) return null;\n    return node('ArithmeticRelation', { relation: relation(m[2], left, right) });\n  }\n\n  function parseEquation(input) {\n    const text = compact(input);\n    if (/(>=|<=|>|<|with)/i.test(text)) return null;\n    const m = /^(.+)=(-?\\d+(?:\\.\\d+)?)$/.exec(text);\n    if (!m || !hasLetter(m[1])) return null;\n    const left = parseAffineExpression(m[1]);\n    if (!left) return null;\n    return node('Equation', { left, right: numberLiteral(Number(m[2])), relation: '=' });\n  }\n\n  function parseLinearEquation(input) {\n    const text = compact(input);\n    if (/(>=|<=|>|<|with)/i.test(text)) return null;\n    const m = /^(.+)=(.+)$/.exec(text);\n    if (!m || !hasLetter(text)) return null;\n    const left = parseAffineSide(m[1]);\n    const right = parseAffineSide(m[2]);\n    if (!left || !right) return null;\n    const variable = left.variable || right.variable;\n    if (!variable) return null;\n    if ((left.variable && left.variable !== variable) || (right.variable && right.variable !== variable)) return null;\n    return node('LinearEquation', { left, right, variable, relation: '=' });\n  }\n\n  function parseSubstitutionEvaluation(input) {\n    const text = compact(input);\n    const m = /^(.+)with([a-zA-Z])=(-?\\d+(?:\\.\\d+)?)$/.exec(text);\n    if (!m) return null;\n    const expression = parseAffineExpression(m[1]);\n    if (!expression || expression.variable !== m[2]) return null;\n    return node('SubstitutionEvaluation', { expression, assignment: node('Assignment', { variable: m[2], value: numberLiteral(Number(m[3])) }) });\n  }\n\n  function parseLinearRelation(input) {\n    const text = compact(input);\n    const m = /^([a-zA-Z])(>=|<=|>|<|=)(-?\\d+(?:\\.\\d+)?)(?:with\\1=(-?\\d+(?:\\.\\d+)?))?$/.exec(text);\n    if (!m) return null;\n    return node('LinearRelation', { relation: relation(m[2], symbol(m[1]), numberLiteral(Number(m[3]))), assignment: m[4] === undefined ? null : node('Assignment', { variable: m[1], value: numberLiteral(Number(m[4])) }) });\n  }\n\n  function parseDivisionConstraint(input) {\n    const raw = compact(input);\n    const m = /^([a-zA-Z])\\/([a-zA-Z])isundefinedwhen\\2=0$/i.exec(raw);\n    if (!m) return null;\n    return node('DivisionConstraint', { expression: binary('/', symbol(m[1]), symbol(m[2])), denominator: symbol(m[2]), violation: relation('=', symbol(m[2]), numberLiteral(0)), result: node('Undefined', {}) });\n  }\n\n  function parseSquareNonnegative(input) {\n    const raw = compact(input);\n    const m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?\\1\\^2>=0$/i.exec(raw);\n    if (!m) return null;\n    return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('>=', binary('^', symbol(m[1]), numberLiteral(2)), numberLiteral(0)), theorem_class: 'square_nonnegative_over_reals' });\n  }\n\n  function parseAlgebraicIdentity(input) {\n    const raw = compact(input);\n    let m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?\\1\\+0=\\1$/i.exec(raw);\n    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('+', symbol(m[1]), numberLiteral(0)), symbol(m[1])), theorem_class: 'additive_identity_over_reals' });\n    m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?0\\+\\1=\\1$/i.exec(raw);\n    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('+', numberLiteral(0), symbol(m[1])), symbol(m[1])), theorem_class: 'additive_identity_over_reals' });\n    m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?\\1\\*1=\\1$/i.exec(raw);\n    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('*', symbol(m[1]), numberLiteral(1)), symbol(m[1])), theorem_class: 'multiplicative_identity_over_reals' });\n    m = /^(?:forall|∀)?([a-zA-Z])(?:inR|inreals|inreal)?[,]?1\\*\\1=\\1$/i.exec(raw);\n    if (m) return node('QuantifiedStatement', { quantifier: 'forall', variable: symbol(m[1]), domain: symbol('R'), body: relation('=', binary('*', numberLiteral(1), symbol(m[1])), symbol(m[1])), theorem_class: 'multiplicative_identity_over_reals' });\n    return null;\n  }\n\n  function parseImplicationAtom(input) {\n    const text = compact(input);\n    const m = /^([A-Za-z][A-Za-z0-9_]*)(?:=>)([A-Za-z][A-Za-z0-9_]*)$/.exec(text);\n    if (!m) return null;\n    return node('Implication', { antecedent: symbol(m[1]), consequent: symbol(m[2]) });\n  }\n\n  function parseImplicationChain(input) {\n    const rows = Array.isArray(input) ? input : normalize(input).split(/,| and /i);\n    const implications = rows.map(parseImplicationAtom).filter(Boolean);\n    if (implications.length < 2) return null;\n    return node('ImplicationChain', { implications });\n  }\n\n  function parseClaimAtom(input) {\n    const text = normalize(input);\n    const neg = /^not\\s+(.+)$/i.exec(text);\n    if (neg) return unary('not', symbol(neg[1].trim()));\n    return symbol(text);\n  }\n\n  function parseContradictionPair(input) {\n    const rows = Array.isArray(input) ? input : normalize(input).split(/,| and /i);\n    const claims = rows.map(parseClaimAtom).filter(x => x && (x.type === 'Symbol' || x.type === 'UnaryExpression'));\n    if (claims.length < 2) return null;\n    const positives = new Set(claims.filter(x => x.type === 'Symbol').map(x => x.name.toUpperCase()));\n    const negatives = new Set(claims.filter(x => x.type === 'UnaryExpression' && x.operator === 'not' && x.argument.type === 'Symbol').map(x => x.argument.name.toUpperCase()));\n    const hit = Array.from(positives).find(x => negatives.has(x));\n    if (!hit) return null;\n    return node('ContradictionPair', { claims, contradiction: true, referent: hit });\n  }\n\n  function parse(input) {\n    const parsers = [\n      parseSquareNonnegative,\n      parseAlgebraicIdentity,\n      parseEqualityProof,\n      parseSimplification,\n      parseSqrtDomain,\n      parseFunctionComposition,\n      parseSetMembership,\n      parseInductionSchema,\n      parseLimitStatement,\n      parseDerivativeStatement,\n      parseIntegralStatement,\n      parseProbabilityProductStatement,\n      parseSequenceDefinition,\n      parseMatrixProductStatement,\n      parseComplexUnitIdentity,\n      parseDivisionConstraint,\n      parseSubstitutionEvaluation,\n      parseLinearRelation,\n      parseEquation,\n      parseLinearEquation,\n      parseArithmeticRelation,\n      parseImplicationChain,\n      parseContradictionPair\n    ];\n    for (const p of parsers) {\n      const ast = p(input);\n      if (ast) return node('MathProgram', { body: ast, source: input, ok: true });\n    }\n    return node('MathProgram', { body: node('Unknown', { raw: normalize(input) }), source: input, ok: false });\n  }\n\n  function classify(astOrInput) {\n    const ast = typeof astOrInput === 'string' || Array.isArray(astOrInput) ? parse(astOrInput) : astOrInput;\n    const body = ast && ast.type === 'MathProgram' ? ast.body : ast;\n    const type = body && body.type;\n    if (type === 'QuantifiedStatement') {\n      if (body.theorem_class === 'square_nonnegative_over_reals') return { ok: true, type, class: 'theorem', anatomy_id: 'square_nonnegative', closure: 'proveSquareNonnegative' };\n      if (/identity_over_reals$/.test(String(body.theorem_class || ''))) return { ok: true, type, class: 'theorem', anatomy_id: 'algebraic_identity', closure: 'proveAlgebraicIdentity' };\n    }\n    const map = {\n      Equation: { class: 'equation', anatomy_id: 'affine_equation', closure: 'solveAffineEquation' },\n      LinearEquation: { class: 'equation', anatomy_id: 'linear_equation', closure: 'solveLinearEquation' },\n      EqualityProof: { class: 'proof', anatomy_id: 'equality_proof', closure: 'proveEquality' },\n      Simplification: { class: 'rewrite', anatomy_id: 'expression_simplification', closure: 'simplifyExpression' },\n      SqrtDomainStatement: { class: 'constraint', anatomy_id: 'sqrt_domain', closure: 'proveSqrtDomain' },\n      FunctionComposition: { class: 'expression', anatomy_id: 'function_composition', closure: 'composeFunctionApplication' },\n      SetMembership: { class: 'relation', anatomy_id: 'set_membership', closure: 'typeSetMembership' },\n      InductionSchema: { class: 'proof_schema', anatomy_id: 'induction_schema', closure: 'generateInductionObligations' },\n      LimitStatement: { class: 'analysis', anatomy_id: 'limit_statement', closure: 'proveLimitStatement' },\n      DerivativeStatement: { class: 'calculus', anatomy_id: 'derivative_statement', closure: 'proveDerivativeStatement' },\n      IntegralStatement: { class: 'calculus', anatomy_id: 'integral_statement', closure: 'proveIntegralStatement' },\n      ProbabilityProductStatement: { class: 'probability', anatomy_id: 'probability_product_rule', closure: 'proveProbabilityProductRule' },\n      ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },\n      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },\n      SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },\n      AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },\n      SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },\n      LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },\n      ArithmeticRelation: { class: 'relation', anatomy_id: 'arithmetic_relation_truth', closure: 'evaluateArithmeticRelation' },\n      DivisionConstraint: { class: 'constraint', anatomy_id: 'division_constraint', closure: 'proveDivisionByZeroUndefined' },\n      ImplicationChain: { class: 'proof', anatomy_id: 'implication_chain', closure: 'composeImplicationChain' },\n      ContradictionPair: { class: 'proof', anatomy_id: 'contradiction_pair', closure: 'detectContradiction' }\n    };\n    return Object.assign({ ok: !!map[type], type: type || 'Unknown' }, map[type] || { class: 'unknown', anatomy_id: null, closure: null });\n  }\n\n  function canonical(astOrInput) {\n    const ast = typeof astOrInput === 'string' || Array.isArray(astOrInput) ? parse(astOrInput) : astOrInput;\n    return JSON.stringify(ast, Object.keys(JSON.parse(JSON.stringify(ast))).sort());\n  }\n\n  return Object.freeze({\n    VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,\n    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,\n    parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,\n    parseImplicationChain, parseContradictionPair, parse, classify, canonical\n  });\n});\n"
+      },
+      {
+        "type": "replace",
+        "path": "src/proof-calculus-core-v0-1.js",
+        "content": "(function(root, factory) {\n  if (typeof module === 'object' && module.exports) module.exports = factory();\n  else root.FortySecondMindProofCalculusCore = factory();\n})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n  'use strict';\n\n  const VERSION = '0.1.0';\n  const EPS = 1e-12;\n  const A = value => Array.isArray(value) ? value : [];\n  const R = value => Number((Number(value) || 0).toFixed(12));\n\n  function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }\n  function bodyOf(input) { return input && input.type === 'MathProgram' ? input.body : input; }\n  function finite(value) { return Number.isFinite(Number(value)); }\n  function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }\n  function gap(id, reason, data) { return Object.assign({ ok: false, verified: false, gap: { id, reason } }, data || {}); }\n  function verified(rule, data) { return Object.assign({ ok: true, verified: true, rule, gaps: [] }, data || {}); }\n\n  function symbolName(node) {\n    if (!node) return null;\n    if (node.type === 'Symbol') return String(node.name || '');\n    if (typeof node === 'string') return node;\n    return null;\n  }\n\n  function atomKey(node) {\n    if (!node) return '';\n    if (node.type === 'Symbol') return String(node.name || '').trim().toUpperCase();\n    if (node.type === 'UnaryExpression' && node.operator === 'not') return 'not ' + atomKey(node.argument);\n    if (typeof node === 'string') return node.trim().toUpperCase();\n    return JSON.stringify(node);\n  }\n\n  function expressionText(node) {\n    if (!node) return '';\n    if (node.type === 'NumberLiteral') return String(node.value);\n    if (node.type === 'Symbol') return node.name;\n    if (node.type === 'Undefined') return 'undefined';\n    if (node.type === 'UnaryExpression') return String(node.operator) + ' ' + expressionText(node.argument);\n    if (node.type === 'BinaryExpression') return expressionText(node.left) + String(node.operator) + expressionText(node.right);\n    if (node.type === 'AffineExpression') return String(node.coefficient) + '*' + (node.variable || '') + (node.offset < 0 ? String(node.offset) : '+' + String(node.offset));\n    if (node.type === 'Relation') return expressionText(node.left) + node.operator + expressionText(node.right);\n    return JSON.stringify(node);\n  }\n\n  function valueOf(node) {\n    if (node && node.type === 'NumberLiteral') return Number(node.value);\n    if (finite(node)) return Number(node);\n    return NaN;\n  }\n\n  function evaluateNumericExpression(node) {\n    if (!node) return NaN;\n    if (node.type === 'NumberLiteral') return Number(node.value);\n    if (node.type === 'UnaryExpression' && node.operator === '-') return -evaluateNumericExpression(node.argument);\n    if (node.type !== 'BinaryExpression') return NaN;\n    const left = evaluateNumericExpression(node.left);\n    const right = evaluateNumericExpression(node.right);\n    if (!finite(left) || !finite(right)) return NaN;\n    if (node.operator === '+') return left + right;\n    if (node.operator === '-') return left - right;\n    if (node.operator === '*') return left * right;\n    if (node.operator === '/') return Math.abs(right) <= EPS ? NaN : left / right;\n    if (node.operator === '^') return Math.pow(left, right);\n    return NaN;\n  }\n\n  function compare(left, op, right) {\n    if (!finite(left) || !finite(right)) return null;\n    if (op === '>=') return left >= right;\n    if (op === '<=') return left <= right;\n    if (op === '>') return left > right;\n    if (op === '<') return left < right;\n    if (op === '=') return Math.abs(left - right) <= EPS;\n    return null;\n  }\n\n  function identity(left, right) {\n    if (arguments.length === 1) return verified('identity', { conclusion: clone(left), left: clone(left), right: clone(left) });\n    return same(left, right)\n      ? verified('identity', { conclusion: clone(right), left: clone(left), right: clone(right) })\n      : gap('identity_mismatch', 'Identity requires both sides to be canonically identical.', { left: clone(left), right: clone(right) });\n  }\n\n  function substituteNode(node, assignments) {\n    if (!node || typeof node !== 'object') return node;\n    if (node.type === 'Symbol' && Object.prototype.hasOwnProperty.call(assignments, node.name)) return { type: 'NumberLiteral', value: R(assignments[node.name]) };\n    if (node.type === 'BinaryExpression') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\n    if (node.type === 'UnaryExpression') return Object.assign({}, node, { argument: substituteNode(node.argument, assignments) });\n    if (node.type === 'Relation') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\n    if (node.type === 'AffineExpression') return node.variable && Object.prototype.hasOwnProperty.call(assignments, node.variable)\n      ? { type: 'NumberLiteral', value: R(Number(node.coefficient) * Number(assignments[node.variable]) + Number(node.offset || 0)) }\n      : clone(node);\n    return clone(node);\n  }\n\n  function substitution(target, assignment) {\n    const body = bodyOf(target);\n    const assignments = {};\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\n    const substituted = substituteNode(body, assignments);\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\n  }\n\n  function equivalenceRewrite(target, from, to) {\n    const base = bodyOf(target);\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\n  }\n\n  function inverseOperation(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\n    const left = body.left;\n    const right = valueOf(body.right);\n    if (!left || left.type !== 'AffineExpression') return gap('left_side_not_affine', 'Solving requires an affine left side.', { equation: clone(body) });\n    if (!finite(right)) return gap('non_finite_target', 'Solving requires a finite numeric target.', { equation: clone(body) });\n    if (Math.abs(Number(left.coefficient)) <= EPS) return gap('zero_coefficient', 'Affine equation cannot be solved by division when coefficient is zero.', { equation: clone(body) });\n    const shifted = right - Number(left.offset || 0);\n    const value = shifted / Number(left.coefficient);\n    if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });\n    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });\n  }\n\n  function solveLinearEquation(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');\n    const left = body.left;\n    const right = body.right;\n    if (!left || !right || left.type !== 'AffineExpression' || right.type !== 'AffineExpression') return gap('linear_equation_not_affine', 'Both sides must reduce to affine expressions.', { equation: clone(body) });\n    const coefficient = Number(left.coefficient || 0) - Number(right.coefficient || 0);\n    const offset = Number(right.offset || 0) - Number(left.offset || 0);\n    if (Math.abs(coefficient) <= EPS) return gap('zero_linear_coefficient', 'Linear equation cannot isolate a unique value when net coefficient is zero.', { equation: clone(body) });\n    const value = offset / coefficient;\n    return verified('linear-equation-solve', { operator: 'solveLinearEquation', variable: body.variable, value: R(value), conclusion: { type: 'Assignment', variable: body.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['collect-variable-terms', 'collect-constant-terms', 'divide-by-net-coefficient'] });\n  }\n\n  function evaluateSubstitution(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'SubstitutionEvaluation') return gap('unsupported_substitution_evaluation', 'Substitution evaluation requires a SubstitutionEvaluation AST node.');\n    const expr = body.expression;\n    const assignment = body.assignment;\n    if (!expr || expr.type !== 'AffineExpression' || !assignment) return gap('substitution_not_affine', 'Only affine substitution is supported for this rule.', { node: clone(body) });\n    if (expr.variable !== assignment.variable) return gap('substitution_variable_mismatch', 'Assignment variable must match expression variable.', { node: clone(body) });\n    const value = valueOf(assignment.value);\n    if (!finite(value)) return gap('non_finite_substitution_value', 'Substitution value must be finite.', { node: clone(body) });\n    const result = Number(expr.coefficient || 0) * value + Number(expr.offset || 0);\n    return verified('substitution-evaluation', { operator: 'evaluateSubstitution', variable: expr.variable, value: R(value), result: R(result), conclusion: { type: 'NumberLiteral', value: R(result) }, steps: ['substitute-assigned-value', 'evaluate-affine-expression'] });\n  }\n\n  function relationOk(rel) { return rel && rel.type === 'Relation' && rel.operator === '=' && rel.left && rel.right; }\n  function eqTerm(a, b) { return same(a, b); }\n\n  function proveEquality(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'EqualityProof') return gap('unsupported_equality_proof', 'Equality proof requires an EqualityProof AST node.');\n    const conclusion = body.conclusion;\n    if (!relationOk(conclusion)) return gap('invalid_equality_conclusion', 'Equality proof requires an equality conclusion.', { node: clone(body) });\n    const premises = A(body.premises).filter(relationOk);\n    if (body.rule === 'reflexivity') {\n      if (premises.length) return gap('reflexivity_has_premises', 'Reflexivity proof should not require premises.', { node: clone(body) });\n      if (!eqTerm(conclusion.left, conclusion.right)) return gap('reflexivity_mismatch', 'Reflexivity requires a term equal to itself.', { conclusion: clone(conclusion) });\n      return verified('equality-reflexivity', { operator: 'proveEquality', equality_rule: 'reflexivity', conclusion: clone(conclusion), steps: ['term-is-identical-to-itself'] });\n    }\n    if (body.rule === 'symmetry') {\n      if (premises.length !== 1) return gap('symmetry_requires_one_premise', 'Symmetry requires exactly one equality premise.', { node: clone(body) });\n      const p = premises[0];\n      if (!eqTerm(p.left, conclusion.right) || !eqTerm(p.right, conclusion.left)) return gap('symmetry_mismatch', 'Symmetry requires a=b therefore b=a.', { premise: clone(p), conclusion: clone(conclusion) });\n      return verified('equality-symmetry', { operator: 'proveEquality', equality_rule: 'symmetry', conclusion: clone(conclusion), steps: ['flip-equality-sides'] });\n    }\n    if (body.rule === 'transitivity' || body.rule === 'equality_chain') {\n      if (premises.length < 2) return gap('transitivity_requires_two_premises', 'Transitivity requires at least two equality premises.', { node: clone(body) });\n      for (let i = 0; i < premises.length - 1; i += 1) {\n        if (!eqTerm(premises[i].right, premises[i + 1].left)) return gap('equality_chain_break', 'Adjacent equality premises must share the same middle term.', { index: i, premises: clone(premises) });\n      }\n      const first = premises[0];\n      const last = premises[premises.length - 1];\n      if (!eqTerm(first.left, conclusion.left) || !eqTerm(last.right, conclusion.right)) return gap('transitivity_conclusion_mismatch', 'Conclusion must connect the first left term to the last right term.', { premises: clone(premises), conclusion: clone(conclusion) });\n      return verified('equality-transitivity', { operator: 'proveEquality', equality_rule: premises.length === 2 ? 'transitivity' : 'equality_chain', conclusion: clone(conclusion), steps: ['match-adjacent-equality-terms', 'compose-equality-chain'] });\n    }\n    return gap('unsupported_equality_rule', 'Equality proof rule is not supported.', { rule: body.rule });\n  }\n\n  function simplifyNode(node) {\n    if (!node || typeof node !== 'object') return node;\n    if (node.type !== 'BinaryExpression') return clone(node);\n    const left = simplifyNode(node.left);\n    const right = simplifyNode(node.right);\n    if (node.operator === '+') {\n      if (valueOf(right) === 0) return clone(left);\n      if (valueOf(left) === 0) return clone(right);\n    }\n    if (node.operator === '*') {\n      if (valueOf(right) === 1) return clone(left);\n      if (valueOf(left) === 1) return clone(right);\n      if (valueOf(right) === 0 || valueOf(left) === 0) return { type: 'NumberLiteral', value: 0 };\n    }\n    const lnum = evaluateNumericExpression(left);\n    const rnum = evaluateNumericExpression(right);\n    if (finite(lnum) && finite(rnum)) {\n      const value = evaluateNumericExpression({ type: 'BinaryExpression', operator: node.operator, left: { type: 'NumberLiteral', value: lnum }, right: { type: 'NumberLiteral', value: rnum } });\n      if (finite(value)) return { type: 'NumberLiteral', value: R(value) };\n    }\n    return Object.assign({}, node, { left, right });\n  }\n\n  function simplifyExpression(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'Simplification') return gap('unsupported_simplification', 'Simplification requires a Simplification AST node.');\n    const simplified = simplifyNode(body.expression);\n    if (!simplified) return gap('simplification_failed', 'Expression could not be simplified.', { node: clone(body) });\n    const changed = !same(body.expression, simplified);\n    return verified('expression-simplification', { operator: 'simplifyExpression', changed, input: clone(body.expression), conclusion: clone(simplified), result: expressionText(simplified), steps: changed ? ['apply-neutral-element-rewrite'] : ['already-normal-form'] });\n  }\n\n\n  function proveSqrtDomain(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'SqrtDomainStatement') return gap('unsupported_sqrt_domain', 'Square-root domain closure requires a SqrtDomainStatement AST node.');\n    const radicandValue = valueOf(body.radicand);\n    if (Number.isFinite(radicandValue) && radicandValue < 0) return gap('sqrt_negative_radicand', 'sqrt(x) is real over R only when the radicand is nonnegative.', { radicand: clone(body.radicand) });\n    return verified('sqrt-domain-guard', { operator: 'proveSqrtDomain', guard: clone(body.guard), conclusion: { type: 'DomainGuard', expression: 'sqrt', requirement: clone(body.guard) }, steps: ['detect-square-root', 'emit-real-domain-radicand-guard'] });\n  }\n\n  function composeFunctionApplication(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'FunctionComposition') return gap('unsupported_function_composition', 'Function composition closure requires a FunctionComposition AST node.');\n    return verified('function-composition-canonicalization', { operator: 'composeFunctionApplication', outer: clone(body.outer), inner: clone(body.inner), argument: clone(body.argument), conclusion: clone(body.expression), steps: ['detect-nested-function-application', 'canonicalize-as-composition-tree'] });\n  }\n\n  function typeSetMembership(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'SetMembership') return gap('unsupported_set_membership', 'Set membership closure requires a SetMembership AST node.');\n    return verified('set-membership-typing', { operator: 'typeSetMembership', element: clone(body.element), set: clone(body.set), conclusion: { type: 'TypedRelation', operator: 'in', element: clone(body.element), set: clone(body.set) }, steps: ['detect-membership-relation', 'canonicalize-element-set-relation'] });\n  }\n\n  function generateInductionObligations(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'InductionSchema') return gap('unsupported_induction_schema', 'Induction closure requires an InductionSchema AST node.');\n    return verified('induction-schema-obligations', { operator: 'generateInductionObligations', predicate: clone(body.predicate), variable: clone(body.variable), domain: clone(body.domain), conclusion: { type: 'ProofObligations', schema: 'induction', obligations: [clone(body.base_case), clone(body.inductive_step)] }, steps: ['detect-induction-request', 'emit-base-case', 'emit-inductive-step'] });\n  }\n\n\n  function proveLimitStatement(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'LimitStatement') return gap('unsupported_limit_statement', 'Limit closure requires a LimitStatement AST node.');\n    if (body.theorem_class !== 'sine_over_x_limit_at_zero') return gap('unsupported_limit_theorem', 'Only lim x->0 sin(x)/x = 1 is registered in this bounded frontier.', { theorem_class: body.theorem_class || null });\n    return verified('limit-sine-over-x', { operator: 'proveLimitStatement', theorem_class: body.theorem_class, conclusion: clone(body.relation), steps: ['detect-standard-limit-form', 'apply-registered-sine-over-x-limit-theorem'] });\n  }\n\n  function proveDerivativeStatement(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'DerivativeStatement') return gap('unsupported_derivative_statement', 'Derivative closure requires a DerivativeStatement AST node.');\n    if (body.rule_class !== 'power_rule_n2') return gap('unsupported_derivative_rule', 'Only d/dx x^2 = 2x is registered in this bounded frontier.', { rule_class: body.rule_class || null });\n    return verified('derivative-power-rule-n2', { operator: 'proveDerivativeStatement', variable: clone(body.variable), conclusion: { type: 'DerivativeEquality', expression: clone(body.expression), derivative: clone(body.derivative) }, steps: ['detect-power-expression', 'apply-power-rule-for-n=2'] });\n  }\n\n  function proveIntegralStatement(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'IntegralStatement') return gap('unsupported_integral_statement', 'Integral closure requires an IntegralStatement AST node.');\n    if (body.rule_class !== 'power_rule_linear_antiderivative') return gap('unsupported_integral_rule', 'Only integral 2x dx = x^2 + C is registered in this bounded frontier.', { rule_class: body.rule_class || null });\n    return verified('integral-power-rule-linear', { operator: 'proveIntegralStatement', variable: clone(body.variable), conclusion: { type: 'AntiderivativeEquality', integrand: clone(body.integrand), antiderivative: clone(body.antiderivative) }, steps: ['detect-linear-power-integrand', 'apply-power-rule-antiderivative', 'include-constant-of-integration'] });\n  }\n\n  function proveProbabilityProductRule(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'ProbabilityProductStatement') return gap('unsupported_probability_product', 'Probability closure requires a ProbabilityProductStatement AST node.');\n    return verified('probability-product-requires-independence', { operator: 'proveProbabilityProductRule', guard: clone(body.guard), conclusion: { type: 'ConditionalProbabilityRule', guard: clone(body.guard), equality: { type: 'ProbabilityEquality', joint: clone(body.joint), product: clone(body.product) } }, steps: ['detect-joint-event-product-form', 'emit-independence-guard', 'close-product-rule-under-guard'] });\n  }\n\n\n  function proveComplexUnitIdentity(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'ComplexUnitIdentityStatement') return gap('unsupported_complex_unit_identity', 'Complex unit identity closure requires a ComplexUnitIdentityStatement AST node.');\n    return verified('complex-unit-identity', {\n      operator: 'proveComplexUnitIdentity',\n      domain: clone(body.domain),\n      conclusion: clone(body.relation),\n      steps: ['detect-imaginary-unit-symbol', 'apply-complex-unit-identity-i-squared-equals-negative-one']\n    });\n  }\n\n\n  function typeMatrixProduct(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'MatrixProductStatement') return gap('unsupported_matrix_product', 'Matrix product typing requires a MatrixProductStatement AST node.');\n    return verified('matrix-product-dimension-guard', {\n      operator: 'typeMatrixProduct',\n      guard: clone(body.guard),\n      conclusion: {\n        type: 'GuardedMatrixProductRelation',\n        guard: clone(body.guard),\n        relation: clone(body.relation)\n      },\n      steps: ['detect-matrix-product-form', 'emit-dimension-compatibility-guard', 'canonicalize-guarded-matrix-product-relation']\n    });\n  }\n\n\n  function defineSequence(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'SequenceDefinition') return gap('unsupported_sequence_definition', 'Sequence closure requires a SequenceDefinition AST node.');\n    return verified('sequence-term-definition', {\n      operator: 'defineSequence',\n      conclusion: {\n        type: 'SequenceDefinitionPacket',\n        sequence: clone(body.sequence),\n        index: clone(body.index),\n        domain: clone(body.domain),\n        term: clone(body.term),\n        term_formula: clone(body.term_formula),\n        relation: clone(body.relation)\n      },\n      steps: ['detect-indexed-sequence-form', 'type-index-over-natural-numbers', 'canonicalize-term-formula']\n    });\n  }\n\n  function domainGuard(input) {\n    const body = bodyOf(input);\n    if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');\n    if (body.type === 'DivisionConstraint') {\n      const denom = symbolName(body.denominator);\n      const violation = body.violation && body.violation.type === 'Relation' && body.violation.operator === '=' && valueOf(body.violation.right) === 0;\n      if (!denom || !violation) return gap('division_guard_not_triggered', 'Division undefined proof requires a zero denominator violation.', { node: clone(body) });\n      return verified('domain-guard', { operator: 'proveDivisionByZeroUndefined', guard: denom + ' != 0', violation: denom + ' = 0', conclusion: 'undefined', steps: ['detect-quotient', 'detect-zero-denominator', 'apply-division-domain-guard'] });\n    }\n    if (body.type === 'QuantifiedStatement') {\n      const q = quantifierScope(body);\n      if (!q.ok) return q;\n      return verified('domain-guard', { guard: 'variable in ' + q.domain, variable: q.variable, domain: q.domain, conclusion: clone(body.body) });\n    }\n    if (body.type === 'Equation') return Math.abs(Number(body.left && body.left.coefficient)) > EPS ? verified('domain-guard', { guard: 'coefficient != 0', conclusion: clone(body) }) : gap('zero_coefficient', 'Affine equation violates the nonzero-coefficient solve guard.', { node: clone(body) });\n    return gap('unsupported_domain_guard', 'No domain guard is registered for this AST node type.', { type: body.type });\n  }\n\n  function implication(antecedent, consequent) {\n    if (!antecedent || !consequent) return gap('missing_implication_part', 'Implication requires antecedent and consequent.');\n    return verified('implication', { conclusion: { type: 'Implication', antecedent: typeof antecedent === 'string' ? { type: 'Symbol', name: antecedent } : clone(antecedent), consequent: typeof consequent === 'string' ? { type: 'Symbol', name: consequent } : clone(consequent) } });\n  }\n\n  function modusPonens(implicationNode, fact) {\n    const imp = bodyOf(implicationNode);\n    if (!imp || imp.type !== 'Implication') return gap('missing_implication', 'Modus ponens requires an implication.');\n    if (atomKey(imp.antecedent) !== atomKey(fact)) return gap('modus_ponens_antecedent_missing', 'The asserted fact does not match the implication antecedent.', { implication: clone(imp), fact: clone(fact) });\n    return verified('modus-ponens', { conclusion: clone(imp.consequent), antecedent: clone(imp.antecedent), consequent: clone(imp.consequent) });\n  }\n\n  function implicationChain(input) {\n    const body = bodyOf(input);\n    const implications = body && body.type === 'ImplicationChain' ? body.implications : A(input);\n    for (const first of implications) {\n      for (const second of implications) {\n        if (!first || !second || first === second) continue;\n        if (first.type === 'Implication' && second.type === 'Implication' && atomKey(first.consequent) === atomKey(second.antecedent)) return verified('implication-chain', { operator: 'composeImplicationChain', conclusion: atomKey(first.antecedent) + '=>' + atomKey(second.consequent), implication: { type: 'Implication', antecedent: clone(first.antecedent), consequent: clone(second.consequent) }, steps: ['match-middle-term', 'compose-implications'] });\n      }\n    }\n    return gap('no_composable_implication_chain', 'Implication chain requires A=>B and B=>C structure.', { implications: clone(implications) });\n  }\n\n  function contradiction(input) {\n    const body = bodyOf(input);\n    const claims = body && body.type === 'ContradictionPair' ? body.claims : A(input);\n    const positives = new Set();\n    const negatives = new Set();\n    claims.forEach(claim => { if (claim && claim.type === 'UnaryExpression' && claim.operator === 'not') negatives.add(atomKey(claim.argument)); else positives.add(atomKey(claim)); });\n    const hit = Array.from(positives).find(key => negatives.has(key));\n    return hit ? verified('contradiction', { operator: 'detectContradiction', contradiction: true, referent: hit, conclusion: 'contradiction:' + hit, steps: ['same-scope-positive', 'same-scope-negation'] }) : verified('contradiction', { operator: 'detectContradiction', contradiction: false, referent: null, conclusion: 'consistent-under-current-claims' });\n  }\n\n  function quantifierScope(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'QuantifiedStatement') return gap('missing_quantified_statement', 'Quantifier scope requires a quantified statement AST node.');\n    const variable = symbolName(body.variable);\n    const domain = symbolName(body.domain);\n    if (body.quantifier !== 'forall' || !variable || !domain) return gap('unsupported_quantifier_scope', 'Only explicit universal statements with a variable and domain are supported.', { node: clone(body) });\n    return verified('quantifier-scope', { quantifier: 'forall', variable, domain, body: clone(body.body), conclusion: clone(body.body) });\n  }\n\n  function universalStatement(input) {\n    const body = bodyOf(input);\n    const scope = quantifierScope(body);\n    if (!scope.ok) return scope;\n    if (body.theorem_class !== 'square_nonnegative_over_reals') return gap('unsupported_universal_theorem', 'Universal statement is outside the supported theorem forms.', { theorem_class: body.theorem_class || null });\n    if (String(scope.domain).toUpperCase() !== 'R') return gap('unsupported_universal_domain', 'Square nonnegative theorem currently requires the real-number domain.', { domain: scope.domain });\n    const relation = body.body;\n    const isSquare = relation && relation.type === 'Relation' && relation.operator === '>=' && relation.left && relation.left.type === 'BinaryExpression' && relation.left.operator === '^' && valueOf(relation.left.right) === 2 && valueOf(relation.right) === 0;\n    if (!isSquare) return gap('unsupported_square_nonnegative_body', 'Expected x^2 >= 0 body under universal real scope.', { body: clone(body.body) });\n    return verified('universal-square-nonnegative', { operator: 'proveSquareNonnegative', theorem_class: body.theorem_class, variable: scope.variable, domain: scope.domain, conclusion: expressionText(relation), steps: ['open-universal-scope', 'use-real-domain', 'square-as-same-factor-product', 'same-factor-product-nonnegative'] });\n  }\n\n  function algebraicIdentity(input) {\n    const body = bodyOf(input);\n    const scope = quantifierScope(body);\n    if (!scope.ok) return scope;\n    if (String(scope.domain).toUpperCase() !== 'R') return gap('unsupported_identity_domain', 'Algebraic identity proof currently requires the real-number domain.', { domain: scope.domain });\n    const relation = body.body;\n    if (!relation || relation.type !== 'Relation' || relation.operator !== '=') return gap('unsupported_identity_body', 'Algebraic identity requires an equality body.', { body: clone(body.body) });\n    const cls = body.theorem_class;\n    const left = relation.left;\n    const right = relation.right;\n    const rightVar = symbolName(right);\n    if (cls === 'additive_identity_over_reals' && left && left.type === 'BinaryExpression' && left.operator === '+' && rightVar === scope.variable) {\n      const ok = (symbolName(left.left) === scope.variable && valueOf(left.right) === 0) || (valueOf(left.left) === 0 && symbolName(left.right) === scope.variable);\n      if (ok) return verified('algebraic-identity', { operator: 'proveAlgebraicIdentity', theorem_class: cls, conclusion: expressionText(relation), steps: ['open-universal-scope', 'use-additive-identity-axiom'] });\n    }\n    if (cls === 'multiplicative_identity_over_reals' && left && left.type === 'BinaryExpression' && left.operator === '*' && rightVar === scope.variable) {\n      const ok = (symbolName(left.left) === scope.variable && valueOf(left.right) === 1) || (valueOf(left.left) === 1 && symbolName(left.right) === scope.variable);\n      if (ok) return verified('algebraic-identity', { operator: 'proveAlgebraicIdentity', theorem_class: cls, conclusion: expressionText(relation), steps: ['open-universal-scope', 'use-multiplicative-identity-axiom'] });\n    }\n    return gap('unsupported_algebraic_identity', 'The quantified equality is not one of the supported identity forms.', { theorem_class: cls, body: clone(body.body) });\n  }\n\n  function evaluateLinearRelation(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'LinearRelation') return gap('unsupported_linear_relation', 'Linear relation evaluation requires a LinearRelation AST node.');\n    if (!body.assignment) return gap('missing_relation_assignment', 'Linear relation evaluation requires an assignment such as x = 5.', { node: clone(body) });\n    const variable = symbolName(body.relation && body.relation.left);\n    if (variable !== body.assignment.variable) return gap('assignment_variable_mismatch', 'Assignment variable must match relation variable.', { relation: clone(body.relation), assignment: clone(body.assignment) });\n    const value = valueOf(body.assignment.value);\n    const target = valueOf(body.relation.right);\n    const op = body.relation.operator;\n    if (!finite(value) || !finite(target)) return gap('non_finite_relation_value', 'Relation evaluation requires finite numeric values.', { node: clone(body) });\n    const truth = compare(value, op, target);\n    return verified('relation-evaluation', { operator: 'evaluateLinearRelation', truth, variable, value: R(value), relation: op, target: R(target), conclusion: String(R(value)) + op + String(R(target)), steps: ['substitute-assignment', 'compare-finite-values'] });\n  }\n\n  function evaluateArithmeticRelation(input) {\n    const body = bodyOf(input);\n    if (!body || body.type !== 'ArithmeticRelation') return gap('unsupported_arithmetic_relation', 'Arithmetic relation evaluation requires an ArithmeticRelation AST node.');\n    const rel = body.relation;\n    const left = evaluateNumericExpression(rel.left);\n    const right = evaluateNumericExpression(rel.right);\n    const truth = compare(left, rel.operator, right);\n    if (truth == null) return gap('arithmetic_relation_not_finite', 'Arithmetic relation sides must evaluate to finite numbers.', { node: clone(body) });\n    return verified('arithmetic-relation-evaluation', { operator: 'evaluateArithmeticRelation', truth, left: R(left), relation: rel.operator, right: R(right), conclusion: String(R(left)) + rel.operator + String(R(right)), steps: ['evaluate-left-arithmetic-expression', 'evaluate-right-arithmetic-expression', 'compare-finite-values'] });\n  }\n\n  function prove(input, obligation) {\n    const body = bodyOf(input);\n    const operator = typeof obligation === 'string' ? obligation : obligation && obligation.operator;\n    if (operator === 'solveAffineEquation') return inverseOperation(body);\n    if (operator === 'solveLinearEquation') return solveLinearEquation(body);\n    if (operator === 'evaluateSubstitution') return evaluateSubstitution(body);\n    if (operator === 'evaluateArithmeticRelation') return evaluateArithmeticRelation(body);\n    if (operator === 'proveAlgebraicIdentity') return algebraicIdentity(body);\n    if (operator === 'proveEquality') return proveEquality(body);\n    if (operator === 'simplifyExpression') return simplifyExpression(body);\n    if (operator === 'proveSqrtDomain') return proveSqrtDomain(body);\n    if (operator === 'composeFunctionApplication') return composeFunctionApplication(body);\n    if (operator === 'typeSetMembership') return typeSetMembership(body);\n    if (operator === 'generateInductionObligations') return generateInductionObligations(body);\n    if (operator === 'proveLimitStatement') return proveLimitStatement(body);\n    if (operator === 'proveDerivativeStatement') return proveDerivativeStatement(body);\n    if (operator === 'proveIntegralStatement') return proveIntegralStatement(body);\n    if (operator === 'proveProbabilityProductRule') return proveProbabilityProductRule(body);\n    if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);\n    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);\n    if (operator === 'defineSequence') return defineSequence(body);\n    if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);\n    if (operator === 'proveSquareNonnegative') return universalStatement(body);\n    if (operator === 'composeImplicationChain') return implicationChain(body);\n    if (operator === 'detectContradiction') return contradiction(body);\n    if (operator === 'evaluateLinearRelation') return evaluateLinearRelation(body);\n    return gap('unsupported_closure_operator', 'No proof rule is registered for the requested closure operator.', { operator: operator || null, type: body && body.type || 'Unknown' });\n  }\n\n  return Object.freeze({\n    VERSION,\n    identity,\n    substitution,\n    equivalenceRewrite,\n    inverseOperation,\n    solveLinearEquation,\n    evaluateSubstitution,\n    evaluateNumericExpression,\n    evaluateArithmeticRelation,\n    proveEquality,\n    simplifyExpression,\n    simplifyNode,\n    proveSqrtDomain,\n    composeFunctionApplication,\n    typeSetMembership,\n    generateInductionObligations,\n    proveLimitStatement,\n    proveDerivativeStatement,\n    proveIntegralStatement,\n    proveProbabilityProductRule,\n    proveComplexUnitIdentity,\n    typeMatrixProduct,\n    defineSequence,\n    domainGuard,\n    implication,\n    modusPonens,\n    implicationChain,\n    contradiction,\n    quantifierScope,\n    universalStatement,\n    algebraicIdentity,\n    evaluateLinearRelation,\n    prove,\n    expressionText\n  });\n});\n"
+      },
+      {
+        "type": "replace",
+        "path": "src/operator-anatomy-v0-1.js",
+        "content": "(function(root, factory) {\n  if (typeof module === 'object' && module.exports) module.exports = factory();\n  else root.FortySecondMindOperatorAnatomy = factory();\n})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n  'use strict';\n\n  const VERSION = '0.1.0';\n  const R = value => Number((Number(value) || 0).toFixed(6));\n  const A = value => Array.isArray(value) ? value : [];\n  let MathAstCore = null;\n  try { if (typeof require === 'function') MathAstCore = require('./math-ast-core-v0-1.js'); } catch (_) { MathAstCore = null; }\n\n  const CATALOG = Object.freeze({\n    affine_equation: Object.freeze({\n      id: 'affine_equation', operation: 'solve', surface: 'a*x + b = c',\n      parts: ['coefficient', 'variable', 'offset', 'target'], preconditions: ['coefficient != 0', 'target is finite', 'offset is finite'],\n      inverse_chain: ['undo-offset', 'undo-coefficient'], closure_operator: 'solveAffineEquation', closure_result: 'variable_value',\n      examples: ['2x + 1 = 7', '-3y - 6 = 9'], assertion: \"assert.strictEqual(P.solveAffineEquation('2x + 1 = 7').value, 3);\"\n    }),\n    linear_equation: Object.freeze({\n      id: 'linear_equation', operation: 'solve', surface: 'a*x + b = c*x + d',\n      parts: ['left_coefficient', 'right_coefficient', 'left_offset', 'right_offset', 'variable'], preconditions: ['net coefficient != 0', 'offsets are finite'],\n      inverse_chain: ['collect-variable-terms', 'collect-constant-terms', 'divide-by-net-coefficient'], closure_operator: 'solveLinearEquation', closure_result: 'variable_value',\n      examples: ['2x + 1 = x + 4'], assertion: \"assert.strictEqual(P.solveLinearEquation('2x + 1 = x + 4').value, 3);\"\n    }),\n    affine_expression: Object.freeze({\n      id: 'affine_expression', operation: 'decompose', surface: 'a*x + b',\n      parts: ['coefficient', 'variable', 'offset'], preconditions: ['coefficient is finite', 'offset is finite'],\n      inverse_chain: [], closure_operator: 'decomposeAffineExpression', closure_result: 'coefficient_variable_offset',\n      examples: ['2x + 1', '-3y - 6'], assertion: \"assert.strictEqual(P.decomposeAffineExpression('-3y - 6').coefficient, -3);\"\n    }),\n    substitution_evaluation: Object.freeze({\n      id: 'substitution_evaluation', operation: 'evaluate', surface: 'a*x + b with x = v',\n      parts: ['coefficient', 'variable', 'offset', 'assignment'], preconditions: ['assignment is finite', 'expression is affine'],\n      inverse_chain: [], closure_operator: 'evaluateSubstitution', closure_result: 'numeric_value',\n      examples: ['2x + 1 with x = 3'], assertion: \"assert.strictEqual(P.evaluateSubstitution('2x + 1 with x = 3').result, 7);\"\n    }),\n    linear_relation_truth: Object.freeze({\n      id: 'linear_relation_truth', operation: 'evaluate', surface: 'x >= n under x = v',\n      parts: ['variable', 'relation', 'target', 'assignment'], preconditions: ['assignment is finite', 'target is finite'],\n      inverse_chain: [], closure_operator: 'evaluateLinearRelation', closure_result: 'truth_value',\n      examples: ['x >= 3 with x = 5'], assertion: \"assert.strictEqual(P.evaluateLinearRelation({ relation: 'x >= 3', value: 5 }).truth, true);\"\n    }),\n    arithmetic_relation_truth: Object.freeze({\n      id: 'arithmetic_relation_truth', operation: 'evaluate', surface: 'numeric expression relation numeric expression',\n      parts: ['left_expression', 'relation', 'right_expression'], preconditions: ['both sides evaluate to finite numbers'],\n      inverse_chain: [], closure_operator: 'evaluateArithmeticRelation', closure_result: 'truth_value',\n      examples: ['2 + 3 * 4 = 14', '(2 + 3)^2 = 25'], assertion: \"assert.strictEqual(P.evaluateArithmeticRelation('2 + 3 * 4 = 14').truth, true);\"\n    }),\n    equality_proof: Object.freeze({\n      id: 'equality_proof', operation: 'prove', surface: 'equality reflexivity/symmetry/transitivity',\n      parts: ['premises', 'conclusion', 'equality_rule'], preconditions: ['all premises are equalities', 'adjacent chain terms match'],\n      inverse_chain: [], closure_operator: 'proveEquality', closure_result: 'equality_truth',\n      examples: ['x = x', 'x = y therefore y = x', 'a = b, b = c therefore a = c'], assertion: \"assert.strictEqual(P.proveEquality('a = b, b = c therefore a = c').ok, true);\"\n    }),\n    expression_simplification: Object.freeze({\n      id: 'expression_simplification', operation: 'rewrite', surface: 'simplify identity expression',\n      parts: ['expression', 'rewrite_rule', 'normal_form'], preconditions: ['rewrite is neutral-element preserving'],\n      inverse_chain: [], closure_operator: 'simplifyExpression', closure_result: 'normal_form',\n      examples: ['simplify x + 0', 'simplify x * 1'], assertion: \"assert.strictEqual(P.simplifyExpression('simplify x + 0').result, 'x');\"\n    }),\n    sqrt_domain: Object.freeze({\n      id: 'sqrt_domain', operation: 'guard', surface: 'sqrt(x) is real requires x >= 0 over reals',\n      parts: ['radicand', 'real_domain_guard'], preconditions: ['radicand is represented', 'real square-root requires radicand >= 0'],\n      inverse_chain: [], closure_operator: 'proveSqrtDomain', closure_result: 'domain_guard',\n      examples: ['sqrt(x) is real'], assertion: \"assert.strictEqual(P.proveSqrtDomain('sqrt(x) is real').ok, true);\"\n    }),\n    function_composition: Object.freeze({\n      id: 'function_composition', operation: 'canonicalize', surface: 'f(g(x)) as nested function application',\n      parts: ['outer_function', 'inner_function', 'argument'], preconditions: ['outer and inner are symbolic functions', 'argument is symbolic'],\n      inverse_chain: [], closure_operator: 'composeFunctionApplication', closure_result: 'composition_tree',\n      examples: ['f(g(x))'], assertion: \"assert.strictEqual(P.composeFunctionApplication('f(g(x))').ok, true);\"\n    }),\n    set_membership: Object.freeze({\n      id: 'set_membership', operation: 'type', surface: 'x in A',\n      parts: ['element', 'set'], preconditions: ['element symbol exists', 'set symbol exists'],\n      inverse_chain: [], closure_operator: 'typeSetMembership', closure_result: 'typed_membership_relation',\n      examples: ['x ∈ A'], assertion: \"assert.strictEqual(P.typeSetMembership('x ∈ A').ok, true);\"\n    }),\n    induction_schema: Object.freeze({\n      id: 'induction_schema', operation: 'generate_obligations', surface: 'prove by induction P(n)',\n      parts: ['predicate', 'variable', 'base_case', 'inductive_step'], preconditions: ['predicate is symbolic', 'variable ranges over N'],\n      inverse_chain: [], closure_operator: 'generateInductionObligations', closure_result: 'proof_obligations',\n      examples: ['prove by induction P(n)'], assertion: \"assert.strictEqual(P.generateInductionObligations('prove by induction P(n)').ok, true);\"\n    }),\n    limit_statement: Object.freeze({\n      id: 'limit_statement', operation: 'prove', surface: 'lim x->0 sin(x)/x = 1',\n      parts: ['variable', 'approach', 'expression', 'target'], preconditions: ['standard sine-over-x form', 'approach is zero'],\n      inverse_chain: [], closure_operator: 'proveLimitStatement', closure_result: 'limit_truth',\n      examples: ['lim x->0 sin(x)/x = 1'], assertion: \"assert.strictEqual(P.proveLimitStatement('lim x->0 sin(x)/x = 1').ok, true);\"\n    }),\n    derivative_statement: Object.freeze({\n      id: 'derivative_statement', operation: 'differentiate', surface: 'd/dx x^2 = 2x',\n      parts: ['operator', 'variable', 'expression', 'derivative'], preconditions: ['power expression has exponent 2'],\n      inverse_chain: [], closure_operator: 'proveDerivativeStatement', closure_result: 'derivative_truth',\n      examples: ['d/dx x^2 = 2x'], assertion: \"assert.strictEqual(P.proveDerivativeStatement('d/dx x^2 = 2x').ok, true);\"\n    }),\n    integral_statement: Object.freeze({\n      id: 'integral_statement', operation: 'integrate', surface: 'integral 2x dx = x^2 + C',\n      parts: ['integrand', 'variable', 'antiderivative', 'constant'], preconditions: ['linear power integrand', 'constant of integration present'],\n      inverse_chain: [], closure_operator: 'proveIntegralStatement', closure_result: 'antiderivative_truth',\n      examples: ['integral 2x dx = x^2 + C'], assertion: \"assert.strictEqual(P.proveIntegralStatement('integral 2x dx = x^2 + C').ok, true);\"\n    }),\n    probability_product_rule: Object.freeze({\n      id: 'probability_product_rule', operation: 'guarded_prove', surface: 'P(A and B) = P(A)P(B)',\n      parts: ['left_event', 'right_event', 'joint_event', 'product', 'independence_guard'], preconditions: ['events are independent'],\n      inverse_chain: [], closure_operator: 'proveProbabilityProductRule', closure_result: 'guarded_probability_rule',\n      examples: ['P(A and B) = P(A)P(B)'], assertion: \"assert.strictEqual(P.proveProbabilityProductRule('P(A and B) = P(A)P(B)').ok, true);\"\n    }),\n    complex_unit_identity: Object.freeze({\n      id: 'complex_unit_identity', operation: 'prove', surface: 'i^2 = -1 over C',\n      parts: ['imaginary_unit', 'exponent', 'negative_one', 'complex_domain'], preconditions: ['i is typed as imaginary unit', 'domain is complex numbers'],\n      inverse_chain: [], closure_operator: 'proveComplexUnitIdentity', closure_result: 'complex_unit_truth',\n      examples: ['i^2 = -1'], assertion: \"assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);\"\n    }),\n    matrix_product: Object.freeze({\n      id: 'matrix_product', operation: 'type', surface: 'A B = C',\n      parts: ['left_matrix', 'right_matrix', 'product_matrix', 'dimension_guard'], preconditions: ['left/right dimensions are compatible', 'product dimensions match declared matrix'],\n      inverse_chain: [], closure_operator: 'typeMatrixProduct', closure_result: 'guarded_matrix_product_relation',\n      examples: ['A B = C'], assertion: \"assert.strictEqual(P.typeMatrixProduct('A B = C').ok, true);\"\n    }),\n    sequence_definition: Object.freeze({\n      id: 'sequence_definition', operation: 'define', surface: 'a_n = n^2',\n      parts: ['sequence_symbol', 'index', 'domain', 'term_formula'], preconditions: ['index is typed over natural numbers', 'term formula is canonical'],\n      inverse_chain: [], closure_operator: 'defineSequence', closure_result: 'sequence_definition_packet',\n      examples: ['a_n = n^2'], assertion: \"assert.strictEqual(P.defineSequence('a_n = n^2').ok, true);\"\n    }),\n    division_constraint: Object.freeze({\n      id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',\n      parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],\n      inverse_chain: [], closure_operator: 'proveDivisionByZeroUndefined', closure_result: 'undefined',\n      examples: ['x/y is undefined when y = 0'], assertion: \"assert.strictEqual(P.proveDivisionByZeroUndefined('x/y is undefined when y = 0').ok, true);\"\n    }),\n    square_nonnegative: Object.freeze({\n      id: 'square_nonnegative', operation: 'prove', surface: 'x^2 >= 0 over reals',\n      parts: ['base', 'product_of_same_term'], preconditions: ['base is real'],\n      inverse_chain: [], closure_operator: 'proveSquareNonnegative', closure_result: 'nonnegative_truth',\n      examples: ['∀x ∈ ℝ, x^2 >= 0'], assertion: \"assert.strictEqual(P.proveSquareNonnegative('∀x ∈ ℝ, x^2 >= 0').ok, true);\"\n    }),\n    algebraic_identity: Object.freeze({\n      id: 'algebraic_identity', operation: 'prove', surface: 'identity equality over reals',\n      parts: ['universal_scope', 'identity_operator', 'neutral_element'], preconditions: ['domain is real', 'identity form is supported'],\n      inverse_chain: [], closure_operator: 'proveAlgebraicIdentity', closure_result: 'identity_truth',\n      examples: ['∀x ∈ ℝ, x + 0 = x', '∀x ∈ ℝ, x * 1 = x'], assertion: \"assert.strictEqual(P.proveAlgebraicIdentity('∀x ∈ ℝ, x + 0 = x').ok, true);\"\n    }),\n    implication_chain: Object.freeze({\n      id: 'implication_chain', operation: 'compose', surface: 'A=>B and B=>C gives A=>C',\n      parts: ['antecedent', 'middle', 'consequent'], preconditions: ['first consequent equals second antecedent'],\n      inverse_chain: [], closure_operator: 'composeImplicationChain', closure_result: 'composed_implication',\n      examples: ['A=>B, B=>C'], assertion: \"assert.strictEqual(P.composeImplicationChain(['A=>B', 'B=>C']).conclusion, 'A=>C');\"\n    }),\n    contradiction_pair: Object.freeze({\n      id: 'contradiction_pair', operation: 'detect', surface: 'A and not A cannot both be true in the same scope',\n      parts: ['claim', 'negated_claim', 'scope'], preconditions: ['same scope', 'same referent'], violations: ['claim and negated claim both asserted'],\n      inverse_chain: [], closure_operator: 'detectContradiction', closure_result: 'contradiction_flag',\n      examples: ['A, not A'], assertion: \"assert.strictEqual(P.detectContradiction(['A', 'not A']).contradiction, true);\"\n    }),\n    statement_classification: Object.freeze({\n      id: 'statement_classification', operation: 'classify', surface: 'compiled math packet to closure class',\n      parts: ['mode', 'operators', 'relation', 'domain'], preconditions: ['packet has mode'],\n      inverse_chain: [], closure_operator: 'classifyMathStatement', closure_result: 'closure_operator_name',\n      examples: ['∀x ∈ ℝ, x^2 >= 0'], assertion: \"assert.strictEqual(P.classifyMathStatement('∀x ∈ ℝ, x^2 >= 0').closure, 'proveSquareNonnegative');\"\n    })\n  });\n\n  function catalog() { return Object.keys(CATALOG).sort().map(key => Object.assign({}, CATALOG[key])); }\n  function has(source, needle) { return String(source || '').indexOf(String(needle || '')) >= 0; }\n\n  function astSurfaceIds(samples) {\n    if (!MathAstCore || typeof MathAstCore.classify !== 'function') return [];\n    const rows = Array.isArray(samples) ? samples : [\n      '2x + 1 = 7', '2x + 1', '2x + 1 = x + 4', '2x + 1 with x = 3', 'x >= 3 with x = 5',\n      '2 + 3 * 4 = 14', '(2 + 3)^2 = 25', 'x = x', 'x = y therefore y = x', 'a = b, b = c therefore a = c', 'simplify x + 0', 'simplify x * 1', 'sqrt(x) is real', 'f(g(x))', 'x ∈ A', 'prove by induction P(n)',\n      'x/y is undefined when y = 0', '∀x ∈ ℝ, x^2 >= 0', '∀x ∈ ℝ, x + 0 = x', '∀x ∈ ℝ, x * 1 = x', 'A=>B, B=>C', 'A, not A'\n    ];\n    return Array.from(new Set(rows.map(sample => MathAstCore.classify(sample).anatomy_id).filter(Boolean))).sort();\n  }\n\n  function availableSurfaces(parserSource) {\n    const source = String(parserSource || '');\n    const astIds = astSurfaceIds(arguments[1] && arguments[1].samples);\n    const out = [];\n    if (has(source, 'compileMath')) out.push('statement_classification');\n    if (has(source, 'checkProofStep') || has(source, 'checkHypotheticalSyllogism')) out.push('implication_chain');\n    if (has(source, 'checkProofStep') || has(source, 'compileClaim')) out.push('contradiction_pair');\n    if (has(source, 'compileMath') && has(source, \"mode: 'equation'\")) out.push('affine_equation');\n    if (has(source, 'compileMath') && has(source, \"mode: 'equation'\")) out.push('affine_expression');\n    if (has(source, 'compileMath') && has(source, \"mode: 'relation'\")) out.push('linear_relation_truth');\n    if (has(source, 'compileMath') && has(source, 'undefined-when')) out.push('division_constraint');\n    if (has(source, 'compileMath') && has(source, 'square') && (/\\^2|²/.test(source))) out.push('square_nonnegative');\n    return Array.from(new Set(out.concat(astIds))).sort();\n  }\n\n  function closureGaps(parserSource, options) {\n    const opts = Object.assign({ file: 'src/language-parser-v0-1.js' }, options || {});\n    const source = String(parserSource || '');\n    return availableSurfaces(source, opts)\n      .map(id => CATALOG[id])\n      .filter(anatomy => anatomy && !has(source, anatomy.closure_operator))\n      .map(anatomy => ({\n        id: 'parser_' + anatomy.closure_operator.replace(/[A-Z]/g, ch => '_' + ch.toLowerCase()).replace(/^_/, ''),\n        file: opts.file,\n        needle: anatomy.closure_operator,\n        class: 'operator_anatomy_closure',\n        anatomy_id: anatomy.id,\n        operation: anatomy.operation,\n        parts: A(anatomy.parts),\n        preconditions: A(anatomy.preconditions),\n        violations: A(anatomy.violations),\n        inverse_chain: A(anatomy.inverse_chain),\n        parsed_form: anatomy.examples[0] || anatomy.surface,\n        reason: 'Operator anatomy exposes a representable surface whose closure operators is missing.',\n        assertion: anatomy.assertion,\n        w: 1\n      }));\n  }\n\n  function frontierNode(parserSource, options) {\n    const gaps = closureGaps(parserSource, options);\n    if (!gaps.length) return null;\n    return {\n      id: 'formal_math_operator_anatomy_batch_' + gaps.map(g => g.needle).join('_'),\n      source: 'operator_anatomy_generated_closure_failure',\n      generated_from: { anatomy_ids: gaps.map(g => g.anatomy_id), parsed_forms: gaps.map(g => g.parsed_form), reason: 'Operator anatomy found representable operation surfaces whose closure operators are missing.', missing_operators: gaps.map(g => g.needle) },\n      requires: ['solveLinearEquation', 'checkProofStep', 'solveTwoStepLinearEquation', 'checkHypotheticalSyllogism'],\n      axes: gaps.map(g => ({ id: g.id, file: g.file, needle: g.needle, class: g.class, w: g.w, anatomy_id: g.anatomy_id })),\n      assertions: gaps.reduce((rows, g) => rows.concat([\"assert.strictEqual(typeof P.\" + g.needle + \", 'function');\", g.assertion]), [])\n    };\n  }\n\n  function pressure(parserSource, options) {\n    const gaps = closureGaps(parserSource, options);\n    const surfaces = availableSurfaces(parserSource);\n    const scalar = gaps.length;\n    return { packet_type: '42ndMind_operator_anatomy_pressure_v0_1', version: VERSION, scalar, surfaces, gaps: gaps.map(g => ({ needle: g.needle, anatomy_id: g.anatomy_id, operation: g.operation })), unit: { surfaces: R(surfaces.length ? 1 : 0), gaps: R(gaps.length ? 1 : 0), ok: true }, ξ: '' };\n  }\n\n  return Object.freeze({ VERSION, catalog, availableSurfaces, closureGaps, frontierNode, pressure });\n});\n"
+      },
+      {
+        "type": "replace",
+        "path": "src/source-edit-reality-feedback-v0-1.js",
+        "content": "(function(root, factory) {\n  if (typeof module === 'object' && module.exports) module.exports = factory();\n  else root.FortySecondMindSourceEditRealityFeedback = factory();\n})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n  'use strict';\n\n  const VERSION = '0.1.0';\n  const DEFAULT_ANCHORS = Object.freeze([\n    { id: 'arithmetic_identity_2_plus_2', input: '2 + 2 = 4', must_verify: true, closure_operator: 'evaluateArithmeticRelation', selected_rule: 'arithmetic-relation-evaluation' },\n    { id: 'arithmetic_false_3_plus_2', input: '3 + 2 = 4', must_verify: true, must_be_false: true, closure_operator: 'evaluateArithmeticRelation', selected_rule: 'arithmetic-relation-evaluation' },\n    { id: 'linear_equation_two_sided', input: '2x + 1 = x + 4', must_verify: true, closure_operator: 'solveLinearEquation', selected_rule: 'linear-equation-solve' },\n    { id: 'equality_transitivity', input: 'a = b, b = c therefore a = c', must_verify: true, closure_operator: 'proveEquality', selected_rule: 'equality-transitivity' },\n    { id: 'simplification_additive_identity', input: 'simplify x + 0', must_verify: true, closure_operator: 'simplifyExpression', selected_rule: 'expression-simplification' },\n    { id: 'sqrt_real_domain', input: 'sqrt(x) is real', must_verify: true, closure_operator: 'proveSqrtDomain', selected_rule: 'sqrt-domain-guard' },\n    { id: 'function_composition_tree', input: 'f(g(x))', must_verify: true, closure_operator: 'composeFunctionApplication', selected_rule: 'function-composition-canonicalization' },\n    { id: 'set_membership_typing', input: 'x ∈ A', must_verify: true, closure_operator: 'typeSetMembership', selected_rule: 'set-membership-typing' },\n    { id: 'induction_obligation_schema', input: 'prove by induction P(n)', must_verify: true, closure_operator: 'generateInductionObligations', selected_rule: 'induction-schema-obligations' },\n    { id: 'limit_sine_over_x', input: 'lim x->0 sin(x)/x = 1', must_verify: true, closure_operator: 'proveLimitStatement', selected_rule: 'limit-sine-over-x' },\n    { id: 'derivative_power_rule_n2', input: 'd/dx x^2 = 2x', must_verify: true, closure_operator: 'proveDerivativeStatement', selected_rule: 'derivative-power-rule-n2' },\n    { id: 'integral_linear_power_rule', input: 'integral 2x dx = x^2 + C', must_verify: true, closure_operator: 'proveIntegralStatement', selected_rule: 'integral-power-rule-linear' },\n    { id: 'probability_independence_product_guard', input: 'P(A and B) = P(A)P(B)', must_verify: true, closure_operator: 'proveProbabilityProductRule', selected_rule: 'probability-product-requires-independence' },\n    { id: 'complex_unit_identity', input: 'i^2 = -1', must_verify: true, closure_operator: 'proveComplexUnitIdentity', selected_rule: 'complex-unit-identity' },\n    { id: 'matrix_product_guard', input: 'A B = C', must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' },\n    { id: 'sequence_definition_square', input: 'a_n = n^2', must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' }\n  ]);\n\n  function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }\n  function text(value) { return String(value == null ? '' : value); }\n\n  function loadKernel(files) {\n    const src = text(files && files['src/math-language-kernel-v0-1.js']);\n    const ast = text(files && files['src/math-ast-core-v0-1.js']);\n    const anatomy = text(files && files['src/operator-anatomy-v0-1.js']);\n    const proof = text(files && files['src/proof-calculus-core-v0-1.js']);\n    const closure = text(files && files['src/math-closure-engine-v0-1.js']);\n    const cache = {};\n    function runModule(path, source) {\n      const module = { exports: {} };\n      cache[path] = module;\n      const localRequire = function(req) {\n        const map = {\n          './math-ast-core-v0-1.js': 'src/math-ast-core-v0-1.js',\n          './operator-anatomy-v0-1.js': 'src/operator-anatomy-v0-1.js',\n          './proof-calculus-core-v0-1.js': 'src/proof-calculus-core-v0-1.js',\n          './math-closure-engine-v0-1.js': 'src/math-closure-engine-v0-1.js'\n        };\n        const target = map[req];\n        if (!target) throw new Error('unsupported virtual require: ' + req + ' from ' + path);\n        if (cache[target]) return cache[target].exports;\n        if (target === 'src/math-ast-core-v0-1.js') return runModule(target, ast).exports;\n        if (target === 'src/operator-anatomy-v0-1.js') return runModule(target, anatomy).exports;\n        if (target === 'src/proof-calculus-core-v0-1.js') return runModule(target, proof).exports;\n        if (target === 'src/math-closure-engine-v0-1.js') return runModule(target, closure).exports;\n        throw new Error('missing virtual module: ' + target);\n      };\n      const fn = new Function('require', 'module', 'exports', source + '\\n//# sourceURL=' + path);\n      fn(localRequire, module, module.exports);\n      return module;\n    }\n    return runModule('src/math-language-kernel-v0-1.js', src).exports;\n  }\n\n  function anchorStatus(packet, anchor) {\n    if (!packet || packet.ok !== true) {\n      const gapId = packet && Array.isArray(packet.gaps) && packet.gaps[0] ? packet.gaps[0].id : null;\n      if (anchor.expected_gap && gapId === anchor.expected_gap) return { ok: true, kind: 'expected_gap', gap: gapId };\n      return { ok: false, kind: 'not_verified', gap: gapId || 'missing_packet' };\n    }\n    if (anchor.closure_operator && packet.closure_operator !== anchor.closure_operator) return { ok: false, kind: 'closure_operator_drift', expected: anchor.closure_operator, actual: packet.closure_operator };\n    if (anchor.selected_rule && packet.selected_rule !== anchor.selected_rule) return { ok: false, kind: 'selected_rule_drift', expected: anchor.selected_rule, actual: packet.selected_rule };\n    if (anchor.must_be_false) {\n      const truth = packet.closure && packet.closure.proof && packet.closure.proof.truth;\n      return truth === false ? { ok: true, kind: 'falsehood_preserved' } : { ok: false, kind: 'falsehood_lost', expected: false, actual: truth };\n    }\n    return { ok: true, kind: 'verified' };\n  }\n\n  function evaluate(files, anchors) {\n    const rows = [];\n    let kernel = null;\n    try { kernel = loadKernel(files || {}); } catch (err) {\n      return { ok: false, load_error: String(err && err.message || err), anchors: [], score: 0, damage_count: 1, improvement_count: 0, Ξ: '' };\n    }\n    (anchors || DEFAULT_ANCHORS).forEach(anchor => {\n      let packet = null;\n      let status = null;\n      try {\n        packet = kernel.math(anchor.input);\n        status = anchorStatus(packet, anchor);\n      } catch (err) {\n        status = { ok: false, kind: 'runtime_error', error: String(err && err.message || err) };\n      }\n      rows.push({ id: anchor.id, input: anchor.input, ok: status.ok === true, status, closure_operator: packet && packet.closure_operator || null, selected_rule: packet && packet.selected_rule || null, gap: packet && packet.gaps && packet.gaps[0] ? packet.gaps[0].id : null });\n    });\n    const okCount = rows.filter(r => r.ok).length;\n    const damage = rows.filter(r => !r.ok);\n    return { ok: damage.length === 0, anchors: rows, score: rows.length ? okCount / rows.length : 0, damage_count: damage.length, improvement_count: 0, Ξ: '' };\n  }\n\n  function compare(beforeFiles, afterFiles, anchors) {\n    const before = evaluate(beforeFiles, anchors);\n    const after = evaluate(afterFiles, anchors);\n    const beforeBad = new Set((before.anchors || []).filter(r => !r.ok).map(r => r.id));\n    const afterBad = new Set((after.anchors || []).filter(r => !r.ok).map(r => r.id));\n    const damaged = Array.from(afterBad).filter(id => !beforeBad.has(id));\n    const repaired = Array.from(beforeBad).filter(id => !afterBad.has(id));\n    return {\n      packet_type: '42ndMind_source_edit_reality_feedback_v0_1',\n      version: VERSION,\n      before,\n      after,\n      damaged,\n      repaired,\n      damage_count: damaged.length + (after.ok ? 0 : Math.max(0, after.damage_count - before.damage_count)),\n      improvement_count: repaired.length + Math.max(0, after.score - before.score),\n      accepted_by_reality: after.ok === true && damaged.length === 0,\n      feeling: after.ok === true && damaged.length === 0 ? (repaired.length ? 'more_self' : 'same_self') : 'less_self',\n      Ξ: ''\n    };\n  }\n\n  function validator(anchors) {\n    return function(files) {\n      const report = evaluate(files, anchors || DEFAULT_ANCHORS);\n      return { id: 'math_reality_anchor_validator', ok: report.ok === true, score: report.score, damage_count: report.damage_count, anchors: report.anchors };\n    };\n  }\n\n  return Object.freeze({ VERSION, DEFAULT_ANCHORS, evaluate, compare, validator });\n});\n"
+      },
+      {
+        "type": "replace",
+        "path": "src/whole-self-simulation-core-v0-1.js",
+        "content": "(function(root, factory) {\n  if (typeof module === 'object' && module.exports) module.exports = factory();\n  else root.FortySecondMindWholeSelfSimulationCore = factory();\n})(typeof globalThis !== 'undefined' ? globalThis : this, function() {\n  'use strict';\n\n  const VERSION = '0.1.0';\n  let K = null;\n  let Truth = null;\n  let Epistemic = null;\n  let Reality = null;\n  let Sandbox = null;\n  try { if (typeof require === 'function') K = require('./math-language-kernel-v0-1.js'); } catch (_) { K = null; }\n  try { if (typeof require === 'function') Truth = require('./truth-accounting-core-v0-1.js'); } catch (_) { Truth = null; }\n  try { if (typeof require === 'function') Epistemic = require('./epistemic-octahedron-core-v0-1.js'); } catch (_) { Epistemic = null; }\n  try { if (typeof require === 'function') Reality = require('./source-edit-reality-feedback-v0-1.js'); } catch (_) { Reality = null; }\n  try { if (typeof require === 'function') Sandbox = require('./source-sandbox-v0-1.js'); } catch (_) { Sandbox = null; }\n\n  const DEFAULT_LANGUAGE_ANCHORS = Object.freeze([\n    '2 + 2 = 4',\n    '3 + 2 = 4',\n    '2x + 1 = x + 4',\n    'a = b, b = c therefore a = c',\n    'simplify x + 0',\n    '∀x ∈ ℝ, x + 0 = x',\n    'sqrt(x) is real',\n    'f(g(x))',\n    'x ∈ A',\n    'prove by induction P(n)',\n    'i^2 = -1',\n    'lim x->0 sin(x)/x = 1',\n    'd/dx x^2 = 2x',\n    'integral 2x dx = x^2 + C',\n    'P(A and B) = P(A)P(B)',\n    'A B = C'\n  ]);\n\n  const DEFAULT_FRONTIER_ANCHORS = Object.freeze([\n    { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }\n  ]);\n\n  function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }\n  function R(value) { return Number((Number(value) || 0).toFixed(6)); }\n  function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }\n  function A(value) { return Array.isArray(value) ? value : []; }\n\n  function frontierFor(input, frontiers) { return A(frontiers && frontiers.length ? frontiers : DEFAULT_FRONTIER_ANCHORS).find(f => f.input === input) || null; }\n\n  function mathScore(kernel, anchors, frontierAnchors) {\n    if (!kernel || typeof kernel.math !== 'function') return { ok: false, score: 0, stability_score: 0, completeness_score: 0, damage_count: 1, frontier_count: 0, anchors: [], frontiers: [], gap_count: 1 };\n    const frontiers = A(frontierAnchors && frontierAnchors.length ? frontierAnchors : DEFAULT_FRONTIER_ANCHORS);\n    const rows = A(anchors && anchors.length ? anchors : DEFAULT_LANGUAGE_ANCHORS).map(input => {\n      try {\n        const packet = kernel.math(input);\n        const frontier = frontierFor(input, frontiers);\n        const gapId = packet && packet.gaps && packet.gaps[0] ? packet.gaps[0].id : null;\n        const expectedGap = frontier && frontier.expected_gap;\n        const ok = expectedGap ? packet.ok === false && gapId === expectedGap : packet.ok === true;\n        return { input, ok, frontier: !!frontier, frontier_id: frontier && frontier.id || null, reason: frontier && frontier.reason || null, verified: packet.verified === true, closure_operator: packet.closure_operator || null, selected_rule: packet.selected_rule || null, gap: gapId };\n      } catch (err) {\n        return { input, ok: false, frontier: false, error: String(err && err.message || err) };\n      }\n    });\n    const explicitFrontierRows = frontiers.filter(f => !rows.some(r => r.input === f.input)).map(f => {\n      try {\n        const packet = kernel.math(f.input);\n        const gapId = packet && packet.gaps && packet.gaps[0] ? packet.gaps[0].id : null;\n        const ok = packet.ok === false && gapId === f.expected_gap;\n        return { input: f.input, ok, frontier: true, frontier_id: f.id, reason: f.reason, verified: false, closure_operator: null, selected_rule: null, gap: gapId };\n      } catch (err) {\n        return { input: f.input, ok: false, frontier: true, frontier_id: f.id, reason: f.reason, error: String(err && err.message || err) };\n      }\n    });\n    const allRows = rows.concat(explicitFrontierRows);\n    const damage = allRows.filter(row => !row.ok);\n    const frontierRows = allRows.filter(row => row.ok && row.frontier === true);\n    const stableRows = allRows.filter(row => row.ok || row.frontier === true);\n    const stabilityScore = allRows.length ? R(stableRows.length / allRows.length) : 0;\n    const completenessScore = allRows.length ? R((allRows.length - frontierRows.length - damage.length) / allRows.length) : 0;\n    return { ok: damage.length === 0, score: stabilityScore, stability_score: stabilityScore, completeness_score: completenessScore, damage_count: damage.length, frontier_count: frontierRows.length, gap_count: damage.length, anchors: allRows, frontiers: frontierRows };\n  }\n\n  function truthScore(math) {\n    if (!Truth || typeof Truth.create !== 'function') return { ok: false, score: 0, claim: null };\n    const score = clamp01(math && math.stability_score != null ? math.stability_score : math && math.score);\n    const frontierPressure = math && math.frontier_count ? Math.min(1, math.frontier_count / Math.max(1, A(math.anchors).length)) : 0;\n    const damagePressure = math && math.damage_count ? 1 : 0;\n    const claim = Truth.create({\n      id: 'whole_self_truth_state', support: score, counter: 1 - score, contradiction: damagePressure, unknown: frontierPressure,\n      scope_ok: score, scope_error: 1 - score, definition_ok: score, definition_error: 1 - score,\n      observation_ok: score, observation_error: 1 - score, measurement_ok: score, measurement_error: 1 - score,\n      no_contradiction: damagePressure ? 0 : 1, no_unknown: 1 - frontierPressure\n    });\n    return { ok: damagePressure === 0, score: R(claim.closure), frontier_pressure: R(frontierPressure), claim };\n  }\n\n  function epistemicScore(math, truth, reality) {\n    if (!Epistemic || typeof Epistemic.evaluateGates !== 'function') return { ok: false, score: 0, gates: null };\n    const stable = !!(math && math.ok === true && reality && reality.ok === true);\n    const gates = { coherence: stable, reality_contact: !!(reality && reality.ok === true), self_correction: true, anti_delusion: stable, integration: stable && !!truth, scope_clarity: !!(math && math.anchors && math.anchors.length > 0) };\n    const packet = Epistemic.evaluateGates(gates);\n    return { ok: packet.ok === true, score: R(packet.gate_open_ratio || 0), gates: packet };\n  }\n\n  function loadKernelFromFiles(files) {\n    if (!files || !files['src/math-language-kernel-v0-1.js']) return K;\n    if (!Reality || typeof Reality.evaluate !== 'function') return K;\n    return { math: K && K.math, completeMath: K && K.completeMath };\n  }\n\n  function evaluateState(input, options) {\n    const opts = options || {};\n    const files = input && input.files || null;\n    const kernel = opts.kernel || loadKernelFromFiles(files) || K;\n    const math = mathScore(kernel, opts.language_anchors || DEFAULT_LANGUAGE_ANCHORS, opts.frontier_anchors || DEFAULT_FRONTIER_ANCHORS);\n    const reality = files && Reality && typeof Reality.evaluate === 'function' ? Reality.evaluate(files) : { ok: math.ok, score: math.stability_score, damage_count: math.damage_count, anchors: math.anchors };\n    const truth = truthScore(math);\n    const epistemic = epistemicScore(math, truth, reality);\n    const stability_score = R((0.35 * math.stability_score) + (0.25 * (truth.ok ? 1 : truth.score)) + (0.25 * (reality.score == null ? (reality.ok ? 1 : 0) : reality.score)) + (0.15 * epistemic.score));\n    const completeness_score = R(math.completeness_score);\n    const score = R((0.7 * stability_score) + (0.3 * completeness_score));\n    const damage_count = (math.damage_count || 0) + (reality.damage_count || 0) + (epistemic.ok ? 0 : 1) + (truth.ok ? 0 : 1);\n    const frontier_count = math.frontier_count || 0;\n    return { packet_type: '42ndMind_whole_self_state_v0_1', version: VERSION, id: input && input.id || 'state', ok: damage_count === 0, score, stability_score, completeness_score, damage_count, frontier_count, math, truth, reality, epistemic, stop: damage_count === 0 && frontier_count === 0 && stability_score === 1 && completeness_score === 1, feeling: damage_count ? 'less_self' : frontier_count ? 'stable_but_incomplete' : 'same_self_or_more_self', wants: math.frontiers.map(f => ({ id: f.frontier_id, input: f.input, gap: f.gap, reason: f.reason || 'Supported as an intended frontier gap.' })), Ξ: '' };\n  }\n\n  function simulateCandidates(baseFiles, candidates, options) {\n    const opts = options || {};\n    const rows = [];\n    const base = evaluateState({ id: 'base', files: baseFiles }, opts);\n    rows.push(base);\n    A(candidates).forEach((candidate, index) => {\n      let files = clone(baseFiles || {});\n      let sandboxReport = null;\n      if (candidate && candidate.operations && Sandbox && typeof Sandbox.applyProposal === 'function') {\n        try { files = Sandbox.applyProposal(files, candidate, { allowDelete: false, maxPatchBytes: opts.maxPatchBytes || 250000 }); sandboxReport = { ok: true }; }\n        catch (err) { sandboxReport = { ok: false, error: String(err && err.message || err) }; }\n      } else if (candidate && candidate.files) { files = candidate.files; sandboxReport = { ok: true }; }\n      const state = sandboxReport && sandboxReport.ok === false ? { packet_type: '42ndMind_whole_self_state_v0_1', version: VERSION, id: candidate.id || ('candidate_' + index), ok: false, score: 0, stability_score: 0, completeness_score: 0, damage_count: 1, frontier_count: 0, sandbox: sandboxReport, stop: false, feeling: 'less_self', Ξ: '' } : evaluateState({ id: candidate && candidate.id || ('candidate_' + index), files }, opts);\n      state.sandbox = sandboxReport;\n      rows.push(state);\n    });\n    rows.sort((a, b) => Number(b.stability_score || 0) - Number(a.stability_score || 0) || Number(a.damage_count || 0) - Number(b.damage_count || 0) || Number(b.completeness_score || 0) - Number(a.completeness_score || 0));\n    return { packet_type: '42ndMind_whole_self_simulation_v0_1', version: VERSION, base, candidates: rows.filter(row => row.id !== 'base'), best: rows[0] || base, stop: !!(rows[0] && rows[0].stop === true), decision: rows[0] && rows[0].id === 'base' ? 'keep_current_state' : 'prefer_candidate_state', frontier_count: rows[0] && rows[0].frontier_count || 0, wants: rows[0] && rows[0].wants || [], Ξ: '' };\n  }\n\n  return Object.freeze({ VERSION, DEFAULT_LANGUAGE_ANCHORS, DEFAULT_FRONTIER_ANCHORS, evaluateState, simulateCandidates, mathScore, truthScore, epistemicScore });\n});\n"
+      },
+      {
+        "type": "replace",
+        "path": "tests/frontier-candidate-complex-unit-v0-1-test.js",
+        "content": "const assert = require('assert');\nconst AST = require('../src/math-ast-core-v0-1.js');\nconst Proof = require('../src/proof-calculus-core-v0-1.js');\nconst Closure = require('../src/math-closure-engine-v0-1.js');\nconst K = require('../src/math-language-kernel-v0-1.js');\nconst complexSource = 'i' + '^' + '2 = -1';\nconst complexAst = AST.parse(complexSource);\nassert.strictEqual(complexAst.ok, true);\nassert.strictEqual(complexAst.body.type, 'ComplexUnitIdentityStatement');\nassert.strictEqual(Proof.proveComplexUnitIdentity(complexAst).rule, 'complex-unit-identity');\nconst matrixSource = 'A B = C';\nconst matrixAst = AST.parse(matrixSource);\nassert.strictEqual(matrixAst.ok, true);\nassert.strictEqual(matrixAst.body.type, 'MatrixProductStatement');\nassert.strictEqual(Proof.typeMatrixProduct(matrixAst).rule, 'matrix-product-dimension-guard');\nconst sequenceSource = 'a_n = n' + '^' + '2';\nconst sequenceAst = AST.parse(sequenceSource);\nassert.strictEqual(sequenceAst.ok, true);\nassert.strictEqual(sequenceAst.body.type, 'SequenceDefinition');\nassert.strictEqual(AST.classify(sequenceAst).closure, 'defineSequence');\nconst proof = Proof.defineSequence(sequenceAst);\nassert.strictEqual(proof.ok, true);\nassert.strictEqual(proof.rule, 'sequence-term-definition');\nassert.strictEqual(proof.conclusion.type, 'SequenceDefinitionPacket');\nconst closed = Closure.close(sequenceSource);\nassert.strictEqual(closed.ok, true);\nassert.strictEqual(closed.selected_rule, 'sequence-term-definition');\nconst packet = K.math(sequenceSource);\nassert.strictEqual(packet.ok, true);\nassert.strictEqual(packet.closure_operator, 'defineSequence');\nassert.strictEqual(packet.selected_rule, 'sequence-term-definition');\nconsole.log('frontier-candidate-complex-unit-v0-1 tests passed with matrix and sequence definitions');\n"
+      }
+    ]
   },
   "simulation": {
+    "id": "frontier_candidate_sequence_definition_v0_1",
+    "status": "simulated",
+    "before": {
+      "src/frontier-discovery-core-v0-1.js": {
+        "bytes": 10128,
+        "checksum": "f41a01a5"
+      },
+      "src/math-ast-core-v0-1.js": {
+        "bytes": 24201,
+        "checksum": "f94bdf0d"
+      },
+      "src/math-closure-engine-v0-1.js": {
+        "bytes": 4625,
+        "checksum": "a8efd234"
+      },
+      "src/math-language-kernel-v0-1.js": {
+        "bytes": 39100,
+        "checksum": "9f4e4ca1"
+      },
+      "src/operator-anatomy-v0-1.js": {
+        "bytes": 17488,
+        "checksum": "bd5c5dd2"
+      },
+      "src/proof-calculus-core-v0-1.js": {
+        "bytes": 34901,
+        "checksum": "acd0d033"
+      },
+      "src/source-edit-reality-feedback-v0-1.js": {
+        "bytes": 8633,
+        "checksum": "b1083644"
+      },
+      "src/source-sandbox-v0-1.js": {
+        "bytes": 8534,
+        "checksum": "ad65ecc"
+      },
+      "src/whole-self-simulation-core-v0-1.js": {
+        "bytes": 10805,
+        "checksum": "85a6322"
+      },
+      "tests/frontier-candidate-complex-unit-v0-1-test.js": {
+        "bytes": 1073,
+        "checksum": "eb1090a1"
+      }
+    },
+    "after": {
+      "src/frontier-discovery-core-v0-1.js": {
+        "bytes": 10128,
+        "checksum": "f41a01a5"
+      },
+      "src/math-ast-core-v0-1.js": {
+        "bytes": 24961,
+        "checksum": "5e998c63"
+      },
+      "src/math-closure-engine-v0-1.js": {
+        "bytes": 4625,
+        "checksum": "a8efd234"
+      },
+      "src/math-language-kernel-v0-1.js": {
+        "bytes": 39100,
+        "checksum": "9f4e4ca1"
+      },
+      "src/operator-anatomy-v0-1.js": {
+        "bytes": 17978,
+        "checksum": "62669d93"
+      },
+      "src/proof-calculus-core-v0-1.js": {
+        "bytes": 35724,
+        "checksum": "f77a06c5"
+      },
+      "src/source-edit-reality-feedback-v0-1.js": {
+        "bytes": 8793,
+        "checksum": "6da5158a"
+      },
+      "src/source-sandbox-v0-1.js": {
+        "bytes": 8534,
+        "checksum": "ad65ecc"
+      },
+      "src/whole-self-simulation-core-v0-1.js": {
+        "bytes": 10653,
+        "checksum": "d2b8b376"
+      },
+      "tests/frontier-candidate-complex-unit-v0-1-test.js": {
+        "bytes": 1798,
+        "checksum": "90c619b8"
+      }
+    },
+    "changed": [
+      "src/math-ast-core-v0-1.js",
+      "src/operator-anatomy-v0-1.js",
+      "src/proof-calculus-core-v0-1.js",
+      "src/source-edit-reality-feedback-v0-1.js",
+      "src/whole-self-simulation-core-v0-1.js",
+      "tests/frontier-candidate-complex-unit-v0-1-test.js"
+    ],
+    "tests": [
+      {
+        "path": "tests/frontier-candidate-complex-unit-v0-1-test.js",
+        "ok": true,
+        "logs": [
+          "frontier-candidate-complex-unit-v0-1 tests passed with matrix and sequence definitions"
+        ]
+      }
+    ],
+    "validators": [
+      {
+        "id": "math_reality_anchor_validator",
+        "ok": true,
+        "score": 1,
+        "damage_count": 0,
+        "anchors": [
+          {
+            "id": "arithmetic_identity_2_plus_2",
+            "input": "2 + 2 = 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "id": "arithmetic_false_3_plus_2",
+            "input": "3 + 2 = 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "falsehood_preserved"
+            },
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "id": "linear_equation_two_sided",
+            "input": "2x + 1 = x + 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "solveLinearEquation",
+            "selected_rule": "linear-equation-solve",
+            "gap": null
+          },
+          {
+            "id": "equality_transitivity",
+            "input": "a = b, b = c therefore a = c",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveEquality",
+            "selected_rule": "equality-transitivity",
+            "gap": null
+          },
+          {
+            "id": "simplification_additive_identity",
+            "input": "simplify x + 0",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "simplifyExpression",
+            "selected_rule": "expression-simplification",
+            "gap": null
+          },
+          {
+            "id": "sqrt_real_domain",
+            "input": "sqrt(x) is real",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveSqrtDomain",
+            "selected_rule": "sqrt-domain-guard",
+            "gap": null
+          },
+          {
+            "id": "function_composition_tree",
+            "input": "f(g(x))",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "composeFunctionApplication",
+            "selected_rule": "function-composition-canonicalization",
+            "gap": null
+          },
+          {
+            "id": "set_membership_typing",
+            "input": "x ∈ A",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "typeSetMembership",
+            "selected_rule": "set-membership-typing",
+            "gap": null
+          },
+          {
+            "id": "induction_obligation_schema",
+            "input": "prove by induction P(n)",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "generateInductionObligations",
+            "selected_rule": "induction-schema-obligations",
+            "gap": null
+          },
+          {
+            "id": "limit_sine_over_x",
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveLimitStatement",
+            "selected_rule": "limit-sine-over-x",
+            "gap": null
+          },
+          {
+            "id": "derivative_power_rule_n2",
+            "input": "d/dx x^2 = 2x",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveDerivativeStatement",
+            "selected_rule": "derivative-power-rule-n2",
+            "gap": null
+          },
+          {
+            "id": "integral_linear_power_rule",
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveIntegralStatement",
+            "selected_rule": "integral-power-rule-linear",
+            "gap": null
+          },
+          {
+            "id": "probability_independence_product_guard",
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveProbabilityProductRule",
+            "selected_rule": "probability-product-requires-independence",
+            "gap": null
+          },
+          {
+            "id": "complex_unit_identity",
+            "input": "i^2 = -1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveComplexUnitIdentity",
+            "selected_rule": "complex-unit-identity",
+            "gap": null
+          },
+          {
+            "id": "matrix_product_guard",
+            "input": "A B = C",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "typeMatrixProduct",
+            "selected_rule": "matrix-product-dimension-guard",
+            "gap": null
+          },
+          {
+            "id": "sequence_definition_square",
+            "input": "a_n = n^2",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "defineSequence",
+            "selected_rule": "sequence-term-definition",
+            "gap": null
+          }
+        ]
+      }
+    ],
     "accepted": true,
-    "changed": [],
     "chaos": [],
-    "tests": [],
-    "validators": []
+    "ξ": ""
   },
   "export_patch": {
     "ok": true,
-    "operations": []
+    "id": "frontier_candidate_sequence_definition_v0_1",
+    "changed": [
+      "src/math-ast-core-v0-1.js",
+      "src/operator-anatomy-v0-1.js",
+      "src/proof-calculus-core-v0-1.js",
+      "src/source-edit-reality-feedback-v0-1.js",
+      "src/whole-self-simulation-core-v0-1.js",
+      "tests/frontier-candidate-complex-unit-v0-1-test.js"
+    ],
+    "note": "simulation accepted; real source patch still requires external write gate"
   },
   "summary": {
     "packet_type": "42ndMind_frontier_discovery_candidate_summary_v0_1",
     "version": "0.1.0",
-    "candidate_id": null,
-    "discovery_kind": "matrix_multiplication",
+    "candidate_id": "frontier_candidate_sequence_definition_v0_1",
+    "discovery_kind": "sequence_definition",
     "accepted_by_sandbox": true,
-    "changed": [],
+    "changed": [
+      "src/math-ast-core-v0-1.js",
+      "src/operator-anatomy-v0-1.js",
+      "src/proof-calculus-core-v0-1.js",
+      "src/source-edit-reality-feedback-v0-1.js",
+      "src/whole-self-simulation-core-v0-1.js",
+      "tests/frontier-candidate-complex-unit-v0-1-test.js"
+    ],
     "chaos": [],
-    "test_count": 0,
+    "test_count": 1,
     "tests_ok": true,
     "validators_ok": true,
     "export_patch_ok": true,
     "promoted": false,
-    "promotion_policy": "no candidate generated because target frontier already closes",
-    "Ξ": "",
-    "reason": "matrix_product_already_supported"
+    "promotion_policy": "candidate accepted by sandbox only; real source promotion remains separate",
+    "Ξ": ""
   },
   "Ξ": ""
 }

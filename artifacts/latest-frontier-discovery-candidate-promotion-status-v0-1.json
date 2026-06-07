@@ -1,8 +1,35 @@
 {
   "promoted": false,
-  "reason": "candidate_already_current_or_noop",
+  "reason": "frontier_candidate_promotion_gate_failed",
   "checks": {
-    "noop_report": true
+    "candidate_id_known": false,
+    "discovery_kind_known": false,
+    "accepted_by_sandbox": true,
+    "tests_ok": true,
+    "validators_ok": true,
+    "no_chaos": true,
+    "export_patch_ok": true,
+    "operations_present": true,
+    "all_paths_allowed": true,
+    "changed_paths_allowed": true
   },
-  "discovery_kind": "matrix_multiplication"
+  "candidate_id": "frontier_candidate_sequence_definition_v0_1",
+  "expected_kind": null,
+  "actual_kind": "sequence_definition",
+  "operation_paths": [
+    "src/math-ast-core-v0-1.js",
+    "src/proof-calculus-core-v0-1.js",
+    "src/operator-anatomy-v0-1.js",
+    "src/source-edit-reality-feedback-v0-1.js",
+    "src/whole-self-simulation-core-v0-1.js",
+    "tests/frontier-candidate-complex-unit-v0-1-test.js"
+  ],
+  "changed_paths": [
+    "src/math-ast-core-v0-1.js",
+    "src/operator-anatomy-v0-1.js",
+    "src/proof-calculus-core-v0-1.js",
+    "src/source-edit-reality-feedback-v0-1.js",
+    "src/whole-self-simulation-core-v0-1.js",
+    "tests/frontier-candidate-complex-unit-v0-1-test.js"
+  ]
 }
