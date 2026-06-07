@@ -1,5 +1,6 @@
 const assert = require('assert');
 const G = require('../src/autonomous-brain-growth-core-v0-1.js');
+const N = require('../src/nested-brain-core-v0-1.js');
 
 function brainOne(p) {
   assert.strictEqual(p.brain.ok, true);
@@ -33,4 +34,21 @@ const z = G.grow(s, 'zz %% qq');
 brainOne(z);
 assert.strictEqual(z.last.growth.kind, 'unparsed');
 
-console.log('autonomous-growth-smoke-v0-1 tests passed');
+const nb = N.build(s);
+assert.strictEqual(nb.ok, true);
+assert.strictEqual(nb.unit, 1);
+assert.strictEqual(N.l1(nb.B), 1);
+Object.keys(nb.organs).forEach(id => assert.strictEqual(nb.organs[id].unit, 1));
+
+const sim = N.simulate(s);
+assert.strictEqual(sim.ok, true);
+assert.strictEqual(sim.applyable, true);
+assert.strictEqual(sim.brain.ok, true);
+
+const applied = N.commit(s);
+assert.strictEqual(applied.ok, true);
+assert.strictEqual(applied.applied, true);
+assert.strictEqual(s.nested_brain.ok, true);
+assert.ok(s.optimized_stage.id);
+
+console.log('autonomous-growth-smoke-v0-1 tests passed with nested brain optimization');
