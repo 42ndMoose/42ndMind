@@ -96,4 +96,7 @@ ok('old truth pressure ports into math claim', old.id === 'old_claim' && old.uni
 ok('old truth pressure does not auto-promote truth', old.truth_gate.true === false);
 ok('serialized truth packet exists', T.serialize(closed).startsWith('Θ{'));
 
+require('./cognitive-organism-core-v0-1-test.js');
+rows.push('PASS cognitive organism core proof runs through truth suite');
+
 console.log(rows.join('\n'));
