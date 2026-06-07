@@ -439,6 +439,9 @@ PASS irregular stream tolerated
 PASS irregular stream does not require English
 PASS unknown field remains unit-total
 exit_code=0
+## tests/frontier-discovery-core-v0-1-test.js
+frontier-discovery-core-v0-1 tests passed
+exit_code=0
 ## tests/source-sandbox-v0-1-test.js
 PASS sandbox loads
 PASS sandbox starts with virtual copy
