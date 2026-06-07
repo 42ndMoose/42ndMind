@@ -132,5 +132,5 @@ exit_code=0
 whole-self-simulation-core-v0-1 tests passed
 exit_code=0
 ## tests/frontier-candidate-complex-unit-v0-1-test.js
-frontier-candidate-complex-unit-v0-1 tests passed
+frontier-candidate-complex-unit-v0-1 tests passed with matrix and sequence definitions
 exit_code=0

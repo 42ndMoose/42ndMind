@@ -13,13 +13,11 @@
     "confidence": 1,
     "summary": "No failed simulation signatures were available for operator synthesis."
   },
-  "frontier_discovery_proposal_count": 2,
+  "frontier_discovery_proposal_count": 1,
   "frontier_discovery_proposal_kinds": [
-    "sequence_definition",
     "existential_quantifier"
   ],
   "frontier_discovery_closure_operators": [
-    "defineSequence",
     "generateExistentialObligations"
   ],
   "frontier_discovery_artifact": "artifacts/frontier-discovery-report-v0-1.json",

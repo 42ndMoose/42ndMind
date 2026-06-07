@@ -1,19 +1,16 @@
 {
   "packet_type": "42ndMind_frontier_discovery_summary_v0_1",
   "version": "0.1.0",
-  "frontier_count": 2,
+  "frontier_count": 1,
   "want_ids": [
-    "sequences",
     "logic_quantifier_exists"
   ],
-  "discovery_count": 2,
-  "proposal_count": 2,
+  "discovery_count": 1,
+  "proposal_count": 1,
   "proposal_kinds": [
-    "sequence_definition",
     "existential_quantifier"
   ],
   "closure_operators": [
-    "defineSequence",
     "generateExistentialObligations"
   ],
   "promoted": false,
