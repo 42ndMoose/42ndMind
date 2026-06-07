@@ -150,6 +150,71 @@
     return verified('substitution-evaluation', { operator: 'evaluateSubstitution', variable: expr.variable, value: R(value), result: R(result), conclusion: { type: 'NumberLiteral', value: R(result) }, steps: ['substitute-assigned-value', 'evaluate-affine-expression'] });
   }
 
+  function relationOk(rel) { return rel && rel.type === 'Relation' && rel.operator === '=' && rel.left && rel.right; }
+  function eqTerm(a, b) { return same(a, b); }
+
+  function proveEquality(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'EqualityProof') return gap('unsupported_equality_proof', 'Equality proof requires an EqualityProof AST node.');
+    const conclusion = body.conclusion;
+    if (!relationOk(conclusion)) return gap('invalid_equality_conclusion', 'Equality proof requires an equality conclusion.', { node: clone(body) });
+    const premises = A(body.premises).filter(relationOk);
+    if (body.rule === 'reflexivity') {
+      if (premises.length) return gap('reflexivity_has_premises', 'Reflexivity proof should not require premises.', { node: clone(body) });
+      if (!eqTerm(conclusion.left, conclusion.right)) return gap('reflexivity_mismatch', 'Reflexivity requires a term equal to itself.', { conclusion: clone(conclusion) });
+      return verified('equality-reflexivity', { operator: 'proveEquality', equality_rule: 'reflexivity', conclusion: clone(conclusion), steps: ['term-is-identical-to-itself'] });
+    }
+    if (body.rule === 'symmetry') {
+      if (premises.length !== 1) return gap('symmetry_requires_one_premise', 'Symmetry requires exactly one equality premise.', { node: clone(body) });
+      const p = premises[0];
+      if (!eqTerm(p.left, conclusion.right) || !eqTerm(p.right, conclusion.left)) return gap('symmetry_mismatch', 'Symmetry requires a=b therefore b=a.', { premise: clone(p), conclusion: clone(conclusion) });
+      return verified('equality-symmetry', { operator: 'proveEquality', equality_rule: 'symmetry', conclusion: clone(conclusion), steps: ['flip-equality-sides'] });
+    }
+    if (body.rule === 'transitivity' || body.rule === 'equality_chain') {
+      if (premises.length < 2) return gap('transitivity_requires_two_premises', 'Transitivity requires at least two equality premises.', { node: clone(body) });
+      for (let i = 0; i < premises.length - 1; i += 1) {
+        if (!eqTerm(premises[i].right, premises[i + 1].left)) return gap('equality_chain_break', 'Adjacent equality premises must share the same middle term.', { index: i, premises: clone(premises) });
+      }
+      const first = premises[0];
+      const last = premises[premises.length - 1];
+      if (!eqTerm(first.left, conclusion.left) || !eqTerm(last.right, conclusion.right)) return gap('transitivity_conclusion_mismatch', 'Conclusion must connect the first left term to the last right term.', { premises: clone(premises), conclusion: clone(conclusion) });
+      return verified('equality-transitivity', { operator: 'proveEquality', equality_rule: premises.length === 2 ? 'transitivity' : 'equality_chain', conclusion: clone(conclusion), steps: ['match-adjacent-equality-terms', 'compose-equality-chain'] });
+    }
+    return gap('unsupported_equality_rule', 'Equality proof rule is not supported.', { rule: body.rule });
+  }
+
+  function simplifyNode(node) {
+    if (!node || typeof node !== 'object') return node;
+    if (node.type !== 'BinaryExpression') return clone(node);
+    const left = simplifyNode(node.left);
+    const right = simplifyNode(node.right);
+    if (node.operator === '+') {
+      if (valueOf(right) === 0) return clone(left);
+      if (valueOf(left) === 0) return clone(right);
+    }
+    if (node.operator === '*') {
+      if (valueOf(right) === 1) return clone(left);
+      if (valueOf(left) === 1) return clone(right);
+      if (valueOf(right) === 0 || valueOf(left) === 0) return { type: 'NumberLiteral', value: 0 };
+    }
+    const lnum = evaluateNumericExpression(left);
+    const rnum = evaluateNumericExpression(right);
+    if (finite(lnum) && finite(rnum)) {
+      const value = evaluateNumericExpression({ type: 'BinaryExpression', operator: node.operator, left: { type: 'NumberLiteral', value: lnum }, right: { type: 'NumberLiteral', value: rnum } });
+      if (finite(value)) return { type: 'NumberLiteral', value: R(value) };
+    }
+    return Object.assign({}, node, { left, right });
+  }
+
+  function simplifyExpression(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'Simplification') return gap('unsupported_simplification', 'Simplification requires a Simplification AST node.');
+    const simplified = simplifyNode(body.expression);
+    if (!simplified) return gap('simplification_failed', 'Expression could not be simplified.', { node: clone(body) });
+    const changed = !same(body.expression, simplified);
+    return verified('expression-simplification', { operator: 'simplifyExpression', changed, input: clone(body.expression), conclusion: clone(simplified), result: expressionText(simplified), steps: changed ? ['apply-neutral-element-rewrite'] : ['already-normal-form'] });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -278,6 +343,8 @@
     if (operator === 'evaluateSubstitution') return evaluateSubstitution(body);
     if (operator === 'evaluateArithmeticRelation') return evaluateArithmeticRelation(body);
     if (operator === 'proveAlgebraicIdentity') return algebraicIdentity(body);
+    if (operator === 'proveEquality') return proveEquality(body);
+    if (operator === 'simplifyExpression') return simplifyExpression(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -296,6 +363,9 @@
     evaluateSubstitution,
     evaluateNumericExpression,
     evaluateArithmeticRelation,
+    proveEquality,
+    simplifyExpression,
+    simplifyNode,
     domainGuard,
     implication,
     modusPonens,
