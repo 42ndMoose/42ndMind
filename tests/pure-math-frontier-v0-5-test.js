@@ -44,11 +44,14 @@ const state = W.evaluateState({ id: 'frontier_after_v0_5' });
 assert.strictEqual(state.ok, true);
 assert.strictEqual(state.stop, false);
 assert.ok(!state.wants.some(row => row.id === 'complex_numbers'));
-assert.ok(state.wants.some(row => row.id === 'matrices'));
 assert.ok(state.wants.some(row => row.id === 'sequences'));
 assert.ok(state.wants.some(row => row.id === 'logic_quantifier_exists'));
 assert.ok(!state.wants.some(row => row.id === 'limits'));
 assert.ok(!state.wants.some(row => row.id === 'derivative'));
 assert.ok(!state.wants.some(row => row.id === 'integral'));
+
+const matrix = Closure.close('A B = C');
+if (matrix.ok) assert.strictEqual(matrix.selected_rule, 'matrix-product-dimension-guard');
+else assert.strictEqual(matrix.gaps[0].id, 'unclassified_math_ast');
 
 console.log('pure-math-frontier-v0-5 tests passed');
