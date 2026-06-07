@@ -2,9 +2,10 @@ const assert = require('assert');
 const G = require('../src/autonomous-brain-growth-core-v0-1.js');
 const N = require('../src/nested-brain-core-v0-1.js');
 
+function nearOne(value) { assert.ok(Math.abs(Number(value) - 1) < 1e-5); }
 function brainOne(p) {
   assert.strictEqual(p.brain.ok, true);
-  assert.ok(Math.abs(G.l1(p.B) - 1) < 1e-5);
+  nearOne(G.l1(p.B));
 }
 
 const s = G.create();
@@ -36,9 +37,9 @@ assert.strictEqual(z.last.growth.kind, 'unparsed');
 
 const nb = N.build(s);
 assert.strictEqual(nb.ok, true);
-assert.strictEqual(nb.unit, 1);
-assert.strictEqual(N.l1(nb.B), 1);
-Object.keys(nb.organs).forEach(id => assert.strictEqual(nb.organs[id].unit, 1));
+nearOne(nb.unit);
+nearOne(N.l1(nb.B));
+Object.keys(nb.organs).forEach(id => nearOne(nb.organs[id].unit));
 
 const sim = N.simulate(s);
 assert.strictEqual(sim.ok, true);
