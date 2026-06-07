@@ -23,14 +23,17 @@
     'a = b, b = c therefore a = c',
     'simplify x + 0',
     '∀x ∈ ℝ, x + 0 = x',
-    'sqrt(x) is real'
+    'sqrt(x) is real',
+    'f(g(x))',
+    'x ∈ A',
+    'prove by induction P(n)'
   ]);
 
   const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'sqrt_real_domain', input: 'sqrt(x) is real', expected_gap: 'unclassified_math_ast', reason: 'Square-root/domain reasoning is not yet represented in the canonical math language.' },
-    { id: 'function_composition', input: 'f(g(x))', expected_gap: 'unclassified_math_ast', reason: 'Function application and composition are not yet represented.' },
-    { id: 'set_membership', input: 'x ∈ A', expected_gap: 'unclassified_math_ast', reason: 'Set membership and typed domains beyond R are not yet represented.' },
-    { id: 'induction_schema', input: 'prove by induction P(n)', expected_gap: 'unclassified_math_ast', reason: 'Induction is not yet represented as a proof schema.' }
+    { id: 'limits', input: 'lim x->0 sin(x)/x = 1', expected_gap: 'unclassified_math_ast', reason: 'Limits are not yet represented in the canonical math language.' },
+    { id: 'derivative', input: 'd/dx x^2 = 2x', expected_gap: 'unclassified_math_ast', reason: 'Derivative operators are not yet represented.' },
+    { id: 'integral', input: 'integral 2x dx = x^2 + C', expected_gap: 'unclassified_math_ast', reason: 'Integral operators are not yet represented.' },
+    { id: 'probability', input: 'P(A and B) = P(A)P(B)', expected_gap: 'unclassified_math_ast', reason: 'Probability/event algebra is not yet represented.' }
   ]);
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }

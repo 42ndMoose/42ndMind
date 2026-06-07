@@ -215,6 +215,33 @@
     return verified('expression-simplification', { operator: 'simplifyExpression', changed, input: clone(body.expression), conclusion: clone(simplified), result: expressionText(simplified), steps: changed ? ['apply-neutral-element-rewrite'] : ['already-normal-form'] });
   }
 
+
+  function proveSqrtDomain(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'SqrtDomainStatement') return gap('unsupported_sqrt_domain', 'Square-root domain closure requires a SqrtDomainStatement AST node.');
+    const radicandValue = valueOf(body.radicand);
+    if (Number.isFinite(radicandValue) && radicandValue < 0) return gap('sqrt_negative_radicand', 'sqrt(x) is real over R only when the radicand is nonnegative.', { radicand: clone(body.radicand) });
+    return verified('sqrt-domain-guard', { operator: 'proveSqrtDomain', guard: clone(body.guard), conclusion: { type: 'DomainGuard', expression: 'sqrt', requirement: clone(body.guard) }, steps: ['detect-square-root', 'emit-real-domain-radicand-guard'] });
+  }
+
+  function composeFunctionApplication(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'FunctionComposition') return gap('unsupported_function_composition', 'Function composition closure requires a FunctionComposition AST node.');
+    return verified('function-composition-canonicalization', { operator: 'composeFunctionApplication', outer: clone(body.outer), inner: clone(body.inner), argument: clone(body.argument), conclusion: clone(body.expression), steps: ['detect-nested-function-application', 'canonicalize-as-composition-tree'] });
+  }
+
+  function typeSetMembership(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'SetMembership') return gap('unsupported_set_membership', 'Set membership closure requires a SetMembership AST node.');
+    return verified('set-membership-typing', { operator: 'typeSetMembership', element: clone(body.element), set: clone(body.set), conclusion: { type: 'TypedRelation', operator: 'in', element: clone(body.element), set: clone(body.set) }, steps: ['detect-membership-relation', 'canonicalize-element-set-relation'] });
+  }
+
+  function generateInductionObligations(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'InductionSchema') return gap('unsupported_induction_schema', 'Induction closure requires an InductionSchema AST node.');
+    return verified('induction-schema-obligations', { operator: 'generateInductionObligations', predicate: clone(body.predicate), variable: clone(body.variable), domain: clone(body.domain), conclusion: { type: 'ProofObligations', schema: 'induction', obligations: [clone(body.base_case), clone(body.inductive_step)] }, steps: ['detect-induction-request', 'emit-base-case', 'emit-inductive-step'] });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -345,6 +372,10 @@
     if (operator === 'proveAlgebraicIdentity') return algebraicIdentity(body);
     if (operator === 'proveEquality') return proveEquality(body);
     if (operator === 'simplifyExpression') return simplifyExpression(body);
+    if (operator === 'proveSqrtDomain') return proveSqrtDomain(body);
+    if (operator === 'composeFunctionApplication') return composeFunctionApplication(body);
+    if (operator === 'typeSetMembership') return typeSetMembership(body);
+    if (operator === 'generateInductionObligations') return generateInductionObligations(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -366,6 +397,10 @@
     proveEquality,
     simplifyExpression,
     simplifyNode,
+    proveSqrtDomain,
+    composeFunctionApplication,
+    typeSetMembership,
+    generateInductionObligations,
     domainGuard,
     implication,
     modusPonens,

@@ -167,6 +167,50 @@
     return node('Simplification', { expression });
   }
 
+
+  function parseSqrtDomain(input) {
+    const text = normalize(input);
+    const m = /^sqrt\(([^)]+)\)\s+is\s+real$/i.exec(text);
+    if (!m) return null;
+    const radicand = parseSymbolicExpression(m[1]);
+    if (!radicand) return null;
+    return node('SqrtDomainStatement', { radicand, domain: symbol('R'), guard: relation('>=', radicand, numberLiteral(0)) });
+  }
+
+  function parseFunctionComposition(input) {
+    const raw = compact(input);
+    const m = /^([A-Za-z][A-Za-z0-9_]*)\(([A-Za-z][A-Za-z0-9_]*)\(([A-Za-z][A-Za-z0-9_]*)\)\)$/.exec(raw);
+    if (!m) return null;
+    const inner = node('FunctionApplication', { fn: symbol(m[2]), argument: symbol(m[3]) });
+    const outer = node('FunctionApplication', { fn: symbol(m[1]), argument: inner });
+    return node('FunctionComposition', { outer: symbol(m[1]), inner: symbol(m[2]), argument: symbol(m[3]), expression: outer });
+  }
+
+  function parseSetMembership(input) {
+    const text = normalize(input);
+    const m = /^([A-Za-z][A-Za-z0-9_]*)\s+in\s+([A-Za-z][A-Za-z0-9_]*)$/i.exec(text);
+    if (!m) return null;
+    return node('SetMembership', { element: symbol(m[1]), set: symbol(m[2]), relation: 'in' });
+  }
+
+  function parseInductionSchema(input) {
+    const text = normalize(input);
+    const m = /^prove\s+by\s+induction\s+([A-Za-z][A-Za-z0-9_]*)\(([A-Za-z][A-Za-z0-9_]*)\)$/i.exec(text);
+    if (!m) return null;
+    const predicate = symbol(m[1]);
+    const variable = symbol(m[2]);
+    return node('InductionSchema', {
+      predicate,
+      variable,
+      domain: symbol('N'),
+      base_case: node('PredicateApplication', { predicate, argument: numberLiteral(0) }),
+      inductive_step: node('Implication', {
+        antecedent: node('PredicateApplication', { predicate, argument: variable }),
+        consequent: node('PredicateApplication', { predicate, argument: binary('+', variable, numberLiteral(1)) })
+      })
+    });
+  }
+
   function parseArithmeticRelation(input) {
     const text = compact(input);
     if (hasLetter(text)) return null;
@@ -283,6 +327,10 @@
       parseAlgebraicIdentity,
       parseEqualityProof,
       parseSimplification,
+      parseSqrtDomain,
+      parseFunctionComposition,
+      parseSetMembership,
+      parseInductionSchema,
       parseDivisionConstraint,
       parseSubstitutionEvaluation,
       parseLinearRelation,
@@ -312,6 +360,10 @@
       LinearEquation: { class: 'equation', anatomy_id: 'linear_equation', closure: 'solveLinearEquation' },
       EqualityProof: { class: 'proof', anatomy_id: 'equality_proof', closure: 'proveEquality' },
       Simplification: { class: 'rewrite', anatomy_id: 'expression_simplification', closure: 'simplifyExpression' },
+      SqrtDomainStatement: { class: 'constraint', anatomy_id: 'sqrt_domain', closure: 'proveSqrtDomain' },
+      FunctionComposition: { class: 'expression', anatomy_id: 'function_composition', closure: 'composeFunctionApplication' },
+      SetMembership: { class: 'relation', anatomy_id: 'set_membership', closure: 'typeSetMembership' },
+      InductionSchema: { class: 'proof_schema', anatomy_id: 'induction_schema', closure: 'generateInductionObligations' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
       SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
@@ -330,7 +382,7 @@
 
   return Object.freeze({
     VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
-    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification,
+    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema,
     parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
     parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
     parseImplicationChain, parseContradictionPair, parse, classify, canonical

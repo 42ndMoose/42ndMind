@@ -59,6 +59,30 @@
       inverse_chain: [], closure_operator: 'simplifyExpression', closure_result: 'normal_form',
       examples: ['simplify x + 0', 'simplify x * 1'], assertion: "assert.strictEqual(P.simplifyExpression('simplify x + 0').result, 'x');"
     }),
+    sqrt_domain: Object.freeze({
+      id: 'sqrt_domain', operation: 'guard', surface: 'sqrt(x) is real requires x >= 0 over reals',
+      parts: ['radicand', 'real_domain_guard'], preconditions: ['radicand is represented', 'real square-root requires radicand >= 0'],
+      inverse_chain: [], closure_operator: 'proveSqrtDomain', closure_result: 'domain_guard',
+      examples: ['sqrt(x) is real'], assertion: "assert.strictEqual(P.proveSqrtDomain('sqrt(x) is real').ok, true);"
+    }),
+    function_composition: Object.freeze({
+      id: 'function_composition', operation: 'canonicalize', surface: 'f(g(x)) as nested function application',
+      parts: ['outer_function', 'inner_function', 'argument'], preconditions: ['outer and inner are symbolic functions', 'argument is symbolic'],
+      inverse_chain: [], closure_operator: 'composeFunctionApplication', closure_result: 'composition_tree',
+      examples: ['f(g(x))'], assertion: "assert.strictEqual(P.composeFunctionApplication('f(g(x))').ok, true);"
+    }),
+    set_membership: Object.freeze({
+      id: 'set_membership', operation: 'type', surface: 'x in A',
+      parts: ['element', 'set'], preconditions: ['element symbol exists', 'set symbol exists'],
+      inverse_chain: [], closure_operator: 'typeSetMembership', closure_result: 'typed_membership_relation',
+      examples: ['x ∈ A'], assertion: "assert.strictEqual(P.typeSetMembership('x ∈ A').ok, true);"
+    }),
+    induction_schema: Object.freeze({
+      id: 'induction_schema', operation: 'generate_obligations', surface: 'prove by induction P(n)',
+      parts: ['predicate', 'variable', 'base_case', 'inductive_step'], preconditions: ['predicate is symbolic', 'variable ranges over N'],
+      inverse_chain: [], closure_operator: 'generateInductionObligations', closure_result: 'proof_obligations',
+      examples: ['prove by induction P(n)'], assertion: "assert.strictEqual(P.generateInductionObligations('prove by induction P(n)').ok, true);"
+    }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
       parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],
@@ -104,7 +128,7 @@
     if (!MathAstCore || typeof MathAstCore.classify !== 'function') return [];
     const rows = Array.isArray(samples) ? samples : [
       '2x + 1 = 7', '2x + 1', '2x + 1 = x + 4', '2x + 1 with x = 3', 'x >= 3 with x = 5',
-      '2 + 3 * 4 = 14', '(2 + 3)^2 = 25', 'x = x', 'x = y therefore y = x', 'a = b, b = c therefore a = c', 'simplify x + 0', 'simplify x * 1',
+      '2 + 3 * 4 = 14', '(2 + 3)^2 = 25', 'x = x', 'x = y therefore y = x', 'a = b, b = c therefore a = c', 'simplify x + 0', 'simplify x * 1', 'sqrt(x) is real', 'f(g(x))', 'x ∈ A', 'prove by induction P(n)',
       'x/y is undefined when y = 0', '∀x ∈ ℝ, x^2 >= 0', '∀x ∈ ℝ, x + 0 = x', '∀x ∈ ℝ, x * 1 = x', 'A=>B, B=>C', 'A, not A'
     ];
     return Array.from(new Set(rows.map(sample => MathAstCore.classify(sample).anatomy_id).filter(Boolean))).sort();
