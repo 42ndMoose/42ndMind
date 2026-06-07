@@ -10,6 +10,11 @@ const samples = [
   '2x + 1 with x = 3',
   '2 + 3 * 4 = 14',
   '(2 + 3)^2 = 25',
+  'x = x',
+  'x = y therefore y = x',
+  'a = b, b = c therefore a = c',
+  'simplify x + 0',
+  'simplify x * 1',
   'x/y is undefined when y = 0',
   '∀x ∈ ℝ, x^2 ≥ 0',
   '∀x ∈ ℝ, x + 0 = x',
@@ -46,4 +51,4 @@ const gap = Closure.close('sqrt(x) is real');
 assert.strictEqual(gap.ok, false);
 assert.strictEqual(gap.gaps[0].id, 'unclassified_math_ast');
 
-console.log('math-language-completion-v0-1 tests passed: v0.2 spine, ' + samples.length + ' supported forms, 1 precise unsupported gap');
+console.log('math-language-completion-v0-1 tests passed: v0.3 equality spine, ' + samples.length + ' supported forms, 1 precise unsupported gap');
