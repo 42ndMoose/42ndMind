@@ -1,4 +1,4 @@
 {
-  "frontier_discovery_candidate_exit_code": 1,
-  "ok": false
+  "frontier_discovery_candidate_exit_code": 0,
+  "ok": true
 }

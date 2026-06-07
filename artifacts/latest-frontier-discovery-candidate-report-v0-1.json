@@ -566,7 +566,7 @@
       {
         "type": "create",
         "path": "tests/frontier-candidate-complex-unit-v0-1-test.js",
-        "content": "const assert = require('assert');\nconst AST = require('../src/math-ast-core-v0-1.js');\nconst Proof = require('../src/proof-calculus-core-v0-1.js');\nconst Closure = require('../src/math-closure-engine-v0-1.js');\nconst K = require('../src/math-language-kernel-v0-1.js');\nconst source = 'i' + '^' + '2 = -1';\nconst ast = AST.parse(source);\nassert.strictEqual(ast.ok, true);\nassert.strictEqual(ast.body.type, 'ComplexUnitIdentityStatement');\nassert.strictEqual(AST.classify(ast).closure, 'proveComplexUnitIdentity');\nconst proof = Proof.proveComplexUnitIdentity(ast);\nassert.strictEqual(proof.ok, true);\nassert.strictEqual(proof.selected_rule, 'complex-unit-identity');\nconst closed = Closure.close(source);\nassert.strictEqual(closed.ok, true);\nassert.strictEqual(closed.selected_rule, 'complex-unit-identity');\nconst packet = K.math(source);\nassert.strictEqual(packet.ok, true);\nassert.strictEqual(packet.closure_operator, 'proveComplexUnitIdentity');\nassert.strictEqual(packet.selected_rule, 'complex-unit-identity');\nconsole.log('frontier-candidate-complex-unit-v0-1 tests passed');\n"
+        "content": "const assert = require('assert');\nconst AST = require('../src/math-ast-core-v0-1.js');\nconst Proof = require('../src/proof-calculus-core-v0-1.js');\nconst Closure = require('../src/math-closure-engine-v0-1.js');\nconst K = require('../src/math-language-kernel-v0-1.js');\nconst source = 'i' + '^' + '2 = -1';\nconst ast = AST.parse(source);\nassert.strictEqual(ast.ok, true);\nassert.strictEqual(ast.body.type, 'ComplexUnitIdentityStatement');\nassert.strictEqual(AST.classify(ast).closure, 'proveComplexUnitIdentity');\nconst proof = Proof.proveComplexUnitIdentity(ast);\nassert.strictEqual(proof.ok, true);\nassert.strictEqual(proof.rule, 'complex-unit-identity');\nconst closed = Closure.close(source);\nassert.strictEqual(closed.ok, true);\nassert.strictEqual(closed.selected_rule, 'complex-unit-identity');\nconst packet = K.math(source);\nassert.strictEqual(packet.ok, true);\nassert.strictEqual(packet.closure_operator, 'proveComplexUnitIdentity');\nassert.strictEqual(packet.selected_rule, 'complex-unit-identity');\nconsole.log('frontier-candidate-complex-unit-v0-1 tests passed');\n"
       }
     ]
   },
@@ -649,8 +649,8 @@
         "checksum": "69f74cca"
       },
       "tests/frontier-candidate-complex-unit-v0-1-test.js": {
-        "bytes": 1082,
-        "checksum": "ee896e8f"
+        "bytes": 1073,
+        "checksum": "eb1090a1"
       }
     },
     "changed": [
@@ -663,8 +663,10 @@
     "tests": [
       {
         "path": "tests/frontier-candidate-complex-unit-v0-1-test.js",
-        "ok": false,
-        "error": "Error: undefined !== complex-unit-identity\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/frontier-candidate-complex-unit-v0-1-test.js:15:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-frontier-discovery-candidate-v0-1.js:188:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-frontier-discovery-candidate-v0-1.js:214:30)\n    at Module._compile (node:internal/modules/cjs/loader:1521:14)"
+        "ok": true,
+        "logs": [
+          "frontier-candidate-complex-unit-v0-1 tests passed"
+        ]
       }
     ],
     "validators": [
@@ -845,23 +847,13 @@
         ]
       }
     ],
-    "accepted": false,
-    "chaos": [
-      "test_failed:tests/frontier-candidate-complex-unit-v0-1-test.js"
-    ],
+    "accepted": true,
+    "chaos": [],
     "ξ": ""
   },
   "export_patch": {
-    "ok": false,
-    "reason": "report not accepted",
-    "patch": []
-  },
-  "summary": {
-    "packet_type": "42ndMind_frontier_discovery_candidate_summary_v0_1",
-    "version": "0.1.0",
-    "candidate_id": "frontier_candidate_complex_unit_identity_v0_1",
-    "discovery_kind": "complex_unit_identity",
-    "accepted_by_sandbox": false,
+    "ok": true,
+    "id": "frontier_candidate_complex_unit_identity_v0_1",
     "changed": [
       "src/math-ast-core-v0-1.js",
       "src/operator-anatomy-v0-1.js",
@@ -869,13 +861,26 @@
       "src/source-edit-reality-feedback-v0-1.js",
       "tests/frontier-candidate-complex-unit-v0-1-test.js"
     ],
-    "chaos": [
-      "test_failed:tests/frontier-candidate-complex-unit-v0-1-test.js"
+    "note": "simulation accepted; real source patch still requires external write gate"
+  },
+  "summary": {
+    "packet_type": "42ndMind_frontier_discovery_candidate_summary_v0_1",
+    "version": "0.1.0",
+    "candidate_id": "frontier_candidate_complex_unit_identity_v0_1",
+    "discovery_kind": "complex_unit_identity",
+    "accepted_by_sandbox": true,
+    "changed": [
+      "src/math-ast-core-v0-1.js",
+      "src/operator-anatomy-v0-1.js",
+      "src/proof-calculus-core-v0-1.js",
+      "src/source-edit-reality-feedback-v0-1.js",
+      "tests/frontier-candidate-complex-unit-v0-1-test.js"
     ],
+    "chaos": [],
     "test_count": 1,
-    "tests_ok": false,
+    "tests_ok": true,
     "validators_ok": true,
-    "export_patch_ok": false,
+    "export_patch_ok": true,
     "promoted": false,
     "promotion_policy": "candidate accepted by sandbox only; real source promotion remains separate",
     "Ξ": ""
