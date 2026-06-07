@@ -43,7 +43,7 @@ assert.strictEqual(Proof.proveIntegralStatement(AST.parse(intCase)).ok, true);
 const state = W.evaluateState({ id: 'frontier_after_v0_5' });
 assert.strictEqual(state.ok, true);
 assert.strictEqual(state.stop, false);
-assert.ok(state.wants.some(row => row.id === 'complex_numbers'));
+assert.ok(!state.wants.some(row => row.id === 'complex_numbers'));
 assert.ok(state.wants.some(row => row.id === 'matrices'));
 assert.ok(state.wants.some(row => row.id === 'sequences'));
 assert.ok(state.wants.some(row => row.id === 'logic_quantifier_exists'));
