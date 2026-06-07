@@ -1,24 +1,30 @@
 {
-  "goal_id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_evaluateSubstitution",
+  "goal_id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_proveEquality_simplifyExpression_evaluateSubstitution",
   "generated_from": {
     "anatomy_ids": [
       "algebraic_identity",
       "arithmetic_relation_truth",
+      "equality_proof",
+      "expression_simplification",
       "substitution_evaluation"
     ],
     "parsed_forms": [
       "∀x ∈ ℝ, x + 0 = x",
       "2 + 3 * 4 = 14",
+      "x = x",
+      "simplify x + 0",
       "2x + 1 with x = 3"
     ],
     "reason": "Operator anatomy found representable operation surfaces whose closure operators are missing.",
     "missing_operators": [
       "proveAlgebraicIdentity",
       "evaluateArithmeticRelation",
+      "proveEquality",
+      "simplifyExpression",
       "evaluateSubstitution"
     ]
   },
-  "frontier_selected_id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_evaluateSubstitution",
+  "frontier_selected_id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_proveEquality_simplifyExpression_evaluateSubstitution",
   "frontier_selected_source": "operator_anatomy_generated_closure_failure",
   "frontier_exhausted": false,
   "frontier_generated_count": 0,
@@ -40,30 +46,38 @@
       "generated_from": null
     },
     {
-      "id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_evaluateSubstitution",
+      "id": "formal_math_operator_anatomy_batch_proveAlgebraicIdentity_evaluateArithmeticRelation_proveEquality_simplifyExpression_evaluateSubstitution",
       "source": "operator_anatomy_generated_closure_failure",
       "unlocked": true,
       "closed": false,
       "missing": [
         "proveAlgebraicIdentity",
         "evaluateArithmeticRelation",
+        "proveEquality",
+        "simplifyExpression",
         "evaluateSubstitution"
       ],
       "generated_from": {
         "anatomy_ids": [
           "algebraic_identity",
           "arithmetic_relation_truth",
+          "equality_proof",
+          "expression_simplification",
           "substitution_evaluation"
         ],
         "parsed_forms": [
           "∀x ∈ ℝ, x + 0 = x",
           "2 + 3 * 4 = 14",
+          "x = x",
+          "simplify x + 0",
           "2x + 1 with x = 3"
         ],
         "reason": "Operator anatomy found representable operation surfaces whose closure operators are missing.",
         "missing_operators": [
           "proveAlgebraicIdentity",
           "evaluateArithmeticRelation",
+          "proveEquality",
+          "simplifyExpression",
           "evaluateSubstitution"
         ]
       }
@@ -71,8 +85,8 @@
   ],
   "closed_previous_goal": true,
   "safe_to_propose": false,
-  "initial_pressure": 4,
-  "accepted_delta": -3,
+  "initial_pressure": 6,
+  "accepted_delta": -5,
   "rejected_delta": 0,
   "rejected_causal": [
     "pressure_unchanged"
@@ -170,31 +184,31 @@
         "anti_delusion": 1,
         "integration": 0,
         "scope_clarity": 1,
-        "closure": 0.75
+        "closure": 0.8333333333333334
       },
       "point": {
         "x": 0,
-        "y": 0.571429,
-        "z": 0.428571,
+        "y": 0.60606,
+        "z": 0.39394,
         "active": true,
         "surface": true
       },
-      "peak_distance": 0.428571
+      "peak_distance": 0.39394
     },
     "delta_components": {
       "anti_delusion": 0.5,
-      "closure": 0.75,
+      "closure": 0.833333,
       "coherence": -0.5,
       "integration": 0,
       "reality_contact": 0.5,
       "scope_clarity": 1,
       "self_correction": 0.5
     },
-    "delta_peak_distance": 0.571429,
+    "delta_peak_distance": 0.60606,
     "pressure": {
-      "before": 4,
+      "before": 6,
       "after": 1,
-      "delta": -3
+      "delta": -5
     },
     "preference": {
       "capability_improves": true,
@@ -210,22 +224,24 @@
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 3,
-      "after_gaps": 3
+      "before_gaps": 5,
+      "after_gaps": 5
     },
     {
       "variant": "synthesized_implementation",
       "accepted": false,
       "reverted": true,
       "score": -2,
-      "before_gaps": 3,
-      "after_gaps": 3
+      "before_gaps": 5,
+      "after_gaps": 5
     }
   ],
   "candidate_path": "src/language-parser-v0-1.js",
   "added_needles": [
     "proveAlgebraicIdentity",
     "evaluateArithmeticRelation",
+    "proveEquality",
+    "simplifyExpression",
     "evaluateSubstitution"
   ],
   "report_artifact": "artifacts/reactive-self-edit-report-v0-1.json",
