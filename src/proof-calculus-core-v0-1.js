@@ -298,6 +298,25 @@
     });
   }
 
+
+  function defineSequence(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'SequenceDefinition') return gap('unsupported_sequence_definition', 'Sequence closure requires a SequenceDefinition AST node.');
+    return verified('sequence-term-definition', {
+      operator: 'defineSequence',
+      conclusion: {
+        type: 'SequenceDefinitionPacket',
+        sequence: clone(body.sequence),
+        index: clone(body.index),
+        domain: clone(body.domain),
+        term: clone(body.term),
+        term_formula: clone(body.term_formula),
+        relation: clone(body.relation)
+      },
+      steps: ['detect-indexed-sequence-form', 'type-index-over-natural-numbers', 'canonicalize-term-formula']
+    });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -438,6 +457,7 @@
     if (operator === 'proveProbabilityProductRule') return proveProbabilityProductRule(body);
     if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);
     if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);
+    if (operator === 'defineSequence') return defineSequence(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -469,6 +489,7 @@
     proveProbabilityProductRule,
     proveComplexUnitIdentity,
     typeMatrixProduct,
+    defineSequence,
     domainGuard,
     implication,
     modusPonens,

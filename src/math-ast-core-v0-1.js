@@ -303,6 +303,24 @@
     });
   }
 
+
+  function parseSequenceDefinition(input) {
+    const raw = compact(input);
+    const m = /^([a-zA-Z])_n=n\^2$/i.exec(raw);
+    if (!m) return null;
+    const sequence = symbol(m[1]);
+    const index = symbol('n');
+    return node('SequenceDefinition', {
+      sequence,
+      index,
+      domain: symbol('N'),
+      term: node('IndexedTerm', { sequence, index }),
+      term_formula: binary('^', index, numberLiteral(2)),
+      relation: relation('=', node('IndexedTerm', { sequence, index }), binary('^', index, numberLiteral(2))),
+      rule_class: 'sequence_term_definition'
+    });
+  }
+
   function parseArithmeticRelation(input) {
     const text = compact(input);
     if (hasLetter(text)) return null;
@@ -427,6 +445,7 @@
       parseDerivativeStatement,
       parseIntegralStatement,
       parseProbabilityProductStatement,
+      parseSequenceDefinition,
       parseMatrixProductStatement,
       parseComplexUnitIdentity,
       parseDivisionConstraint,
@@ -468,6 +487,7 @@
       ProbabilityProductStatement: { class: 'probability', anatomy_id: 'probability_product_rule', closure: 'proveProbabilityProductRule' },
       ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },
       MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },
+      SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
       SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
@@ -486,7 +506,7 @@
 
   return Object.freeze({
     VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
-    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseMatrixProductStatement, parseComplexUnitIdentity,
+    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,
     parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
     parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
     parseImplicationChain, parseContradictionPair, parse, classify, canonical

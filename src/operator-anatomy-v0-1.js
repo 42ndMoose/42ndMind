@@ -119,6 +119,12 @@
       inverse_chain: [], closure_operator: 'typeMatrixProduct', closure_result: 'guarded_matrix_product_relation',
       examples: ['A B = C'], assertion: "assert.strictEqual(P.typeMatrixProduct('A B = C').ok, true);"
     }),
+    sequence_definition: Object.freeze({
+      id: 'sequence_definition', operation: 'define', surface: 'a_n = n^2',
+      parts: ['sequence_symbol', 'index', 'domain', 'term_formula'], preconditions: ['index is typed over natural numbers', 'term formula is canonical'],
+      inverse_chain: [], closure_operator: 'defineSequence', closure_result: 'sequence_definition_packet',
+      examples: ['a_n = n^2'], assertion: "assert.strictEqual(P.defineSequence('a_n = n^2').ok, true);"
+    }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
       parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],
