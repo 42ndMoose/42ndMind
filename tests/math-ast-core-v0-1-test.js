@@ -40,6 +40,29 @@ assert.strictEqual(arithParen.ok, true);
 assert.strictEqual(arithParen.body.type, 'ArithmeticRelation');
 assert.strictEqual(AST.classify(arithParen).anatomy_id, 'arithmetic_relation_truth');
 
+const equalityReflexive = AST.parse('x = x');
+assert.strictEqual(equalityReflexive.ok, true);
+assert.strictEqual(equalityReflexive.body.type, 'EqualityProof');
+assert.strictEqual(equalityReflexive.body.rule, 'reflexivity');
+assert.strictEqual(AST.classify(equalityReflexive).closure, 'proveEquality');
+
+const equalitySymmetry = AST.parse('x = y therefore y = x');
+assert.strictEqual(equalitySymmetry.ok, true);
+assert.strictEqual(equalitySymmetry.body.type, 'EqualityProof');
+assert.strictEqual(equalitySymmetry.body.rule, 'symmetry');
+assert.strictEqual(AST.classify(equalitySymmetry).anatomy_id, 'equality_proof');
+
+const equalityTransitivity = AST.parse('a = b, b = c therefore a = c');
+assert.strictEqual(equalityTransitivity.ok, true);
+assert.strictEqual(equalityTransitivity.body.type, 'EqualityProof');
+assert.strictEqual(equalityTransitivity.body.rule, 'transitivity');
+assert.strictEqual(AST.classify(equalityTransitivity).closure, 'proveEquality');
+
+const simplify = AST.parse('simplify x + 0');
+assert.strictEqual(simplify.ok, true);
+assert.strictEqual(simplify.body.type, 'Simplification');
+assert.strictEqual(AST.classify(simplify).closure, 'simplifyExpression');
+
 const div = AST.parse('x/y is undefined when y = 0');
 assert.strictEqual(div.ok, true);
 assert.strictEqual(div.body.type, 'DivisionConstraint');
