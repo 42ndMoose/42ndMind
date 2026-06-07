@@ -36,6 +36,10 @@ function collectFiles() {
   return files;
 }
 
+function exportBlock(source) {
+  return String(source || '').split('return Object.freeze({')[1] || '';
+}
+
 function patchAst(s) {
   if (!has(s, 'function parseComplexUnitIdentity')) {
     const block = String.raw`
@@ -54,7 +58,7 @@ function patchAst(s) {
 `;
     s = replaceOnce(s, '  function parseArithmeticRelation(input) {', block + '  function parseArithmeticRelation(input) {', 'complex parser insertion');
   }
-  if (!has(s, 'parseComplexUnitIdentity,')) {
+  if (!has(s, '      parseComplexUnitIdentity,\n      parseDivisionConstraint,')) {
     s = replaceOnce(s,
       '      parseProbabilityProductStatement,\n      parseDivisionConstraint,',
       '      parseProbabilityProductStatement,\n      parseComplexUnitIdentity,\n      parseDivisionConstraint,',
@@ -66,11 +70,10 @@ function patchAst(s) {
       "      ProbabilityProductStatement: { class: 'probability', anatomy_id: 'probability_product_rule', closure: 'proveProbabilityProductRule' },\n      ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },\n      AffineExpression:",
       'complex classification insertion');
   }
-  if (!has(s, 'parseComplexUnitIdentity,')) throw new Error('complex parser list did not apply');
-  if (!/parseComplexUnitIdentity/.test(s.split('return Object.freeze')[1] || '')) {
+  if (!has(exportBlock(s), 'parseComplexUnitIdentity')) {
     s = replaceOnce(s,
-      'parseProbabilityProductStatement,',
-      'parseProbabilityProductStatement, parseComplexUnitIdentity,',
+      'parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement,\n    parseAffineExpression',
+      'parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
       'complex export insertion');
   }
   return s;
