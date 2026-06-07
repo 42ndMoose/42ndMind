@@ -16,9 +16,13 @@ const samples = [
   'simplify x + 0',
   'simplify x * 1',
   'x/y is undefined when y = 0',
+  'sqrt(x) is real',
   '∀x ∈ ℝ, x^2 ≥ 0',
   '∀x ∈ ℝ, x + 0 = x',
   '∀x ∈ ℝ, x * 1 = x',
+  'f(g(x))',
+  'x ∈ A',
+  'prove by induction P(n)',
   'A=>B, B=>C',
   'A, not A',
   'x >= 3 with x = 5'
@@ -47,8 +51,8 @@ for (const source of samples) {
   assert.ok(closed.selected_rule, 'proof/closure rule selected: ' + source);
 }
 
-const gap = Closure.close('sqrt(x) is real');
+const gap = Closure.close('lim x->0 sin(x)/x = 1');
 assert.strictEqual(gap.ok, false);
 assert.strictEqual(gap.gaps[0].id, 'unclassified_math_ast');
 
-console.log('math-language-completion-v0-1 tests passed: v0.3 equality spine, ' + samples.length + ' supported forms, 1 precise unsupported gap');
+console.log('math-language-completion-v0-1 tests passed: v0.4 pure-math frontier, ' + samples.length + ' supported forms, 1 precise unsupported gap');
