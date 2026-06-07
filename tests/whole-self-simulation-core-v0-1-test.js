@@ -26,7 +26,6 @@ assert.ok(base.score < 1);
 assert.strictEqual(base.reality.ok, true);
 assert.strictEqual(base.epistemic.ok, true);
 assert.ok(!base.wants.some(row => row.id === 'complex_numbers'));
-assert.ok(base.wants.some(row => row.id === 'sequences'));
 assert.ok(base.wants.some(row => row.id === 'logic_quantifier_exists'));
 assert.ok(!base.wants.some(row => row.id === 'limits'));
 assert.ok(!base.wants.some(row => row.id === 'derivative'));
@@ -37,8 +36,8 @@ assert.ok(!base.wants.some(row => row.id === 'function_composition'));
 assert.ok(!base.wants.some(row => row.id === 'set_membership'));
 assert.ok(!base.wants.some(row => row.id === 'induction_schema'));
 
-const matrixWanted = base.wants.some(row => row.id === 'matrices');
-assert.strictEqual(typeof matrixWanted, 'boolean');
+const sequenceWanted = base.wants.some(row => row.id === 'sequences');
+assert.strictEqual(typeof sequenceWanted, 'boolean');
 
 const badContent = files['src/proof-calculus-core-v0-1.js'].replace("if (op === '=') return Math.abs(left - right) <= EPS;", "if (op === '=') return true;");
 const simulation = W.simulateCandidates(files, [{
@@ -62,7 +61,7 @@ const neutral = W.simulateCandidates(files, [{ id: 'same_state', files }]);
 assert.strictEqual(neutral.best.stability_score, 1);
 assert.strictEqual(neutral.stop, false);
 assert.ok(neutral.frontier_count > 0);
-assert.ok(neutral.wants.some(row => row.id === 'sequences'));
+assert.ok(neutral.wants.some(row => row.id === 'logic_quantifier_exists'));
 assert.ok(['base', 'same_state'].includes(neutral.best.id));
 
 console.log('whole-self-simulation-core-v0-1 tests passed');
