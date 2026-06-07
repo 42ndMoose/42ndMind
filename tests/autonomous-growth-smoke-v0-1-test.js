@@ -39,29 +39,30 @@ assert.strictEqual(z.last.growth.kind, 'unparsed');
 
 const nb = N.build(s);
 assert.strictEqual(nb.ok, true);
-assert.strictEqual(nb.equation, 'brain = |perception| + |memory| + |belief| + |valuation| + |action|');
-assert.strictEqual(nb.organ_count, 5);
-near(nb.magnitude, 5);
+assert.strictEqual(nb.equation, 'brain = |perception| + |memory| + |belief| + |valuation| + |action| + |language|');
+assert.strictEqual(nb.organ_count, 6);
+near(nb.magnitude, 6);
 nearOne(nb.coherence);
-near(nb.B.length, 5);
-near(N.l1(nb.B), 5);
+near(nb.B.length, 6);
+near(N.l1(nb.B), 6);
+assert.ok(nb.organs.language);
 Object.keys(nb.organs).forEach(id => nearOne(nb.organs[id].unit));
 
 const sim = N.simulate(s);
 assert.strictEqual(sim.ok, true);
 assert.strictEqual(sim.applyable, true);
 assert.strictEqual(sim.brain.ok, true);
-near(sim.brain.magnitude, 5);
+near(sim.brain.magnitude, 6);
 nearOne(sim.brain.coherence);
 
 const applied = N.commit(s);
 assert.strictEqual(applied.ok, true);
 assert.strictEqual(applied.applied, true);
 assert.strictEqual(s.nested_brain.ok, true);
-near(s.nested_brain.magnitude, 5);
+near(s.nested_brain.magnitude, 6);
 nearOne(s.nested_brain.coherence);
 assert.ok(s.optimized_stage.id);
 
 require('./language-organ-core-v0-1-test.js');
 
-console.log('autonomous-growth-smoke-v0-1 tests passed with summed unit organs, nested brain optimization, and language organ proof');
+console.log('autonomous-growth-smoke-v0-1 tests passed with language as live brain organ');
