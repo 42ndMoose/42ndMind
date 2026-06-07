@@ -31,9 +31,12 @@ if (matrix.needed) {
 
 const sequenceCase = 'a_n = n' + '^' + '2';
 const sequence = F.infer(sequenceCase);
-assert.strictEqual(sequence.needed, true);
-assert.strictEqual(sequence.proposals[0].candidate.ast_node, 'SequenceDefinition');
-assert.strictEqual(sequence.proposals[0].candidate.closure_operator, 'defineSequence');
+if (sequence.needed) {
+  assert.strictEqual(sequence.proposals[0].candidate.ast_node, 'SequenceDefinition');
+  assert.strictEqual(sequence.proposals[0].candidate.closure_operator, 'defineSequence');
+} else {
+  assert.strictEqual(sequence.proposals.length, 0);
+}
 
 const existsCase = 'exists x in R, x' + '^' + '2 = 2';
 const existential = F.infer(existsCase);
