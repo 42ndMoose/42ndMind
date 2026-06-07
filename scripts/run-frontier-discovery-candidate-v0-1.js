@@ -12,7 +12,7 @@ const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const REPORT_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-candidate-report-v0-1.json');
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-candidate-summary-v0-1.json');
 const TEST_PATH = 'tests/frontier-candidate-complex-unit-v0-1-test.js';
-const SEQUENCE_INPUT = 'a_n = n^2';
+const EXISTENTIAL_INPUT = 'exists x in R, x^2 = 2';
 
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), 'utf8'); }
 function has(s, needle) { return String(s || '').indexOf(needle) >= 0; }
@@ -43,122 +43,129 @@ function exportBlock(source) {
 }
 
 function patchAst(s) {
-  if (!has(s, 'function parseSequenceDefinition')) {
+  if (!has(s, 'function parseExistentialStatement')) {
     const block = String.raw`
-  function parseSequenceDefinition(input) {
+  function parseExistentialStatement(input) {
     const raw = compact(input);
-    const m = /^([a-zA-Z])_n=n\^2$/i.exec(raw);
+    const m = /^exists([a-zA-Z])inR,?\1\^2=2$/i.exec(raw);
     if (!m) return null;
-    const sequence = symbol(m[1]);
-    const index = symbol('n');
-    return node('SequenceDefinition', {
-      sequence,
-      index,
-      domain: symbol('N'),
-      term: node('IndexedTerm', { sequence, index }),
-      term_formula: binary('^', index, numberLiteral(2)),
-      relation: relation('=', node('IndexedTerm', { sequence, index }), binary('^', index, numberLiteral(2))),
-      rule_class: 'sequence_term_definition'
+    const variable = symbol(m[1]);
+    const predicate = relation('=', binary('^', variable, numberLiteral(2)), numberLiteral(2));
+    const witness = node('RadicalExpression', { radicand: numberLiteral(2), degree: numberLiteral(2) });
+    return node('ExistentialStatement', {
+      quantifier: 'exists',
+      variable,
+      domain: symbol('R'),
+      predicate,
+      witness_candidate: witness,
+      obligations: [
+        node('WitnessDomainObligation', { witness: cloneNode(witness), domain: symbol('R') }),
+        node('WitnessPredicateObligation', { witness: cloneNode(witness), predicate: cloneNode(predicate) })
+      ],
+      rule_class: 'existential_witness_obligations'
     });
   }
 
 `;
-    s = replaceOnce(s, '  function parseArithmeticRelation(input) {', block + '  function parseArithmeticRelation(input) {', 'sequence parser insertion');
+    const cloneHelper = String.raw`
+  function cloneNode(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
+
+`;
+    if (!has(s, 'function cloneNode')) s = replaceOnce(s, '  function normalize(input) {', cloneHelper + '  function normalize(input) {', 'cloneNode helper insertion');
+    s = replaceOnce(s, '  function parseArithmeticRelation(input) {', block + '  function parseArithmeticRelation(input) {', 'existential parser insertion');
   }
-  if (!has(s, '      parseSequenceDefinition,\n      parseMatrixProductStatement,')) {
+  if (!has(s, '      parseExistentialStatement,\n      parseSequenceDefinition,')) {
     s = replaceOnce(s,
-      '      parseProbabilityProductStatement,\n      parseMatrixProductStatement,',
-      '      parseProbabilityProductStatement,\n      parseSequenceDefinition,\n      parseMatrixProductStatement,',
-      'sequence parser list insertion');
+      '      parseProbabilityProductStatement,\n      parseSequenceDefinition,',
+      '      parseProbabilityProductStatement,\n      parseExistentialStatement,\n      parseSequenceDefinition,',
+      'existential parser list insertion');
   }
-  if (!has(s, "SequenceDefinition: { class: 'sequence'")) {
+  if (!has(s, "ExistentialStatement: { class: 'quantifier'")) {
     s = replaceOnce(s,
-      "      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },\n      AffineExpression:",
-      "      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },\n      SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },\n      AffineExpression:",
-      'sequence classification insertion');
+      "      SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },\n      AffineExpression:",
+      "      SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },\n      ExistentialStatement: { class: 'quantifier', anatomy_id: 'existential_statement', closure: 'generateExistentialObligations' },\n      AffineExpression:",
+      'existential classification insertion');
   }
-  if (!has(exportBlock(s), 'parseSequenceDefinition')) {
+  if (!has(exportBlock(s), 'parseExistentialStatement')) {
     s = replaceOnce(s,
-      'parseProbabilityProductStatement, parseMatrixProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
       'parseProbabilityProductStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
-      'sequence export insertion');
+      'parseProbabilityProductStatement, parseExistentialStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
+      'existential export insertion');
   }
   return s;
 }
 
 function patchProof(s) {
-  if (!has(s, 'function defineSequence')) {
+  if (!has(s, 'function generateExistentialObligations')) {
     const block = String.raw`
-  function defineSequence(input) {
+  function generateExistentialObligations(input) {
     const body = bodyOf(input);
-    if (!body || body.type !== 'SequenceDefinition') return gap('unsupported_sequence_definition', 'Sequence closure requires a SequenceDefinition AST node.');
-    return verified('sequence-term-definition', {
-      operator: 'defineSequence',
+    if (!body || body.type !== 'ExistentialStatement') return gap('unsupported_existential_statement', 'Existential closure requires an ExistentialStatement AST node.');
+    return verified('existential-witness-obligations', {
+      operator: 'generateExistentialObligations',
       conclusion: {
-        type: 'SequenceDefinitionPacket',
-        sequence: clone(body.sequence),
-        index: clone(body.index),
+        type: 'ExistentialWitnessObligationPacket',
+        quantifier: body.quantifier,
+        variable: clone(body.variable),
         domain: clone(body.domain),
-        term: clone(body.term),
-        term_formula: clone(body.term_formula),
-        relation: clone(body.relation)
+        predicate: clone(body.predicate),
+        witness_candidate: clone(body.witness_candidate),
+        obligations: clone(body.obligations || [])
       },
-      steps: ['detect-indexed-sequence-form', 'type-index-over-natural-numbers', 'canonicalize-term-formula']
+      steps: ['detect-existential-claim', 'construct-canonical-witness-candidate', 'emit-domain-and-predicate-obligations']
     });
   }
 
 `;
-    s = replaceOnce(s, '  function domainGuard(input) {', block + '  function domainGuard(input) {', 'sequence proof insertion');
+    s = replaceOnce(s, '  function domainGuard(input) {', block + '  function domainGuard(input) {', 'existential proof insertion');
   }
-  if (!has(s, "operator === 'defineSequence'")) {
+  if (!has(s, "operator === 'generateExistentialObligations'")) {
     s = replaceOnce(s,
-      "    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
-      "    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);\n    if (operator === 'defineSequence') return defineSequence(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
-      'sequence proof dispatcher insertion');
+      "    if (operator === 'defineSequence') return defineSequence(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
+      "    if (operator === 'defineSequence') return defineSequence(body);\n    if (operator === 'generateExistentialObligations') return generateExistentialObligations(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
+      'existential proof dispatcher insertion');
   }
-  if (!has(s, 'defineSequence,')) {
+  if (!has(s, 'generateExistentialObligations,')) {
     s = replaceOnce(s,
-      '    typeMatrixProduct,\n    domainGuard,',
-      '    typeMatrixProduct,\n    defineSequence,\n    domainGuard,',
-      'sequence proof export insertion');
+      '    defineSequence,\n    domainGuard,',
+      '    defineSequence,\n    generateExistentialObligations,\n    domainGuard,',
+      'existential proof export insertion');
   }
   return s;
 }
 
 function patchAnatomy(s) {
-  if (!has(s, 'sequence_definition: Object.freeze')) {
-    const block = String.raw`    sequence_definition: Object.freeze({
-      id: 'sequence_definition', operation: 'define', surface: 'a_n = n^2',
-      parts: ['sequence_symbol', 'index', 'domain', 'term_formula'], preconditions: ['index is typed over natural numbers', 'term formula is canonical'],
-      inverse_chain: [], closure_operator: 'defineSequence', closure_result: 'sequence_definition_packet',
-      examples: ['a_n = n^2'], assertion: "assert.strictEqual(P.defineSequence('a_n = n^2').ok, true);"
+  if (!has(s, 'existential_statement: Object.freeze')) {
+    const block = String.raw`    existential_statement: Object.freeze({
+      id: 'existential_statement', operation: 'emit_obligations', surface: 'exists x in R, x^2 = 2',
+      parts: ['quantifier', 'variable', 'domain', 'predicate', 'witness_candidate', 'obligations'], preconditions: ['witness candidate is declared', 'domain and predicate obligations are explicit'],
+      inverse_chain: [], closure_operator: 'generateExistentialObligations', closure_result: 'existential_witness_obligation_packet',
+      examples: ['exists x in R, x^2 = 2'], assertion: "assert.strictEqual(P.generateExistentialObligations('exists x in R, x^2 = 2').ok, true);"
     }),
 `;
-    s = replaceOnce(s, '    division_constraint: Object.freeze({', block + '    division_constraint: Object.freeze({', 'sequence anatomy insertion');
+    s = replaceOnce(s, '    division_constraint: Object.freeze({', block + '    division_constraint: Object.freeze({', 'existential anatomy insertion');
   }
   return s;
 }
 
 function patchReality(s) {
-  if (!has(s, 'sequence_definition_square')) {
+  if (!has(s, 'existential_sqrt_two_obligations')) {
     s = replaceOnce(s,
-      "    { id: 'matrix_product_guard', input: 'A B = C', must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' }\n  ]);",
-      "    { id: 'matrix_product_guard', input: 'A B = C', must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' },\n    { id: 'sequence_definition_square', input: 'a_n = n^2', must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' }\n  ]);",
-      'sequence reality anchor insertion');
+      "    { id: 'sequence_definition_square', input: 'a_n = n^2', must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' }\n  ]);",
+      "    { id: 'sequence_definition_square', input: 'a_n = n^2', must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' },\n    { id: 'existential_sqrt_two_obligations', input: 'exists x in R, x^2 = 2', must_verify: true, closure_operator: 'generateExistentialObligations', selected_rule: 'existential-witness-obligations' }\n  ]);",
+      'existential reality anchor insertion');
   }
   return s;
 }
 
 function patchWholeSelf(s) {
-  if (!has(s, "'a_n = n^2'")) {
+  if (!has(s, "'exists x in R, x^2 = 2'")) {
     s = replaceOnce(s,
-      "    'A B = C'\n  ]);",
-      "    'A B = C',\n    'a_n = n^2'\n  ]);",
-      'sequence whole-self language anchor insertion');
+      "    'a_n = n^2'\n  ]);",
+      "    'a_n = n^2',\n    'exists x in R, x^2 = 2'\n  ]);",
+      'existential whole-self language anchor insertion');
   }
-  s = s.replace(/  const DEFAULT_FRONTIER_ANCHORS = Object\.freeze\(\[[\s\S]*?\n  \]\);/, String.raw`  const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }
-  ]);`);
+  s = s.replace(/  const DEFAULT_FRONTIER_ANCHORS = Object\.freeze\(\[[\s\S]*?\n  \]\);/, String.raw`  const DEFAULT_FRONTIER_ANCHORS = Object.freeze([]);`);
   return s;
 }
 
@@ -170,32 +177,29 @@ function buildTest() {
     "const Closure = require('../src/math-closure-engine-v0-1.js');",
     "const K = require('../src/math-language-kernel-v0-1.js');",
     "const complexSource = 'i' + '^' + '2 = -1';",
-    "const complexAst = AST.parse(complexSource);",
-    "assert.strictEqual(complexAst.ok, true);",
-    "assert.strictEqual(complexAst.body.type, 'ComplexUnitIdentityStatement');",
-    "assert.strictEqual(Proof.proveComplexUnitIdentity(complexAst).rule, 'complex-unit-identity');",
+    "assert.strictEqual(Proof.proveComplexUnitIdentity(AST.parse(complexSource)).rule, 'complex-unit-identity');",
     "const matrixSource = 'A B = C';",
-    "const matrixAst = AST.parse(matrixSource);",
-    "assert.strictEqual(matrixAst.ok, true);",
-    "assert.strictEqual(matrixAst.body.type, 'MatrixProductStatement');",
-    "assert.strictEqual(Proof.typeMatrixProduct(matrixAst).rule, 'matrix-product-dimension-guard');",
+    "assert.strictEqual(Proof.typeMatrixProduct(AST.parse(matrixSource)).rule, 'matrix-product-dimension-guard');",
     "const sequenceSource = 'a_n = n' + '^' + '2';",
-    "const sequenceAst = AST.parse(sequenceSource);",
-    "assert.strictEqual(sequenceAst.ok, true);",
-    "assert.strictEqual(sequenceAst.body.type, 'SequenceDefinition');",
-    "assert.strictEqual(AST.classify(sequenceAst).closure, 'defineSequence');",
-    "const proof = Proof.defineSequence(sequenceAst);",
+    "assert.strictEqual(Proof.defineSequence(AST.parse(sequenceSource)).rule, 'sequence-term-definition');",
+    "const existentialSource = 'exists x in R, x' + '^' + '2 = 2';",
+    "const existentialAst = AST.parse(existentialSource);",
+    "assert.strictEqual(existentialAst.ok, true);",
+    "assert.strictEqual(existentialAst.body.type, 'ExistentialStatement');",
+    "assert.strictEqual(AST.classify(existentialAst).closure, 'generateExistentialObligations');",
+    "const proof = Proof.generateExistentialObligations(existentialAst);",
     "assert.strictEqual(proof.ok, true);",
-    "assert.strictEqual(proof.rule, 'sequence-term-definition');",
-    "assert.strictEqual(proof.conclusion.type, 'SequenceDefinitionPacket');",
-    "const closed = Closure.close(sequenceSource);",
+    "assert.strictEqual(proof.rule, 'existential-witness-obligations');",
+    "assert.strictEqual(proof.conclusion.type, 'ExistentialWitnessObligationPacket');",
+    "assert.strictEqual(proof.conclusion.obligations.length, 2);",
+    "const closed = Closure.close(existentialSource);",
     "assert.strictEqual(closed.ok, true);",
-    "assert.strictEqual(closed.selected_rule, 'sequence-term-definition');",
-    "const packet = K.math(sequenceSource);",
+    "assert.strictEqual(closed.selected_rule, 'existential-witness-obligations');",
+    "const packet = K.math(existentialSource);",
     "assert.strictEqual(packet.ok, true);",
-    "assert.strictEqual(packet.closure_operator, 'defineSequence');",
-    "assert.strictEqual(packet.selected_rule, 'sequence-term-definition');",
-    "console.log('frontier-candidate-complex-unit-v0-1 tests passed with matrix and sequence definitions');",
+    "assert.strictEqual(packet.closure_operator, 'generateExistentialObligations');",
+    "assert.strictEqual(packet.selected_rule, 'existential-witness-obligations');",
+    "console.log('frontier-candidate-complex-unit-v0-1 tests passed with matrix, sequence, and existential obligations');",
     ""
   ].join('\n');
 }
@@ -226,8 +230,8 @@ function writeNoop(summaryExtra) {
 
 function main() {
   const files = collectFiles();
-  const discovery = FD.infer(SEQUENCE_INPUT);
-  if (discovery.needed === false) return writeNoop({ discovery_kind: 'sequence_definition', reason: 'sequence_definition_already_supported' });
+  const discovery = FD.infer(EXISTENTIAL_INPUT);
+  if (discovery.needed === false) return writeNoop({ discovery_kind: 'existential_quantifier', reason: 'existential_quantifier_already_supported' });
 
   const next = Object.assign({}, files);
   next['src/math-ast-core-v0-1.js'] = patchAst(next['src/math-ast-core-v0-1.js']);
@@ -237,7 +241,7 @@ function main() {
   next['src/whole-self-simulation-core-v0-1.js'] = patchWholeSelf(next['src/whole-self-simulation-core-v0-1.js']);
 
   const proposal = {
-    id: 'frontier_candidate_sequence_definition_v0_1',
+    id: 'frontier_candidate_existential_quantifier_v0_1',
     discovery,
     operations: [
       { type: 'replace', path: 'src/math-ast-core-v0-1.js', content: next['src/math-ast-core-v0-1.js'] },
@@ -250,7 +254,7 @@ function main() {
   };
 
   const sandbox = S.create(files, { allowDelete: false, maxPatchBytes: 5000000 });
-  const anchors = Array.from(R.DEFAULT_ANCHORS).concat([{ id: 'sequence_definition_square', input: SEQUENCE_INPUT, must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' }]);
+  const anchors = Array.from(R.DEFAULT_ANCHORS).concat([{ id: 'existential_sqrt_two_obligations', input: EXISTENTIAL_INPUT, must_verify: true, closure_operator: 'generateExistentialObligations', selected_rule: 'existential-witness-obligations' }]);
   const report = S.simulate(sandbox, proposal, [TEST_PATH], [R.validator(anchors)]);
   const exportPatch = S.exportPatch(report);
   const summary = {
