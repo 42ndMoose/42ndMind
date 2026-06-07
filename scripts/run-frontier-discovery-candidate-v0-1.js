@@ -12,7 +12,7 @@ const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const REPORT_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-candidate-report-v0-1.json');
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'frontier-discovery-candidate-summary-v0-1.json');
 const TEST_PATH = 'tests/frontier-candidate-complex-unit-v0-1-test.js';
-const MATRIX_INPUT = 'A B = C';
+const SEQUENCE_INPUT = 'a_n = n^2';
 
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), 'utf8'); }
 function has(s, needle) { return String(s || '').indexOf(needle) >= 0; }
@@ -43,116 +43,120 @@ function exportBlock(source) {
 }
 
 function patchAst(s) {
-  if (!has(s, 'function parseMatrixProductStatement')) {
+  if (!has(s, 'function parseSequenceDefinition')) {
     const block = String.raw`
-  function parseMatrixProductStatement(input) {
+  function parseSequenceDefinition(input) {
     const raw = compact(input);
-    const m = /^([A-Z])([A-Z])=([A-Z])$/.exec(raw);
+    const m = /^([a-zA-Z])_n=n\^2$/i.exec(raw);
     if (!m) return null;
-    return node('MatrixProductStatement', {
-      left_matrix: symbol(m[1]),
-      right_matrix: symbol(m[2]),
-      product_matrix: symbol(m[3]),
-      product: node('MatrixProduct', { left: symbol(m[1]), right: symbol(m[2]) }),
-      relation: relation('=', node('MatrixProduct', { left: symbol(m[1]), right: symbol(m[2]) }), symbol(m[3])),
-      guard: node('DimensionCompatibilityGuard', { left: symbol(m[1]), right: symbol(m[2]), product: symbol(m[3]) }),
-      rule_class: 'matrix_product_dimension_guard'
+    const sequence = symbol(m[1]);
+    const index = symbol('n');
+    return node('SequenceDefinition', {
+      sequence,
+      index,
+      domain: symbol('N'),
+      term: node('IndexedTerm', { sequence, index }),
+      term_formula: binary('^', index, numberLiteral(2)),
+      relation: relation('=', node('IndexedTerm', { sequence, index }), binary('^', index, numberLiteral(2))),
+      rule_class: 'sequence_term_definition'
     });
   }
 
 `;
-    s = replaceOnce(s, '  function parseArithmeticRelation(input) {', block + '  function parseArithmeticRelation(input) {', 'matrix parser insertion');
+    s = replaceOnce(s, '  function parseArithmeticRelation(input) {', block + '  function parseArithmeticRelation(input) {', 'sequence parser insertion');
   }
-  if (!has(s, '      parseMatrixProductStatement,\n      parseComplexUnitIdentity,')) {
+  if (!has(s, '      parseSequenceDefinition,\n      parseMatrixProductStatement,')) {
     s = replaceOnce(s,
-      '      parseProbabilityProductStatement,\n      parseComplexUnitIdentity,',
-      '      parseProbabilityProductStatement,\n      parseMatrixProductStatement,\n      parseComplexUnitIdentity,',
-      'matrix parser list insertion');
+      '      parseProbabilityProductStatement,\n      parseMatrixProductStatement,',
+      '      parseProbabilityProductStatement,\n      parseSequenceDefinition,\n      parseMatrixProductStatement,',
+      'sequence parser list insertion');
   }
-  if (!has(s, "MatrixProductStatement: { class: 'linear_algebra'")) {
+  if (!has(s, "SequenceDefinition: { class: 'sequence'")) {
     s = replaceOnce(s,
-      "      ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },\n      AffineExpression:",
-      "      ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },\n      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },\n      AffineExpression:",
-      'matrix classification insertion');
+      "      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },\n      AffineExpression:",
+      "      MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },\n      SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },\n      AffineExpression:",
+      'sequence classification insertion');
   }
-  if (!has(exportBlock(s), 'parseMatrixProductStatement')) {
+  if (!has(exportBlock(s), 'parseSequenceDefinition')) {
     s = replaceOnce(s,
-      'parseProbabilityProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
       'parseProbabilityProductStatement, parseMatrixProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
-      'matrix export insertion');
+      'parseProbabilityProductStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,\n    parseAffineExpression',
+      'sequence export insertion');
   }
   return s;
 }
 
 function patchProof(s) {
-  if (!has(s, 'function typeMatrixProduct')) {
+  if (!has(s, 'function defineSequence')) {
     const block = String.raw`
-  function typeMatrixProduct(input) {
+  function defineSequence(input) {
     const body = bodyOf(input);
-    if (!body || body.type !== 'MatrixProductStatement') return gap('unsupported_matrix_product', 'Matrix product typing requires a MatrixProductStatement AST node.');
-    return verified('matrix-product-dimension-guard', {
-      operator: 'typeMatrixProduct',
-      guard: clone(body.guard),
+    if (!body || body.type !== 'SequenceDefinition') return gap('unsupported_sequence_definition', 'Sequence closure requires a SequenceDefinition AST node.');
+    return verified('sequence-term-definition', {
+      operator: 'defineSequence',
       conclusion: {
-        type: 'GuardedMatrixProductRelation',
-        guard: clone(body.guard),
+        type: 'SequenceDefinitionPacket',
+        sequence: clone(body.sequence),
+        index: clone(body.index),
+        domain: clone(body.domain),
+        term: clone(body.term),
+        term_formula: clone(body.term_formula),
         relation: clone(body.relation)
       },
-      steps: ['detect-matrix-product-form', 'emit-dimension-compatibility-guard', 'canonicalize-guarded-matrix-product-relation']
+      steps: ['detect-indexed-sequence-form', 'type-index-over-natural-numbers', 'canonicalize-term-formula']
     });
   }
 
 `;
-    s = replaceOnce(s, '  function domainGuard(input) {', block + '  function domainGuard(input) {', 'matrix proof insertion');
+    s = replaceOnce(s, '  function domainGuard(input) {', block + '  function domainGuard(input) {', 'sequence proof insertion');
   }
-  if (!has(s, "operator === 'typeMatrixProduct'")) {
+  if (!has(s, "operator === 'defineSequence'")) {
     s = replaceOnce(s,
-      "    if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
-      "    if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);\n    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
-      'matrix proof dispatcher insertion');
+      "    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
+      "    if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);\n    if (operator === 'defineSequence') return defineSequence(body);\n    if (operator === 'proveDivisionByZeroUndefined')",
+      'sequence proof dispatcher insertion');
   }
-  if (!has(s, 'typeMatrixProduct,')) {
+  if (!has(s, 'defineSequence,')) {
     s = replaceOnce(s,
-      '    proveComplexUnitIdentity,\n    domainGuard,',
-      '    proveComplexUnitIdentity,\n    typeMatrixProduct,\n    domainGuard,',
-      'matrix proof export insertion');
+      '    typeMatrixProduct,\n    domainGuard,',
+      '    typeMatrixProduct,\n    defineSequence,\n    domainGuard,',
+      'sequence proof export insertion');
   }
   return s;
 }
 
 function patchAnatomy(s) {
-  if (!has(s, 'matrix_product: Object.freeze')) {
-    const block = String.raw`    matrix_product: Object.freeze({
-      id: 'matrix_product', operation: 'type', surface: 'A B = C',
-      parts: ['left_matrix', 'right_matrix', 'product_matrix', 'dimension_guard'], preconditions: ['left/right dimensions are compatible', 'product dimensions match declared matrix'],
-      inverse_chain: [], closure_operator: 'typeMatrixProduct', closure_result: 'guarded_matrix_product_relation',
-      examples: ['A B = C'], assertion: "assert.strictEqual(P.typeMatrixProduct('A B = C').ok, true);"
+  if (!has(s, 'sequence_definition: Object.freeze')) {
+    const block = String.raw`    sequence_definition: Object.freeze({
+      id: 'sequence_definition', operation: 'define', surface: 'a_n = n^2',
+      parts: ['sequence_symbol', 'index', 'domain', 'term_formula'], preconditions: ['index is typed over natural numbers', 'term formula is canonical'],
+      inverse_chain: [], closure_operator: 'defineSequence', closure_result: 'sequence_definition_packet',
+      examples: ['a_n = n^2'], assertion: "assert.strictEqual(P.defineSequence('a_n = n^2').ok, true);"
     }),
 `;
-    s = replaceOnce(s, '    division_constraint: Object.freeze({', block + '    division_constraint: Object.freeze({', 'matrix anatomy insertion');
+    s = replaceOnce(s, '    division_constraint: Object.freeze({', block + '    division_constraint: Object.freeze({', 'sequence anatomy insertion');
   }
   return s;
 }
 
 function patchReality(s) {
-  if (!has(s, 'matrix_product_guard')) {
+  if (!has(s, 'sequence_definition_square')) {
     s = replaceOnce(s,
-      "    { id: 'complex_unit_identity', input: 'i^2 = -1', must_verify: true, closure_operator: 'proveComplexUnitIdentity', selected_rule: 'complex-unit-identity' }\n  ]);",
-      "    { id: 'complex_unit_identity', input: 'i^2 = -1', must_verify: true, closure_operator: 'proveComplexUnitIdentity', selected_rule: 'complex-unit-identity' },\n    { id: 'matrix_product_guard', input: 'A B = C', must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' }\n  ]);",
-      'matrix reality anchor insertion');
+      "    { id: 'matrix_product_guard', input: 'A B = C', must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' }\n  ]);",
+      "    { id: 'matrix_product_guard', input: 'A B = C', must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' },\n    { id: 'sequence_definition_square', input: 'a_n = n^2', must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' }\n  ]);",
+      'sequence reality anchor insertion');
   }
   return s;
 }
 
 function patchWholeSelf(s) {
-  if (!has(s, "'A B = C'")) {
+  if (!has(s, "'a_n = n^2'")) {
     s = replaceOnce(s,
-      "    'i^2 = -1'\n  ]);",
-      "    'i^2 = -1',\n    'A B = C'\n  ]);",
-      'matrix whole-self language anchor insertion');
+      "    'A B = C'\n  ]);",
+      "    'A B = C',\n    'a_n = n^2'\n  ]);",
+      'sequence whole-self language anchor insertion');
   }
   s = s.replace(/  const DEFAULT_FRONTIER_ANCHORS = Object\.freeze\(\[[\s\S]*?\n  \]\);/, String.raw`  const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'sequences', input: 'a_n = n^2', expected_gap: 'unclassified_math_ast', reason: 'Sequences and indexed variables are not yet represented.' },
     { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }
   ]);`);
   return s;
@@ -174,20 +178,24 @@ function buildTest() {
     "const matrixAst = AST.parse(matrixSource);",
     "assert.strictEqual(matrixAst.ok, true);",
     "assert.strictEqual(matrixAst.body.type, 'MatrixProductStatement');",
-    "assert.strictEqual(AST.classify(matrixAst).closure, 'typeMatrixProduct');",
-    "const proof = Proof.typeMatrixProduct(matrixAst);",
+    "assert.strictEqual(Proof.typeMatrixProduct(matrixAst).rule, 'matrix-product-dimension-guard');",
+    "const sequenceSource = 'a_n = n' + '^' + '2';",
+    "const sequenceAst = AST.parse(sequenceSource);",
+    "assert.strictEqual(sequenceAst.ok, true);",
+    "assert.strictEqual(sequenceAst.body.type, 'SequenceDefinition');",
+    "assert.strictEqual(AST.classify(sequenceAst).closure, 'defineSequence');",
+    "const proof = Proof.defineSequence(sequenceAst);",
     "assert.strictEqual(proof.ok, true);",
-    "assert.strictEqual(proof.rule, 'matrix-product-dimension-guard');",
-    "assert.strictEqual(proof.conclusion.type, 'GuardedMatrixProductRelation');",
-    "assert.strictEqual(proof.conclusion.guard.type, 'DimensionCompatibilityGuard');",
-    "const closed = Closure.close(matrixSource);",
+    "assert.strictEqual(proof.rule, 'sequence-term-definition');",
+    "assert.strictEqual(proof.conclusion.type, 'SequenceDefinitionPacket');",
+    "const closed = Closure.close(sequenceSource);",
     "assert.strictEqual(closed.ok, true);",
-    "assert.strictEqual(closed.selected_rule, 'matrix-product-dimension-guard');",
-    "const packet = K.math(matrixSource);",
+    "assert.strictEqual(closed.selected_rule, 'sequence-term-definition');",
+    "const packet = K.math(sequenceSource);",
     "assert.strictEqual(packet.ok, true);",
-    "assert.strictEqual(packet.closure_operator, 'typeMatrixProduct');",
-    "assert.strictEqual(packet.selected_rule, 'matrix-product-dimension-guard');",
-    "console.log('frontier-candidate-complex-unit-v0-1 tests passed with matrix product guard');",
+    "assert.strictEqual(packet.closure_operator, 'defineSequence');",
+    "assert.strictEqual(packet.selected_rule, 'sequence-term-definition');",
+    "console.log('frontier-candidate-complex-unit-v0-1 tests passed with matrix and sequence definitions');",
     ""
   ].join('\n');
 }
@@ -218,8 +226,8 @@ function writeNoop(summaryExtra) {
 
 function main() {
   const files = collectFiles();
-  const discovery = FD.infer(MATRIX_INPUT);
-  if (discovery.needed === false) return writeNoop({ discovery_kind: 'matrix_multiplication', reason: 'matrix_product_already_supported' });
+  const discovery = FD.infer(SEQUENCE_INPUT);
+  if (discovery.needed === false) return writeNoop({ discovery_kind: 'sequence_definition', reason: 'sequence_definition_already_supported' });
 
   const next = Object.assign({}, files);
   next['src/math-ast-core-v0-1.js'] = patchAst(next['src/math-ast-core-v0-1.js']);
@@ -229,7 +237,7 @@ function main() {
   next['src/whole-self-simulation-core-v0-1.js'] = patchWholeSelf(next['src/whole-self-simulation-core-v0-1.js']);
 
   const proposal = {
-    id: 'frontier_candidate_matrix_product_v0_1',
+    id: 'frontier_candidate_sequence_definition_v0_1',
     discovery,
     operations: [
       { type: 'replace', path: 'src/math-ast-core-v0-1.js', content: next['src/math-ast-core-v0-1.js'] },
@@ -242,7 +250,7 @@ function main() {
   };
 
   const sandbox = S.create(files, { allowDelete: false, maxPatchBytes: 5000000 });
-  const anchors = Array.from(R.DEFAULT_ANCHORS).concat([{ id: 'matrix_product_guard', input: MATRIX_INPUT, must_verify: true, closure_operator: 'typeMatrixProduct', selected_rule: 'matrix-product-dimension-guard' }]);
+  const anchors = Array.from(R.DEFAULT_ANCHORS).concat([{ id: 'sequence_definition_square', input: SEQUENCE_INPUT, must_verify: true, closure_operator: 'defineSequence', selected_rule: 'sequence-term-definition' }]);
   const report = S.simulate(sandbox, proposal, [TEST_PATH], [R.validator(anchors)]);
   const exportPatch = S.exportPatch(report);
   const summary = {
