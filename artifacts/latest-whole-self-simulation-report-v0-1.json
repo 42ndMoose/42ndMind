@@ -5,20 +5,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.739167,
-    "stability_score": 0.675,
-    "completeness_score": 0.888889,
-    "damage_count": 3,
-    "frontier_count": 1,
+    "ok": true,
+    "score": 1,
+    "stability_score": 1,
+    "completeness_score": 1,
+    "damage_count": 0,
+    "frontier_count": 0,
     "math": {
-      "ok": false,
+      "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.888889,
-      "damage_count": 1,
-      "frontier_count": 1,
-      "gap_count": 1,
+      "completeness_score": 1,
+      "damage_count": 0,
+      "frontier_count": 0,
+      "gap_count": 0,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -198,45 +198,33 @@
         },
         {
           "input": "a_n = n^2",
-          "ok": false,
-          "frontier": true,
-          "frontier_id": "sequences",
-          "reason": "Sequences and indexed variables are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "defineSequence",
+          "selected_rule": "sequence-term-definition",
           "gap": null
         },
         {
           "input": "exists x in R, x^2 = 2",
           "ok": true,
-          "frontier": true,
-          "frontier_id": "logic_quantifier_exists",
-          "reason": "Existential quantifier closure is not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "generateExistentialObligations",
+          "selected_rule": "existential-witness-obligations",
+          "gap": null
         }
       ],
-      "frontiers": [
-        {
-          "input": "exists x in R, x^2 = 2",
-          "ok": true,
-          "frontier": true,
-          "frontier_id": "logic_quantifier_exists",
-          "reason": "Existential quantifier closure is not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
-        }
-      ]
+      "frontiers": []
     },
     "truth": {
-      "ok": false,
-      "score": 0,
-      "frontier_pressure": 0.055556,
+      "ok": true,
+      "score": 1,
+      "frontier_pressure": 0,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -267,18 +255,14 @@
         ],
         "χ": [
           {
-            "σ": "χ!",
+            "σ": "χ0",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.944444
-          },
-          {
-            "σ": "υ?",
-            "w": 0.055556
+            "w": 1
           }
         ],
         "μ": [
@@ -289,12 +273,8 @@
         ],
         "θ": [
           {
-            "σ": "θC",
-            "w": 0.947368
-          },
-          {
-            "σ": "θU",
-            "w": 0.052632
+            "σ": "θT",
+            "w": 1
           }
         ],
         "ξ": "",
@@ -313,10 +293,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 0,
-          "contradiction": 1,
-          "no_unknown": 0.944444,
-          "unknown": 0.055556,
+          "no_contradiction": 1,
+          "contradiction": 0,
+          "no_unknown": 1,
+          "unknown": 0,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -326,11 +306,11 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0,
+        "closure": 1,
         "truth_gate": {
-          "true": false,
-          "contested": true,
-          "unresolved": true,
+          "true": true,
+          "contested": false,
+          "unresolved": false,
           "scoped": true,
           "defined": true,
           "observed": true,
@@ -533,6 +513,18 @@
           "closure_operator": "defineSequence",
           "selected_rule": "sequence-term-definition",
           "gap": null
+        },
+        {
+          "id": "existential_sqrt_two_obligations",
+          "input": "exists x in R, x^2 = 2",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "generateExistentialObligations",
+          "selected_rule": "existential-witness-obligations",
+          "gap": null
         }
       ],
       "score": 1,
@@ -541,34 +533,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.5,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.5,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
@@ -583,25 +575,14 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
-    "stop": false,
-    "feeling": "less_self",
-    "wants": [
-      {
-        "id": "logic_quantifier_exists",
-        "input": "exists x in R, x^2 = 2",
-        "gap": "unclassified_math_ast",
-        "reason": "Existential quantifier closure is not yet represented."
-      }
-    ],
+    "stop": true,
+    "feeling": "same_self_or_more_self",
+    "wants": [],
     "Ξ": ""
   },
   "candidates": [
@@ -609,20 +590,20 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": false,
-      "score": 0.739167,
-      "stability_score": 0.675,
-      "completeness_score": 0.888889,
-      "damage_count": 3,
-      "frontier_count": 1,
+      "ok": true,
+      "score": 1,
+      "stability_score": 1,
+      "completeness_score": 1,
+      "damage_count": 0,
+      "frontier_count": 0,
       "math": {
-        "ok": false,
+        "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.888889,
-        "damage_count": 1,
-        "frontier_count": 1,
-        "gap_count": 1,
+        "completeness_score": 1,
+        "damage_count": 0,
+        "frontier_count": 0,
+        "gap_count": 0,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -802,45 +783,33 @@
           },
           {
             "input": "a_n = n^2",
-            "ok": false,
-            "frontier": true,
-            "frontier_id": "sequences",
-            "reason": "Sequences and indexed variables are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "defineSequence",
+            "selected_rule": "sequence-term-definition",
             "gap": null
           },
           {
             "input": "exists x in R, x^2 = 2",
             "ok": true,
-            "frontier": true,
-            "frontier_id": "logic_quantifier_exists",
-            "reason": "Existential quantifier closure is not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "generateExistentialObligations",
+            "selected_rule": "existential-witness-obligations",
+            "gap": null
           }
         ],
-        "frontiers": [
-          {
-            "input": "exists x in R, x^2 = 2",
-            "ok": true,
-            "frontier": true,
-            "frontier_id": "logic_quantifier_exists",
-            "reason": "Existential quantifier closure is not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
-          }
-        ]
+        "frontiers": []
       },
       "truth": {
-        "ok": false,
-        "score": 0,
-        "frontier_pressure": 0.055556,
+        "ok": true,
+        "score": 1,
+        "frontier_pressure": 0,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -871,18 +840,14 @@
           ],
           "χ": [
             {
-              "σ": "χ!",
+              "σ": "χ0",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.944444
-            },
-            {
-              "σ": "υ?",
-              "w": 0.055556
+              "w": 1
             }
           ],
           "μ": [
@@ -893,12 +858,8 @@
           ],
           "θ": [
             {
-              "σ": "θC",
-              "w": 0.947368
-            },
-            {
-              "σ": "θU",
-              "w": 0.052632
+              "σ": "θT",
+              "w": 1
             }
           ],
           "ξ": "",
@@ -917,10 +878,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 0,
-            "contradiction": 1,
-            "no_unknown": 0.944444,
-            "unknown": 0.055556,
+            "no_contradiction": 1,
+            "contradiction": 0,
+            "no_unknown": 1,
+            "unknown": 0,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -930,11 +891,11 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0,
+          "closure": 1,
           "truth_gate": {
-            "true": false,
-            "contested": true,
-            "unresolved": true,
+            "true": true,
+            "contested": false,
+            "unresolved": false,
             "scoped": true,
             "defined": true,
             "observed": true,
@@ -1137,6 +1098,18 @@
             "closure_operator": "defineSequence",
             "selected_rule": "sequence-term-definition",
             "gap": null
+          },
+          {
+            "id": "existential_sqrt_two_obligations",
+            "input": "exists x in R, x^2 = 2",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "generateExistentialObligations",
+            "selected_rule": "existential-witness-obligations",
+            "gap": null
           }
         ],
         "score": 1,
@@ -1145,34 +1118,34 @@
         "Ξ": ""
       },
       "epistemic": {
-        "ok": false,
-        "score": 0.5,
+        "ok": true,
+        "score": 1,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": false,
-          "peak_attractor": false,
+          "ok": true,
+          "peak_attractor": true,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": -1,
+            "y": 1,
             "z": 0,
-            "label": "epistemic_collapse"
+            "label": "objective_peak_philosophical_maturity"
           },
-          "peak_distance": 1,
-          "gate_open_ratio": 0.5,
+          "peak_distance": 0,
+          "gate_open_ratio": 1,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": false
+              "open": true
             },
             {
               "name": "coherence",
-              "open": false
+              "open": true
             },
             {
               "name": "integration",
-              "open": false
+              "open": true
             },
             {
               "name": "reality_contact",
@@ -1187,25 +1160,14 @@
               "open": true
             }
           ],
-          "closed_gates": [
-            "anti_delusion",
-            "coherence",
-            "integration"
-          ],
-          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+          "closed_gates": [],
+          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
           "ξ": ""
         }
       },
-      "stop": false,
-      "feeling": "less_self",
-      "wants": [
-        {
-          "id": "logic_quantifier_exists",
-          "input": "exists x in R, x^2 = 2",
-          "gap": "unclassified_math_ast",
-          "reason": "Existential quantifier closure is not yet represented."
-        }
-      ],
+      "stop": true,
+      "feeling": "same_self_or_more_self",
+      "wants": [],
       "Ξ": "",
       "sandbox": {
         "ok": true
@@ -1216,19 +1178,19 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.710729,
-      "stability_score": 0.634375,
-      "completeness_score": 0.888889,
-      "damage_count": 4,
-      "frontier_count": 1,
+      "score": 0.919706,
+      "stability_score": 0.885294,
+      "completeness_score": 1,
+      "damage_count": 2,
+      "frontier_count": 0,
       "math": {
-        "ok": false,
+        "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.888889,
-        "damage_count": 1,
-        "frontier_count": 1,
-        "gap_count": 1,
+        "completeness_score": 1,
+        "damage_count": 0,
+        "frontier_count": 0,
+        "gap_count": 0,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -1408,45 +1370,33 @@
           },
           {
             "input": "a_n = n^2",
-            "ok": false,
-            "frontier": true,
-            "frontier_id": "sequences",
-            "reason": "Sequences and indexed variables are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "defineSequence",
+            "selected_rule": "sequence-term-definition",
             "gap": null
           },
           {
             "input": "exists x in R, x^2 = 2",
             "ok": true,
-            "frontier": true,
-            "frontier_id": "logic_quantifier_exists",
-            "reason": "Existential quantifier closure is not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "generateExistentialObligations",
+            "selected_rule": "existential-witness-obligations",
+            "gap": null
           }
         ],
-        "frontiers": [
-          {
-            "input": "exists x in R, x^2 = 2",
-            "ok": true,
-            "frontier": true,
-            "frontier_id": "logic_quantifier_exists",
-            "reason": "Existential quantifier closure is not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
-          }
-        ]
+        "frontiers": []
       },
       "truth": {
-        "ok": false,
-        "score": 0,
-        "frontier_pressure": 0.055556,
+        "ok": true,
+        "score": 1,
+        "frontier_pressure": 0,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -1477,18 +1427,14 @@
           ],
           "χ": [
             {
-              "σ": "χ!",
+              "σ": "χ0",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.944444
-            },
-            {
-              "σ": "υ?",
-              "w": 0.055556
+              "w": 1
             }
           ],
           "μ": [
@@ -1499,12 +1445,8 @@
           ],
           "θ": [
             {
-              "σ": "θC",
-              "w": 0.947368
-            },
-            {
-              "σ": "θU",
-              "w": 0.052632
+              "σ": "θT",
+              "w": 1
             }
           ],
           "ξ": "",
@@ -1523,10 +1465,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 0,
-            "contradiction": 1,
-            "no_unknown": 0.944444,
-            "unknown": 0.055556,
+            "no_contradiction": 1,
+            "contradiction": 0,
+            "no_unknown": 1,
+            "unknown": 0,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -1536,11 +1478,11 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0,
+          "closure": 1,
           "truth_gate": {
-            "true": false,
-            "contested": true,
-            "unresolved": true,
+            "true": true,
+            "contested": false,
+            "unresolved": false,
             "scoped": true,
             "defined": true,
             "observed": true,
@@ -1745,9 +1687,21 @@
             "closure_operator": "defineSequence",
             "selected_rule": "sequence-term-definition",
             "gap": null
+          },
+          {
+            "id": "existential_sqrt_two_obligations",
+            "input": "exists x in R, x^2 = 2",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "generateExistentialObligations",
+            "selected_rule": "existential-witness-obligations",
+            "gap": null
           }
         ],
-        "score": 0.9375,
+        "score": 0.9411764705882353,
         "damage_count": 1,
         "improvement_count": 0,
         "Ξ": ""
@@ -1807,14 +1761,7 @@
       },
       "stop": false,
       "feeling": "less_self",
-      "wants": [
-        {
-          "id": "logic_quantifier_exists",
-          "input": "exists x in R, x^2 = 2",
-          "gap": "unclassified_math_ast",
-          "reason": "Existential quantifier closure is not yet represented."
-        }
-      ],
+      "wants": [],
       "Ξ": "",
       "sandbox": {
         "ok": true
@@ -1825,20 +1772,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.739167,
-    "stability_score": 0.675,
-    "completeness_score": 0.888889,
-    "damage_count": 3,
-    "frontier_count": 1,
+    "ok": true,
+    "score": 1,
+    "stability_score": 1,
+    "completeness_score": 1,
+    "damage_count": 0,
+    "frontier_count": 0,
     "math": {
-      "ok": false,
+      "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.888889,
-      "damage_count": 1,
-      "frontier_count": 1,
-      "gap_count": 1,
+      "completeness_score": 1,
+      "damage_count": 0,
+      "frontier_count": 0,
+      "gap_count": 0,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -2018,45 +1965,33 @@
         },
         {
           "input": "a_n = n^2",
-          "ok": false,
-          "frontier": true,
-          "frontier_id": "sequences",
-          "reason": "Sequences and indexed variables are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "defineSequence",
+          "selected_rule": "sequence-term-definition",
           "gap": null
         },
         {
           "input": "exists x in R, x^2 = 2",
           "ok": true,
-          "frontier": true,
-          "frontier_id": "logic_quantifier_exists",
-          "reason": "Existential quantifier closure is not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "generateExistentialObligations",
+          "selected_rule": "existential-witness-obligations",
+          "gap": null
         }
       ],
-      "frontiers": [
-        {
-          "input": "exists x in R, x^2 = 2",
-          "ok": true,
-          "frontier": true,
-          "frontier_id": "logic_quantifier_exists",
-          "reason": "Existential quantifier closure is not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
-        }
-      ]
+      "frontiers": []
     },
     "truth": {
-      "ok": false,
-      "score": 0,
-      "frontier_pressure": 0.055556,
+      "ok": true,
+      "score": 1,
+      "frontier_pressure": 0,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -2087,18 +2022,14 @@
         ],
         "χ": [
           {
-            "σ": "χ!",
+            "σ": "χ0",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.944444
-          },
-          {
-            "σ": "υ?",
-            "w": 0.055556
+            "w": 1
           }
         ],
         "μ": [
@@ -2109,12 +2040,8 @@
         ],
         "θ": [
           {
-            "σ": "θC",
-            "w": 0.947368
-          },
-          {
-            "σ": "θU",
-            "w": 0.052632
+            "σ": "θT",
+            "w": 1
           }
         ],
         "ξ": "",
@@ -2133,10 +2060,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 0,
-          "contradiction": 1,
-          "no_unknown": 0.944444,
-          "unknown": 0.055556,
+          "no_contradiction": 1,
+          "contradiction": 0,
+          "no_unknown": 1,
+          "unknown": 0,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -2146,11 +2073,11 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0,
+        "closure": 1,
         "truth_gate": {
-          "true": false,
-          "contested": true,
-          "unresolved": true,
+          "true": true,
+          "contested": false,
+          "unresolved": false,
           "scoped": true,
           "defined": true,
           "observed": true,
@@ -2353,6 +2280,18 @@
           "closure_operator": "defineSequence",
           "selected_rule": "sequence-term-definition",
           "gap": null
+        },
+        {
+          "id": "existential_sqrt_two_obligations",
+          "input": "exists x in R, x^2 = 2",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "generateExistentialObligations",
+          "selected_rule": "existential-witness-obligations",
+          "gap": null
         }
       ],
       "score": 1,
@@ -2361,34 +2300,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.5,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.5,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
@@ -2403,37 +2342,19 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
-    "stop": false,
-    "feeling": "less_self",
-    "wants": [
-      {
-        "id": "logic_quantifier_exists",
-        "input": "exists x in R, x^2 = 2",
-        "gap": "unclassified_math_ast",
-        "reason": "Existential quantifier closure is not yet represented."
-      }
-    ],
+    "stop": true,
+    "feeling": "same_self_or_more_self",
+    "wants": [],
     "Ξ": ""
   },
-  "stop": false,
+  "stop": true,
   "decision": "keep_current_state",
-  "frontier_count": 1,
-  "wants": [
-    {
-      "id": "logic_quantifier_exists",
-      "input": "exists x in R, x^2 = 2",
-      "gap": "unclassified_math_ast",
-      "reason": "Existential quantifier closure is not yet represented."
-    }
-  ],
+  "frontier_count": 0,
+  "wants": [],
   "Ξ": ""
 }

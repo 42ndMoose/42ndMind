@@ -2,26 +2,26 @@
   "packet_type": "42ndMind_whole_self_simulation_summary_v0_1",
   "version": "0.1.0",
   "decision": "keep_current_state",
-  "stop": false,
+  "stop": true,
   "best_id": "base",
-  "best_score": 0.739167,
-  "best_damage_count": 3,
-  "best_feeling": "less_self",
-  "base_score": 0.739167,
-  "base_damage_count": 3,
+  "best_score": 1,
+  "best_damage_count": 0,
+  "best_feeling": "same_self_or_more_self",
+  "base_score": 1,
+  "base_damage_count": 0,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 0.739167,
-      "damage_count": 3,
-      "feeling": "less_self",
-      "ok": false,
-      "stop": false
+      "score": 1,
+      "damage_count": 0,
+      "feeling": "same_self_or_more_self",
+      "ok": true,
+      "stop": true
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.710729,
-      "damage_count": 4,
+      "score": 0.919706,
+      "damage_count": 2,
       "feeling": "less_self",
       "ok": false,
       "stop": false
@@ -142,31 +142,27 @@
     },
     {
       "input": "a_n = n^2",
-      "ok": false,
-      "closure_operator": null,
-      "selected_rule": null,
+      "ok": true,
+      "closure_operator": "defineSequence",
+      "selected_rule": "sequence-term-definition",
       "gap": null
     },
     {
       "input": "exists x in R, x^2 = 2",
       "ok": true,
-      "closure_operator": null,
-      "selected_rule": null,
-      "gap": "unclassified_math_ast"
+      "closure_operator": "generateExistentialObligations",
+      "selected_rule": "existential-witness-obligations",
+      "gap": null
     }
   ],
   "epistemic": {
-    "ok": false,
-    "score": 0.5,
-    "closed_gates": [
-      "anti_delusion",
-      "coherence",
-      "integration"
-    ]
+    "ok": true,
+    "score": 1,
+    "closed_gates": []
   },
   "truth": {
-    "ok": false,
-    "score": 0
+    "ok": true,
+    "score": 1
   },
   "reality": {
     "ok": true,

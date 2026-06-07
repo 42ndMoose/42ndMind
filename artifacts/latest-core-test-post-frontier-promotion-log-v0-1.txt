@@ -117,30 +117,8 @@ exit_code=0
 kernel-math-closure-bridge-v0-1 tests passed
 exit_code=0
 ## tests/pure-math-frontier-v0-4-test.js
-node:assert:90
-  throw new AssertionError(obj);
-  ^
-
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-
-true !== false
-
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/pure-math-frontier-v0-4-test.js:51:8)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-    at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
-    at node:internal/main/run_main_module:28:49 {
-  generatedMessage: true,
-  code: 'ERR_ASSERTION',
-  actual: true,
-  expected: false,
-  operator: 'strictEqual'
-}
-
-Node.js v20.20.2
-exit_code=1
+pure-math-frontier-v0-4 tests passed
+exit_code=0
 ## tests/pure-math-frontier-v0-5-test.js
 pure-math-frontier-v0-5 tests passed
 exit_code=0
