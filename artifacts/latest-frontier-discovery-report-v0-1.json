@@ -1,0 +1,2430 @@
+{
+  "packet_type": "42ndMind_frontier_discovery_report_v0_1",
+  "version": "0.1.0",
+  "generated_by": "scripts/run-self-edit-loop-v0-1.js",
+  "whole_self": {
+    "ok": false,
+    "stop": false,
+    "feeling": "less_self",
+    "frontier_count": 4,
+    "wants": [
+      {
+        "id": "complex_numbers",
+        "input": "i^2 = -1",
+        "gap": "unclassified_math_ast",
+        "reason": "Complex-number constants and fields are not yet represented."
+      },
+      {
+        "id": "matrices",
+        "input": "A B = C",
+        "gap": "unclassified_math_ast",
+        "reason": "Matrix multiplication and typed linear algebra are not yet represented."
+      },
+      {
+        "id": "sequences",
+        "input": "a_n = n^2",
+        "gap": "unclassified_math_ast",
+        "reason": "Sequences and indexed variables are not yet represented."
+      },
+      {
+        "id": "logic_quantifier_exists",
+        "input": "exists x in R, x^2 = 2",
+        "gap": "unclassified_math_ast",
+        "reason": "Existential quantifier closure is not yet represented."
+      }
+    ]
+  },
+  "discovery": {
+    "packet_type": "42ndMind_frontier_discovery_batch_v0_1",
+    "version": "0.1.0",
+    "Ξ": "",
+    "source": "whole_self_wants",
+    "count": 4,
+    "discoveries": [
+      {
+        "packet_type": "42ndMind_frontier_discovery_v0_1",
+        "version": "0.1.0",
+        "Ξ": "",
+        "input": "i^2 = -1",
+        "ok": false,
+        "needed": true,
+        "gap": {
+          "packet_type": "42ndMind_frontier_gap_read_v0_1",
+          "version": "0.1.0",
+          "Ξ": "",
+          "input": "i^2 = -1",
+          "ok": false,
+          "gap_id": "unclassified_math_ast",
+          "gap": {
+            "id": "unclassified_math_ast",
+            "reason": "Input did not reduce into a supported MathProgram AST."
+          },
+          "kernel_packet": {
+            "φ": "M",
+            "v": "0.1.0",
+            "source": "i^2 = -1",
+            "ast_type": "Unknown",
+            "anatomy_id": null,
+            "closure_operator": null,
+            "selected_rule": null,
+            "ok": false,
+            "verified": false,
+            "gap_count": 1,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "closure": {
+              "packet_type": "42ndMind_math_closure_v0_1",
+              "version": "0.1.0",
+              "stage": "closure",
+              "ok": false,
+              "verified": false,
+              "gaps": [
+                {
+                  "id": "unclassified_math_ast",
+                  "reason": "Input did not reduce into a supported MathProgram AST."
+                }
+              ],
+              "ast": {
+                "type": "MathProgram",
+                "body": {
+                  "type": "Unknown",
+                  "raw": "i^2 = -1"
+                },
+                "source": "i^2 = -1",
+                "ok": false
+              },
+              "classification": {
+                "ok": false,
+                "type": "Unknown",
+                "class": "unknown",
+                "anatomy_id": null,
+                "closure": null
+              },
+              "anatomy": null,
+              "obligation": null,
+              "Ξ": ""
+            },
+            "ΩM": [
+              {
+                "σ": "M:gap",
+                "w": 0.588235
+              },
+              {
+                "σ": "M:gap:unclassified_math_ast",
+                "w": 0.411765
+              }
+            ],
+            "lexicon": {
+              "φ": "Λ",
+              "v": "0.1.0",
+              "Λ": [
+                {
+                  "σ": "Λ:M.gap_count=1",
+                  "w": 0.031056
+                },
+                {
+                  "σ": "Λ:M.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:M.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.body.raw=i^2 = -1",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.source=i^2 = -1",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.stage=closure",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.version=0.1.0",
+                  "w": 0.04969
+                }
+              ],
+              "entries": [
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.gap_count=1",
+                  "rule": "M.gap_count=1",
+                  "ν": "ν14ba0ee",
+                  "source": "M",
+                  "c": 0.25,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.ok0",
+                  "rule": "M.ok=false",
+                  "ν": "ν80f79c5c",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.verified0",
+                  "rule": "M.verified=false",
+                  "ν": "ν333c7dde",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.raw=i^2 = -1",
+                  "rule": "Π.ast.body.raw=i^2 = -1",
+                  "ν": "ν91bbc70c",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "rule": "Π.ast.body.type=Unknown",
+                  "ν": "ν3a028650",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.ok0",
+                  "rule": "Π.ast.ok=false",
+                  "ν": "νeff30ac5",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.source=i^2 = -1",
+                  "rule": "Π.ast.source=i^2 = -1",
+                  "ν": "ν428a97dd",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "rule": "Π.ast.type=MathProgram",
+                  "ν": "νf417fb0",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "rule": "Π.classification.class=unknown",
+                  "ν": "ν2780ef9c",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.ok0",
+                  "rule": "Π.classification.ok=false",
+                  "ν": "ν15fcea5b",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "rule": "Π.classification.type=Unknown",
+                  "ν": "ν8a810da",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ok0",
+                  "rule": "Π.ok=false",
+                  "ν": "ν1e9030cb",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "rule": "Π.packet_type=42ndMind_math_closure_v0_1",
+                  "ν": "ν8579d41b",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.stage=closure",
+                  "rule": "Π.stage=closure",
+                  "ν": "ν7af384d3",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.verified0",
+                  "rule": "Π.verified=false",
+                  "ν": "νecdd32e1",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.version=0.1.0",
+                  "rule": "Π.version=0.1.0",
+                  "ν": "νaaf50caf",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                }
+              ],
+              "count": 16,
+              "u": {
+                "Λ": 1,
+                "ok": true
+              },
+              "χ": [
+                "Λ=accepted(kernel-derived facts)",
+                "no σ conflict",
+                "Ξ=\"\""
+              ],
+              "Ξ": ""
+            },
+            "u": {
+              "ΩM": 1,
+              "ok": true
+            },
+            "χ": [
+              "M=kernel math closure packet",
+              "M consumes AST→anatomy→proof/closure",
+              "M.ok iff closure.ok",
+              "Ξ=\"\""
+            ],
+            "Ξ": ""
+          },
+          "closure_packet": {
+            "packet_type": "42ndMind_math_closure_v0_1",
+            "version": "0.1.0",
+            "stage": "closure",
+            "ok": false,
+            "verified": false,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "ast": {
+              "type": "MathProgram",
+              "body": {
+                "type": "Unknown",
+                "raw": "i^2 = -1"
+              },
+              "source": "i^2 = -1",
+              "ok": false
+            },
+            "classification": {
+              "ok": false,
+              "type": "Unknown",
+              "class": "unknown",
+              "anatomy_id": null,
+              "closure": null
+            },
+            "anatomy": null,
+            "obligation": null,
+            "Ξ": ""
+          }
+        },
+        "proposals": [
+          {
+            "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+            "version": "0.1.0",
+            "Ξ": "",
+            "id": "complex_unit_identity_i_2_1",
+            "kind": "complex_unit_identity",
+            "input": "i^2 = -1",
+            "status": "candidate_structure_only",
+            "promoted": false,
+            "missing": [
+              "complex_unit_symbol",
+              "complex_number_domain",
+              "complex_unit_identity_rule"
+            ],
+            "candidate": {
+              "ast_node": "ComplexUnitIdentityStatement",
+              "anatomy_id": "complex_unit_identity",
+              "closure_operator": "proveComplexUnitIdentity",
+              "classification": {
+                "anatomy_id": "complex_unit_identity",
+                "closure": "proveComplexUnitIdentity"
+              },
+              "proof_obligations": [
+                "represent i as the imaginary unit",
+                "prove or register i^2 = -1 under complex-number domain"
+              ],
+              "reality_anchor": {
+                "id": "complex_unit_identity",
+                "input": "i^2 = -1",
+                "closure_operator": "proveComplexUnitIdentity",
+                "selected_rule": "complex-unit-identity"
+              },
+              "tests": [
+                "AST parses complex unit identity",
+                "closure verifies identity under complex domain",
+                "whole-self wants no longer include complex_numbers"
+              ]
+            },
+            "source_patch": {
+              "ready": false,
+              "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+            }
+          }
+        ]
+      },
+      {
+        "packet_type": "42ndMind_frontier_discovery_v0_1",
+        "version": "0.1.0",
+        "Ξ": "",
+        "input": "A B = C",
+        "ok": false,
+        "needed": true,
+        "gap": {
+          "packet_type": "42ndMind_frontier_gap_read_v0_1",
+          "version": "0.1.0",
+          "Ξ": "",
+          "input": "A B = C",
+          "ok": false,
+          "gap_id": "unclassified_math_ast",
+          "gap": {
+            "id": "unclassified_math_ast",
+            "reason": "Input did not reduce into a supported MathProgram AST."
+          },
+          "kernel_packet": {
+            "φ": "M",
+            "v": "0.1.0",
+            "source": "A B = C",
+            "ast_type": "Unknown",
+            "anatomy_id": null,
+            "closure_operator": null,
+            "selected_rule": null,
+            "ok": false,
+            "verified": false,
+            "gap_count": 1,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "closure": {
+              "packet_type": "42ndMind_math_closure_v0_1",
+              "version": "0.1.0",
+              "stage": "closure",
+              "ok": false,
+              "verified": false,
+              "gaps": [
+                {
+                  "id": "unclassified_math_ast",
+                  "reason": "Input did not reduce into a supported MathProgram AST."
+                }
+              ],
+              "ast": {
+                "type": "MathProgram",
+                "body": {
+                  "type": "Unknown",
+                  "raw": "A B = C"
+                },
+                "source": "A B = C",
+                "ok": false
+              },
+              "classification": {
+                "ok": false,
+                "type": "Unknown",
+                "class": "unknown",
+                "anatomy_id": null,
+                "closure": null
+              },
+              "anatomy": null,
+              "obligation": null,
+              "Ξ": ""
+            },
+            "ΩM": [
+              {
+                "σ": "M:gap",
+                "w": 0.588235
+              },
+              {
+                "σ": "M:gap:unclassified_math_ast",
+                "w": 0.411765
+              }
+            ],
+            "lexicon": {
+              "φ": "Λ",
+              "v": "0.1.0",
+              "Λ": [
+                {
+                  "σ": "Λ:M.gap_count=1",
+                  "w": 0.031056
+                },
+                {
+                  "σ": "Λ:M.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:M.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.body.raw=A B = C",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.source=A B = C",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.stage=closure",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.version=0.1.0",
+                  "w": 0.04969
+                }
+              ],
+              "entries": [
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.gap_count=1",
+                  "rule": "M.gap_count=1",
+                  "ν": "ν14ba0ee",
+                  "source": "M",
+                  "c": 0.25,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.ok0",
+                  "rule": "M.ok=false",
+                  "ν": "ν80f79c5c",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.verified0",
+                  "rule": "M.verified=false",
+                  "ν": "ν333c7dde",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.raw=A B = C",
+                  "rule": "Π.ast.body.raw=A B = C",
+                  "ν": "ν32e8adf3",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "rule": "Π.ast.body.type=Unknown",
+                  "ν": "ν3a028650",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.ok0",
+                  "rule": "Π.ast.ok=false",
+                  "ν": "νeff30ac5",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.source=A B = C",
+                  "rule": "Π.ast.source=A B = C",
+                  "ν": "ν6338d328",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "rule": "Π.ast.type=MathProgram",
+                  "ν": "νf417fb0",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "rule": "Π.classification.class=unknown",
+                  "ν": "ν2780ef9c",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.ok0",
+                  "rule": "Π.classification.ok=false",
+                  "ν": "ν15fcea5b",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "rule": "Π.classification.type=Unknown",
+                  "ν": "ν8a810da",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ok0",
+                  "rule": "Π.ok=false",
+                  "ν": "ν1e9030cb",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "rule": "Π.packet_type=42ndMind_math_closure_v0_1",
+                  "ν": "ν8579d41b",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.stage=closure",
+                  "rule": "Π.stage=closure",
+                  "ν": "ν7af384d3",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.verified0",
+                  "rule": "Π.verified=false",
+                  "ν": "νecdd32e1",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.version=0.1.0",
+                  "rule": "Π.version=0.1.0",
+                  "ν": "νaaf50caf",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                }
+              ],
+              "count": 16,
+              "u": {
+                "Λ": 1,
+                "ok": true
+              },
+              "χ": [
+                "Λ=accepted(kernel-derived facts)",
+                "no σ conflict",
+                "Ξ=\"\""
+              ],
+              "Ξ": ""
+            },
+            "u": {
+              "ΩM": 1,
+              "ok": true
+            },
+            "χ": [
+              "M=kernel math closure packet",
+              "M consumes AST→anatomy→proof/closure",
+              "M.ok iff closure.ok",
+              "Ξ=\"\""
+            ],
+            "Ξ": ""
+          },
+          "closure_packet": {
+            "packet_type": "42ndMind_math_closure_v0_1",
+            "version": "0.1.0",
+            "stage": "closure",
+            "ok": false,
+            "verified": false,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "ast": {
+              "type": "MathProgram",
+              "body": {
+                "type": "Unknown",
+                "raw": "A B = C"
+              },
+              "source": "A B = C",
+              "ok": false
+            },
+            "classification": {
+              "ok": false,
+              "type": "Unknown",
+              "class": "unknown",
+              "anatomy_id": null,
+              "closure": null
+            },
+            "anatomy": null,
+            "obligation": null,
+            "Ξ": ""
+          }
+        },
+        "proposals": [
+          {
+            "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+            "version": "0.1.0",
+            "Ξ": "",
+            "id": "matrix_multiplication_a_b_c",
+            "kind": "matrix_multiplication",
+            "input": "A B = C",
+            "status": "candidate_structure_only",
+            "promoted": false,
+            "missing": [
+              "matrix_type",
+              "matrix_product_operator",
+              "dimension_compatibility_guard"
+            ],
+            "candidate": {
+              "ast_node": "MatrixProductStatement",
+              "anatomy_id": "matrix_product",
+              "closure_operator": "typeMatrixProduct",
+              "classification": {
+                "anatomy_id": "matrix_product",
+                "closure": "typeMatrixProduct"
+              },
+              "proof_obligations": [
+                "infer matrix operands",
+                "emit dimension compatibility guard",
+                "canonicalize product relation"
+              ],
+              "reality_anchor": {
+                "id": "matrix_product_typing",
+                "input": "A B = C",
+                "closure_operator": "typeMatrixProduct",
+                "selected_rule": "matrix-product-dimension-guard"
+              },
+              "tests": [
+                "AST parses matrix product",
+                "closure emits dimension guard",
+                "unsupported invalid dimensions stay guarded"
+              ]
+            },
+            "source_patch": {
+              "ready": false,
+              "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+            }
+          }
+        ]
+      },
+      {
+        "packet_type": "42ndMind_frontier_discovery_v0_1",
+        "version": "0.1.0",
+        "Ξ": "",
+        "input": "a_n = n^2",
+        "ok": false,
+        "needed": true,
+        "gap": {
+          "packet_type": "42ndMind_frontier_gap_read_v0_1",
+          "version": "0.1.0",
+          "Ξ": "",
+          "input": "a_n = n^2",
+          "ok": false,
+          "gap_id": "unclassified_math_ast",
+          "gap": {
+            "id": "unclassified_math_ast",
+            "reason": "Input did not reduce into a supported MathProgram AST."
+          },
+          "kernel_packet": {
+            "φ": "M",
+            "v": "0.1.0",
+            "source": "a_n = n^2",
+            "ast_type": "Unknown",
+            "anatomy_id": null,
+            "closure_operator": null,
+            "selected_rule": null,
+            "ok": false,
+            "verified": false,
+            "gap_count": 1,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "closure": {
+              "packet_type": "42ndMind_math_closure_v0_1",
+              "version": "0.1.0",
+              "stage": "closure",
+              "ok": false,
+              "verified": false,
+              "gaps": [
+                {
+                  "id": "unclassified_math_ast",
+                  "reason": "Input did not reduce into a supported MathProgram AST."
+                }
+              ],
+              "ast": {
+                "type": "MathProgram",
+                "body": {
+                  "type": "Unknown",
+                  "raw": "a_n = n^2"
+                },
+                "source": "a_n = n^2",
+                "ok": false
+              },
+              "classification": {
+                "ok": false,
+                "type": "Unknown",
+                "class": "unknown",
+                "anatomy_id": null,
+                "closure": null
+              },
+              "anatomy": null,
+              "obligation": null,
+              "Ξ": ""
+            },
+            "ΩM": [
+              {
+                "σ": "M:gap",
+                "w": 0.588235
+              },
+              {
+                "σ": "M:gap:unclassified_math_ast",
+                "w": 0.411765
+              }
+            ],
+            "lexicon": {
+              "φ": "Λ",
+              "v": "0.1.0",
+              "Λ": [
+                {
+                  "σ": "Λ:M.gap_count=1",
+                  "w": 0.031056
+                },
+                {
+                  "σ": "Λ:M.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:M.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.body.raw=a_n = n^2",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.source=a_n = n^2",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.stage=closure",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.version=0.1.0",
+                  "w": 0.04969
+                }
+              ],
+              "entries": [
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.gap_count=1",
+                  "rule": "M.gap_count=1",
+                  "ν": "ν14ba0ee",
+                  "source": "M",
+                  "c": 0.25,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.ok0",
+                  "rule": "M.ok=false",
+                  "ν": "ν80f79c5c",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.verified0",
+                  "rule": "M.verified=false",
+                  "ν": "ν333c7dde",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.raw=a_n = n^2",
+                  "rule": "Π.ast.body.raw=a_n = n^2",
+                  "ν": "νbbd54c7",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "rule": "Π.ast.body.type=Unknown",
+                  "ν": "ν3a028650",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.ok0",
+                  "rule": "Π.ast.ok=false",
+                  "ν": "νeff30ac5",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.source=a_n = n^2",
+                  "rule": "Π.ast.source=a_n = n^2",
+                  "ν": "νfd7cf874",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "rule": "Π.ast.type=MathProgram",
+                  "ν": "νf417fb0",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "rule": "Π.classification.class=unknown",
+                  "ν": "ν2780ef9c",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.ok0",
+                  "rule": "Π.classification.ok=false",
+                  "ν": "ν15fcea5b",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "rule": "Π.classification.type=Unknown",
+                  "ν": "ν8a810da",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ok0",
+                  "rule": "Π.ok=false",
+                  "ν": "ν1e9030cb",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "rule": "Π.packet_type=42ndMind_math_closure_v0_1",
+                  "ν": "ν8579d41b",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.stage=closure",
+                  "rule": "Π.stage=closure",
+                  "ν": "ν7af384d3",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.verified0",
+                  "rule": "Π.verified=false",
+                  "ν": "νecdd32e1",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.version=0.1.0",
+                  "rule": "Π.version=0.1.0",
+                  "ν": "νaaf50caf",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                }
+              ],
+              "count": 16,
+              "u": {
+                "Λ": 1,
+                "ok": true
+              },
+              "χ": [
+                "Λ=accepted(kernel-derived facts)",
+                "no σ conflict",
+                "Ξ=\"\""
+              ],
+              "Ξ": ""
+            },
+            "u": {
+              "ΩM": 1,
+              "ok": true
+            },
+            "χ": [
+              "M=kernel math closure packet",
+              "M consumes AST→anatomy→proof/closure",
+              "M.ok iff closure.ok",
+              "Ξ=\"\""
+            ],
+            "Ξ": ""
+          },
+          "closure_packet": {
+            "packet_type": "42ndMind_math_closure_v0_1",
+            "version": "0.1.0",
+            "stage": "closure",
+            "ok": false,
+            "verified": false,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "ast": {
+              "type": "MathProgram",
+              "body": {
+                "type": "Unknown",
+                "raw": "a_n = n^2"
+              },
+              "source": "a_n = n^2",
+              "ok": false
+            },
+            "classification": {
+              "ok": false,
+              "type": "Unknown",
+              "class": "unknown",
+              "anatomy_id": null,
+              "closure": null
+            },
+            "anatomy": null,
+            "obligation": null,
+            "Ξ": ""
+          }
+        },
+        "proposals": [
+          {
+            "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+            "version": "0.1.0",
+            "Ξ": "",
+            "id": "sequence_definition_a_n_n_2",
+            "kind": "sequence_definition",
+            "input": "a_n = n^2",
+            "status": "candidate_structure_only",
+            "promoted": false,
+            "missing": [
+              "indexed_variable",
+              "sequence_domain",
+              "term_formula"
+            ],
+            "candidate": {
+              "ast_node": "SequenceDefinition",
+              "anatomy_id": "sequence_definition",
+              "closure_operator": "defineSequence",
+              "classification": {
+                "anatomy_id": "sequence_definition",
+                "closure": "defineSequence"
+              },
+              "proof_obligations": [
+                "represent indexed term",
+                "type n over natural numbers",
+                "canonicalize term formula"
+              ],
+              "reality_anchor": {
+                "id": "sequence_definition_square",
+                "input": "a_n = n^2",
+                "closure_operator": "defineSequence",
+                "selected_rule": "sequence-term-definition"
+              },
+              "tests": [
+                "AST parses indexed sequence",
+                "closure emits sequence definition packet",
+                "whole-self wants no longer include sequences"
+              ]
+            },
+            "source_patch": {
+              "ready": false,
+              "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+            }
+          }
+        ]
+      },
+      {
+        "packet_type": "42ndMind_frontier_discovery_v0_1",
+        "version": "0.1.0",
+        "Ξ": "",
+        "input": "exists x in R, x^2 = 2",
+        "ok": false,
+        "needed": true,
+        "gap": {
+          "packet_type": "42ndMind_frontier_gap_read_v0_1",
+          "version": "0.1.0",
+          "Ξ": "",
+          "input": "exists x in R, x^2 = 2",
+          "ok": false,
+          "gap_id": "unclassified_math_ast",
+          "gap": {
+            "id": "unclassified_math_ast",
+            "reason": "Input did not reduce into a supported MathProgram AST."
+          },
+          "kernel_packet": {
+            "φ": "M",
+            "v": "0.1.0",
+            "source": "exists x in R, x^2 = 2",
+            "ast_type": "Unknown",
+            "anatomy_id": null,
+            "closure_operator": null,
+            "selected_rule": null,
+            "ok": false,
+            "verified": false,
+            "gap_count": 1,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "closure": {
+              "packet_type": "42ndMind_math_closure_v0_1",
+              "version": "0.1.0",
+              "stage": "closure",
+              "ok": false,
+              "verified": false,
+              "gaps": [
+                {
+                  "id": "unclassified_math_ast",
+                  "reason": "Input did not reduce into a supported MathProgram AST."
+                }
+              ],
+              "ast": {
+                "type": "MathProgram",
+                "body": {
+                  "type": "Unknown",
+                  "raw": "exists x in R, x^2 = 2"
+                },
+                "source": "exists x in R, x^2 = 2",
+                "ok": false
+              },
+              "classification": {
+                "ok": false,
+                "type": "Unknown",
+                "class": "unknown",
+                "anatomy_id": null,
+                "closure": null
+              },
+              "anatomy": null,
+              "obligation": null,
+              "Ξ": ""
+            },
+            "ΩM": [
+              {
+                "σ": "M:gap",
+                "w": 0.588235
+              },
+              {
+                "σ": "M:gap:unclassified_math_ast",
+                "w": 0.411765
+              }
+            ],
+            "lexicon": {
+              "φ": "Λ",
+              "v": "0.1.0",
+              "Λ": [
+                {
+                  "σ": "Λ:M.gap_count=1",
+                  "w": 0.031056
+                },
+                {
+                  "σ": "Λ:M.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:M.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.body.raw=exists x in R, x^2 = 2",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.ast.source=exists x in R, x^2 = 2",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.classification.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.ok0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.stage=closure",
+                  "w": 0.049689
+                },
+                {
+                  "σ": "Λ:Π.verified0",
+                  "w": 0.086957
+                },
+                {
+                  "σ": "Λ:Π.version=0.1.0",
+                  "w": 0.04969
+                }
+              ],
+              "entries": [
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.gap_count=1",
+                  "rule": "M.gap_count=1",
+                  "ν": "ν14ba0ee",
+                  "source": "M",
+                  "c": 0.25,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.ok0",
+                  "rule": "M.ok=false",
+                  "ν": "ν80f79c5c",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:M.verified0",
+                  "rule": "M.verified=false",
+                  "ν": "ν333c7dde",
+                  "source": "M",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.raw=exists x in R, x^2 = 2",
+                  "rule": "Π.ast.body.raw=exists x in R, x^2 = 2",
+                  "ν": "νdd3368e4",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.body.type=Unknown",
+                  "rule": "Π.ast.body.type=Unknown",
+                  "ν": "ν3a028650",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.ok0",
+                  "rule": "Π.ast.ok=false",
+                  "ν": "νeff30ac5",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.source=exists x in R, x^2 = 2",
+                  "rule": "Π.ast.source=exists x in R, x^2 = 2",
+                  "ν": "νda6d9599",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ast.type=MathProgram",
+                  "rule": "Π.ast.type=MathProgram",
+                  "ν": "νf417fb0",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.class=unknown",
+                  "rule": "Π.classification.class=unknown",
+                  "ν": "ν2780ef9c",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.ok0",
+                  "rule": "Π.classification.ok=false",
+                  "ν": "ν15fcea5b",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.classification.type=Unknown",
+                  "rule": "Π.classification.type=Unknown",
+                  "ν": "ν8a810da",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.ok0",
+                  "rule": "Π.ok=false",
+                  "ν": "ν1e9030cb",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.packet_type=42ndMind_math_closure_v0_1",
+                  "rule": "Π.packet_type=42ndMind_math_closure_v0_1",
+                  "ν": "ν8579d41b",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.stage=closure",
+                  "rule": "Π.stage=closure",
+                  "ν": "ν7af384d3",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.verified0",
+                  "rule": "Π.verified=false",
+                  "ν": "νecdd32e1",
+                  "source": "∅",
+                  "c": 0.7,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                },
+                {
+                  "φ": "Λ",
+                  "v": "0.1.0",
+                  "σ": "Λ:Π.version=0.1.0",
+                  "rule": "Π.version=0.1.0",
+                  "ν": "νaaf50caf",
+                  "source": "∅",
+                  "c": 0.4,
+                  "accepted": true,
+                  "χ": [
+                    "Λ=derive(packet fact)",
+                    "Λν=canonical(rule)",
+                    "Ξ=\"\""
+                  ],
+                  "Ξ": "",
+                  "rejected": false,
+                  "conflict": null
+                }
+              ],
+              "count": 16,
+              "u": {
+                "Λ": 1,
+                "ok": true
+              },
+              "χ": [
+                "Λ=accepted(kernel-derived facts)",
+                "no σ conflict",
+                "Ξ=\"\""
+              ],
+              "Ξ": ""
+            },
+            "u": {
+              "ΩM": 1,
+              "ok": true
+            },
+            "χ": [
+              "M=kernel math closure packet",
+              "M consumes AST→anatomy→proof/closure",
+              "M.ok iff closure.ok",
+              "Ξ=\"\""
+            ],
+            "Ξ": ""
+          },
+          "closure_packet": {
+            "packet_type": "42ndMind_math_closure_v0_1",
+            "version": "0.1.0",
+            "stage": "closure",
+            "ok": false,
+            "verified": false,
+            "gaps": [
+              {
+                "id": "unclassified_math_ast",
+                "reason": "Input did not reduce into a supported MathProgram AST."
+              }
+            ],
+            "ast": {
+              "type": "MathProgram",
+              "body": {
+                "type": "Unknown",
+                "raw": "exists x in R, x^2 = 2"
+              },
+              "source": "exists x in R, x^2 = 2",
+              "ok": false
+            },
+            "classification": {
+              "ok": false,
+              "type": "Unknown",
+              "class": "unknown",
+              "anatomy_id": null,
+              "closure": null
+            },
+            "anatomy": null,
+            "obligation": null,
+            "Ξ": ""
+          }
+        },
+        "proposals": [
+          {
+            "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+            "version": "0.1.0",
+            "Ξ": "",
+            "id": "existential_quantifier_exists_x_in_r_x_2_2",
+            "kind": "existential_quantifier",
+            "input": "exists x in R, x^2 = 2",
+            "status": "candidate_structure_only",
+            "promoted": false,
+            "missing": [
+              "existential_quantifier",
+              "witness_obligation",
+              "domain_scope"
+            ],
+            "candidate": {
+              "ast_node": "ExistentialStatement",
+              "anatomy_id": "existential_quantifier",
+              "closure_operator": "generateExistentialObligations",
+              "classification": {
+                "anatomy_id": "existential_quantifier",
+                "closure": "generateExistentialObligations"
+              },
+              "proof_obligations": [
+                "open existential scope",
+                "emit witness obligation",
+                "verify predicate under witness or return missing witness gap"
+              ],
+              "reality_anchor": {
+                "id": "existential_witness_obligation",
+                "input": "exists x in R, x^2 = 2",
+                "closure_operator": "generateExistentialObligations",
+                "selected_rule": "existential-witness-obligation"
+              },
+              "tests": [
+                "AST parses existential statement",
+                "closure emits witness obligation",
+                "unwitnessed existential remains incomplete"
+              ]
+            },
+            "source_patch": {
+              "ready": false,
+              "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "proposal_count": 4,
+  "proposals": [
+    {
+      "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+      "version": "0.1.0",
+      "Ξ": "",
+      "id": "complex_unit_identity_i_2_1",
+      "kind": "complex_unit_identity",
+      "input": "i^2 = -1",
+      "status": "candidate_structure_only",
+      "promoted": false,
+      "missing": [
+        "complex_unit_symbol",
+        "complex_number_domain",
+        "complex_unit_identity_rule"
+      ],
+      "candidate": {
+        "ast_node": "ComplexUnitIdentityStatement",
+        "anatomy_id": "complex_unit_identity",
+        "closure_operator": "proveComplexUnitIdentity",
+        "classification": {
+          "anatomy_id": "complex_unit_identity",
+          "closure": "proveComplexUnitIdentity"
+        },
+        "proof_obligations": [
+          "represent i as the imaginary unit",
+          "prove or register i^2 = -1 under complex-number domain"
+        ],
+        "reality_anchor": {
+          "id": "complex_unit_identity",
+          "input": "i^2 = -1",
+          "closure_operator": "proveComplexUnitIdentity",
+          "selected_rule": "complex-unit-identity"
+        },
+        "tests": [
+          "AST parses complex unit identity",
+          "closure verifies identity under complex domain",
+          "whole-self wants no longer include complex_numbers"
+        ]
+      },
+      "source_patch": {
+        "ready": false,
+        "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+      }
+    },
+    {
+      "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+      "version": "0.1.0",
+      "Ξ": "",
+      "id": "matrix_multiplication_a_b_c",
+      "kind": "matrix_multiplication",
+      "input": "A B = C",
+      "status": "candidate_structure_only",
+      "promoted": false,
+      "missing": [
+        "matrix_type",
+        "matrix_product_operator",
+        "dimension_compatibility_guard"
+      ],
+      "candidate": {
+        "ast_node": "MatrixProductStatement",
+        "anatomy_id": "matrix_product",
+        "closure_operator": "typeMatrixProduct",
+        "classification": {
+          "anatomy_id": "matrix_product",
+          "closure": "typeMatrixProduct"
+        },
+        "proof_obligations": [
+          "infer matrix operands",
+          "emit dimension compatibility guard",
+          "canonicalize product relation"
+        ],
+        "reality_anchor": {
+          "id": "matrix_product_typing",
+          "input": "A B = C",
+          "closure_operator": "typeMatrixProduct",
+          "selected_rule": "matrix-product-dimension-guard"
+        },
+        "tests": [
+          "AST parses matrix product",
+          "closure emits dimension guard",
+          "unsupported invalid dimensions stay guarded"
+        ]
+      },
+      "source_patch": {
+        "ready": false,
+        "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+      }
+    },
+    {
+      "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+      "version": "0.1.0",
+      "Ξ": "",
+      "id": "sequence_definition_a_n_n_2",
+      "kind": "sequence_definition",
+      "input": "a_n = n^2",
+      "status": "candidate_structure_only",
+      "promoted": false,
+      "missing": [
+        "indexed_variable",
+        "sequence_domain",
+        "term_formula"
+      ],
+      "candidate": {
+        "ast_node": "SequenceDefinition",
+        "anatomy_id": "sequence_definition",
+        "closure_operator": "defineSequence",
+        "classification": {
+          "anatomy_id": "sequence_definition",
+          "closure": "defineSequence"
+        },
+        "proof_obligations": [
+          "represent indexed term",
+          "type n over natural numbers",
+          "canonicalize term formula"
+        ],
+        "reality_anchor": {
+          "id": "sequence_definition_square",
+          "input": "a_n = n^2",
+          "closure_operator": "defineSequence",
+          "selected_rule": "sequence-term-definition"
+        },
+        "tests": [
+          "AST parses indexed sequence",
+          "closure emits sequence definition packet",
+          "whole-self wants no longer include sequences"
+        ]
+      },
+      "source_patch": {
+        "ready": false,
+        "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+      }
+    },
+    {
+      "packet_type": "42ndMind_frontier_candidate_language_extension_v0_1",
+      "version": "0.1.0",
+      "Ξ": "",
+      "id": "existential_quantifier_exists_x_in_r_x_2_2",
+      "kind": "existential_quantifier",
+      "input": "exists x in R, x^2 = 2",
+      "status": "candidate_structure_only",
+      "promoted": false,
+      "missing": [
+        "existential_quantifier",
+        "witness_obligation",
+        "domain_scope"
+      ],
+      "candidate": {
+        "ast_node": "ExistentialStatement",
+        "anatomy_id": "existential_quantifier",
+        "closure_operator": "generateExistentialObligations",
+        "classification": {
+          "anatomy_id": "existential_quantifier",
+          "closure": "generateExistentialObligations"
+        },
+        "proof_obligations": [
+          "open existential scope",
+          "emit witness obligation",
+          "verify predicate under witness or return missing witness gap"
+        ],
+        "reality_anchor": {
+          "id": "existential_witness_obligation",
+          "input": "exists x in R, x^2 = 2",
+          "closure_operator": "generateExistentialObligations",
+          "selected_rule": "existential-witness-obligation"
+        },
+        "tests": [
+          "AST parses existential statement",
+          "closure emits witness obligation",
+          "unwitnessed existential remains incomplete"
+        ]
+      },
+      "source_patch": {
+        "ready": false,
+        "reason": "Discovery core proposes structure first. Source edits must be generated separately and judged by sandbox, tests, reality feedback, and whole-self simulation."
+      }
+    }
+  ],
+  "ledger": {
+    "packet_type": "42ndMind_frontier_discovery_ledger_v0_1",
+    "version": "0.1.0",
+    "Ξ": "",
+    "entries": [
+      {
+        "index": 0,
+        "status": "recorded",
+        "input": "i^2 = -1",
+        "kind": "complex_unit_identity",
+        "result": "proposed",
+        "promoted": false,
+        "closure_operator": "proveComplexUnitIdentity"
+      },
+      {
+        "index": 1,
+        "status": "recorded",
+        "input": "A B = C",
+        "kind": "matrix_multiplication",
+        "result": "proposed",
+        "promoted": false,
+        "closure_operator": "typeMatrixProduct"
+      },
+      {
+        "index": 2,
+        "status": "recorded",
+        "input": "a_n = n^2",
+        "kind": "sequence_definition",
+        "result": "proposed",
+        "promoted": false,
+        "closure_operator": "defineSequence"
+      },
+      {
+        "index": 3,
+        "status": "recorded",
+        "input": "exists x in R, x^2 = 2",
+        "kind": "existential_quantifier",
+        "result": "proposed",
+        "promoted": false,
+        "closure_operator": "generateExistentialObligations"
+      }
+    ],
+    "success_count": 0,
+    "failure_count": 0
+  },
+  "promotion_policy": "discovery proposes candidate structures only; sandbox, reality feedback, whole-self simulation, and promotion gates decide acceptance",
+  "Ξ": ""
+}

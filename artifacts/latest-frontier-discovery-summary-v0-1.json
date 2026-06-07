@@ -1,0 +1,29 @@
+{
+  "packet_type": "42ndMind_frontier_discovery_summary_v0_1",
+  "version": "0.1.0",
+  "frontier_count": 4,
+  "want_ids": [
+    "complex_numbers",
+    "matrices",
+    "sequences",
+    "logic_quantifier_exists"
+  ],
+  "discovery_count": 4,
+  "proposal_count": 4,
+  "proposal_kinds": [
+    "complex_unit_identity",
+    "matrix_multiplication",
+    "sequence_definition",
+    "existential_quantifier"
+  ],
+  "closure_operators": [
+    "proveComplexUnitIdentity",
+    "typeMatrixProduct",
+    "defineSequence",
+    "generateExistentialObligations"
+  ],
+  "promoted": false,
+  "report_artifact": "artifacts/frontier-discovery-report-v0-1.json",
+  "summary_artifact": "artifacts/frontier-discovery-summary-v0-1.json",
+  "Ξ": ""
+}
