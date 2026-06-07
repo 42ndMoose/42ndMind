@@ -35,10 +35,7 @@
     'A B = C'
   ]);
 
-  const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'sequences', input: 'a_n = n^2', expected_gap: 'unclassified_math_ast', reason: 'Sequences and indexed variables are not yet represented.' },
-    { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }
-  ]);
+  const DEFAULT_FRONTIER_ANCHORS = Object.freeze([]);
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
   function R(value) { return Number((Number(value) || 0).toFixed(6)); }

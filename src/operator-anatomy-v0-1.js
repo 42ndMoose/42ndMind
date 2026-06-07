@@ -125,6 +125,12 @@
       inverse_chain: [], closure_operator: 'defineSequence', closure_result: 'sequence_definition_packet',
       examples: ['a_n = n^2'], assertion: "assert.strictEqual(P.defineSequence('a_n = n^2').ok, true);"
     }),
+    existential_statement: Object.freeze({
+      id: 'existential_statement', operation: 'emit_obligations', surface: 'exists x in R, x^2 = 2',
+      parts: ['quantifier', 'variable', 'domain', 'predicate', 'witness_candidate', 'obligations'], preconditions: ['witness candidate is declared', 'domain and predicate obligations are explicit'],
+      inverse_chain: [], closure_operator: 'generateExistentialObligations', closure_result: 'existential_witness_obligation_packet',
+      examples: ['exists x in R, x^2 = 2'], assertion: "assert.strictEqual(P.generateExistentialObligations('exists x in R, x^2 = 2').ok, true);"
+    }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
       parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],

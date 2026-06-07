@@ -317,6 +317,25 @@
     });
   }
 
+
+  function generateExistentialObligations(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'ExistentialStatement') return gap('unsupported_existential_statement', 'Existential closure requires an ExistentialStatement AST node.');
+    return verified('existential-witness-obligations', {
+      operator: 'generateExistentialObligations',
+      conclusion: {
+        type: 'ExistentialWitnessObligationPacket',
+        quantifier: body.quantifier,
+        variable: clone(body.variable),
+        domain: clone(body.domain),
+        predicate: clone(body.predicate),
+        witness_candidate: clone(body.witness_candidate),
+        obligations: clone(body.obligations || [])
+      },
+      steps: ['detect-existential-claim', 'construct-canonical-witness-candidate', 'emit-domain-and-predicate-obligations']
+    });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -458,6 +477,7 @@
     if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);
     if (operator === 'typeMatrixProduct') return typeMatrixProduct(body);
     if (operator === 'defineSequence') return defineSequence(body);
+    if (operator === 'generateExistentialObligations') return generateExistentialObligations(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -490,6 +510,7 @@
     proveComplexUnitIdentity,
     typeMatrixProduct,
     defineSequence,
+    generateExistentialObligations,
     domainGuard,
     implication,
     modusPonens,

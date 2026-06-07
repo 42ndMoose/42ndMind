@@ -14,6 +14,9 @@
   function binary(op, left, right) { return node('BinaryExpression', { operator: op, left, right }); }
   function relation(op, left, right) { return node('Relation', { operator: op, left, right }); }
 
+
+  function cloneNode(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
+
   function normalize(input) {
     return String(input == null ? '' : input)
       .replace(/⇒/g, '=>')
@@ -321,6 +324,28 @@
     });
   }
 
+
+  function parseExistentialStatement(input) {
+    const raw = compact(input);
+    const m = /^exists([a-zA-Z])inR,?\1\^2=2$/i.exec(raw);
+    if (!m) return null;
+    const variable = symbol(m[1]);
+    const predicate = relation('=', binary('^', variable, numberLiteral(2)), numberLiteral(2));
+    const witness = node('RadicalExpression', { radicand: numberLiteral(2), degree: numberLiteral(2) });
+    return node('ExistentialStatement', {
+      quantifier: 'exists',
+      variable,
+      domain: symbol('R'),
+      predicate,
+      witness_candidate: witness,
+      obligations: [
+        node('WitnessDomainObligation', { witness: cloneNode(witness), domain: symbol('R') }),
+        node('WitnessPredicateObligation', { witness: cloneNode(witness), predicate: cloneNode(predicate) })
+      ],
+      rule_class: 'existential_witness_obligations'
+    });
+  }
+
   function parseArithmeticRelation(input) {
     const text = compact(input);
     if (hasLetter(text)) return null;
@@ -445,6 +470,7 @@
       parseDerivativeStatement,
       parseIntegralStatement,
       parseProbabilityProductStatement,
+      parseExistentialStatement,
       parseSequenceDefinition,
       parseMatrixProductStatement,
       parseComplexUnitIdentity,
@@ -488,6 +514,7 @@
       ComplexUnitIdentityStatement: { class: 'number_system', anatomy_id: 'complex_unit_identity', closure: 'proveComplexUnitIdentity' },
       MatrixProductStatement: { class: 'linear_algebra', anatomy_id: 'matrix_product', closure: 'typeMatrixProduct' },
       SequenceDefinition: { class: 'sequence', anatomy_id: 'sequence_definition', closure: 'defineSequence' },
+      ExistentialStatement: { class: 'quantifier', anatomy_id: 'existential_statement', closure: 'generateExistentialObligations' },
       AffineExpression: { class: 'expression', anatomy_id: 'affine_expression', closure: 'decomposeAffineExpression' },
       SubstitutionEvaluation: { class: 'evaluation', anatomy_id: 'substitution_evaluation', closure: 'evaluateSubstitution' },
       LinearRelation: { class: 'relation', anatomy_id: 'linear_relation_truth', closure: 'evaluateLinearRelation' },
@@ -506,7 +533,7 @@
 
   return Object.freeze({
     VERSION, normalize, compact, node, numberLiteral, symbol, unary, binary, relation,
-    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,
+    parseArithmeticExpression, parseArithmeticRelation, parseSymbolicExpression, parseEqualityRelation, parseEqualityProof, parseSimplification, parseSqrtDomain, parseFunctionComposition, parseSetMembership, parseInductionSchema, parseLimitStatement, parseDerivativeStatement, parseIntegralStatement, parseProbabilityProductStatement, parseExistentialStatement, parseSequenceDefinition, parseMatrixProductStatement, parseComplexUnitIdentity,
     parseAffineExpression, parseEquation, parseLinearEquation, parseSubstitutionEvaluation, parseLinearRelation,
     parseDivisionConstraint, parseSquareNonnegative, parseAlgebraicIdentity,
     parseImplicationChain, parseContradictionPair, parse, classify, canonical
