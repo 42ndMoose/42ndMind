@@ -308,7 +308,7 @@ Source-edit reality feedback lives in:
 src/source-edit-reality-feedback-v0-1.js
 ```
 
-It anchors source edits against truths that must not drift. Examples:
+It anchors accepted source edits against truths that must not drift. Examples:
 
 ```text
 2 + 2 = 4 must close as true
@@ -410,16 +410,18 @@ Goal:
 raw math input → AST → anatomy → closure obligation → proof/gap → kernel packet → whole-self score
 ```
 
-Required implementation gates:
+Promotion gates for accepted implementations:
 
 ```text
-no hardcoded answer strings
-no test that only checks printed text
 all new forms must classify into anatomy_id and closure_operator
 all closure results must be AST/packet structures, not prose
 every unsupported form must return a precise gap
 whole-self simulation must track frontier pressure after each closure expansion
+reality anchors must not be removed just to pass tests
+selected rules must stay consistent with anatomy and closure tests
 ```
+
+These gates are not constraints on candidate generation. The sandbox is allowed to try broad, weird, risky, or imprecise candidates. The gates decide only whether a candidate becomes accepted source/state.
 
 Current next targets:
 
@@ -514,7 +516,7 @@ Goal:
 English input → canonical internal language → verified state / gap → English explanation
 ```
 
-Rules:
+Rules for accepted input/output implementations:
 
 ```text
 English may suggest structure
@@ -540,9 +542,13 @@ meaning algebra grows only when closure improves
 
 This is the milestone where the kernel can begin to learn from user-described meaning without falling into word association.
 
-## Anti-fake implementation rules
+## Promotion gates, not thought constraints
 
-A patch is fake progress if it does any of the following:
+The kernel should be free to generate candidate structures, conjectures, edits, and interpretations inside simulation. A candidate is allowed to be rough, broad, wrong, or incomplete while it is still being explored.
+
+The gates below apply only when a candidate asks to become accepted source/state. They are closer to immune-system checks than commands about what the kernel is allowed to want.
+
+A candidate should not be promoted if it does any of the following:
 
 ```text
 adds strings that look like conclusions without AST support
@@ -554,11 +560,13 @@ changes selected rules without updating anatomy and closure tests
 claims meaning without observables, falsifiers, or relation structure
 ```
 
-A patch is real progress only if it moves through the shared chain:
+A candidate is stronger when it moves through the shared chain:
 
 ```text
 AST → anatomy → proof/closure → kernel packet → reality feedback → whole-self simulation
 ```
+
+This does not make the kernel less free. It makes accepted self-change accountable to the system's own reality contact.
 
 ## Important source files
 
