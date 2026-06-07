@@ -10,6 +10,11 @@ const cases = [
   ['2x + 1 with x = 3', 'evaluateSubstitution'],
   ['2 + 3 * 4 = 14', 'evaluateArithmeticRelation'],
   ['(2 + 3)^2 = 25', 'evaluateArithmeticRelation'],
+  ['x = x', 'proveEquality'],
+  ['x = y therefore y = x', 'proveEquality'],
+  ['a = b, b = c therefore a = c', 'proveEquality'],
+  ['simplify x + 0', 'simplifyExpression'],
+  ['simplify x * 1', 'simplifyExpression'],
   ['x/y is undefined when y = 0', 'proveDivisionByZeroUndefined'],
   ['∀x ∈ ℝ, x^2 ≥ 0', 'proveSquareNonnegative'],
   ['∀x ∈ ℝ, x + 0 = x', 'proveAlgebraicIdentity'],
@@ -52,6 +57,14 @@ assert.strictEqual(substitution.proof.result, 7);
 
 const arithmetic = Closure.close('2 + 3 * 4 = 14');
 assert.strictEqual(arithmetic.proof.truth, true);
+
+const equality = Closure.close('a = b, b = c therefore a = c');
+assert.strictEqual(equality.proof.equality_rule, 'transitivity');
+assert.strictEqual(equality.selected_rule, 'equality-transitivity');
+
+const simplification = Closure.close('simplify x + 0');
+assert.strictEqual(simplification.proof.result, 'x');
+assert.strictEqual(simplification.selected_rule, 'expression-simplification');
 
 const relation = Closure.close('x >= 3 with x = 5');
 assert.strictEqual(relation.proof.truth, true);
