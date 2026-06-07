@@ -4,24 +4,24 @@
   "decision": "keep_current_state",
   "stop": false,
   "best_id": "base",
-  "best_score": 0.708214,
-  "best_damage_count": 3,
-  "best_feeling": "less_self",
-  "base_score": 0.708214,
-  "base_damage_count": 3,
+  "best_score": 0.966667,
+  "best_damage_count": 0,
+  "best_feeling": "stable_but_incomplete",
+  "base_score": 0.966667,
+  "base_damage_count": 0,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 0.708214,
-      "damage_count": 3,
-      "feeling": "less_self",
-      "ok": false,
+      "score": 0.966667,
+      "damage_count": 0,
+      "feeling": "stable_but_incomplete",
+      "ok": true,
       "stop": false
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.679047,
-      "damage_count": 4,
+      "score": 0.885,
+      "damage_count": 2,
       "feeling": "less_self",
       "ok": false,
       "stop": false
@@ -106,8 +106,36 @@
       "gap": null
     },
     {
+      "input": "lim x->0 sin(x)/x = 1",
+      "ok": true,
+      "closure_operator": "proveLimitStatement",
+      "selected_rule": "limit-sine-over-x",
+      "gap": null
+    },
+    {
+      "input": "d/dx x^2 = 2x",
+      "ok": true,
+      "closure_operator": "proveDerivativeStatement",
+      "selected_rule": "derivative-power-rule-n2",
+      "gap": null
+    },
+    {
+      "input": "integral 2x dx = x^2 + C",
+      "ok": true,
+      "closure_operator": "proveIntegralStatement",
+      "selected_rule": "integral-power-rule-linear",
+      "gap": null
+    },
+    {
+      "input": "P(A and B) = P(A)P(B)",
+      "ok": true,
+      "closure_operator": "proveProbabilityProductRule",
+      "selected_rule": "probability-product-requires-independence",
+      "gap": null
+    },
+    {
       "input": "A B = C",
-      "ok": false,
+      "ok": true,
       "closure_operator": "typeMatrixProduct",
       "selected_rule": "matrix-product-dimension-guard",
       "gap": null
@@ -128,17 +156,13 @@
     }
   ],
   "epistemic": {
-    "ok": false,
-    "score": 0.5,
-    "closed_gates": [
-      "anti_delusion",
-      "coherence",
-      "integration"
-    ]
+    "ok": true,
+    "score": 1,
+    "closed_gates": []
   },
   "truth": {
-    "ok": false,
-    "score": 0
+    "ok": true,
+    "score": 0.888889
   },
   "reality": {
     "ok": true,

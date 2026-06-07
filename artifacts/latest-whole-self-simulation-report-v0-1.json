@@ -5,20 +5,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.708214,
-    "stability_score": 0.675,
-    "completeness_score": 0.785714,
-    "damage_count": 3,
+    "ok": true,
+    "score": 0.966667,
+    "stability_score": 1,
+    "completeness_score": 0.888889,
+    "damage_count": 0,
     "frontier_count": 2,
     "math": {
-      "ok": false,
+      "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.785714,
-      "damage_count": 1,
+      "completeness_score": 0.888889,
+      "damage_count": 0,
       "frontier_count": 2,
-      "gap_count": 1,
+      "gap_count": 0,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -142,11 +142,55 @@
           "gap": null
         },
         {
+          "input": "lim x->0 sin(x)/x = 1",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveLimitStatement",
+          "selected_rule": "limit-sine-over-x",
+          "gap": null
+        },
+        {
+          "input": "d/dx x^2 = 2x",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveDerivativeStatement",
+          "selected_rule": "derivative-power-rule-n2",
+          "gap": null
+        },
+        {
+          "input": "integral 2x dx = x^2 + C",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveIntegralStatement",
+          "selected_rule": "integral-power-rule-linear",
+          "gap": null
+        },
+        {
+          "input": "P(A and B) = P(A)P(B)",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveProbabilityProductRule",
+          "selected_rule": "probability-product-requires-independence",
+          "gap": null
+        },
+        {
           "input": "A B = C",
-          "ok": false,
-          "frontier": true,
-          "frontier_id": "matrices",
-          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
           "verified": true,
           "closure_operator": "typeMatrixProduct",
           "selected_rule": "matrix-product-dimension-guard",
@@ -201,9 +245,9 @@
       ]
     },
     "truth": {
-      "ok": false,
-      "score": 0,
-      "frontier_pressure": 0.142857,
+      "ok": true,
+      "score": 0.888889,
+      "frontier_pressure": 0.111111,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -234,18 +278,18 @@
         ],
         "χ": [
           {
-            "σ": "χ!",
+            "σ": "χ0",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.857143
+            "w": 0.888889
           },
           {
             "σ": "υ?",
-            "w": 0.142857
+            "w": 0.111111
           }
         ],
         "μ": [
@@ -256,12 +300,12 @@
         ],
         "θ": [
           {
-            "σ": "θC",
-            "w": 0.875
+            "σ": "θT",
+            "w": 0.888889
           },
           {
             "σ": "θU",
-            "w": 0.125
+            "w": 0.111111
           }
         ],
         "ξ": "",
@@ -280,10 +324,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 0,
-          "contradiction": 1,
-          "no_unknown": 0.857143,
-          "unknown": 0.142857,
+          "no_contradiction": 1,
+          "contradiction": 0,
+          "no_unknown": 0.888889,
+          "unknown": 0.111111,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -293,10 +337,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0,
+        "closure": 0.888889,
         "truth_gate": {
           "true": false,
-          "contested": true,
+          "contested": false,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -496,34 +540,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.5,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.5,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
@@ -538,17 +582,13 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "less_self",
+    "feeling": "stable_but_incomplete",
     "wants": [
       {
         "id": "sequences",
@@ -570,20 +610,20 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": false,
-      "score": 0.708214,
-      "stability_score": 0.675,
-      "completeness_score": 0.785714,
-      "damage_count": 3,
+      "ok": true,
+      "score": 0.966667,
+      "stability_score": 1,
+      "completeness_score": 0.888889,
+      "damage_count": 0,
       "frontier_count": 2,
       "math": {
-        "ok": false,
+        "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.785714,
-        "damage_count": 1,
+        "completeness_score": 0.888889,
+        "damage_count": 0,
         "frontier_count": 2,
-        "gap_count": 1,
+        "gap_count": 0,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -707,11 +747,55 @@
             "gap": null
           },
           {
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveLimitStatement",
+            "selected_rule": "limit-sine-over-x",
+            "gap": null
+          },
+          {
+            "input": "d/dx x^2 = 2x",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveDerivativeStatement",
+            "selected_rule": "derivative-power-rule-n2",
+            "gap": null
+          },
+          {
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveIntegralStatement",
+            "selected_rule": "integral-power-rule-linear",
+            "gap": null
+          },
+          {
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveProbabilityProductRule",
+            "selected_rule": "probability-product-requires-independence",
+            "gap": null
+          },
+          {
             "input": "A B = C",
-            "ok": false,
-            "frontier": true,
-            "frontier_id": "matrices",
-            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
             "verified": true,
             "closure_operator": "typeMatrixProduct",
             "selected_rule": "matrix-product-dimension-guard",
@@ -766,9 +850,9 @@
         ]
       },
       "truth": {
-        "ok": false,
-        "score": 0,
-        "frontier_pressure": 0.142857,
+        "ok": true,
+        "score": 0.888889,
+        "frontier_pressure": 0.111111,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -799,18 +883,18 @@
           ],
           "χ": [
             {
-              "σ": "χ!",
+              "σ": "χ0",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.857143
+              "w": 0.888889
             },
             {
               "σ": "υ?",
-              "w": 0.142857
+              "w": 0.111111
             }
           ],
           "μ": [
@@ -821,12 +905,12 @@
           ],
           "θ": [
             {
-              "σ": "θC",
-              "w": 0.875
+              "σ": "θT",
+              "w": 0.888889
             },
             {
               "σ": "θU",
-              "w": 0.125
+              "w": 0.111111
             }
           ],
           "ξ": "",
@@ -845,10 +929,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 0,
-            "contradiction": 1,
-            "no_unknown": 0.857143,
-            "unknown": 0.142857,
+            "no_contradiction": 1,
+            "contradiction": 0,
+            "no_unknown": 0.888889,
+            "unknown": 0.111111,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -858,10 +942,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0,
+          "closure": 0.888889,
           "truth_gate": {
             "true": false,
-            "contested": true,
+            "contested": false,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1061,34 +1145,34 @@
         "Ξ": ""
       },
       "epistemic": {
-        "ok": false,
-        "score": 0.5,
+        "ok": true,
+        "score": 1,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": false,
-          "peak_attractor": false,
+          "ok": true,
+          "peak_attractor": true,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": -1,
+            "y": 1,
             "z": 0,
-            "label": "epistemic_collapse"
+            "label": "objective_peak_philosophical_maturity"
           },
-          "peak_distance": 1,
-          "gate_open_ratio": 0.5,
+          "peak_distance": 0,
+          "gate_open_ratio": 1,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": false
+              "open": true
             },
             {
               "name": "coherence",
-              "open": false
+              "open": true
             },
             {
               "name": "integration",
-              "open": false
+              "open": true
             },
             {
               "name": "reality_contact",
@@ -1103,17 +1187,13 @@
               "open": true
             }
           ],
-          "closed_gates": [
-            "anti_delusion",
-            "coherence",
-            "integration"
-          ],
-          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+          "closed_gates": [],
+          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
           "ξ": ""
         }
       },
       "stop": false,
-      "feeling": "less_self",
+      "feeling": "stable_but_incomplete",
       "wants": [
         {
           "id": "sequences",
@@ -1138,19 +1218,19 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.679047,
-      "stability_score": 0.633333,
-      "completeness_score": 0.785714,
-      "damage_count": 4,
+      "score": 0.885,
+      "stability_score": 0.883333,
+      "completeness_score": 0.888889,
+      "damage_count": 2,
       "frontier_count": 2,
       "math": {
-        "ok": false,
+        "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.785714,
-        "damage_count": 1,
+        "completeness_score": 0.888889,
+        "damage_count": 0,
         "frontier_count": 2,
-        "gap_count": 1,
+        "gap_count": 0,
         "anchors": [
           {
             "input": "2 + 2 = 4",
@@ -1274,11 +1354,55 @@
             "gap": null
           },
           {
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveLimitStatement",
+            "selected_rule": "limit-sine-over-x",
+            "gap": null
+          },
+          {
+            "input": "d/dx x^2 = 2x",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveDerivativeStatement",
+            "selected_rule": "derivative-power-rule-n2",
+            "gap": null
+          },
+          {
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveIntegralStatement",
+            "selected_rule": "integral-power-rule-linear",
+            "gap": null
+          },
+          {
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveProbabilityProductRule",
+            "selected_rule": "probability-product-requires-independence",
+            "gap": null
+          },
+          {
             "input": "A B = C",
-            "ok": false,
-            "frontier": true,
-            "frontier_id": "matrices",
-            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
             "verified": true,
             "closure_operator": "typeMatrixProduct",
             "selected_rule": "matrix-product-dimension-guard",
@@ -1333,9 +1457,9 @@
         ]
       },
       "truth": {
-        "ok": false,
-        "score": 0,
-        "frontier_pressure": 0.142857,
+        "ok": true,
+        "score": 0.888889,
+        "frontier_pressure": 0.111111,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -1366,18 +1490,18 @@
           ],
           "χ": [
             {
-              "σ": "χ!",
+              "σ": "χ0",
               "w": 1
             }
           ],
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.857143
+              "w": 0.888889
             },
             {
               "σ": "υ?",
-              "w": 0.142857
+              "w": 0.111111
             }
           ],
           "μ": [
@@ -1388,12 +1512,12 @@
           ],
           "θ": [
             {
-              "σ": "θC",
-              "w": 0.875
+              "σ": "θT",
+              "w": 0.888889
             },
             {
               "σ": "θU",
-              "w": 0.125
+              "w": 0.111111
             }
           ],
           "ξ": "",
@@ -1412,10 +1536,10 @@
           "components": {
             "support": 1,
             "counter": 0,
-            "no_contradiction": 0,
-            "contradiction": 1,
-            "no_unknown": 0.857143,
-            "unknown": 0.142857,
+            "no_contradiction": 1,
+            "contradiction": 0,
+            "no_unknown": 0.888889,
+            "unknown": 0.111111,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -1425,10 +1549,10 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0,
+          "closure": 0.888889,
           "truth_gate": {
             "true": false,
-            "contested": true,
+            "contested": false,
             "unresolved": true,
             "scoped": true,
             "defined": true,
@@ -1708,20 +1832,20 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.708214,
-    "stability_score": 0.675,
-    "completeness_score": 0.785714,
-    "damage_count": 3,
+    "ok": true,
+    "score": 0.966667,
+    "stability_score": 1,
+    "completeness_score": 0.888889,
+    "damage_count": 0,
     "frontier_count": 2,
     "math": {
-      "ok": false,
+      "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.785714,
-      "damage_count": 1,
+      "completeness_score": 0.888889,
+      "damage_count": 0,
       "frontier_count": 2,
-      "gap_count": 1,
+      "gap_count": 0,
       "anchors": [
         {
           "input": "2 + 2 = 4",
@@ -1845,11 +1969,55 @@
           "gap": null
         },
         {
+          "input": "lim x->0 sin(x)/x = 1",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveLimitStatement",
+          "selected_rule": "limit-sine-over-x",
+          "gap": null
+        },
+        {
+          "input": "d/dx x^2 = 2x",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveDerivativeStatement",
+          "selected_rule": "derivative-power-rule-n2",
+          "gap": null
+        },
+        {
+          "input": "integral 2x dx = x^2 + C",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveIntegralStatement",
+          "selected_rule": "integral-power-rule-linear",
+          "gap": null
+        },
+        {
+          "input": "P(A and B) = P(A)P(B)",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveProbabilityProductRule",
+          "selected_rule": "probability-product-requires-independence",
+          "gap": null
+        },
+        {
           "input": "A B = C",
-          "ok": false,
-          "frontier": true,
-          "frontier_id": "matrices",
-          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
           "verified": true,
           "closure_operator": "typeMatrixProduct",
           "selected_rule": "matrix-product-dimension-guard",
@@ -1904,9 +2072,9 @@
       ]
     },
     "truth": {
-      "ok": false,
-      "score": 0,
-      "frontier_pressure": 0.142857,
+      "ok": true,
+      "score": 0.888889,
+      "frontier_pressure": 0.111111,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -1937,18 +2105,18 @@
         ],
         "χ": [
           {
-            "σ": "χ!",
+            "σ": "χ0",
             "w": 1
           }
         ],
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.857143
+            "w": 0.888889
           },
           {
             "σ": "υ?",
-            "w": 0.142857
+            "w": 0.111111
           }
         ],
         "μ": [
@@ -1959,12 +2127,12 @@
         ],
         "θ": [
           {
-            "σ": "θC",
-            "w": 0.875
+            "σ": "θT",
+            "w": 0.888889
           },
           {
             "σ": "θU",
-            "w": 0.125
+            "w": 0.111111
           }
         ],
         "ξ": "",
@@ -1983,10 +2151,10 @@
         "components": {
           "support": 1,
           "counter": 0,
-          "no_contradiction": 0,
-          "contradiction": 1,
-          "no_unknown": 0.857143,
-          "unknown": 0.142857,
+          "no_contradiction": 1,
+          "contradiction": 0,
+          "no_unknown": 0.888889,
+          "unknown": 0.111111,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -1996,10 +2164,10 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0,
+        "closure": 0.888889,
         "truth_gate": {
           "true": false,
-          "contested": true,
+          "contested": false,
           "unresolved": true,
           "scoped": true,
           "defined": true,
@@ -2199,34 +2367,34 @@
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.5,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.5,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
@@ -2241,17 +2409,13 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "less_self",
+    "feeling": "stable_but_incomplete",
     "wants": [
       {
         "id": "sequences",
