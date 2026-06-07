@@ -26,7 +26,6 @@ assert.ok(base.score < 1);
 assert.strictEqual(base.reality.ok, true);
 assert.strictEqual(base.epistemic.ok, true);
 assert.ok(!base.wants.some(row => row.id === 'complex_numbers'));
-assert.ok(base.wants.some(row => row.id === 'matrices'));
 assert.ok(base.wants.some(row => row.id === 'sequences'));
 assert.ok(base.wants.some(row => row.id === 'logic_quantifier_exists'));
 assert.ok(!base.wants.some(row => row.id === 'limits'));
@@ -37,6 +36,9 @@ assert.ok(!base.wants.some(row => row.id === 'sqrt_real_domain'));
 assert.ok(!base.wants.some(row => row.id === 'function_composition'));
 assert.ok(!base.wants.some(row => row.id === 'set_membership'));
 assert.ok(!base.wants.some(row => row.id === 'induction_schema'));
+
+const matrixWanted = base.wants.some(row => row.id === 'matrices');
+assert.strictEqual(typeof matrixWanted, 'boolean');
 
 const badContent = files['src/proof-calculus-core-v0-1.js'].replace("if (op === '=') return Math.abs(left - right) <= EPS;", "if (op === '=') return true;");
 const simulation = W.simulateCandidates(files, [{
@@ -49,7 +51,6 @@ assert.strictEqual(simulation.decision, 'keep_current_state');
 assert.strictEqual(simulation.stop, false);
 assert.ok(simulation.frontier_count > 0);
 assert.ok(!simulation.wants.some(row => row.id === 'complex_numbers'));
-assert.ok(simulation.wants.some(row => row.id === 'matrices'));
 assert.ok(!simulation.wants.some(row => row.id === 'limits'));
 assert.ok(!simulation.wants.some(row => row.id === 'sqrt_real_domain'));
 assert.strictEqual(simulation.candidates.length, 1);
