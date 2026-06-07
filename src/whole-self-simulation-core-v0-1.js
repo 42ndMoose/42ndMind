@@ -28,11 +28,14 @@
     'x ∈ A',
     'prove by induction P(n)',
     'i^2 = -1',
+    'lim x->0 sin(x)/x = 1',
+    'd/dx x^2 = 2x',
+    'integral 2x dx = x^2 + C',
+    'P(A and B) = P(A)P(B)',
     'A B = C'
   ]);
 
   const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'matrices', input: 'A B = C', expected_gap: 'unclassified_math_ast', reason: 'Matrix multiplication and typed linear algebra are not yet represented.' },
     { id: 'sequences', input: 'a_n = n^2', expected_gap: 'unclassified_math_ast', reason: 'Sequences and indexed variables are not yet represented.' },
     { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }
   ]);
