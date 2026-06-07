@@ -44,15 +44,16 @@ assert.strictEqual(identity.closure_operator, 'proveAlgebraicIdentity');
 assert.strictEqual(identity.selected_rule, 'algebraic-identity');
 assert.ok(identity.ΩM.some(row => row.σ === 'M:closure:proveAlgebraicIdentity'));
 
-const unsupported = K.math('sqrt(x) is real');
-assert.strictEqual(unsupported.φ, 'M');
-assert.strictEqual(unsupported.ok, false);
-assert.strictEqual(unsupported.verified, false);
-assert.strictEqual(unsupported.gap_count, 1);
-assert.strictEqual(unsupported.gaps[0].id, 'unclassified_math_ast');
-assert.ok(unsupported.ΩM.some(row => row.σ === 'M:gap'));
-assert.ok(unsupported.ΩM.some(row => row.σ === 'M:gap:unclassified_math_ast'));
-assert.strictEqual(unsupported.Ξ, '');
+const sqrt = K.math('sqrt(x) is real');
+assert.strictEqual(sqrt.φ, 'M');
+assert.strictEqual(sqrt.ok, true);
+assert.strictEqual(sqrt.verified, true);
+assert.strictEqual(sqrt.gap_count, 0);
+assert.strictEqual(sqrt.ast_type, 'SqrtDomainStatement');
+assert.strictEqual(sqrt.closure_operator, 'proveSqrtDomain');
+assert.strictEqual(sqrt.selected_rule, 'sqrt-domain-guard');
+assert.ok(sqrt.ΩM.some(row => row.σ === 'M:closure:proveSqrtDomain'));
+assert.strictEqual(sqrt.Ξ, '');
 
 const complete = K.completeMath('a = b, b = c therefore a = c', { steps: 4 });
 assert.strictEqual(complete.φ, 'MΩ*');
