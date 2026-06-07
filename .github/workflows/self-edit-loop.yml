@@ -171,7 +171,7 @@ jobs:
       - name: Ensure report placeholders exist
         run: |
           mkdir -p artifacts
-          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json whole-self-simulation-report-v0-1.json whole-self-simulation-summary-v0-1.json
+          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json frontier-discovery-report-v0-1.json frontier-discovery-summary-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json whole-self-simulation-report-v0-1.json whole-self-simulation-summary-v0-1.json
           do
             if [ ! -f "artifacts/$file" ]; then
               printf '{\n  "missing": true,\n  "file": "%s"\n}\n' "$file" > "artifacts/$file"
@@ -187,6 +187,10 @@ jobs:
           echo "## 42ndMind Whole-Self Simulation Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/whole-self-simulation-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Frontier Discovery Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/frontier-discovery-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
@@ -220,6 +224,8 @@ jobs:
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
           cp artifacts/whole-self-simulation-report-v0-1.json artifacts/latest-whole-self-simulation-report-v0-1.json
           cp artifacts/whole-self-simulation-summary-v0-1.json artifacts/latest-whole-self-simulation-summary-v0-1.json
+          cp artifacts/frontier-discovery-report-v0-1.json artifacts/latest-frontier-discovery-report-v0-1.json
+          cp artifacts/frontier-discovery-summary-v0-1.json artifacts/latest-frontier-discovery-summary-v0-1.json
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
           cp artifacts/self-edit-loop-post-promotion-status-v0-1.json artifacts/latest-self-edit-loop-post-promotion-status-v0-1.json
           cp artifacts/reactive-promotion-status-v0-1.json artifacts/latest-reactive-promotion-status-v0-1.json
