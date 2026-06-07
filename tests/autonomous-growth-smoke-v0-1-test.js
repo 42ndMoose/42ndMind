@@ -2,7 +2,8 @@ const assert = require('assert');
 const G = require('../src/autonomous-brain-growth-core-v0-1.js');
 const N = require('../src/nested-brain-core-v0-1.js');
 
-function nearOne(value) { assert.ok(Math.abs(Number(value) - 1) < 1e-5); }
+function near(value, target) { assert.ok(Math.abs(Number(value) - Number(target)) < 1e-9); }
+function nearOne(value) { near(value, 1); }
 function brainOne(p) {
   assert.strictEqual(p.brain.ok, true);
   nearOne(G.l1(p.B));
@@ -37,19 +38,27 @@ assert.strictEqual(z.last.growth.kind, 'unparsed');
 
 const nb = N.build(s);
 assert.strictEqual(nb.ok, true);
-nearOne(nb.unit);
-nearOne(N.l1(nb.B));
+assert.strictEqual(nb.equation, 'brain = |perception| + |memory| + |belief| + |valuation| + |action|');
+assert.strictEqual(nb.organ_count, 5);
+near(nb.magnitude, 5);
+nearOne(nb.coherence);
+near(nb.B.length, 5);
+near(N.l1(nb.B), 5);
 Object.keys(nb.organs).forEach(id => nearOne(nb.organs[id].unit));
 
 const sim = N.simulate(s);
 assert.strictEqual(sim.ok, true);
 assert.strictEqual(sim.applyable, true);
 assert.strictEqual(sim.brain.ok, true);
+near(sim.brain.magnitude, 5);
+nearOne(sim.brain.coherence);
 
 const applied = N.commit(s);
 assert.strictEqual(applied.ok, true);
 assert.strictEqual(applied.applied, true);
 assert.strictEqual(s.nested_brain.ok, true);
+near(s.nested_brain.magnitude, 5);
+nearOne(s.nested_brain.coherence);
 assert.ok(s.optimized_stage.id);
 
-console.log('autonomous-growth-smoke-v0-1 tests passed with nested brain optimization');
+console.log('autonomous-growth-smoke-v0-1 tests passed with summed unit organs and nested brain optimization');
