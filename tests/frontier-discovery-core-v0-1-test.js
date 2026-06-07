@@ -16,12 +16,8 @@ assert.strictEqual(already.proposals.length, 0);
 
 const complexCase = 'i' + '^' + '2 = -1';
 const complex = F.infer(complexCase);
-assert.strictEqual(complex.needed, true);
-assert.strictEqual(complex.gap.gap_id, 'unclassified_math_ast');
-assert.strictEqual(complex.proposals[0].candidate.ast_node, 'ComplexUnitIdentityStatement');
-assert.strictEqual(complex.proposals[0].candidate.anatomy_id, 'complex_unit_identity');
-assert.strictEqual(complex.proposals[0].candidate.closure_operator, 'proveComplexUnitIdentity');
-assert.strictEqual(complex.proposals[0].source_patch.ready, false);
+assert.strictEqual(complex.needed, false);
+assert.strictEqual(complex.proposals.length, 0);
 
 const matrixCase = 'A B = C';
 const matrix = F.infer(matrixCase);
@@ -60,12 +56,13 @@ assert.strictEqual(batch.packet_type, '42ndMind_frontier_discovery_batch_v0_1');
 assert.strictEqual(batch.count, state.wants.length);
 assert.strictEqual(batch.discoveries.length, state.wants.length);
 assert.ok(batch.discoveries.some(row => row.needed === true));
+assert.ok(!state.wants.some(row => row.id === 'complex_numbers'));
 
 let ledger = F.createLedger([]);
 assert.strictEqual(ledger.success_count, 0);
 assert.strictEqual(ledger.failure_count, 0);
-ledger = F.record(ledger, { input: complexCase, result: 'rejected', reason: 'missing proof rule' });
-ledger = F.record(ledger, { input: sequenceCase, result: 'promoted', reason: 'candidate passed gates' });
+ledger = F.record(ledger, { input: complexCase, result: 'promoted', reason: 'candidate passed gates' });
+ledger = F.record(ledger, { input: sequenceCase, result: 'rejected', reason: 'missing proof rule' });
 assert.strictEqual(ledger.entries.length, 2);
 assert.strictEqual(ledger.success_count, 1);
 assert.strictEqual(ledger.failure_count, 1);
