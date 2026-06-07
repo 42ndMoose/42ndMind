@@ -2,25 +2,25 @@
   "packet_type": "42ndMind_whole_self_simulation_summary_v0_1",
   "version": "0.1.0",
   "decision": "keep_current_state",
-  "stop": true,
+  "stop": false,
   "best_id": "base",
-  "best_score": 1,
-  "best_damage_count": 0,
-  "best_feeling": "same_self_or_more_self",
-  "base_score": 1,
-  "base_damage_count": 0,
+  "best_score": 0.7925,
+  "best_damage_count": 1,
+  "best_feeling": "less_self",
+  "base_score": 0.7925,
+  "base_damage_count": 1,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 1,
-      "damage_count": 0,
-      "feeling": "same_self_or_more_self",
-      "ok": true,
-      "stop": true
+      "score": 0.7925,
+      "damage_count": 1,
+      "feeling": "less_self",
+      "ok": false,
+      "stop": false
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.883333,
+      "score": 0.710833,
       "damage_count": 2,
       "feeling": "less_self",
       "ok": false,
@@ -76,16 +76,39 @@
       "closure_operator": null,
       "selected_rule": null,
       "gap": "unclassified_math_ast"
+    },
+    {
+      "input": "f(g(x))",
+      "ok": true,
+      "closure_operator": null,
+      "selected_rule": null,
+      "gap": "unclassified_math_ast"
+    },
+    {
+      "input": "x ∈ A",
+      "ok": true,
+      "closure_operator": null,
+      "selected_rule": null,
+      "gap": "unclassified_math_ast"
+    },
+    {
+      "input": "prove by induction P(n)",
+      "ok": true,
+      "closure_operator": null,
+      "selected_rule": null,
+      "gap": "unclassified_math_ast"
     }
   ],
   "epistemic": {
-    "ok": true,
-    "score": 1,
-    "closed_gates": []
+    "ok": false,
+    "score": 0.833333,
+    "closed_gates": [
+      "coherence"
+    ]
   },
   "truth": {
     "ok": true,
-    "score": 1
+    "score": 0.6
   },
   "reality": {
     "ok": true,
