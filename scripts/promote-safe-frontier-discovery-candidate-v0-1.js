@@ -20,7 +20,8 @@ const ALLOWED_PATHS = new Set([
 
 const ALLOWED_CANDIDATES = new Map([
   ['frontier_candidate_complex_unit_identity_v0_1', 'complex_unit_identity'],
-  ['frontier_candidate_matrix_product_v0_1', 'matrix_multiplication']
+  ['frontier_candidate_matrix_product_v0_1', 'matrix_multiplication'],
+  ['frontier_candidate_sequence_definition_v0_1', 'sequence_definition']
 ]);
 
 function writeStatus(status) {
