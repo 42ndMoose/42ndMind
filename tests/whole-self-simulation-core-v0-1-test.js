@@ -15,13 +15,18 @@ const files = {
 const base = W.evaluateState({ id: 'base', files });
 assert.strictEqual(base.packet_type, '42ndMind_whole_self_state_v0_1');
 assert.strictEqual(base.ok, true);
-assert.strictEqual(base.stop, true);
-assert.strictEqual(base.score, 1);
+assert.strictEqual(base.stop, false);
 assert.strictEqual(base.damage_count, 0);
+assert.ok(base.frontier_count > 0);
+assert.strictEqual(base.feeling, 'stable_but_incomplete');
 assert.strictEqual(base.math.ok, true);
-assert.strictEqual(base.truth.score, 1);
+assert.strictEqual(base.math.stability_score, 1);
+assert.ok(base.math.completeness_score < 1);
+assert.ok(base.score < 1);
 assert.strictEqual(base.reality.ok, true);
 assert.strictEqual(base.epistemic.ok, true);
+assert.ok(base.wants.some(row => row.id === 'sqrt_real_domain'));
+assert.ok(base.wants.some(row => row.id === 'function_composition'));
 
 const badContent = files['src/proof-calculus-core-v0-1.js'].replace("if (op === '=') return Math.abs(left - right) <= EPS;", "if (op === '=') return true;");
 const simulation = W.simulateCandidates(files, [{
@@ -31,15 +36,18 @@ const simulation = W.simulateCandidates(files, [{
 assert.strictEqual(simulation.packet_type, '42ndMind_whole_self_simulation_v0_1');
 assert.strictEqual(simulation.best.id, 'base');
 assert.strictEqual(simulation.decision, 'keep_current_state');
-assert.strictEqual(simulation.stop, true);
+assert.strictEqual(simulation.stop, false);
+assert.ok(simulation.frontier_count > 0);
+assert.ok(simulation.wants.some(row => row.id === 'sqrt_real_domain'));
 assert.strictEqual(simulation.candidates.length, 1);
 assert.strictEqual(simulation.candidates[0].feeling, 'less_self');
-assert.ok(simulation.candidates[0].score < simulation.base.score);
+assert.ok(simulation.candidates[0].stability_score < simulation.base.stability_score);
 assert.ok(simulation.candidates[0].damage_count > 0);
 
 const neutral = W.simulateCandidates(files, [{ id: 'same_state', files }]);
-assert.strictEqual(neutral.best.score, 1);
-assert.strictEqual(neutral.stop, true);
+assert.strictEqual(neutral.best.stability_score, 1);
+assert.strictEqual(neutral.stop, false);
+assert.ok(neutral.frontier_count > 0);
 assert.ok(['base', 'same_state'].includes(neutral.best.id));
 
 console.log('whole-self-simulation-core-v0-1 tests passed');
