@@ -62,4 +62,6 @@ near(s.nested_brain.magnitude, 5);
 nearOne(s.nested_brain.coherence);
 assert.ok(s.optimized_stage.id);
 
-console.log('autonomous-growth-smoke-v0-1 tests passed with summed unit organs and nested brain optimization');
+require('./language-organ-core-v0-1-test.js');
+
+console.log('autonomous-growth-smoke-v0-1 tests passed with summed unit organs, nested brain optimization, and language organ proof');
