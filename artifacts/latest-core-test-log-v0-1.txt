@@ -11,7 +11,7 @@ exit_code=0
 math-closure-engine-v0-1 tests passed
 exit_code=0
 ## tests/math-language-completion-v0-1-test.js
-math-language-completion-v0-1 tests passed: v0.2 spine, 13 supported forms, 1 precise unsupported gap
+math-language-completion-v0-1 tests passed: v0.3 equality spine, 18 supported forms, 1 precise unsupported gap
 exit_code=0
 ## tests/math-language-kernel-v0-1-test.js
 PASS kernel loads
