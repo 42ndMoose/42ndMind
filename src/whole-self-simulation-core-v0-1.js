@@ -32,7 +32,6 @@
   ]);
 
   const DEFAULT_FRONTIER_ANCHORS = Object.freeze([
-    { id: 'matrices', input: 'A B = C', expected_gap: 'unclassified_math_ast', reason: 'Matrix multiplication and typed linear algebra are not yet represented.' },
     { id: 'sequences', input: 'a_n = n^2', expected_gap: 'unclassified_math_ast', reason: 'Sequences and indexed variables are not yet represented.' },
     { id: 'logic_quantifier_exists', input: 'exists x in R, x^2 = 2', expected_gap: 'unclassified_math_ast', reason: 'Existential quantifier closure is not yet represented.' }
   ]);
@@ -138,7 +137,7 @@
       state.sandbox = sandboxReport;
       rows.push(state);
     });
-    rows.sort((a, b) => Number(b.stability_score || 0) - Number(a.damage_count || 0) || Number(a.damage_count || 0) - Number(b.damage_count || 0) || Number(b.completeness_score || 0) - Number(a.completeness_score || 0));
+    rows.sort((a, b) => Number(b.stability_score || 0) - Number(a.stability_score || 0) || Number(a.damage_count || 0) - Number(b.damage_count || 0) || Number(b.completeness_score || 0) - Number(a.completeness_score || 0));
     return { packet_type: '42ndMind_whole_self_simulation_v0_1', version: VERSION, base, candidates: rows.filter(row => row.id !== 'base'), best: rows[0] || base, stop: !!(rows[0] && rows[0].stop === true), decision: rows[0] && rows[0].id === 'base' ? 'keep_current_state' : 'prefer_candidate_state', frontier_count: rows[0] && rows[0].frontier_count || 0, wants: rows[0] && rows[0].wants || [], Ξ: '' };
   }
 
