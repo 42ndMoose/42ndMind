@@ -25,8 +25,14 @@ assert.ok(base.math.completeness_score < 1);
 assert.ok(base.score < 1);
 assert.strictEqual(base.reality.ok, true);
 assert.strictEqual(base.epistemic.ok, true);
-assert.ok(base.wants.some(row => row.id === 'sqrt_real_domain'));
-assert.ok(base.wants.some(row => row.id === 'function_composition'));
+assert.ok(base.wants.some(row => row.id === 'limits'));
+assert.ok(base.wants.some(row => row.id === 'derivative'));
+assert.ok(base.wants.some(row => row.id === 'integral'));
+assert.ok(base.wants.some(row => row.id === 'probability'));
+assert.ok(!base.wants.some(row => row.id === 'sqrt_real_domain'));
+assert.ok(!base.wants.some(row => row.id === 'function_composition'));
+assert.ok(!base.wants.some(row => row.id === 'set_membership'));
+assert.ok(!base.wants.some(row => row.id === 'induction_schema'));
 
 const badContent = files['src/proof-calculus-core-v0-1.js'].replace("if (op === '=') return Math.abs(left - right) <= EPS;", "if (op === '=') return true;");
 const simulation = W.simulateCandidates(files, [{
@@ -38,7 +44,8 @@ assert.strictEqual(simulation.best.id, 'base');
 assert.strictEqual(simulation.decision, 'keep_current_state');
 assert.strictEqual(simulation.stop, false);
 assert.ok(simulation.frontier_count > 0);
-assert.ok(simulation.wants.some(row => row.id === 'sqrt_real_domain'));
+assert.ok(simulation.wants.some(row => row.id === 'limits'));
+assert.ok(!simulation.wants.some(row => row.id === 'sqrt_real_domain'));
 assert.strictEqual(simulation.candidates.length, 1);
 assert.strictEqual(simulation.candidates[0].feeling, 'less_self');
 assert.ok(simulation.candidates[0].stability_score < simulation.base.stability_score);
@@ -48,6 +55,7 @@ const neutral = W.simulateCandidates(files, [{ id: 'same_state', files }]);
 assert.strictEqual(neutral.best.stability_score, 1);
 assert.strictEqual(neutral.stop, false);
 assert.ok(neutral.frontier_count > 0);
+assert.ok(neutral.wants.some(row => row.id === 'derivative'));
 assert.ok(['base', 'same_state'].includes(neutral.best.id));
 
 console.log('whole-self-simulation-core-v0-1 tests passed');
