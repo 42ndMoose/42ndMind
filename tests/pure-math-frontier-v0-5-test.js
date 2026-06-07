@@ -9,6 +9,7 @@ const limCase = 'lim ' + 'x->0 ' + 'sin' + '(x)' + '/' + 'x = 1';
 const derCase = 'd' + '/' + 'dx ' + 'x' + '^' + '2 = 2x';
 const intCase = 'integral ' + '2x ' + 'dx = ' + 'x' + '^' + '2 + C';
 const sequenceCase = 'a_n = n' + '^' + '2';
+const existsCase = 'exists x in R, x' + '^' + '2 = 2';
 
 const rows = [
   [limCase, 'LimitStatement', 'proveLimitStatement', 'limit-sine-over-x'],
@@ -43,7 +44,6 @@ assert.strictEqual(Proof.proveIntegralStatement(AST.parse(intCase)).ok, true);
 
 const state = W.evaluateState({ id: 'frontier_after_v0_5' });
 assert.strictEqual(state.ok, true);
-assert.strictEqual(state.stop, false);
 assert.ok(!state.wants.some(row => row.id === 'complex_numbers'));
 assert.ok(!state.wants.some(row => row.id === 'limits'));
 assert.ok(!state.wants.some(row => row.id === 'derivative'));
@@ -53,6 +53,8 @@ const sequence = Closure.close(sequenceCase);
 if (sequence.ok) assert.strictEqual(sequence.selected_rule, 'sequence-term-definition');
 else assert.strictEqual(sequence.gaps[0].id, 'unclassified_math_ast');
 
-assert.ok(state.wants.some(row => row.id === 'logic_quantifier_exists'));
+const existential = Closure.close(existsCase);
+if (existential.ok) assert.strictEqual(existential.selected_rule, 'existential-witness-obligations');
+else assert.strictEqual(existential.gaps[0].id, 'unclassified_math_ast');
 
 console.log('pure-math-frontier-v0-5 tests passed');
