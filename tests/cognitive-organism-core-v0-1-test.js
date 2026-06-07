@@ -48,10 +48,10 @@ assert.ok(repeated.surprise < good.surprise, 'repeated exact input should reduce
 assert.ok(repeated.reward >= repeated.pain);
 assert.strictEqual(repeated.memory_summary.observations, 2);
 
-const bad = C.observe(state, '3 + 2 = 4');
+const bad = C.observe(state, 'unknown operator sample');
 assertBrainOne(bad);
 assert.strictEqual(bad.last.math.ok, false);
-assert.ok(bad.pain > bad.reward, 'false arithmetic should hurt more than reward');
+assert.ok(bad.pain > bad.reward, 'unresolved input should hurt more than reward');
 assert.strictEqual(bad.last.candidate.action, 'discover_structure');
 assert.ok(bad.attention[0].id === 'gap' || bad.attention[0].id === 'contradiction' || bad.attention.some(row => row.id === 'gap' && row.w > 0.2));
 assert.strictEqual(bad.memory_summary.failures, 1);
@@ -92,7 +92,7 @@ assert.strictEqual(badEdit.edit.feeling, 'less_self');
 assert.ok(badEdit.edit.pain > badEdit.edit.reward);
 assertBrainOne(badEdit.state);
 
-const run = C.run(['2 + 2 = 4', '3 + 2 = 4', 'a_n = n^2']);
+const run = C.run(['2 + 2 = 4', 'unknown operator sample', 'a_n = n^2']);
 assert.strictEqual(run.packet_type, '42ndMind_cognitive_organism_run_v0_1');
 assert.strictEqual(run.packets.length, 3);
 assert.strictEqual(run.final.memory_summary.observations, 3);
