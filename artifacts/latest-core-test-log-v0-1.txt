@@ -448,6 +448,9 @@ PASS delete is blocked by policy
 PASS blocked proposal reports chaos
 PASS reset restores virtual source
 exit_code=0
+## tests/source-edit-reality-feedback-v0-1-test.js
+source-edit-reality-feedback-v0-1 tests passed
+exit_code=0
 ## tests/mathematical-patch-proposer-v0-1-test.js
 PASS mathematical patch proposer loads
 PASS complete source has no gaps
