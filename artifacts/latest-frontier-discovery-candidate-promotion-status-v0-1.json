@@ -1,9 +1,9 @@
 {
-  "promoted": false,
-  "reason": "frontier_candidate_promotion_gate_failed",
+  "promoted": true,
+  "reason": "safe_frontier_candidate_promoted",
   "checks": {
-    "candidate_id_known": false,
-    "discovery_kind_known": false,
+    "candidate_id_known": true,
+    "discovery_kind_known": true,
     "accepted_by_sandbox": true,
     "tests_ok": true,
     "validators_ok": true,
@@ -13,17 +13,47 @@
     "all_paths_allowed": true,
     "changed_paths_allowed": true
   },
-  "candidate_id": "frontier_candidate_existential_quantifier_v0_1",
-  "expected_kind": null,
-  "actual_kind": "existential_quantifier",
-  "operation_paths": [
-    "src/math-ast-core-v0-1.js",
-    "src/proof-calculus-core-v0-1.js",
-    "src/operator-anatomy-v0-1.js",
-    "src/source-edit-reality-feedback-v0-1.js",
-    "src/whole-self-simulation-core-v0-1.js",
-    "tests/frontier-candidate-complex-unit-v0-1-test.js"
+  "applied": [
+    {
+      "path": "src/math-ast-core-v0-1.js",
+      "type": "replace",
+      "before_bytes": 24961,
+      "after_bytes": 26115
+    },
+    {
+      "path": "src/proof-calculus-core-v0-1.js",
+      "type": "replace",
+      "before_bytes": 35724,
+      "after_bytes": 36703
+    },
+    {
+      "path": "src/operator-anatomy-v0-1.js",
+      "type": "replace",
+      "before_bytes": 17978,
+      "after_bytes": 18609
+    },
+    {
+      "path": "src/source-edit-reality-feedback-v0-1.js",
+      "type": "replace",
+      "before_bytes": 8793,
+      "after_bytes": 8995
+    },
+    {
+      "path": "src/whole-self-simulation-core-v0-1.js",
+      "type": "replace",
+      "before_bytes": 10805,
+      "after_bytes": 10474
+    },
+    {
+      "path": "tests/frontier-candidate-complex-unit-v0-1-test.js",
+      "type": "replace",
+      "before_bytes": 1798,
+      "after_bytes": 1859
+    }
   ],
+  "skipped": [],
+  "candidate_id": "frontier_candidate_existential_quantifier_v0_1",
+  "discovery_kind": "existential_quantifier",
   "changed_paths": [
     "src/math-ast-core-v0-1.js",
     "src/operator-anatomy-v0-1.js",
