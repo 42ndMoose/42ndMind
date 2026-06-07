@@ -79,6 +79,9 @@ jobs:
       - name: Apply pure math frontier v0.4
         run: node scripts/apply-pure-math-frontier-v0-4.js
 
+      - name: Apply pure math frontier v0.5
+        run: node scripts/apply-pure-math-frontier-v0-5.js
+
       - name: Run core tests and capture status
         run: |
           set +e
@@ -94,6 +97,7 @@ jobs:
             tests/math-language-kernel-v0-1-test.js \
             tests/kernel-math-closure-bridge-v0-1-test.js \
             tests/pure-math-frontier-v0-4-test.js \
+            tests/pure-math-frontier-v0-5-test.js \
             tests/completion-scopes-v0-1-test.js \
             tests/completion-edge-scopes-v0-1-test.js \
             tests/completion-frontier-scopes-v0-1-test.js \
@@ -209,7 +213,7 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add scripts/run-self-edit-loop-v0-1.js scripts/run-whole-self-simulation-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js scripts/apply-kernel-math-closure-bridge-v0-1.js scripts/apply-pure-math-frontier-v0-4.js src/self-edit-loop-v0-1.js src/source-edit-reality-feedback-v0-1.js src/whole-self-simulation-core-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-language-kernel-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/pure-math-frontier-v0-4-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js tests/self-edit-parser-export-fallback-v0-1-test.cjs
+          git add scripts/run-self-edit-loop-v0-1.js scripts/run-whole-self-simulation-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js scripts/apply-kernel-math-closure-bridge-v0-1.js scripts/apply-pure-math-frontier-v0-4.js scripts/apply-pure-math-frontier-v0-5.js src/self-edit-loop-v0-1.js src/source-edit-reality-feedback-v0-1.js src/whole-self-simulation-core-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-language-kernel-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/pure-math-frontier-v0-4-test.js tests/pure-math-frontier-v0-5-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js tests/self-edit-parser-export-fallback-v0-1-test.cjs
           git diff --cached --quiet || git commit -m "Wire proof and closure spine [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
