@@ -147,9 +147,9 @@
           "frontier": true,
           "frontier_id": "matrices",
           "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
+          "verified": true,
+          "closure_operator": "typeMatrixProduct",
+          "selected_rule": "matrix-product-dimension-guard",
           "gap": null
         },
         {
@@ -712,9 +712,9 @@
             "frontier": true,
             "frontier_id": "matrices",
             "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
+            "verified": true,
+            "closure_operator": "typeMatrixProduct",
+            "selected_rule": "matrix-product-dimension-guard",
             "gap": null
           },
           {
@@ -1279,9 +1279,9 @@
             "frontier": true,
             "frontier_id": "matrices",
             "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
+            "verified": true,
+            "closure_operator": "typeMatrixProduct",
+            "selected_rule": "matrix-product-dimension-guard",
             "gap": null
           },
           {
@@ -1707,7 +1707,7 @@
   "best": {
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
-    "id": "base",
+    "id": "candidate_same_state",
     "ok": false,
     "score": 0.708214,
     "stability_score": 0.675,
@@ -1850,9 +1850,9 @@
           "frontier": true,
           "frontier_id": "matrices",
           "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
+          "verified": true,
+          "closure_operator": "typeMatrixProduct",
+          "selected_rule": "matrix-product-dimension-guard",
           "gap": null
         },
         {
@@ -2266,10 +2266,13 @@
         "reason": "Existential quantifier closure is not yet represented."
       }
     ],
-    "Ξ": ""
+    "Ξ": "",
+    "sandbox": {
+      "ok": true
+    }
   },
   "stop": false,
-  "decision": "keep_current_state",
+  "decision": "prefer_candidate_state",
   "frontier_count": 2,
   "wants": [
     {

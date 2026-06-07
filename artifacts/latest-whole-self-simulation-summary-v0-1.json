@@ -1,9 +1,9 @@
 {
   "packet_type": "42ndMind_whole_self_simulation_summary_v0_1",
   "version": "0.1.0",
-  "decision": "keep_current_state",
+  "decision": "prefer_candidate_state",
   "stop": false,
-  "best_id": "base",
+  "best_id": "candidate_same_state",
   "best_score": 0.708214,
   "best_damage_count": 3,
   "best_feeling": "less_self",
@@ -108,8 +108,8 @@
     {
       "input": "A B = C",
       "ok": false,
-      "closure_operator": null,
-      "selected_rule": null,
+      "closure_operator": "typeMatrixProduct",
+      "selected_rule": "matrix-product-dimension-guard",
       "gap": null
     },
     {
