@@ -11,7 +11,10 @@
     { id: 'linear_equation_two_sided', input: '2x + 1 = x + 4', must_verify: true, closure_operator: 'solveLinearEquation', selected_rule: 'linear-equation-solve' },
     { id: 'equality_transitivity', input: 'a = b, b = c therefore a = c', must_verify: true, closure_operator: 'proveEquality', selected_rule: 'equality-transitivity' },
     { id: 'simplification_additive_identity', input: 'simplify x + 0', must_verify: true, closure_operator: 'simplifyExpression', selected_rule: 'expression-simplification' },
-    { id: 'unsupported_sqrt_gap', input: 'sqrt(x) is real', must_verify: false, expected_gap: 'unclassified_math_ast' }
+    { id: 'sqrt_real_domain', input: 'sqrt(x) is real', must_verify: true, closure_operator: 'proveSqrtDomain', selected_rule: 'sqrt-domain-guard' },
+    { id: 'function_composition_tree', input: 'f(g(x))', must_verify: true, closure_operator: 'composeFunctionApplication', selected_rule: 'function-composition-canonicalization' },
+    { id: 'set_membership_typing', input: 'x ∈ A', must_verify: true, closure_operator: 'typeSetMembership', selected_rule: 'set-membership-typing' },
+    { id: 'induction_obligation_schema', input: 'prove by induction P(n)', must_verify: true, closure_operator: 'generateInductionObligations', selected_rule: 'induction-schema-obligations' }
   ]);
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
