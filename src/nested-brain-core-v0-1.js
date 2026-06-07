@@ -6,7 +6,9 @@
 
   const VERSION = '0.1.0';
   let Growth = null;
+  let Language = null;
   try { if (typeof require === 'function') Growth = require('./autonomous-brain-growth-core-v0-1.js'); } catch (_) { Growth = null; }
+  try { if (typeof require === 'function') Language = require('./language-organ-core-v0-1.js'); } catch (_) { Language = null; }
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
   function A(value) { return Array.isArray(value) ? value : []; }
@@ -45,6 +47,33 @@
       confidence += b.confidence || 0;
     });
     return { concepts, beliefs, contradictions, questions, log, pos, neg, confidence: beliefs ? confidence / beliefs : 0 };
+  }
+
+  function languageInputs(state) {
+    const rows = [];
+    const growth = state && state.growth || {};
+    A(growth.growth_log).slice(0, 16).forEach(row => { if (row && row.input) rows.push(row.input); });
+    Object.keys(growth.beliefs || {}).slice(0, 16).forEach(key => {
+      const b = growth.beliefs[key];
+      if (b && b.examples && b.examples[0]) rows.push(b.examples[0]);
+    });
+    if (state && state.last && state.last.input) rows.push(state.last.input);
+    return rows.filter(Boolean);
+  }
+
+  function languageOrgan(state) {
+    if (!Language || typeof Language.run !== 'function') return organ('language', [{ id: 'language:unavailable', w: 1 }]);
+    const inputs = languageInputs(state);
+    const packet = Language.run(inputs.length ? inputs : ['2 + 2 = 4']).final;
+    const organs = packet.organs || {};
+    return organ('language', [
+      { id: 'syntax', w: organs.syntax && organs.syntax.unit || 1 },
+      { id: 'semantics', w: organs.semantics && organs.semantics.unit || 1 },
+      { id: 'proof', w: organs.proof && organs.proof.unit || 1 },
+      { id: 'rewrite', w: organs.rewrite && organs.rewrite.unit || 1 },
+      { id: 'generation', w: organs.generation && organs.generation.unit || 1 },
+      { id: 'translation', w: organs.translation && organs.translation.unit || 1 }
+    ]);
   }
 
   function organsFor(state) {
@@ -87,7 +116,8 @@
         { id: 'reinforce', w: isClaim + 1e-12 },
         { id: 'repair', w: isContradiction + 1e-12 },
         { id: 'explore', w: isUnparsed + isUnknown + 1e-12 }
-      ])
+      ]),
+      language: languageOrgan(state)
     };
   }
 
@@ -100,8 +130,8 @@
     const magnitude = l1(terms);
     const coherence = terms.length ? magnitude / terms.length : 0;
     return {
-      equation: 'brain = |perception| + |memory| + |belief| + |valuation| + |action|',
-      invariant: 'each organ is its own unit whole; no rounded organ field',
+      equation: 'brain = |perception| + |memory| + |belief| + |valuation| + |action| + |language|',
+      invariant: 'each organ is its own unit whole; language is a live brain organ, not a side module',
       organ_count: terms.length,
       magnitude,
       coherence,
@@ -143,5 +173,5 @@
     return { packet_type: '42ndMind_nested_brain_commit_v0_1', version: VERSION, ok: true, applied: true, stage: clone(sim.stage), state: target, Xi: '' };
   }
 
-  return Object.freeze({ VERSION, normalize, l1, organ, organsFor, build, optimizedStage, simulate, commit });
+  return Object.freeze({ VERSION, normalize, l1, organ, languageInputs, languageOrgan, organsFor, build, optimizedStage, simulate, commit });
 });
