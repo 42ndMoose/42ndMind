@@ -5,17 +5,17 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.732222,
-    "stability_score": 0.788889,
-    "completeness_score": 0.6,
-    "damage_count": 5,
+    "ok": true,
+    "score": 0.914286,
+    "stability_score": 1,
+    "completeness_score": 0.714286,
+    "damage_count": 0,
     "frontier_count": 4,
     "math": {
       "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.6,
+      "completeness_score": 0.714286,
       "damage_count": 0,
       "frontier_count": 4,
       "gap_count": 0,
@@ -89,42 +89,86 @@
         {
           "input": "sqrt(x) is real",
           "ok": true,
-          "frontier": true,
-          "frontier_id": "sqrt_real_domain",
-          "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveSqrtDomain",
+          "selected_rule": "sqrt-domain-guard",
+          "gap": null
         },
         {
           "input": "f(g(x))",
           "ok": true,
-          "frontier": true,
-          "frontier_id": "function_composition",
-          "reason": "Function application and composition are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "composeFunctionApplication",
+          "selected_rule": "function-composition-canonicalization",
+          "gap": null
         },
         {
           "input": "x ∈ A",
           "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "typeSetMembership",
+          "selected_rule": "set-membership-typing",
+          "gap": null
+        },
+        {
+          "input": "prove by induction P(n)",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "generateInductionObligations",
+          "selected_rule": "induction-schema-obligations",
+          "gap": null
+        },
+        {
+          "input": "lim x->0 sin(x)/x = 1",
+          "ok": true,
           "frontier": true,
-          "frontier_id": "set_membership",
-          "reason": "Set membership and typed domains beyond R are not yet represented.",
+          "frontier_id": "limits",
+          "reason": "Limits are not yet represented in the canonical math language.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "prove by induction P(n)",
+          "input": "d/dx x^2 = 2x",
           "ok": true,
           "frontier": true,
-          "frontier_id": "induction_schema",
-          "reason": "Induction is not yet represented as a proof schema.",
+          "frontier_id": "derivative",
+          "reason": "Derivative operators are not yet represented.",
+          "verified": false,
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "input": "integral 2x dx = x^2 + C",
+          "ok": true,
+          "frontier": true,
+          "frontier_id": "integral",
+          "reason": "Integral operators are not yet represented.",
+          "verified": false,
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "input": "P(A and B) = P(A)P(B)",
+          "ok": true,
+          "frontier": true,
+          "frontier_id": "probability",
+          "reason": "Probability/event algebra is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -133,44 +177,44 @@
       ],
       "frontiers": [
         {
-          "input": "sqrt(x) is real",
+          "input": "lim x->0 sin(x)/x = 1",
           "ok": true,
           "frontier": true,
-          "frontier_id": "sqrt_real_domain",
-          "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
+          "frontier_id": "limits",
+          "reason": "Limits are not yet represented in the canonical math language.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "f(g(x))",
+          "input": "d/dx x^2 = 2x",
           "ok": true,
           "frontier": true,
-          "frontier_id": "function_composition",
-          "reason": "Function application and composition are not yet represented.",
+          "frontier_id": "derivative",
+          "reason": "Derivative operators are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "x ∈ A",
+          "input": "integral 2x dx = x^2 + C",
           "ok": true,
           "frontier": true,
-          "frontier_id": "set_membership",
-          "reason": "Set membership and typed domains beyond R are not yet represented.",
+          "frontier_id": "integral",
+          "reason": "Integral operators are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "prove by induction P(n)",
+          "input": "P(A and B) = P(A)P(B)",
           "ok": true,
           "frontier": true,
-          "frontier_id": "induction_schema",
-          "reason": "Induction is not yet represented as a proof schema.",
+          "frontier_id": "probability",
+          "reason": "Probability/event algebra is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -180,8 +224,8 @@
     },
     "truth": {
       "ok": true,
-      "score": 0.6,
-      "frontier_pressure": 0.4,
+      "score": 0.714286,
+      "frontier_pressure": 0.285714,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -219,11 +263,11 @@
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.6
+            "w": 0.714286
           },
           {
             "σ": "υ?",
-            "w": 0.4
+            "w": 0.285714
           }
         ],
         "μ": [
@@ -235,11 +279,11 @@
         "θ": [
           {
             "σ": "θT",
-            "w": 0.6
+            "w": 0.714286
           },
           {
             "σ": "θU",
-            "w": 0.4
+            "w": 0.285714
           }
         ],
         "ξ": "",
@@ -260,8 +304,8 @@
           "counter": 0,
           "no_contradiction": 1,
           "contradiction": 0,
-          "no_unknown": 0.6,
-          "unknown": 0.4,
+          "no_unknown": 0.714286,
+          "unknown": 0.285714,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -271,7 +315,7 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0.6,
+        "closure": 0.714286,
         "truth_gate": {
           "true": false,
           "contested": false,
@@ -285,7 +329,7 @@
       }
     },
     "reality": {
-      "ok": false,
+      "ok": true,
       "anchors": [
         {
           "id": "arithmetic_identity_2_plus_2",
@@ -350,94 +394,90 @@
         {
           "id": "sqrt_real_domain",
           "input": "sqrt(x) is real",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "proveSqrtDomain",
+          "selected_rule": "sqrt-domain-guard",
+          "gap": null
         },
         {
           "id": "function_composition_tree",
           "input": "f(g(x))",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "composeFunctionApplication",
+          "selected_rule": "function-composition-canonicalization",
+          "gap": null
         },
         {
           "id": "set_membership_typing",
           "input": "x ∈ A",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "typeSetMembership",
+          "selected_rule": "set-membership-typing",
+          "gap": null
         },
         {
           "id": "induction_obligation_schema",
           "input": "prove by induction P(n)",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "generateInductionObligations",
+          "selected_rule": "induction-schema-obligations",
+          "gap": null
         }
       ],
-      "score": 0.5555555555555556,
-      "damage_count": 4,
+      "score": 1,
+      "damage_count": 0,
       "improvement_count": 0,
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.333333,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.333333,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
-            "open": false
+            "open": true
           },
           {
             "name": "scope_clarity",
@@ -448,42 +488,37 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration",
-          "reality_contact"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "less_self",
+    "feeling": "stable_but_incomplete",
     "wants": [
       {
-        "id": "sqrt_real_domain",
-        "input": "sqrt(x) is real",
+        "id": "limits",
+        "input": "lim x->0 sin(x)/x = 1",
         "gap": "unclassified_math_ast",
-        "reason": "Square-root/domain reasoning is not yet represented in the canonical math language."
+        "reason": "Limits are not yet represented in the canonical math language."
       },
       {
-        "id": "function_composition",
-        "input": "f(g(x))",
+        "id": "derivative",
+        "input": "d/dx x^2 = 2x",
         "gap": "unclassified_math_ast",
-        "reason": "Function application and composition are not yet represented."
+        "reason": "Derivative operators are not yet represented."
       },
       {
-        "id": "set_membership",
-        "input": "x ∈ A",
+        "id": "integral",
+        "input": "integral 2x dx = x^2 + C",
         "gap": "unclassified_math_ast",
-        "reason": "Set membership and typed domains beyond R are not yet represented."
+        "reason": "Integral operators are not yet represented."
       },
       {
-        "id": "induction_schema",
-        "input": "prove by induction P(n)",
+        "id": "probability",
+        "input": "P(A and B) = P(A)P(B)",
         "gap": "unclassified_math_ast",
-        "reason": "Induction is not yet represented as a proof schema."
+        "reason": "Probability/event algebra is not yet represented."
       }
     ],
     "Ξ": ""
@@ -493,17 +528,17 @@
       "packet_type": "42ndMind_whole_self_state_v0_1",
       "version": "0.1.0",
       "id": "candidate_same_state",
-      "ok": false,
-      "score": 0.732222,
-      "stability_score": 0.788889,
-      "completeness_score": 0.6,
-      "damage_count": 5,
+      "ok": true,
+      "score": 0.914286,
+      "stability_score": 1,
+      "completeness_score": 0.714286,
+      "damage_count": 0,
       "frontier_count": 4,
       "math": {
         "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.6,
+        "completeness_score": 0.714286,
         "damage_count": 0,
         "frontier_count": 4,
         "gap_count": 0,
@@ -577,42 +612,86 @@
           {
             "input": "sqrt(x) is real",
             "ok": true,
-            "frontier": true,
-            "frontier_id": "sqrt_real_domain",
-            "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveSqrtDomain",
+            "selected_rule": "sqrt-domain-guard",
+            "gap": null
           },
           {
             "input": "f(g(x))",
             "ok": true,
-            "frontier": true,
-            "frontier_id": "function_composition",
-            "reason": "Function application and composition are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "composeFunctionApplication",
+            "selected_rule": "function-composition-canonicalization",
+            "gap": null
           },
           {
             "input": "x ∈ A",
             "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "typeSetMembership",
+            "selected_rule": "set-membership-typing",
+            "gap": null
+          },
+          {
+            "input": "prove by induction P(n)",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "generateInductionObligations",
+            "selected_rule": "induction-schema-obligations",
+            "gap": null
+          },
+          {
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
             "frontier": true,
-            "frontier_id": "set_membership",
-            "reason": "Set membership and typed domains beyond R are not yet represented.",
+            "frontier_id": "limits",
+            "reason": "Limits are not yet represented in the canonical math language.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "prove by induction P(n)",
+            "input": "d/dx x^2 = 2x",
             "ok": true,
             "frontier": true,
-            "frontier_id": "induction_schema",
-            "reason": "Induction is not yet represented as a proof schema.",
+            "frontier_id": "derivative",
+            "reason": "Derivative operators are not yet represented.",
+            "verified": false,
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "frontier": true,
+            "frontier_id": "integral",
+            "reason": "Integral operators are not yet represented.",
+            "verified": false,
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "frontier": true,
+            "frontier_id": "probability",
+            "reason": "Probability/event algebra is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -621,44 +700,44 @@
         ],
         "frontiers": [
           {
-            "input": "sqrt(x) is real",
+            "input": "lim x->0 sin(x)/x = 1",
             "ok": true,
             "frontier": true,
-            "frontier_id": "sqrt_real_domain",
-            "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
+            "frontier_id": "limits",
+            "reason": "Limits are not yet represented in the canonical math language.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "f(g(x))",
+            "input": "d/dx x^2 = 2x",
             "ok": true,
             "frontier": true,
-            "frontier_id": "function_composition",
-            "reason": "Function application and composition are not yet represented.",
+            "frontier_id": "derivative",
+            "reason": "Derivative operators are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "x ∈ A",
+            "input": "integral 2x dx = x^2 + C",
             "ok": true,
             "frontier": true,
-            "frontier_id": "set_membership",
-            "reason": "Set membership and typed domains beyond R are not yet represented.",
+            "frontier_id": "integral",
+            "reason": "Integral operators are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "prove by induction P(n)",
+            "input": "P(A and B) = P(A)P(B)",
             "ok": true,
             "frontier": true,
-            "frontier_id": "induction_schema",
-            "reason": "Induction is not yet represented as a proof schema.",
+            "frontier_id": "probability",
+            "reason": "Probability/event algebra is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -668,8 +747,8 @@
       },
       "truth": {
         "ok": true,
-        "score": 0.6,
-        "frontier_pressure": 0.4,
+        "score": 0.714286,
+        "frontier_pressure": 0.285714,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -707,11 +786,11 @@
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.6
+              "w": 0.714286
             },
             {
               "σ": "υ?",
-              "w": 0.4
+              "w": 0.285714
             }
           ],
           "μ": [
@@ -723,11 +802,11 @@
           "θ": [
             {
               "σ": "θT",
-              "w": 0.6
+              "w": 0.714286
             },
             {
               "σ": "θU",
-              "w": 0.4
+              "w": 0.285714
             }
           ],
           "ξ": "",
@@ -748,8 +827,8 @@
             "counter": 0,
             "no_contradiction": 1,
             "contradiction": 0,
-            "no_unknown": 0.6,
-            "unknown": 0.4,
+            "no_unknown": 0.714286,
+            "unknown": 0.285714,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -759,7 +838,7 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0.6,
+          "closure": 0.714286,
           "truth_gate": {
             "true": false,
             "contested": false,
@@ -773,7 +852,7 @@
         }
       },
       "reality": {
-        "ok": false,
+        "ok": true,
         "anchors": [
           {
             "id": "arithmetic_identity_2_plus_2",
@@ -838,94 +917,90 @@
           {
             "id": "sqrt_real_domain",
             "input": "sqrt(x) is real",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "proveSqrtDomain",
+            "selected_rule": "sqrt-domain-guard",
+            "gap": null
           },
           {
             "id": "function_composition_tree",
             "input": "f(g(x))",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "composeFunctionApplication",
+            "selected_rule": "function-composition-canonicalization",
+            "gap": null
           },
           {
             "id": "set_membership_typing",
             "input": "x ∈ A",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "typeSetMembership",
+            "selected_rule": "set-membership-typing",
+            "gap": null
           },
           {
             "id": "induction_obligation_schema",
             "input": "prove by induction P(n)",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "generateInductionObligations",
+            "selected_rule": "induction-schema-obligations",
+            "gap": null
           }
         ],
-        "score": 0.5555555555555556,
-        "damage_count": 4,
+        "score": 1,
+        "damage_count": 0,
         "improvement_count": 0,
         "Ξ": ""
       },
       "epistemic": {
-        "ok": false,
-        "score": 0.333333,
+        "ok": true,
+        "score": 1,
         "gates": {
           "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
           "version": "0.1.0",
-          "ok": false,
-          "peak_attractor": false,
+          "ok": true,
+          "peak_attractor": true,
           "plot_kind": "kernel_governance_gate_state",
           "point": {
             "x": 0,
-            "y": -1,
+            "y": 1,
             "z": 0,
-            "label": "epistemic_collapse"
+            "label": "objective_peak_philosophical_maturity"
           },
-          "peak_distance": 1,
-          "gate_open_ratio": 0.333333,
+          "peak_distance": 0,
+          "gate_open_ratio": 1,
           "gates": [
             {
               "name": "anti_delusion",
-              "open": false
+              "open": true
             },
             {
               "name": "coherence",
-              "open": false
+              "open": true
             },
             {
               "name": "integration",
-              "open": false
+              "open": true
             },
             {
               "name": "reality_contact",
-              "open": false
+              "open": true
             },
             {
               "name": "scope_clarity",
@@ -936,42 +1011,37 @@
               "open": true
             }
           ],
-          "closed_gates": [
-            "anti_delusion",
-            "coherence",
-            "integration",
-            "reality_contact"
-          ],
-          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+          "closed_gates": [],
+          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
           "ξ": ""
         }
       },
       "stop": false,
-      "feeling": "less_self",
+      "feeling": "stable_but_incomplete",
       "wants": [
         {
-          "id": "sqrt_real_domain",
-          "input": "sqrt(x) is real",
+          "id": "limits",
+          "input": "lim x->0 sin(x)/x = 1",
           "gap": "unclassified_math_ast",
-          "reason": "Square-root/domain reasoning is not yet represented in the canonical math language."
+          "reason": "Limits are not yet represented in the canonical math language."
         },
         {
-          "id": "function_composition",
-          "input": "f(g(x))",
+          "id": "derivative",
+          "input": "d/dx x^2 = 2x",
           "gap": "unclassified_math_ast",
-          "reason": "Function application and composition are not yet represented."
+          "reason": "Derivative operators are not yet represented."
         },
         {
-          "id": "set_membership",
-          "input": "x ∈ A",
+          "id": "integral",
+          "input": "integral 2x dx = x^2 + C",
           "gap": "unclassified_math_ast",
-          "reason": "Set membership and typed domains beyond R are not yet represented."
+          "reason": "Integral operators are not yet represented."
         },
         {
-          "id": "induction_schema",
-          "input": "prove by induction P(n)",
+          "id": "probability",
+          "input": "P(A and B) = P(A)P(B)",
           "gap": "unclassified_math_ast",
-          "reason": "Induction is not yet represented as a proof schema."
+          "reason": "Probability/event algebra is not yet represented."
         }
       ],
       "Ξ": "",
@@ -984,16 +1054,16 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.712778,
-      "stability_score": 0.761111,
-      "completeness_score": 0.6,
-      "damage_count": 6,
+      "score": 0.824841,
+      "stability_score": 0.872222,
+      "completeness_score": 0.714286,
+      "damage_count": 2,
       "frontier_count": 4,
       "math": {
         "ok": true,
         "score": 1,
         "stability_score": 1,
-        "completeness_score": 0.6,
+        "completeness_score": 0.714286,
         "damage_count": 0,
         "frontier_count": 4,
         "gap_count": 0,
@@ -1067,42 +1137,86 @@
           {
             "input": "sqrt(x) is real",
             "ok": true,
-            "frontier": true,
-            "frontier_id": "sqrt_real_domain",
-            "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "proveSqrtDomain",
+            "selected_rule": "sqrt-domain-guard",
+            "gap": null
           },
           {
             "input": "f(g(x))",
             "ok": true,
-            "frontier": true,
-            "frontier_id": "function_composition",
-            "reason": "Function application and composition are not yet represented.",
-            "verified": false,
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "composeFunctionApplication",
+            "selected_rule": "function-composition-canonicalization",
+            "gap": null
           },
           {
             "input": "x ∈ A",
             "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "typeSetMembership",
+            "selected_rule": "set-membership-typing",
+            "gap": null
+          },
+          {
+            "input": "prove by induction P(n)",
+            "ok": true,
+            "frontier": false,
+            "frontier_id": null,
+            "reason": null,
+            "verified": true,
+            "closure_operator": "generateInductionObligations",
+            "selected_rule": "induction-schema-obligations",
+            "gap": null
+          },
+          {
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
             "frontier": true,
-            "frontier_id": "set_membership",
-            "reason": "Set membership and typed domains beyond R are not yet represented.",
+            "frontier_id": "limits",
+            "reason": "Limits are not yet represented in the canonical math language.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "prove by induction P(n)",
+            "input": "d/dx x^2 = 2x",
             "ok": true,
             "frontier": true,
-            "frontier_id": "induction_schema",
-            "reason": "Induction is not yet represented as a proof schema.",
+            "frontier_id": "derivative",
+            "reason": "Derivative operators are not yet represented.",
+            "verified": false,
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "frontier": true,
+            "frontier_id": "integral",
+            "reason": "Integral operators are not yet represented.",
+            "verified": false,
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          },
+          {
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "frontier": true,
+            "frontier_id": "probability",
+            "reason": "Probability/event algebra is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -1111,44 +1225,44 @@
         ],
         "frontiers": [
           {
-            "input": "sqrt(x) is real",
+            "input": "lim x->0 sin(x)/x = 1",
             "ok": true,
             "frontier": true,
-            "frontier_id": "sqrt_real_domain",
-            "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
+            "frontier_id": "limits",
+            "reason": "Limits are not yet represented in the canonical math language.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "f(g(x))",
+            "input": "d/dx x^2 = 2x",
             "ok": true,
             "frontier": true,
-            "frontier_id": "function_composition",
-            "reason": "Function application and composition are not yet represented.",
+            "frontier_id": "derivative",
+            "reason": "Derivative operators are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "x ∈ A",
+            "input": "integral 2x dx = x^2 + C",
             "ok": true,
             "frontier": true,
-            "frontier_id": "set_membership",
-            "reason": "Set membership and typed domains beyond R are not yet represented.",
+            "frontier_id": "integral",
+            "reason": "Integral operators are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "prove by induction P(n)",
+            "input": "P(A and B) = P(A)P(B)",
             "ok": true,
             "frontier": true,
-            "frontier_id": "induction_schema",
-            "reason": "Induction is not yet represented as a proof schema.",
+            "frontier_id": "probability",
+            "reason": "Probability/event algebra is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -1158,8 +1272,8 @@
       },
       "truth": {
         "ok": true,
-        "score": 0.6,
-        "frontier_pressure": 0.4,
+        "score": 0.714286,
+        "frontier_pressure": 0.285714,
         "claim": {
           "packet_type": "42ndMind_truth_accounting_claim_v0_1",
           "version": "0.1.0",
@@ -1197,11 +1311,11 @@
           "υ": [
             {
               "σ": "υ0",
-              "w": 0.6
+              "w": 0.714286
             },
             {
               "σ": "υ?",
-              "w": 0.4
+              "w": 0.285714
             }
           ],
           "μ": [
@@ -1213,11 +1327,11 @@
           "θ": [
             {
               "σ": "θT",
-              "w": 0.6
+              "w": 0.714286
             },
             {
               "σ": "θU",
-              "w": 0.4
+              "w": 0.285714
             }
           ],
           "ξ": "",
@@ -1238,8 +1352,8 @@
             "counter": 0,
             "no_contradiction": 1,
             "contradiction": 0,
-            "no_unknown": 0.6,
-            "unknown": 0.4,
+            "no_unknown": 0.714286,
+            "unknown": 0.285714,
             "scope_ok": 1,
             "scope_error": 0,
             "definition_ok": 1,
@@ -1249,7 +1363,7 @@
             "measurement_ok": 1,
             "measurement_error": 0
           },
-          "closure": 0.6,
+          "closure": 0.714286,
           "truth_gate": {
             "true": false,
             "contested": false,
@@ -1330,58 +1444,54 @@
           {
             "id": "sqrt_real_domain",
             "input": "sqrt(x) is real",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "proveSqrtDomain",
+            "selected_rule": "sqrt-domain-guard",
+            "gap": null
           },
           {
             "id": "function_composition_tree",
             "input": "f(g(x))",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "composeFunctionApplication",
+            "selected_rule": "function-composition-canonicalization",
+            "gap": null
           },
           {
             "id": "set_membership_typing",
             "input": "x ∈ A",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "typeSetMembership",
+            "selected_rule": "set-membership-typing",
+            "gap": null
           },
           {
             "id": "induction_obligation_schema",
             "input": "prove by induction P(n)",
-            "ok": false,
+            "ok": true,
             "status": {
-              "ok": false,
-              "kind": "not_verified",
-              "gap": "unclassified_math_ast"
+              "ok": true,
+              "kind": "verified"
             },
-            "closure_operator": null,
-            "selected_rule": null,
-            "gap": "unclassified_math_ast"
+            "closure_operator": "generateInductionObligations",
+            "selected_rule": "induction-schema-obligations",
+            "gap": null
           }
         ],
-        "score": 0.4444444444444444,
-        "damage_count": 5,
+        "score": 0.8888888888888888,
+        "damage_count": 1,
         "improvement_count": 0,
         "Ξ": ""
       },
@@ -1442,28 +1552,28 @@
       "feeling": "less_self",
       "wants": [
         {
-          "id": "sqrt_real_domain",
-          "input": "sqrt(x) is real",
+          "id": "limits",
+          "input": "lim x->0 sin(x)/x = 1",
           "gap": "unclassified_math_ast",
-          "reason": "Square-root/domain reasoning is not yet represented in the canonical math language."
+          "reason": "Limits are not yet represented in the canonical math language."
         },
         {
-          "id": "function_composition",
-          "input": "f(g(x))",
+          "id": "derivative",
+          "input": "d/dx x^2 = 2x",
           "gap": "unclassified_math_ast",
-          "reason": "Function application and composition are not yet represented."
+          "reason": "Derivative operators are not yet represented."
         },
         {
-          "id": "set_membership",
-          "input": "x ∈ A",
+          "id": "integral",
+          "input": "integral 2x dx = x^2 + C",
           "gap": "unclassified_math_ast",
-          "reason": "Set membership and typed domains beyond R are not yet represented."
+          "reason": "Integral operators are not yet represented."
         },
         {
-          "id": "induction_schema",
-          "input": "prove by induction P(n)",
+          "id": "probability",
+          "input": "P(A and B) = P(A)P(B)",
           "gap": "unclassified_math_ast",
-          "reason": "Induction is not yet represented as a proof schema."
+          "reason": "Probability/event algebra is not yet represented."
         }
       ],
       "Ξ": "",
@@ -1476,17 +1586,17 @@
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
     "id": "base",
-    "ok": false,
-    "score": 0.732222,
-    "stability_score": 0.788889,
-    "completeness_score": 0.6,
-    "damage_count": 5,
+    "ok": true,
+    "score": 0.914286,
+    "stability_score": 1,
+    "completeness_score": 0.714286,
+    "damage_count": 0,
     "frontier_count": 4,
     "math": {
       "ok": true,
       "score": 1,
       "stability_score": 1,
-      "completeness_score": 0.6,
+      "completeness_score": 0.714286,
       "damage_count": 0,
       "frontier_count": 4,
       "gap_count": 0,
@@ -1560,42 +1670,86 @@
         {
           "input": "sqrt(x) is real",
           "ok": true,
-          "frontier": true,
-          "frontier_id": "sqrt_real_domain",
-          "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "proveSqrtDomain",
+          "selected_rule": "sqrt-domain-guard",
+          "gap": null
         },
         {
           "input": "f(g(x))",
           "ok": true,
-          "frontier": true,
-          "frontier_id": "function_composition",
-          "reason": "Function application and composition are not yet represented.",
-          "verified": false,
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "composeFunctionApplication",
+          "selected_rule": "function-composition-canonicalization",
+          "gap": null
         },
         {
           "input": "x ∈ A",
           "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "typeSetMembership",
+          "selected_rule": "set-membership-typing",
+          "gap": null
+        },
+        {
+          "input": "prove by induction P(n)",
+          "ok": true,
+          "frontier": false,
+          "frontier_id": null,
+          "reason": null,
+          "verified": true,
+          "closure_operator": "generateInductionObligations",
+          "selected_rule": "induction-schema-obligations",
+          "gap": null
+        },
+        {
+          "input": "lim x->0 sin(x)/x = 1",
+          "ok": true,
           "frontier": true,
-          "frontier_id": "set_membership",
-          "reason": "Set membership and typed domains beyond R are not yet represented.",
+          "frontier_id": "limits",
+          "reason": "Limits are not yet represented in the canonical math language.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "prove by induction P(n)",
+          "input": "d/dx x^2 = 2x",
           "ok": true,
           "frontier": true,
-          "frontier_id": "induction_schema",
-          "reason": "Induction is not yet represented as a proof schema.",
+          "frontier_id": "derivative",
+          "reason": "Derivative operators are not yet represented.",
+          "verified": false,
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "input": "integral 2x dx = x^2 + C",
+          "ok": true,
+          "frontier": true,
+          "frontier_id": "integral",
+          "reason": "Integral operators are not yet represented.",
+          "verified": false,
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        },
+        {
+          "input": "P(A and B) = P(A)P(B)",
+          "ok": true,
+          "frontier": true,
+          "frontier_id": "probability",
+          "reason": "Probability/event algebra is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -1604,44 +1758,44 @@
       ],
       "frontiers": [
         {
-          "input": "sqrt(x) is real",
+          "input": "lim x->0 sin(x)/x = 1",
           "ok": true,
           "frontier": true,
-          "frontier_id": "sqrt_real_domain",
-          "reason": "Square-root/domain reasoning is not yet represented in the canonical math language.",
+          "frontier_id": "limits",
+          "reason": "Limits are not yet represented in the canonical math language.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "f(g(x))",
+          "input": "d/dx x^2 = 2x",
           "ok": true,
           "frontier": true,
-          "frontier_id": "function_composition",
-          "reason": "Function application and composition are not yet represented.",
+          "frontier_id": "derivative",
+          "reason": "Derivative operators are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "x ∈ A",
+          "input": "integral 2x dx = x^2 + C",
           "ok": true,
           "frontier": true,
-          "frontier_id": "set_membership",
-          "reason": "Set membership and typed domains beyond R are not yet represented.",
+          "frontier_id": "integral",
+          "reason": "Integral operators are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "prove by induction P(n)",
+          "input": "P(A and B) = P(A)P(B)",
           "ok": true,
           "frontier": true,
-          "frontier_id": "induction_schema",
-          "reason": "Induction is not yet represented as a proof schema.",
+          "frontier_id": "probability",
+          "reason": "Probability/event algebra is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -1651,8 +1805,8 @@
     },
     "truth": {
       "ok": true,
-      "score": 0.6,
-      "frontier_pressure": 0.4,
+      "score": 0.714286,
+      "frontier_pressure": 0.285714,
       "claim": {
         "packet_type": "42ndMind_truth_accounting_claim_v0_1",
         "version": "0.1.0",
@@ -1690,11 +1844,11 @@
         "υ": [
           {
             "σ": "υ0",
-            "w": 0.6
+            "w": 0.714286
           },
           {
             "σ": "υ?",
-            "w": 0.4
+            "w": 0.285714
           }
         ],
         "μ": [
@@ -1706,11 +1860,11 @@
         "θ": [
           {
             "σ": "θT",
-            "w": 0.6
+            "w": 0.714286
           },
           {
             "σ": "θU",
-            "w": 0.4
+            "w": 0.285714
           }
         ],
         "ξ": "",
@@ -1731,8 +1885,8 @@
           "counter": 0,
           "no_contradiction": 1,
           "contradiction": 0,
-          "no_unknown": 0.6,
-          "unknown": 0.4,
+          "no_unknown": 0.714286,
+          "unknown": 0.285714,
           "scope_ok": 1,
           "scope_error": 0,
           "definition_ok": 1,
@@ -1742,7 +1896,7 @@
           "measurement_ok": 1,
           "measurement_error": 0
         },
-        "closure": 0.6,
+        "closure": 0.714286,
         "truth_gate": {
           "true": false,
           "contested": false,
@@ -1756,7 +1910,7 @@
       }
     },
     "reality": {
-      "ok": false,
+      "ok": true,
       "anchors": [
         {
           "id": "arithmetic_identity_2_plus_2",
@@ -1821,94 +1975,90 @@
         {
           "id": "sqrt_real_domain",
           "input": "sqrt(x) is real",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "proveSqrtDomain",
+          "selected_rule": "sqrt-domain-guard",
+          "gap": null
         },
         {
           "id": "function_composition_tree",
           "input": "f(g(x))",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "composeFunctionApplication",
+          "selected_rule": "function-composition-canonicalization",
+          "gap": null
         },
         {
           "id": "set_membership_typing",
           "input": "x ∈ A",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "typeSetMembership",
+          "selected_rule": "set-membership-typing",
+          "gap": null
         },
         {
           "id": "induction_obligation_schema",
           "input": "prove by induction P(n)",
-          "ok": false,
+          "ok": true,
           "status": {
-            "ok": false,
-            "kind": "not_verified",
-            "gap": "unclassified_math_ast"
+            "ok": true,
+            "kind": "verified"
           },
-          "closure_operator": null,
-          "selected_rule": null,
-          "gap": "unclassified_math_ast"
+          "closure_operator": "generateInductionObligations",
+          "selected_rule": "induction-schema-obligations",
+          "gap": null
         }
       ],
-      "score": 0.5555555555555556,
-      "damage_count": 4,
+      "score": 1,
+      "damage_count": 0,
       "improvement_count": 0,
       "Ξ": ""
     },
     "epistemic": {
-      "ok": false,
-      "score": 0.333333,
+      "ok": true,
+      "score": 1,
       "gates": {
         "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
         "version": "0.1.0",
-        "ok": false,
-        "peak_attractor": false,
+        "ok": true,
+        "peak_attractor": true,
         "plot_kind": "kernel_governance_gate_state",
         "point": {
           "x": 0,
-          "y": -1,
+          "y": 1,
           "z": 0,
-          "label": "epistemic_collapse"
+          "label": "objective_peak_philosophical_maturity"
         },
-        "peak_distance": 1,
-        "gate_open_ratio": 0.333333,
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
         "gates": [
           {
             "name": "anti_delusion",
-            "open": false
+            "open": true
           },
           {
             "name": "coherence",
-            "open": false
+            "open": true
           },
           {
             "name": "integration",
-            "open": false
+            "open": true
           },
           {
             "name": "reality_contact",
-            "open": false
+            "open": true
           },
           {
             "name": "scope_clarity",
@@ -1919,42 +2069,37 @@
             "open": true
           }
         ],
-        "closed_gates": [
-          "anti_delusion",
-          "coherence",
-          "integration",
-          "reality_contact"
-        ],
-        "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
         "ξ": ""
       }
     },
     "stop": false,
-    "feeling": "less_self",
+    "feeling": "stable_but_incomplete",
     "wants": [
       {
-        "id": "sqrt_real_domain",
-        "input": "sqrt(x) is real",
+        "id": "limits",
+        "input": "lim x->0 sin(x)/x = 1",
         "gap": "unclassified_math_ast",
-        "reason": "Square-root/domain reasoning is not yet represented in the canonical math language."
+        "reason": "Limits are not yet represented in the canonical math language."
       },
       {
-        "id": "function_composition",
-        "input": "f(g(x))",
+        "id": "derivative",
+        "input": "d/dx x^2 = 2x",
         "gap": "unclassified_math_ast",
-        "reason": "Function application and composition are not yet represented."
+        "reason": "Derivative operators are not yet represented."
       },
       {
-        "id": "set_membership",
-        "input": "x ∈ A",
+        "id": "integral",
+        "input": "integral 2x dx = x^2 + C",
         "gap": "unclassified_math_ast",
-        "reason": "Set membership and typed domains beyond R are not yet represented."
+        "reason": "Integral operators are not yet represented."
       },
       {
-        "id": "induction_schema",
-        "input": "prove by induction P(n)",
+        "id": "probability",
+        "input": "P(A and B) = P(A)P(B)",
         "gap": "unclassified_math_ast",
-        "reason": "Induction is not yet represented as a proof schema."
+        "reason": "Probability/event algebra is not yet represented."
       }
     ],
     "Ξ": ""
@@ -1964,28 +2109,28 @@
   "frontier_count": 4,
   "wants": [
     {
-      "id": "sqrt_real_domain",
-      "input": "sqrt(x) is real",
+      "id": "limits",
+      "input": "lim x->0 sin(x)/x = 1",
       "gap": "unclassified_math_ast",
-      "reason": "Square-root/domain reasoning is not yet represented in the canonical math language."
+      "reason": "Limits are not yet represented in the canonical math language."
     },
     {
-      "id": "function_composition",
-      "input": "f(g(x))",
+      "id": "derivative",
+      "input": "d/dx x^2 = 2x",
       "gap": "unclassified_math_ast",
-      "reason": "Function application and composition are not yet represented."
+      "reason": "Derivative operators are not yet represented."
     },
     {
-      "id": "set_membership",
-      "input": "x ∈ A",
+      "id": "integral",
+      "input": "integral 2x dx = x^2 + C",
       "gap": "unclassified_math_ast",
-      "reason": "Set membership and typed domains beyond R are not yet represented."
+      "reason": "Integral operators are not yet represented."
     },
     {
-      "id": "induction_schema",
-      "input": "prove by induction P(n)",
+      "id": "probability",
+      "input": "P(A and B) = P(A)P(B)",
       "gap": "unclassified_math_ast",
-      "reason": "Induction is not yet represented as a proof schema."
+      "reason": "Probability/event algebra is not yet represented."
     }
   ],
   "Ξ": ""

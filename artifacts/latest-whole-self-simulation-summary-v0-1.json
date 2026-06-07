@@ -4,24 +4,24 @@
   "decision": "keep_current_state",
   "stop": false,
   "best_id": "base",
-  "best_score": 0.732222,
-  "best_damage_count": 5,
-  "best_feeling": "less_self",
-  "base_score": 0.732222,
-  "base_damage_count": 5,
+  "best_score": 0.914286,
+  "best_damage_count": 0,
+  "best_feeling": "stable_but_incomplete",
+  "base_score": 0.914286,
+  "base_damage_count": 0,
   "candidates": [
     {
       "id": "candidate_same_state",
-      "score": 0.732222,
-      "damage_count": 5,
-      "feeling": "less_self",
-      "ok": false,
+      "score": 0.914286,
+      "damage_count": 0,
+      "feeling": "stable_but_incomplete",
+      "ok": true,
       "stop": false
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.712778,
-      "damage_count": 6,
+      "score": 0.824841,
+      "damage_count": 2,
       "feeling": "less_self",
       "ok": false,
       "stop": false
@@ -73,26 +73,54 @@
     {
       "input": "sqrt(x) is real",
       "ok": true,
-      "closure_operator": null,
-      "selected_rule": null,
-      "gap": "unclassified_math_ast"
+      "closure_operator": "proveSqrtDomain",
+      "selected_rule": "sqrt-domain-guard",
+      "gap": null
     },
     {
       "input": "f(g(x))",
       "ok": true,
-      "closure_operator": null,
-      "selected_rule": null,
-      "gap": "unclassified_math_ast"
+      "closure_operator": "composeFunctionApplication",
+      "selected_rule": "function-composition-canonicalization",
+      "gap": null
     },
     {
       "input": "x ∈ A",
+      "ok": true,
+      "closure_operator": "typeSetMembership",
+      "selected_rule": "set-membership-typing",
+      "gap": null
+    },
+    {
+      "input": "prove by induction P(n)",
+      "ok": true,
+      "closure_operator": "generateInductionObligations",
+      "selected_rule": "induction-schema-obligations",
+      "gap": null
+    },
+    {
+      "input": "lim x->0 sin(x)/x = 1",
       "ok": true,
       "closure_operator": null,
       "selected_rule": null,
       "gap": "unclassified_math_ast"
     },
     {
-      "input": "prove by induction P(n)",
+      "input": "d/dx x^2 = 2x",
+      "ok": true,
+      "closure_operator": null,
+      "selected_rule": null,
+      "gap": "unclassified_math_ast"
+    },
+    {
+      "input": "integral 2x dx = x^2 + C",
+      "ok": true,
+      "closure_operator": null,
+      "selected_rule": null,
+      "gap": "unclassified_math_ast"
+    },
+    {
+      "input": "P(A and B) = P(A)P(B)",
       "ok": true,
       "closure_operator": null,
       "selected_rule": null,
@@ -100,23 +128,18 @@
     }
   ],
   "epistemic": {
-    "ok": false,
-    "score": 0.333333,
-    "closed_gates": [
-      "anti_delusion",
-      "coherence",
-      "integration",
-      "reality_contact"
-    ]
+    "ok": true,
+    "score": 1,
+    "closed_gates": []
   },
   "truth": {
     "ok": true,
-    "score": 0.6
+    "score": 0.714286
   },
   "reality": {
-    "ok": false,
-    "score": 0.5555555555555556,
-    "damage_count": 4
+    "ok": true,
+    "score": 1,
+    "damage_count": 0
   },
   "Ξ": ""
 }

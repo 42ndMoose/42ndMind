@@ -11,8 +11,30 @@ exit_code=0
 math-closure-engine-v0-1 tests passed
 exit_code=0
 ## tests/math-language-completion-v0-1-test.js
-math-language-completion-v0-1 tests passed: v0.3 equality spine, 18 supported forms, 1 precise unsupported gap
-exit_code=0
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/math-language-completion-v0-1-test.js:51:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
 ## tests/math-language-kernel-v0-1-test.js
 PASS kernel loads
 PASS lambda starts unit-total
@@ -114,7 +136,32 @@ PASS irregular stream tolerated
 PASS irregular stream still has no English
 exit_code=0
 ## tests/kernel-math-closure-bridge-v0-1-test.js
-kernel-math-closure-bridge-v0-1 tests passed
+node:assert:90
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/kernel-math-closure-bridge-v0-1-test.js:49:8)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual'
+}
+
+Node.js v20.20.2
+exit_code=1
+## tests/pure-math-frontier-v0-4-test.js
+pure-math-frontier-v0-4 tests passed
 exit_code=0
 ## tests/completion-scopes-v0-1-test.js
 PASS pure field algebra scope packet is Ω*
@@ -449,40 +496,18 @@ PASS blocked proposal reports chaos
 PASS reset restores virtual source
 exit_code=0
 ## tests/source-edit-reality-feedback-v0-1-test.js
-node:assert:90
-  throw new AssertionError(obj);
-  ^
-
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-
-false !== true
-
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/source-edit-reality-feedback-v0-1-test.js:17:8)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-    at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
-    at node:internal/main/run_main_module:28:49 {
-  generatedMessage: true,
-  code: 'ERR_ASSERTION',
-  actual: false,
-  expected: true,
-  operator: 'strictEqual'
-}
-
-Node.js v20.20.2
-exit_code=1
+source-edit-reality-feedback-v0-1 tests passed
+exit_code=0
 ## tests/whole-self-simulation-core-v0-1-test.js
-node:assert:90
-  throw new AssertionError(obj);
-  ^
+node:internal/assert/utils:281
+    throw err;
+    ^
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
 
-false !== true
+  assert.ok(base.wants.some(row => row.id === 'sqrt_real_domain'))
 
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/whole-self-simulation-core-v0-1-test.js:17:8)
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/whole-self-simulation-core-v0-1-test.js:28:8)
     at Module._compile (node:internal/modules/cjs/loader:1521:14)
     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
     at Module.load (node:internal/modules/cjs/loader:1266:32)
@@ -493,7 +518,7 @@ false !== true
   code: 'ERR_ASSERTION',
   actual: false,
   expected: true,
-  operator: 'strictEqual'
+  operator: '=='
 }
 
 Node.js v20.20.2
