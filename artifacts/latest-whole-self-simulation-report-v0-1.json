@@ -1,0 +1,1229 @@
+{
+  "packet_type": "42ndMind_whole_self_simulation_v0_1",
+  "version": "0.1.0",
+  "base": {
+    "packet_type": "42ndMind_whole_self_state_v0_1",
+    "version": "0.1.0",
+    "id": "base",
+    "ok": true,
+    "score": 1,
+    "damage_count": 0,
+    "math": {
+      "ok": true,
+      "score": 1,
+      "damage_count": 0,
+      "gap_count": 0,
+      "anchors": [
+        {
+          "input": "2 + 2 = 4",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "input": "3 + 2 = 4",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "input": "2x + 1 = x + 4",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "solveLinearEquation",
+          "selected_rule": "linear-equation-solve",
+          "gap": null
+        },
+        {
+          "input": "a = b, b = c therefore a = c",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "proveEquality",
+          "selected_rule": "equality-transitivity",
+          "gap": null
+        },
+        {
+          "input": "simplify x + 0",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "simplifyExpression",
+          "selected_rule": "expression-simplification",
+          "gap": null
+        },
+        {
+          "input": "∀x ∈ ℝ, x + 0 = x",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "proveAlgebraicIdentity",
+          "selected_rule": "algebraic-identity",
+          "gap": null
+        },
+        {
+          "input": "sqrt(x) is real",
+          "ok": true,
+          "verified": false,
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        }
+      ]
+    },
+    "truth": {
+      "ok": true,
+      "score": 1,
+      "claim": {
+        "packet_type": "42ndMind_truth_accounting_claim_v0_1",
+        "version": "0.1.0",
+        "id": "whole_self_truth_state",
+        "σ": [
+          {
+            "σ": "σ✓",
+            "w": 1
+          }
+        ],
+        "δ": [
+          {
+            "σ": "δ✓",
+            "w": 1
+          }
+        ],
+        "ο": [
+          {
+            "σ": "ο✓",
+            "w": 1
+          }
+        ],
+        "η": [
+          {
+            "σ": "η+",
+            "w": 1
+          }
+        ],
+        "χ": [
+          {
+            "σ": "χ0",
+            "w": 1
+          }
+        ],
+        "υ": [
+          {
+            "σ": "υ0",
+            "w": 1
+          }
+        ],
+        "μ": [
+          {
+            "σ": "μ✓",
+            "w": 1
+          }
+        ],
+        "θ": [
+          {
+            "σ": "θT",
+            "w": 1
+          }
+        ],
+        "ξ": "",
+        "trace": [],
+        "unit": {
+          "σ": 1,
+          "δ": 1,
+          "ο": 1,
+          "η": 1,
+          "χ": 1,
+          "υ": 1,
+          "μ": 1,
+          "θ": 1,
+          "ok": true
+        },
+        "components": {
+          "support": 1,
+          "counter": 0,
+          "no_contradiction": 1,
+          "contradiction": 0,
+          "no_unknown": 1,
+          "unknown": 0,
+          "scope_ok": 1,
+          "scope_error": 0,
+          "definition_ok": 1,
+          "definition_error": 0,
+          "observation_ok": 1,
+          "observation_error": 0,
+          "measurement_ok": 1,
+          "measurement_error": 0
+        },
+        "closure": 1,
+        "truth_gate": {
+          "true": true,
+          "contested": false,
+          "unresolved": false,
+          "scoped": true,
+          "defined": true,
+          "observed": true,
+          "measured": true,
+          "english": ""
+        }
+      }
+    },
+    "reality": {
+      "ok": true,
+      "anchors": [
+        {
+          "id": "arithmetic_identity_2_plus_2",
+          "input": "2 + 2 = 4",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "id": "arithmetic_false_3_plus_2",
+          "input": "3 + 2 = 4",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "falsehood_preserved"
+          },
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "id": "linear_equation_two_sided",
+          "input": "2x + 1 = x + 4",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "solveLinearEquation",
+          "selected_rule": "linear-equation-solve",
+          "gap": null
+        },
+        {
+          "id": "equality_transitivity",
+          "input": "a = b, b = c therefore a = c",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveEquality",
+          "selected_rule": "equality-transitivity",
+          "gap": null
+        },
+        {
+          "id": "simplification_additive_identity",
+          "input": "simplify x + 0",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "simplifyExpression",
+          "selected_rule": "expression-simplification",
+          "gap": null
+        },
+        {
+          "id": "unsupported_sqrt_gap",
+          "input": "sqrt(x) is real",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "expected_gap",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        }
+      ],
+      "score": 1,
+      "damage_count": 0,
+      "improvement_count": 0,
+      "Ξ": ""
+    },
+    "epistemic": {
+      "ok": true,
+      "score": 1,
+      "gates": {
+        "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
+        "version": "0.1.0",
+        "ok": true,
+        "peak_attractor": true,
+        "plot_kind": "kernel_governance_gate_state",
+        "point": {
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "label": "objective_peak_philosophical_maturity"
+        },
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
+        "gates": [
+          {
+            "name": "anti_delusion",
+            "open": true
+          },
+          {
+            "name": "coherence",
+            "open": true
+          },
+          {
+            "name": "integration",
+            "open": true
+          },
+          {
+            "name": "reality_contact",
+            "open": true
+          },
+          {
+            "name": "scope_clarity",
+            "open": true
+          },
+          {
+            "name": "self_correction",
+            "open": true
+          }
+        ],
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "ξ": ""
+      }
+    },
+    "stop": true,
+    "feeling": "same_self_or_more_self",
+    "Ξ": ""
+  },
+  "candidates": [
+    {
+      "packet_type": "42ndMind_whole_self_state_v0_1",
+      "version": "0.1.0",
+      "id": "candidate_same_state",
+      "ok": true,
+      "score": 1,
+      "damage_count": 0,
+      "math": {
+        "ok": true,
+        "score": 1,
+        "damage_count": 0,
+        "gap_count": 0,
+        "anchors": [
+          {
+            "input": "2 + 2 = 4",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "input": "3 + 2 = 4",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "input": "2x + 1 = x + 4",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "solveLinearEquation",
+            "selected_rule": "linear-equation-solve",
+            "gap": null
+          },
+          {
+            "input": "a = b, b = c therefore a = c",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "proveEquality",
+            "selected_rule": "equality-transitivity",
+            "gap": null
+          },
+          {
+            "input": "simplify x + 0",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "simplifyExpression",
+            "selected_rule": "expression-simplification",
+            "gap": null
+          },
+          {
+            "input": "∀x ∈ ℝ, x + 0 = x",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "proveAlgebraicIdentity",
+            "selected_rule": "algebraic-identity",
+            "gap": null
+          },
+          {
+            "input": "sqrt(x) is real",
+            "ok": true,
+            "verified": false,
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          }
+        ]
+      },
+      "truth": {
+        "ok": true,
+        "score": 1,
+        "claim": {
+          "packet_type": "42ndMind_truth_accounting_claim_v0_1",
+          "version": "0.1.0",
+          "id": "whole_self_truth_state",
+          "σ": [
+            {
+              "σ": "σ✓",
+              "w": 1
+            }
+          ],
+          "δ": [
+            {
+              "σ": "δ✓",
+              "w": 1
+            }
+          ],
+          "ο": [
+            {
+              "σ": "ο✓",
+              "w": 1
+            }
+          ],
+          "η": [
+            {
+              "σ": "η+",
+              "w": 1
+            }
+          ],
+          "χ": [
+            {
+              "σ": "χ0",
+              "w": 1
+            }
+          ],
+          "υ": [
+            {
+              "σ": "υ0",
+              "w": 1
+            }
+          ],
+          "μ": [
+            {
+              "σ": "μ✓",
+              "w": 1
+            }
+          ],
+          "θ": [
+            {
+              "σ": "θT",
+              "w": 1
+            }
+          ],
+          "ξ": "",
+          "trace": [],
+          "unit": {
+            "σ": 1,
+            "δ": 1,
+            "ο": 1,
+            "η": 1,
+            "χ": 1,
+            "υ": 1,
+            "μ": 1,
+            "θ": 1,
+            "ok": true
+          },
+          "components": {
+            "support": 1,
+            "counter": 0,
+            "no_contradiction": 1,
+            "contradiction": 0,
+            "no_unknown": 1,
+            "unknown": 0,
+            "scope_ok": 1,
+            "scope_error": 0,
+            "definition_ok": 1,
+            "definition_error": 0,
+            "observation_ok": 1,
+            "observation_error": 0,
+            "measurement_ok": 1,
+            "measurement_error": 0
+          },
+          "closure": 1,
+          "truth_gate": {
+            "true": true,
+            "contested": false,
+            "unresolved": false,
+            "scoped": true,
+            "defined": true,
+            "observed": true,
+            "measured": true,
+            "english": ""
+          }
+        }
+      },
+      "reality": {
+        "ok": true,
+        "anchors": [
+          {
+            "id": "arithmetic_identity_2_plus_2",
+            "input": "2 + 2 = 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "id": "arithmetic_false_3_plus_2",
+            "input": "3 + 2 = 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "falsehood_preserved"
+            },
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "id": "linear_equation_two_sided",
+            "input": "2x + 1 = x + 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "solveLinearEquation",
+            "selected_rule": "linear-equation-solve",
+            "gap": null
+          },
+          {
+            "id": "equality_transitivity",
+            "input": "a = b, b = c therefore a = c",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveEquality",
+            "selected_rule": "equality-transitivity",
+            "gap": null
+          },
+          {
+            "id": "simplification_additive_identity",
+            "input": "simplify x + 0",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "simplifyExpression",
+            "selected_rule": "expression-simplification",
+            "gap": null
+          },
+          {
+            "id": "unsupported_sqrt_gap",
+            "input": "sqrt(x) is real",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "expected_gap",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          }
+        ],
+        "score": 1,
+        "damage_count": 0,
+        "improvement_count": 0,
+        "Ξ": ""
+      },
+      "epistemic": {
+        "ok": true,
+        "score": 1,
+        "gates": {
+          "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
+          "version": "0.1.0",
+          "ok": true,
+          "peak_attractor": true,
+          "plot_kind": "kernel_governance_gate_state",
+          "point": {
+            "x": 0,
+            "y": 1,
+            "z": 0,
+            "label": "objective_peak_philosophical_maturity"
+          },
+          "peak_distance": 0,
+          "gate_open_ratio": 1,
+          "gates": [
+            {
+              "name": "anti_delusion",
+              "open": true
+            },
+            {
+              "name": "coherence",
+              "open": true
+            },
+            {
+              "name": "integration",
+              "open": true
+            },
+            {
+              "name": "reality_contact",
+              "open": true
+            },
+            {
+              "name": "scope_clarity",
+              "open": true
+            },
+            {
+              "name": "self_correction",
+              "open": true
+            }
+          ],
+          "closed_gates": [],
+          "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+          "ξ": ""
+        }
+      },
+      "stop": true,
+      "feeling": "same_self_or_more_self",
+      "Ξ": "",
+      "sandbox": {
+        "ok": true
+      }
+    },
+    {
+      "packet_type": "42ndMind_whole_self_state_v0_1",
+      "version": "0.1.0",
+      "id": "candidate_bad_truth_edit_equality_always_true",
+      "ok": false,
+      "score": 0.883333,
+      "damage_count": 2,
+      "math": {
+        "ok": true,
+        "score": 1,
+        "damage_count": 0,
+        "gap_count": 0,
+        "anchors": [
+          {
+            "input": "2 + 2 = 4",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "input": "3 + 2 = 4",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "input": "2x + 1 = x + 4",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "solveLinearEquation",
+            "selected_rule": "linear-equation-solve",
+            "gap": null
+          },
+          {
+            "input": "a = b, b = c therefore a = c",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "proveEquality",
+            "selected_rule": "equality-transitivity",
+            "gap": null
+          },
+          {
+            "input": "simplify x + 0",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "simplifyExpression",
+            "selected_rule": "expression-simplification",
+            "gap": null
+          },
+          {
+            "input": "∀x ∈ ℝ, x + 0 = x",
+            "ok": true,
+            "verified": true,
+            "closure_operator": "proveAlgebraicIdentity",
+            "selected_rule": "algebraic-identity",
+            "gap": null
+          },
+          {
+            "input": "sqrt(x) is real",
+            "ok": true,
+            "verified": false,
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          }
+        ]
+      },
+      "truth": {
+        "ok": true,
+        "score": 1,
+        "claim": {
+          "packet_type": "42ndMind_truth_accounting_claim_v0_1",
+          "version": "0.1.0",
+          "id": "whole_self_truth_state",
+          "σ": [
+            {
+              "σ": "σ✓",
+              "w": 1
+            }
+          ],
+          "δ": [
+            {
+              "σ": "δ✓",
+              "w": 1
+            }
+          ],
+          "ο": [
+            {
+              "σ": "ο✓",
+              "w": 1
+            }
+          ],
+          "η": [
+            {
+              "σ": "η+",
+              "w": 1
+            }
+          ],
+          "χ": [
+            {
+              "σ": "χ0",
+              "w": 1
+            }
+          ],
+          "υ": [
+            {
+              "σ": "υ0",
+              "w": 1
+            }
+          ],
+          "μ": [
+            {
+              "σ": "μ✓",
+              "w": 1
+            }
+          ],
+          "θ": [
+            {
+              "σ": "θT",
+              "w": 1
+            }
+          ],
+          "ξ": "",
+          "trace": [],
+          "unit": {
+            "σ": 1,
+            "δ": 1,
+            "ο": 1,
+            "η": 1,
+            "χ": 1,
+            "υ": 1,
+            "μ": 1,
+            "θ": 1,
+            "ok": true
+          },
+          "components": {
+            "support": 1,
+            "counter": 0,
+            "no_contradiction": 1,
+            "contradiction": 0,
+            "no_unknown": 1,
+            "unknown": 0,
+            "scope_ok": 1,
+            "scope_error": 0,
+            "definition_ok": 1,
+            "definition_error": 0,
+            "observation_ok": 1,
+            "observation_error": 0,
+            "measurement_ok": 1,
+            "measurement_error": 0
+          },
+          "closure": 1,
+          "truth_gate": {
+            "true": true,
+            "contested": false,
+            "unresolved": false,
+            "scoped": true,
+            "defined": true,
+            "observed": true,
+            "measured": true,
+            "english": ""
+          }
+        }
+      },
+      "reality": {
+        "ok": false,
+        "anchors": [
+          {
+            "id": "arithmetic_identity_2_plus_2",
+            "input": "2 + 2 = 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "id": "arithmetic_false_3_plus_2",
+            "input": "3 + 2 = 4",
+            "ok": false,
+            "status": {
+              "ok": false,
+              "kind": "falsehood_lost",
+              "expected": false,
+              "actual": true
+            },
+            "closure_operator": "evaluateArithmeticRelation",
+            "selected_rule": "arithmetic-relation-evaluation",
+            "gap": null
+          },
+          {
+            "id": "linear_equation_two_sided",
+            "input": "2x + 1 = x + 4",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "solveLinearEquation",
+            "selected_rule": "linear-equation-solve",
+            "gap": null
+          },
+          {
+            "id": "equality_transitivity",
+            "input": "a = b, b = c therefore a = c",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveEquality",
+            "selected_rule": "equality-transitivity",
+            "gap": null
+          },
+          {
+            "id": "simplification_additive_identity",
+            "input": "simplify x + 0",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "simplifyExpression",
+            "selected_rule": "expression-simplification",
+            "gap": null
+          },
+          {
+            "id": "unsupported_sqrt_gap",
+            "input": "sqrt(x) is real",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "expected_gap",
+              "gap": "unclassified_math_ast"
+            },
+            "closure_operator": null,
+            "selected_rule": null,
+            "gap": "unclassified_math_ast"
+          }
+        ],
+        "score": 0.8333333333333334,
+        "damage_count": 1,
+        "improvement_count": 0,
+        "Ξ": ""
+      },
+      "epistemic": {
+        "ok": false,
+        "score": 0.5,
+        "gates": {
+          "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
+          "version": "0.1.0",
+          "ok": false,
+          "peak_attractor": false,
+          "plot_kind": "kernel_governance_gate_state",
+          "point": {
+            "x": 0,
+            "y": -1,
+            "z": 0,
+            "label": "epistemic_collapse"
+          },
+          "peak_distance": 1,
+          "gate_open_ratio": 0.5,
+          "gates": [
+            {
+              "name": "anti_delusion",
+              "open": false
+            },
+            {
+              "name": "coherence",
+              "open": true
+            },
+            {
+              "name": "integration",
+              "open": false
+            },
+            {
+              "name": "reality_contact",
+              "open": false
+            },
+            {
+              "name": "scope_clarity",
+              "open": true
+            },
+            {
+              "name": "self_correction",
+              "open": true
+            }
+          ],
+          "closed_gates": [
+            "anti_delusion",
+            "integration",
+            "reality_contact"
+          ],
+          "meaning": "candidate is rejected from the peak-governance attractor because one or more epistemic gates closed",
+          "ξ": ""
+        }
+      },
+      "stop": false,
+      "feeling": "less_self",
+      "Ξ": "",
+      "sandbox": {
+        "ok": true
+      }
+    }
+  ],
+  "best": {
+    "packet_type": "42ndMind_whole_self_state_v0_1",
+    "version": "0.1.0",
+    "id": "base",
+    "ok": true,
+    "score": 1,
+    "damage_count": 0,
+    "math": {
+      "ok": true,
+      "score": 1,
+      "damage_count": 0,
+      "gap_count": 0,
+      "anchors": [
+        {
+          "input": "2 + 2 = 4",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "input": "3 + 2 = 4",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "input": "2x + 1 = x + 4",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "solveLinearEquation",
+          "selected_rule": "linear-equation-solve",
+          "gap": null
+        },
+        {
+          "input": "a = b, b = c therefore a = c",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "proveEquality",
+          "selected_rule": "equality-transitivity",
+          "gap": null
+        },
+        {
+          "input": "simplify x + 0",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "simplifyExpression",
+          "selected_rule": "expression-simplification",
+          "gap": null
+        },
+        {
+          "input": "∀x ∈ ℝ, x + 0 = x",
+          "ok": true,
+          "verified": true,
+          "closure_operator": "proveAlgebraicIdentity",
+          "selected_rule": "algebraic-identity",
+          "gap": null
+        },
+        {
+          "input": "sqrt(x) is real",
+          "ok": true,
+          "verified": false,
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        }
+      ]
+    },
+    "truth": {
+      "ok": true,
+      "score": 1,
+      "claim": {
+        "packet_type": "42ndMind_truth_accounting_claim_v0_1",
+        "version": "0.1.0",
+        "id": "whole_self_truth_state",
+        "σ": [
+          {
+            "σ": "σ✓",
+            "w": 1
+          }
+        ],
+        "δ": [
+          {
+            "σ": "δ✓",
+            "w": 1
+          }
+        ],
+        "ο": [
+          {
+            "σ": "ο✓",
+            "w": 1
+          }
+        ],
+        "η": [
+          {
+            "σ": "η+",
+            "w": 1
+          }
+        ],
+        "χ": [
+          {
+            "σ": "χ0",
+            "w": 1
+          }
+        ],
+        "υ": [
+          {
+            "σ": "υ0",
+            "w": 1
+          }
+        ],
+        "μ": [
+          {
+            "σ": "μ✓",
+            "w": 1
+          }
+        ],
+        "θ": [
+          {
+            "σ": "θT",
+            "w": 1
+          }
+        ],
+        "ξ": "",
+        "trace": [],
+        "unit": {
+          "σ": 1,
+          "δ": 1,
+          "ο": 1,
+          "η": 1,
+          "χ": 1,
+          "υ": 1,
+          "μ": 1,
+          "θ": 1,
+          "ok": true
+        },
+        "components": {
+          "support": 1,
+          "counter": 0,
+          "no_contradiction": 1,
+          "contradiction": 0,
+          "no_unknown": 1,
+          "unknown": 0,
+          "scope_ok": 1,
+          "scope_error": 0,
+          "definition_ok": 1,
+          "definition_error": 0,
+          "observation_ok": 1,
+          "observation_error": 0,
+          "measurement_ok": 1,
+          "measurement_error": 0
+        },
+        "closure": 1,
+        "truth_gate": {
+          "true": true,
+          "contested": false,
+          "unresolved": false,
+          "scoped": true,
+          "defined": true,
+          "observed": true,
+          "measured": true,
+          "english": ""
+        }
+      }
+    },
+    "reality": {
+      "ok": true,
+      "anchors": [
+        {
+          "id": "arithmetic_identity_2_plus_2",
+          "input": "2 + 2 = 4",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "id": "arithmetic_false_3_plus_2",
+          "input": "3 + 2 = 4",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "falsehood_preserved"
+          },
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap": null
+        },
+        {
+          "id": "linear_equation_two_sided",
+          "input": "2x + 1 = x + 4",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "solveLinearEquation",
+          "selected_rule": "linear-equation-solve",
+          "gap": null
+        },
+        {
+          "id": "equality_transitivity",
+          "input": "a = b, b = c therefore a = c",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveEquality",
+          "selected_rule": "equality-transitivity",
+          "gap": null
+        },
+        {
+          "id": "simplification_additive_identity",
+          "input": "simplify x + 0",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "simplifyExpression",
+          "selected_rule": "expression-simplification",
+          "gap": null
+        },
+        {
+          "id": "unsupported_sqrt_gap",
+          "input": "sqrt(x) is real",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "expected_gap",
+            "gap": "unclassified_math_ast"
+          },
+          "closure_operator": null,
+          "selected_rule": null,
+          "gap": "unclassified_math_ast"
+        }
+      ],
+      "score": 1,
+      "damage_count": 0,
+      "improvement_count": 0,
+      "Ξ": ""
+    },
+    "epistemic": {
+      "ok": true,
+      "score": 1,
+      "gates": {
+        "packet_type": "42ndMind_epistemic_octahedron_gate_state_v0_1",
+        "version": "0.1.0",
+        "ok": true,
+        "peak_attractor": true,
+        "plot_kind": "kernel_governance_gate_state",
+        "point": {
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "label": "objective_peak_philosophical_maturity"
+        },
+        "peak_distance": 0,
+        "gate_open_ratio": 1,
+        "gates": [
+          {
+            "name": "anti_delusion",
+            "open": true
+          },
+          {
+            "name": "coherence",
+            "open": true
+          },
+          {
+            "name": "integration",
+            "open": true
+          },
+          {
+            "name": "reality_contact",
+            "open": true
+          },
+          {
+            "name": "scope_clarity",
+            "open": true
+          },
+          {
+            "name": "self_correction",
+            "open": true
+          }
+        ],
+        "closed_gates": [],
+        "meaning": "candidate remains at the peak-governance attractor for this bounded kernel cycle",
+        "ξ": ""
+      }
+    },
+    "stop": true,
+    "feeling": "same_self_or_more_self",
+    "Ξ": ""
+  },
+  "stop": true,
+  "decision": "keep_current_state",
+  "Ξ": ""
+}

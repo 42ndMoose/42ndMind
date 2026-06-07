@@ -1,0 +1,96 @@
+{
+  "packet_type": "42ndMind_whole_self_simulation_summary_v0_1",
+  "version": "0.1.0",
+  "decision": "keep_current_state",
+  "stop": true,
+  "best_id": "base",
+  "best_score": 1,
+  "best_damage_count": 0,
+  "best_feeling": "same_self_or_more_self",
+  "base_score": 1,
+  "base_damage_count": 0,
+  "candidates": [
+    {
+      "id": "candidate_same_state",
+      "score": 1,
+      "damage_count": 0,
+      "feeling": "same_self_or_more_self",
+      "ok": true,
+      "stop": true
+    },
+    {
+      "id": "candidate_bad_truth_edit_equality_always_true",
+      "score": 0.883333,
+      "damage_count": 2,
+      "feeling": "less_self",
+      "ok": false,
+      "stop": false
+    }
+  ],
+  "math_anchors": [
+    {
+      "input": "2 + 2 = 4",
+      "ok": true,
+      "closure_operator": "evaluateArithmeticRelation",
+      "selected_rule": "arithmetic-relation-evaluation",
+      "gap": null
+    },
+    {
+      "input": "3 + 2 = 4",
+      "ok": true,
+      "closure_operator": "evaluateArithmeticRelation",
+      "selected_rule": "arithmetic-relation-evaluation",
+      "gap": null
+    },
+    {
+      "input": "2x + 1 = x + 4",
+      "ok": true,
+      "closure_operator": "solveLinearEquation",
+      "selected_rule": "linear-equation-solve",
+      "gap": null
+    },
+    {
+      "input": "a = b, b = c therefore a = c",
+      "ok": true,
+      "closure_operator": "proveEquality",
+      "selected_rule": "equality-transitivity",
+      "gap": null
+    },
+    {
+      "input": "simplify x + 0",
+      "ok": true,
+      "closure_operator": "simplifyExpression",
+      "selected_rule": "expression-simplification",
+      "gap": null
+    },
+    {
+      "input": "∀x ∈ ℝ, x + 0 = x",
+      "ok": true,
+      "closure_operator": "proveAlgebraicIdentity",
+      "selected_rule": "algebraic-identity",
+      "gap": null
+    },
+    {
+      "input": "sqrt(x) is real",
+      "ok": true,
+      "closure_operator": null,
+      "selected_rule": null,
+      "gap": "unclassified_math_ast"
+    }
+  ],
+  "epistemic": {
+    "ok": true,
+    "score": 1,
+    "closed_gates": []
+  },
+  "truth": {
+    "ok": true,
+    "score": 1
+  },
+  "reality": {
+    "ok": true,
+    "score": 1,
+    "damage_count": 0
+  },
+  "Ξ": ""
+}
