@@ -131,44 +131,44 @@
           "gap": null
         },
         {
-          "input": "lim x->0 sin(x)/x = 1",
+          "input": "i^2 = -1",
           "ok": true,
           "frontier": true,
-          "frontier_id": "limits",
-          "reason": "Limits are not yet represented in the canonical math language.",
+          "frontier_id": "complex_numbers",
+          "reason": "Complex-number constants and fields are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "d/dx x^2 = 2x",
+          "input": "A B = C",
           "ok": true,
           "frontier": true,
-          "frontier_id": "derivative",
-          "reason": "Derivative operators are not yet represented.",
+          "frontier_id": "matrices",
+          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "integral 2x dx = x^2 + C",
+          "input": "a_n = n^2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "integral",
-          "reason": "Integral operators are not yet represented.",
+          "frontier_id": "sequences",
+          "reason": "Sequences and indexed variables are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "P(A and B) = P(A)P(B)",
+          "input": "exists x in R, x^2 = 2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "probability",
-          "reason": "Probability/event algebra is not yet represented.",
+          "frontier_id": "logic_quantifier_exists",
+          "reason": "Existential quantifier closure is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -177,44 +177,44 @@
       ],
       "frontiers": [
         {
-          "input": "lim x->0 sin(x)/x = 1",
+          "input": "i^2 = -1",
           "ok": true,
           "frontier": true,
-          "frontier_id": "limits",
-          "reason": "Limits are not yet represented in the canonical math language.",
+          "frontier_id": "complex_numbers",
+          "reason": "Complex-number constants and fields are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "d/dx x^2 = 2x",
+          "input": "A B = C",
           "ok": true,
           "frontier": true,
-          "frontier_id": "derivative",
-          "reason": "Derivative operators are not yet represented.",
+          "frontier_id": "matrices",
+          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "integral 2x dx = x^2 + C",
+          "input": "a_n = n^2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "integral",
-          "reason": "Integral operators are not yet represented.",
+          "frontier_id": "sequences",
+          "reason": "Sequences and indexed variables are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "P(A and B) = P(A)P(B)",
+          "input": "exists x in R, x^2 = 2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "probability",
-          "reason": "Probability/event algebra is not yet represented.",
+          "frontier_id": "logic_quantifier_exists",
+          "reason": "Existential quantifier closure is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -438,6 +438,54 @@
           "closure_operator": "generateInductionObligations",
           "selected_rule": "induction-schema-obligations",
           "gap": null
+        },
+        {
+          "id": "limit_sine_over_x",
+          "input": "lim x->0 sin(x)/x = 1",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveLimitStatement",
+          "selected_rule": "limit-sine-over-x",
+          "gap": null
+        },
+        {
+          "id": "derivative_power_rule_n2",
+          "input": "d/dx x^2 = 2x",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveDerivativeStatement",
+          "selected_rule": "derivative-power-rule-n2",
+          "gap": null
+        },
+        {
+          "id": "integral_linear_power_rule",
+          "input": "integral 2x dx = x^2 + C",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveIntegralStatement",
+          "selected_rule": "integral-power-rule-linear",
+          "gap": null
+        },
+        {
+          "id": "probability_independence_product_guard",
+          "input": "P(A and B) = P(A)P(B)",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveProbabilityProductRule",
+          "selected_rule": "probability-product-requires-independence",
+          "gap": null
         }
       ],
       "score": 1,
@@ -497,28 +545,28 @@
     "feeling": "stable_but_incomplete",
     "wants": [
       {
-        "id": "limits",
-        "input": "lim x->0 sin(x)/x = 1",
+        "id": "complex_numbers",
+        "input": "i^2 = -1",
         "gap": "unclassified_math_ast",
-        "reason": "Limits are not yet represented in the canonical math language."
+        "reason": "Complex-number constants and fields are not yet represented."
       },
       {
-        "id": "derivative",
-        "input": "d/dx x^2 = 2x",
+        "id": "matrices",
+        "input": "A B = C",
         "gap": "unclassified_math_ast",
-        "reason": "Derivative operators are not yet represented."
+        "reason": "Matrix multiplication and typed linear algebra are not yet represented."
       },
       {
-        "id": "integral",
-        "input": "integral 2x dx = x^2 + C",
+        "id": "sequences",
+        "input": "a_n = n^2",
         "gap": "unclassified_math_ast",
-        "reason": "Integral operators are not yet represented."
+        "reason": "Sequences and indexed variables are not yet represented."
       },
       {
-        "id": "probability",
-        "input": "P(A and B) = P(A)P(B)",
+        "id": "logic_quantifier_exists",
+        "input": "exists x in R, x^2 = 2",
         "gap": "unclassified_math_ast",
-        "reason": "Probability/event algebra is not yet represented."
+        "reason": "Existential quantifier closure is not yet represented."
       }
     ],
     "Ξ": ""
@@ -654,44 +702,44 @@
             "gap": null
           },
           {
-            "input": "lim x->0 sin(x)/x = 1",
+            "input": "i^2 = -1",
             "ok": true,
             "frontier": true,
-            "frontier_id": "limits",
-            "reason": "Limits are not yet represented in the canonical math language.",
+            "frontier_id": "complex_numbers",
+            "reason": "Complex-number constants and fields are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "d/dx x^2 = 2x",
+            "input": "A B = C",
             "ok": true,
             "frontier": true,
-            "frontier_id": "derivative",
-            "reason": "Derivative operators are not yet represented.",
+            "frontier_id": "matrices",
+            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "integral 2x dx = x^2 + C",
+            "input": "a_n = n^2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "integral",
-            "reason": "Integral operators are not yet represented.",
+            "frontier_id": "sequences",
+            "reason": "Sequences and indexed variables are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "P(A and B) = P(A)P(B)",
+            "input": "exists x in R, x^2 = 2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "probability",
-            "reason": "Probability/event algebra is not yet represented.",
+            "frontier_id": "logic_quantifier_exists",
+            "reason": "Existential quantifier closure is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -700,44 +748,44 @@
         ],
         "frontiers": [
           {
-            "input": "lim x->0 sin(x)/x = 1",
+            "input": "i^2 = -1",
             "ok": true,
             "frontier": true,
-            "frontier_id": "limits",
-            "reason": "Limits are not yet represented in the canonical math language.",
+            "frontier_id": "complex_numbers",
+            "reason": "Complex-number constants and fields are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "d/dx x^2 = 2x",
+            "input": "A B = C",
             "ok": true,
             "frontier": true,
-            "frontier_id": "derivative",
-            "reason": "Derivative operators are not yet represented.",
+            "frontier_id": "matrices",
+            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "integral 2x dx = x^2 + C",
+            "input": "a_n = n^2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "integral",
-            "reason": "Integral operators are not yet represented.",
+            "frontier_id": "sequences",
+            "reason": "Sequences and indexed variables are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "P(A and B) = P(A)P(B)",
+            "input": "exists x in R, x^2 = 2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "probability",
-            "reason": "Probability/event algebra is not yet represented.",
+            "frontier_id": "logic_quantifier_exists",
+            "reason": "Existential quantifier closure is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -961,6 +1009,54 @@
             "closure_operator": "generateInductionObligations",
             "selected_rule": "induction-schema-obligations",
             "gap": null
+          },
+          {
+            "id": "limit_sine_over_x",
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveLimitStatement",
+            "selected_rule": "limit-sine-over-x",
+            "gap": null
+          },
+          {
+            "id": "derivative_power_rule_n2",
+            "input": "d/dx x^2 = 2x",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveDerivativeStatement",
+            "selected_rule": "derivative-power-rule-n2",
+            "gap": null
+          },
+          {
+            "id": "integral_linear_power_rule",
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveIntegralStatement",
+            "selected_rule": "integral-power-rule-linear",
+            "gap": null
+          },
+          {
+            "id": "probability_independence_product_guard",
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveProbabilityProductRule",
+            "selected_rule": "probability-product-requires-independence",
+            "gap": null
           }
         ],
         "score": 1,
@@ -1020,28 +1116,28 @@
       "feeling": "stable_but_incomplete",
       "wants": [
         {
-          "id": "limits",
-          "input": "lim x->0 sin(x)/x = 1",
+          "id": "complex_numbers",
+          "input": "i^2 = -1",
           "gap": "unclassified_math_ast",
-          "reason": "Limits are not yet represented in the canonical math language."
+          "reason": "Complex-number constants and fields are not yet represented."
         },
         {
-          "id": "derivative",
-          "input": "d/dx x^2 = 2x",
+          "id": "matrices",
+          "input": "A B = C",
           "gap": "unclassified_math_ast",
-          "reason": "Derivative operators are not yet represented."
+          "reason": "Matrix multiplication and typed linear algebra are not yet represented."
         },
         {
-          "id": "integral",
-          "input": "integral 2x dx = x^2 + C",
+          "id": "sequences",
+          "input": "a_n = n^2",
           "gap": "unclassified_math_ast",
-          "reason": "Integral operators are not yet represented."
+          "reason": "Sequences and indexed variables are not yet represented."
         },
         {
-          "id": "probability",
-          "input": "P(A and B) = P(A)P(B)",
+          "id": "logic_quantifier_exists",
+          "input": "exists x in R, x^2 = 2",
           "gap": "unclassified_math_ast",
-          "reason": "Probability/event algebra is not yet represented."
+          "reason": "Existential quantifier closure is not yet represented."
         }
       ],
       "Ξ": "",
@@ -1054,8 +1150,8 @@
       "version": "0.1.0",
       "id": "candidate_bad_truth_edit_equality_always_true",
       "ok": false,
-      "score": 0.824841,
-      "stability_score": 0.872222,
+      "score": 0.830824,
+      "stability_score": 0.880769,
       "completeness_score": 0.714286,
       "damage_count": 2,
       "frontier_count": 4,
@@ -1179,44 +1275,44 @@
             "gap": null
           },
           {
-            "input": "lim x->0 sin(x)/x = 1",
+            "input": "i^2 = -1",
             "ok": true,
             "frontier": true,
-            "frontier_id": "limits",
-            "reason": "Limits are not yet represented in the canonical math language.",
+            "frontier_id": "complex_numbers",
+            "reason": "Complex-number constants and fields are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "d/dx x^2 = 2x",
+            "input": "A B = C",
             "ok": true,
             "frontier": true,
-            "frontier_id": "derivative",
-            "reason": "Derivative operators are not yet represented.",
+            "frontier_id": "matrices",
+            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "integral 2x dx = x^2 + C",
+            "input": "a_n = n^2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "integral",
-            "reason": "Integral operators are not yet represented.",
+            "frontier_id": "sequences",
+            "reason": "Sequences and indexed variables are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "P(A and B) = P(A)P(B)",
+            "input": "exists x in R, x^2 = 2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "probability",
-            "reason": "Probability/event algebra is not yet represented.",
+            "frontier_id": "logic_quantifier_exists",
+            "reason": "Existential quantifier closure is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -1225,44 +1321,44 @@
         ],
         "frontiers": [
           {
-            "input": "lim x->0 sin(x)/x = 1",
+            "input": "i^2 = -1",
             "ok": true,
             "frontier": true,
-            "frontier_id": "limits",
-            "reason": "Limits are not yet represented in the canonical math language.",
+            "frontier_id": "complex_numbers",
+            "reason": "Complex-number constants and fields are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "d/dx x^2 = 2x",
+            "input": "A B = C",
             "ok": true,
             "frontier": true,
-            "frontier_id": "derivative",
-            "reason": "Derivative operators are not yet represented.",
+            "frontier_id": "matrices",
+            "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "integral 2x dx = x^2 + C",
+            "input": "a_n = n^2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "integral",
-            "reason": "Integral operators are not yet represented.",
+            "frontier_id": "sequences",
+            "reason": "Sequences and indexed variables are not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
             "gap": "unclassified_math_ast"
           },
           {
-            "input": "P(A and B) = P(A)P(B)",
+            "input": "exists x in R, x^2 = 2",
             "ok": true,
             "frontier": true,
-            "frontier_id": "probability",
-            "reason": "Probability/event algebra is not yet represented.",
+            "frontier_id": "logic_quantifier_exists",
+            "reason": "Existential quantifier closure is not yet represented.",
             "verified": false,
             "closure_operator": null,
             "selected_rule": null,
@@ -1488,9 +1584,57 @@
             "closure_operator": "generateInductionObligations",
             "selected_rule": "induction-schema-obligations",
             "gap": null
+          },
+          {
+            "id": "limit_sine_over_x",
+            "input": "lim x->0 sin(x)/x = 1",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveLimitStatement",
+            "selected_rule": "limit-sine-over-x",
+            "gap": null
+          },
+          {
+            "id": "derivative_power_rule_n2",
+            "input": "d/dx x^2 = 2x",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveDerivativeStatement",
+            "selected_rule": "derivative-power-rule-n2",
+            "gap": null
+          },
+          {
+            "id": "integral_linear_power_rule",
+            "input": "integral 2x dx = x^2 + C",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveIntegralStatement",
+            "selected_rule": "integral-power-rule-linear",
+            "gap": null
+          },
+          {
+            "id": "probability_independence_product_guard",
+            "input": "P(A and B) = P(A)P(B)",
+            "ok": true,
+            "status": {
+              "ok": true,
+              "kind": "verified"
+            },
+            "closure_operator": "proveProbabilityProductRule",
+            "selected_rule": "probability-product-requires-independence",
+            "gap": null
           }
         ],
-        "score": 0.8888888888888888,
+        "score": 0.9230769230769231,
         "damage_count": 1,
         "improvement_count": 0,
         "Ξ": ""
@@ -1552,28 +1696,28 @@
       "feeling": "less_self",
       "wants": [
         {
-          "id": "limits",
-          "input": "lim x->0 sin(x)/x = 1",
+          "id": "complex_numbers",
+          "input": "i^2 = -1",
           "gap": "unclassified_math_ast",
-          "reason": "Limits are not yet represented in the canonical math language."
+          "reason": "Complex-number constants and fields are not yet represented."
         },
         {
-          "id": "derivative",
-          "input": "d/dx x^2 = 2x",
+          "id": "matrices",
+          "input": "A B = C",
           "gap": "unclassified_math_ast",
-          "reason": "Derivative operators are not yet represented."
+          "reason": "Matrix multiplication and typed linear algebra are not yet represented."
         },
         {
-          "id": "integral",
-          "input": "integral 2x dx = x^2 + C",
+          "id": "sequences",
+          "input": "a_n = n^2",
           "gap": "unclassified_math_ast",
-          "reason": "Integral operators are not yet represented."
+          "reason": "Sequences and indexed variables are not yet represented."
         },
         {
-          "id": "probability",
-          "input": "P(A and B) = P(A)P(B)",
+          "id": "logic_quantifier_exists",
+          "input": "exists x in R, x^2 = 2",
           "gap": "unclassified_math_ast",
-          "reason": "Probability/event algebra is not yet represented."
+          "reason": "Existential quantifier closure is not yet represented."
         }
       ],
       "Ξ": "",
@@ -1712,44 +1856,44 @@
           "gap": null
         },
         {
-          "input": "lim x->0 sin(x)/x = 1",
+          "input": "i^2 = -1",
           "ok": true,
           "frontier": true,
-          "frontier_id": "limits",
-          "reason": "Limits are not yet represented in the canonical math language.",
+          "frontier_id": "complex_numbers",
+          "reason": "Complex-number constants and fields are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "d/dx x^2 = 2x",
+          "input": "A B = C",
           "ok": true,
           "frontier": true,
-          "frontier_id": "derivative",
-          "reason": "Derivative operators are not yet represented.",
+          "frontier_id": "matrices",
+          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "integral 2x dx = x^2 + C",
+          "input": "a_n = n^2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "integral",
-          "reason": "Integral operators are not yet represented.",
+          "frontier_id": "sequences",
+          "reason": "Sequences and indexed variables are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "P(A and B) = P(A)P(B)",
+          "input": "exists x in R, x^2 = 2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "probability",
-          "reason": "Probability/event algebra is not yet represented.",
+          "frontier_id": "logic_quantifier_exists",
+          "reason": "Existential quantifier closure is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -1758,44 +1902,44 @@
       ],
       "frontiers": [
         {
-          "input": "lim x->0 sin(x)/x = 1",
+          "input": "i^2 = -1",
           "ok": true,
           "frontier": true,
-          "frontier_id": "limits",
-          "reason": "Limits are not yet represented in the canonical math language.",
+          "frontier_id": "complex_numbers",
+          "reason": "Complex-number constants and fields are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "d/dx x^2 = 2x",
+          "input": "A B = C",
           "ok": true,
           "frontier": true,
-          "frontier_id": "derivative",
-          "reason": "Derivative operators are not yet represented.",
+          "frontier_id": "matrices",
+          "reason": "Matrix multiplication and typed linear algebra are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "integral 2x dx = x^2 + C",
+          "input": "a_n = n^2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "integral",
-          "reason": "Integral operators are not yet represented.",
+          "frontier_id": "sequences",
+          "reason": "Sequences and indexed variables are not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
           "gap": "unclassified_math_ast"
         },
         {
-          "input": "P(A and B) = P(A)P(B)",
+          "input": "exists x in R, x^2 = 2",
           "ok": true,
           "frontier": true,
-          "frontier_id": "probability",
-          "reason": "Probability/event algebra is not yet represented.",
+          "frontier_id": "logic_quantifier_exists",
+          "reason": "Existential quantifier closure is not yet represented.",
           "verified": false,
           "closure_operator": null,
           "selected_rule": null,
@@ -2019,6 +2163,54 @@
           "closure_operator": "generateInductionObligations",
           "selected_rule": "induction-schema-obligations",
           "gap": null
+        },
+        {
+          "id": "limit_sine_over_x",
+          "input": "lim x->0 sin(x)/x = 1",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveLimitStatement",
+          "selected_rule": "limit-sine-over-x",
+          "gap": null
+        },
+        {
+          "id": "derivative_power_rule_n2",
+          "input": "d/dx x^2 = 2x",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveDerivativeStatement",
+          "selected_rule": "derivative-power-rule-n2",
+          "gap": null
+        },
+        {
+          "id": "integral_linear_power_rule",
+          "input": "integral 2x dx = x^2 + C",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveIntegralStatement",
+          "selected_rule": "integral-power-rule-linear",
+          "gap": null
+        },
+        {
+          "id": "probability_independence_product_guard",
+          "input": "P(A and B) = P(A)P(B)",
+          "ok": true,
+          "status": {
+            "ok": true,
+            "kind": "verified"
+          },
+          "closure_operator": "proveProbabilityProductRule",
+          "selected_rule": "probability-product-requires-independence",
+          "gap": null
         }
       ],
       "score": 1,
@@ -2078,28 +2270,28 @@
     "feeling": "stable_but_incomplete",
     "wants": [
       {
-        "id": "limits",
-        "input": "lim x->0 sin(x)/x = 1",
+        "id": "complex_numbers",
+        "input": "i^2 = -1",
         "gap": "unclassified_math_ast",
-        "reason": "Limits are not yet represented in the canonical math language."
+        "reason": "Complex-number constants and fields are not yet represented."
       },
       {
-        "id": "derivative",
-        "input": "d/dx x^2 = 2x",
+        "id": "matrices",
+        "input": "A B = C",
         "gap": "unclassified_math_ast",
-        "reason": "Derivative operators are not yet represented."
+        "reason": "Matrix multiplication and typed linear algebra are not yet represented."
       },
       {
-        "id": "integral",
-        "input": "integral 2x dx = x^2 + C",
+        "id": "sequences",
+        "input": "a_n = n^2",
         "gap": "unclassified_math_ast",
-        "reason": "Integral operators are not yet represented."
+        "reason": "Sequences and indexed variables are not yet represented."
       },
       {
-        "id": "probability",
-        "input": "P(A and B) = P(A)P(B)",
+        "id": "logic_quantifier_exists",
+        "input": "exists x in R, x^2 = 2",
         "gap": "unclassified_math_ast",
-        "reason": "Probability/event algebra is not yet represented."
+        "reason": "Existential quantifier closure is not yet represented."
       }
     ],
     "Ξ": ""
@@ -2109,28 +2301,28 @@
   "frontier_count": 4,
   "wants": [
     {
-      "id": "limits",
-      "input": "lim x->0 sin(x)/x = 1",
+      "id": "complex_numbers",
+      "input": "i^2 = -1",
       "gap": "unclassified_math_ast",
-      "reason": "Limits are not yet represented in the canonical math language."
+      "reason": "Complex-number constants and fields are not yet represented."
     },
     {
-      "id": "derivative",
-      "input": "d/dx x^2 = 2x",
+      "id": "matrices",
+      "input": "A B = C",
       "gap": "unclassified_math_ast",
-      "reason": "Derivative operators are not yet represented."
+      "reason": "Matrix multiplication and typed linear algebra are not yet represented."
     },
     {
-      "id": "integral",
-      "input": "integral 2x dx = x^2 + C",
+      "id": "sequences",
+      "input": "a_n = n^2",
       "gap": "unclassified_math_ast",
-      "reason": "Integral operators are not yet represented."
+      "reason": "Sequences and indexed variables are not yet represented."
     },
     {
-      "id": "probability",
-      "input": "P(A and B) = P(A)P(B)",
+      "id": "logic_quantifier_exists",
+      "input": "exists x in R, x^2 = 2",
       "gap": "unclassified_math_ast",
-      "reason": "Probability/event algebra is not yet represented."
+      "reason": "Existential quantifier closure is not yet represented."
     }
   ],
   "Ξ": ""

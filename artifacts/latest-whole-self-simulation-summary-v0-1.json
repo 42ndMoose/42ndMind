@@ -20,7 +20,7 @@
     },
     {
       "id": "candidate_bad_truth_edit_equality_always_true",
-      "score": 0.824841,
+      "score": 0.830824,
       "damage_count": 2,
       "feeling": "less_self",
       "ok": false,
@@ -99,28 +99,28 @@
       "gap": null
     },
     {
-      "input": "lim x->0 sin(x)/x = 1",
+      "input": "i^2 = -1",
       "ok": true,
       "closure_operator": null,
       "selected_rule": null,
       "gap": "unclassified_math_ast"
     },
     {
-      "input": "d/dx x^2 = 2x",
+      "input": "A B = C",
       "ok": true,
       "closure_operator": null,
       "selected_rule": null,
       "gap": "unclassified_math_ast"
     },
     {
-      "input": "integral 2x dx = x^2 + C",
+      "input": "a_n = n^2",
       "ok": true,
       "closure_operator": null,
       "selected_rule": null,
       "gap": "unclassified_math_ast"
     },
     {
-      "input": "P(A and B) = P(A)P(B)",
+      "input": "exists x in R, x^2 = 2",
       "ok": true,
       "closure_operator": null,
       "selected_rule": null,
