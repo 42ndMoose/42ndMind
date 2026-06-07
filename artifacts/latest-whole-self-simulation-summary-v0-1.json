@@ -1,9 +1,9 @@
 {
   "packet_type": "42ndMind_whole_self_simulation_summary_v0_1",
   "version": "0.1.0",
-  "decision": "prefer_candidate_state",
+  "decision": "keep_current_state",
   "stop": false,
-  "best_id": "candidate_same_state",
+  "best_id": "base",
   "best_score": 0.708214,
   "best_damage_count": 3,
   "best_feeling": "less_self",

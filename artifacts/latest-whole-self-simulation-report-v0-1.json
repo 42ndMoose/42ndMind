@@ -1707,7 +1707,7 @@
   "best": {
     "packet_type": "42ndMind_whole_self_state_v0_1",
     "version": "0.1.0",
-    "id": "candidate_same_state",
+    "id": "base",
     "ok": false,
     "score": 0.708214,
     "stability_score": 0.675,
@@ -2266,13 +2266,10 @@
         "reason": "Existential quantifier closure is not yet represented."
       }
     ],
-    "Ξ": "",
-    "sandbox": {
-      "ok": true
-    }
+    "Ξ": ""
   },
   "stop": false,
-  "decision": "prefer_candidate_state",
+  "decision": "keep_current_state",
   "frontier_count": 2,
   "wants": [
     {
