@@ -107,6 +107,12 @@
       inverse_chain: [], closure_operator: 'proveProbabilityProductRule', closure_result: 'guarded_probability_rule',
       examples: ['P(A and B) = P(A)P(B)'], assertion: "assert.strictEqual(P.proveProbabilityProductRule('P(A and B) = P(A)P(B)').ok, true);"
     }),
+    complex_unit_identity: Object.freeze({
+      id: 'complex_unit_identity', operation: 'prove', surface: 'i^2 = -1 over C',
+      parts: ['imaginary_unit', 'exponent', 'negative_one', 'complex_domain'], preconditions: ['i is typed as imaginary unit', 'domain is complex numbers'],
+      inverse_chain: [], closure_operator: 'proveComplexUnitIdentity', closure_result: 'complex_unit_truth',
+      examples: ['i^2 = -1'], assertion: "assert.strictEqual(P.proveComplexUnitIdentity('i^2 = -1').ok, true);"
+    }),
     division_constraint: Object.freeze({
       id: 'division_constraint', operation: 'guard', surface: 'x/y undefined when y = 0',
       parts: ['numerator', 'denominator'], preconditions: ['denominator != 0'], violations: ['denominator = 0'],

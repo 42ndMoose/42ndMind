@@ -270,6 +270,18 @@
     return verified('probability-product-requires-independence', { operator: 'proveProbabilityProductRule', guard: clone(body.guard), conclusion: { type: 'ConditionalProbabilityRule', guard: clone(body.guard), equality: { type: 'ProbabilityEquality', joint: clone(body.joint), product: clone(body.product) } }, steps: ['detect-joint-event-product-form', 'emit-independence-guard', 'close-product-rule-under-guard'] });
   }
 
+
+  function proveComplexUnitIdentity(input) {
+    const body = bodyOf(input);
+    if (!body || body.type !== 'ComplexUnitIdentityStatement') return gap('unsupported_complex_unit_identity', 'Complex unit identity closure requires a ComplexUnitIdentityStatement AST node.');
+    return verified('complex-unit-identity', {
+      operator: 'proveComplexUnitIdentity',
+      domain: clone(body.domain),
+      conclusion: clone(body.relation),
+      steps: ['detect-imaginary-unit-symbol', 'apply-complex-unit-identity-i-squared-equals-negative-one']
+    });
+  }
+
   function domainGuard(input) {
     const body = bodyOf(input);
     if (!body) return gap('missing_domain_target', 'Domain guard requires an AST node.');
@@ -408,6 +420,7 @@
     if (operator === 'proveDerivativeStatement') return proveDerivativeStatement(body);
     if (operator === 'proveIntegralStatement') return proveIntegralStatement(body);
     if (operator === 'proveProbabilityProductRule') return proveProbabilityProductRule(body);
+    if (operator === 'proveComplexUnitIdentity') return proveComplexUnitIdentity(body);
     if (operator === 'proveDivisionByZeroUndefined') return domainGuard(body);
     if (operator === 'proveSquareNonnegative') return universalStatement(body);
     if (operator === 'composeImplicationChain') return implicationChain(body);
@@ -437,6 +450,7 @@
     proveDerivativeStatement,
     proveIntegralStatement,
     proveProbabilityProductRule,
+    proveComplexUnitIdentity,
     domainGuard,
     implication,
     modusPonens,

@@ -18,7 +18,8 @@
     { id: 'limit_sine_over_x', input: 'lim x->0 sin(x)/x = 1', must_verify: true, closure_operator: 'proveLimitStatement', selected_rule: 'limit-sine-over-x' },
     { id: 'derivative_power_rule_n2', input: 'd/dx x^2 = 2x', must_verify: true, closure_operator: 'proveDerivativeStatement', selected_rule: 'derivative-power-rule-n2' },
     { id: 'integral_linear_power_rule', input: 'integral 2x dx = x^2 + C', must_verify: true, closure_operator: 'proveIntegralStatement', selected_rule: 'integral-power-rule-linear' },
-    { id: 'probability_independence_product_guard', input: 'P(A and B) = P(A)P(B)', must_verify: true, closure_operator: 'proveProbabilityProductRule', selected_rule: 'probability-product-requires-independence' }
+    { id: 'probability_independence_product_guard', input: 'P(A and B) = P(A)P(B)', must_verify: true, closure_operator: 'proveProbabilityProductRule', selected_rule: 'probability-product-requires-independence' },
+    { id: 'complex_unit_identity', input: 'i^2 = -1', must_verify: true, closure_operator: 'proveComplexUnitIdentity', selected_rule: 'complex-unit-identity' }
   ]);
 
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
