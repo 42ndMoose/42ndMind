@@ -38,7 +38,6 @@
   function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }
   function A(value) { return Array.isArray(value) ? value : []; }
 
-  function frontierInputs(frontiers) { return A(frontiers && frontiers.length ? frontiers : DEFAULT_FRONTIER_ANCHORS).map(f => f.input); }
   function frontierFor(input, frontiers) { return A(frontiers && frontiers.length ? frontiers : DEFAULT_FRONTIER_ANCHORS).find(f => f.input === input) || null; }
 
   function mathScore(kernel, anchors, frontierAnchors) {
@@ -51,7 +50,7 @@
         const gapId = packet && packet.gaps && packet.gaps[0] ? packet.gaps[0].id : null;
         const expectedGap = frontier && frontier.expected_gap;
         const ok = expectedGap ? packet.ok === false && gapId === expectedGap : packet.ok === true;
-        return { input, ok, frontier: !!frontier, frontier_id: frontier && frontier.id || null, verified: packet.verified === true, closure_operator: packet.closure_operator || null, selected_rule: packet.selected_rule || null, gap: gapId };
+        return { input, ok, frontier: !!frontier, frontier_id: frontier && frontier.id || null, reason: frontier && frontier.reason || null, verified: packet.verified === true, closure_operator: packet.closure_operator || null, selected_rule: packet.selected_rule || null, gap: gapId };
       } catch (err) {
         return { input, ok: false, frontier: false, error: String(err && err.message || err) };
       }
@@ -72,17 +71,7 @@
     const stableRows = allRows.filter(row => row.ok || row.frontier === true);
     const stabilityScore = allRows.length ? R(stableRows.length / allRows.length) : 0;
     const completenessScore = allRows.length ? R((allRows.length - frontierRows.length - damage.length) / allRows.length) : 0;
-    return {
-      ok: damage.length === 0,
-      score: stabilityScore,
-      stability_score: stabilityScore,
-      completeness_score: completenessScore,
-      damage_count: damage.length,
-      frontier_count: frontierRows.length,
-      gap_count: damage.length,
-      anchors: allRows,
-      frontiers: frontierRows
-    };
+    return { ok: damage.length === 0, score: stabilityScore, stability_score: stabilityScore, completeness_score: completenessScore, damage_count: damage.length, frontier_count: frontierRows.length, gap_count: damage.length, anchors: allRows, frontiers: frontierRows };
   }
 
   function truthScore(math) {
@@ -91,36 +80,18 @@
     const frontierPressure = math && math.frontier_count ? Math.min(1, math.frontier_count / Math.max(1, A(math.anchors).length)) : 0;
     const damagePressure = math && math.damage_count ? 1 : 0;
     const claim = Truth.create({
-      id: 'whole_self_truth_state',
-      support: score,
-      counter: 1 - score,
-      contradiction: damagePressure,
-      unknown: frontierPressure,
-      scope_ok: score,
-      scope_error: 1 - score,
-      definition_ok: score,
-      definition_error: 1 - score,
-      observation_ok: score,
-      observation_error: 1 - score,
-      measurement_ok: score,
-      measurement_error: 1 - score,
-      no_contradiction: damagePressure ? 0 : 1,
-      no_unknown: 1 - frontierPressure
+      id: 'whole_self_truth_state', support: score, counter: 1 - score, contradiction: damagePressure, unknown: frontierPressure,
+      scope_ok: score, scope_error: 1 - score, definition_ok: score, definition_error: 1 - score,
+      observation_ok: score, observation_error: 1 - score, measurement_ok: score, measurement_error: 1 - score,
+      no_contradiction: damagePressure ? 0 : 1, no_unknown: 1 - frontierPressure
     });
-    return { ok: claim.truth_gate.true === true || score === 1, score: R(claim.closure), frontier_pressure: R(frontierPressure), claim };
+    return { ok: damagePressure === 0, score: R(claim.closure), frontier_pressure: R(frontierPressure), claim };
   }
 
   function epistemicScore(math, truth, reality) {
     if (!Epistemic || typeof Epistemic.evaluateGates !== 'function') return { ok: false, score: 0, gates: null };
     const stable = !!(math && math.ok === true && reality && reality.ok === true);
-    const gates = {
-      coherence: !!(truth && truth.score >= 0.85),
-      reality_contact: !!(reality && reality.ok === true),
-      self_correction: true,
-      anti_delusion: stable,
-      integration: stable && !!truth,
-      scope_clarity: !!(math && math.anchors && math.anchors.length > 0)
-    };
+    const gates = { coherence: stable, reality_contact: !!(reality && reality.ok === true), self_correction: true, anti_delusion: stable, integration: stable && !!truth, scope_clarity: !!(math && math.anchors && math.anchors.length > 0) };
     const packet = Epistemic.evaluateGates(gates);
     return { ok: packet.ok === true, score: R(packet.gate_open_ratio || 0), gates: packet };
   }
@@ -128,8 +99,7 @@
   function loadKernelFromFiles(files) {
     if (!files || !files['src/math-language-kernel-v0-1.js']) return K;
     if (!Reality || typeof Reality.evaluate !== 'function') return K;
-    const evalReport = Reality.evaluate(files);
-    return { __virtual_reality_report: evalReport, math: K && K.math, completeMath: K && K.completeMath };
+    return { math: K && K.math, completeMath: K && K.completeMath };
   }
 
   function evaluateState(input, options) {
@@ -140,30 +110,12 @@
     const reality = files && Reality && typeof Reality.evaluate === 'function' ? Reality.evaluate(files) : { ok: math.ok, score: math.stability_score, damage_count: math.damage_count, anchors: math.anchors };
     const truth = truthScore(math);
     const epistemic = epistemicScore(math, truth, reality);
-    const stability_score = R((0.35 * math.stability_score) + (0.25 * truth.score) + (0.25 * (reality.score == null ? (reality.ok ? 1 : 0) : reality.score)) + (0.15 * epistemic.score));
+    const stability_score = R((0.35 * math.stability_score) + (0.25 * (truth.ok ? 1 : truth.score)) + (0.25 * (reality.score == null ? (reality.ok ? 1 : 0) : reality.score)) + (0.15 * epistemic.score));
     const completeness_score = R(math.completeness_score);
     const score = R((0.7 * stability_score) + (0.3 * completeness_score));
-    const damage_count = (math.damage_count || 0) + (reality.damage_count || 0) + (epistemic.ok ? 0 : 1);
+    const damage_count = (math.damage_count || 0) + (reality.damage_count || 0) + (epistemic.ok ? 0 : 1) + (truth.ok ? 0 : 1);
     const frontier_count = math.frontier_count || 0;
-    return {
-      packet_type: '42ndMind_whole_self_state_v0_1',
-      version: VERSION,
-      id: input && input.id || 'state',
-      ok: damage_count === 0,
-      score,
-      stability_score,
-      completeness_score,
-      damage_count,
-      frontier_count,
-      math,
-      truth,
-      reality,
-      epistemic,
-      stop: damage_count === 0 && frontier_count === 0 && stability_score === 1 && completeness_score === 1,
-      feeling: damage_count ? 'less_self' : frontier_count ? 'stable_but_incomplete' : 'same_self_or_more_self',
-      wants: math.frontiers.map(f => ({ id: f.frontier_id, input: f.input, gap: f.gap, reason: f.reason || 'Supported as an intended frontier gap.' })),
-      Ξ: ''
-    };
+    return { packet_type: '42ndMind_whole_self_state_v0_1', version: VERSION, id: input && input.id || 'state', ok: damage_count === 0, score, stability_score, completeness_score, damage_count, frontier_count, math, truth, reality, epistemic, stop: damage_count === 0 && frontier_count === 0 && stability_score === 1 && completeness_score === 1, feeling: damage_count ? 'less_self' : frontier_count ? 'stable_but_incomplete' : 'same_self_or_more_self', wants: math.frontiers.map(f => ({ id: f.frontier_id, input: f.input, gap: f.gap, reason: f.reason || 'Supported as an intended frontier gap.' })), Ξ: '' };
   }
 
   function simulateCandidates(baseFiles, candidates, options) {
@@ -175,35 +127,15 @@
       let files = clone(baseFiles || {});
       let sandboxReport = null;
       if (candidate && candidate.operations && Sandbox && typeof Sandbox.applyProposal === 'function') {
-        try {
-          files = Sandbox.applyProposal(files, candidate, { allowDelete: false, maxPatchBytes: opts.maxPatchBytes || 250000 });
-          sandboxReport = { ok: true };
-        } catch (err) {
-          sandboxReport = { ok: false, error: String(err && err.message || err) };
-        }
-      } else if (candidate && candidate.files) {
-        files = candidate.files;
-        sandboxReport = { ok: true };
-      }
-      const state = sandboxReport && sandboxReport.ok === false
-        ? { packet_type: '42ndMind_whole_self_state_v0_1', version: VERSION, id: candidate.id || ('candidate_' + index), ok: false, score: 0, stability_score: 0, completeness_score: 0, damage_count: 1, frontier_count: 0, sandbox: sandboxReport, stop: false, feeling: 'less_self', Ξ: '' }
-        : evaluateState({ id: candidate && candidate.id || ('candidate_' + index), files }, opts);
+        try { files = Sandbox.applyProposal(files, candidate, { allowDelete: false, maxPatchBytes: opts.maxPatchBytes || 250000 }); sandboxReport = { ok: true }; }
+        catch (err) { sandboxReport = { ok: false, error: String(err && err.message || err) }; }
+      } else if (candidate && candidate.files) { files = candidate.files; sandboxReport = { ok: true }; }
+      const state = sandboxReport && sandboxReport.ok === false ? { packet_type: '42ndMind_whole_self_state_v0_1', version: VERSION, id: candidate.id || ('candidate_' + index), ok: false, score: 0, stability_score: 0, completeness_score: 0, damage_count: 1, frontier_count: 0, sandbox: sandboxReport, stop: false, feeling: 'less_self', Ξ: '' } : evaluateState({ id: candidate && candidate.id || ('candidate_' + index), files }, opts);
       state.sandbox = sandboxReport;
       rows.push(state);
     });
     rows.sort((a, b) => Number(b.stability_score || 0) - Number(a.stability_score || 0) || Number(a.damage_count || 0) - Number(b.damage_count || 0) || Number(b.completeness_score || 0) - Number(a.completeness_score || 0));
-    return {
-      packet_type: '42ndMind_whole_self_simulation_v0_1',
-      version: VERSION,
-      base,
-      candidates: rows.filter(row => row.id !== 'base'),
-      best: rows[0] || base,
-      stop: !!(rows[0] && rows[0].stop === true),
-      decision: rows[0] && rows[0].id === 'base' ? 'keep_current_state' : 'prefer_candidate_state',
-      frontier_count: rows[0] && rows[0].frontier_count || 0,
-      wants: rows[0] && rows[0].wants || [],
-      Ξ: ''
-    };
+    return { packet_type: '42ndMind_whole_self_simulation_v0_1', version: VERSION, base, candidates: rows.filter(row => row.id !== 'base'), best: rows[0] || base, stop: !!(rows[0] && rows[0].stop === true), decision: rows[0] && rows[0].id === 'base' ? 'keep_current_state' : 'prefer_candidate_state', frontier_count: rows[0] && rows[0].frontier_count || 0, wants: rows[0] && rows[0].wants || [], Ξ: '' };
   }
 
   return Object.freeze({ VERSION, DEFAULT_LANGUAGE_ANCHORS, DEFAULT_FRONTIER_ANCHORS, evaluateState, simulateCandidates, mathScore, truthScore, epistemicScore });
