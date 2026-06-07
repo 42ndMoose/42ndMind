@@ -8,7 +8,7 @@ It is not finished. It is not a mature artificial mind. It is not a general theo
 
 ## Core idea
 
-The long-term target is not to manually add thousands of functions. The target is to build a kernel where new math/logical ability is generated from a shared internal language:
+The long-term target is not to manually add thousands of functions. The target is to build a kernel where new math, logic, and eventually meaning can grow from a shared internal language:
 
 ```text
 raw input
@@ -17,10 +17,13 @@ raw input
 → operator anatomy
 → proof / closure obligation
 → verified output or precise gap
+→ whole-self simulation
 → safe self-extension when the missing closure is well-defined
 ```
 
 The kernel should prefer state transitions that increase closure while preserving reality contact, self-correction, coherence, and integration.
+
+The kernel layer must not speak English as proof. English is an input and output interface. The internal work must happen through canonical structures, closure obligations, proof results, reality anchors, and precise gaps.
 
 ## Current status
 
@@ -31,18 +34,22 @@ math-language kernel       normalized Ω packets, gaps, correction, proof, groun
 math AST core              canonical syntax tree for supported math/proof forms
 language parser            symbolic parser and bridge into the AST layer
 operator anatomy           operation parts, preconditions, violations, inverse chains, closure targets
-proof closures             implication chains, contradiction detection, basic equation/relation closure
+proof closures             equation, relation, equality, domain, function, set, and schema closures
+math closure engine        AST → anatomy → proof/closure → verified result or precise gap
+kernel math bridge         K.math(...) and K.completeMath(...) expose math closure through the main kernel
+source sandbox             virtual source mutation sandbox
+source reality feedback    reality anchors for self-edit identity preservation
+whole-self simulation      math, truth, reality, and epistemic stability scored together
 self-edit loop             simulated source mutation, test-backed candidate generation, safe promotion
 epistemic octahedron core  stability geometry for candidate state transitions
 truth accounting           support / contradiction / unknown / measurement accounting
-source sandbox             virtual source editing before real source is touched
 ```
 
-The important shift is that the project is moving away from isolated patches and toward one shared math-language spine. The AST layer is now intended to become the structure that parser, anatomy, proof, and self-edit logic consume.
+The important shift is that the project is moving away from isolated patches and toward one shared math-language spine. The AST layer is now the structure that parser, anatomy, proof, kernel, reality feedback, and self-edit logic consume.
 
 ## Completion model
 
-The main kernel still uses normalized symbolic fields and fixed-point completion.
+The main kernel uses normalized symbolic fields and fixed-point completion.
 
 The central invariant is:
 
@@ -95,6 +102,17 @@ conflict_count = 0
 Ξ = ""
 ```
 
+Whole-self completion is stricter. A state may be stable while incomplete. Frontier gaps should not damage the kernel, but they must prevent a false stop condition.
+
+```text
+stable          = no damaged truth/reality/math anchors
+incomplete      = frontier_count > 0
+stop            = stable and frontier_count = 0 and completeness_score = 1
+less_self       = source edit damages reality anchors or closure identity
+same_self       = source edit preserves identity without increasing closure
+more_self       = source edit increases closure without damaging identity
+```
+
 ## Math-language spine
 
 The current spine begins in:
@@ -107,8 +125,24 @@ It canonicalizes supported forms into a `MathProgram` AST. Current supported for
 
 ```text
 2x + 1 = 7
+-3y - 6 = 9
+2x + 1 = x + 4
+2x + 1 with x = 3
+2 + 3 * 4 = 14
+(2 + 3)^2 = 25
+x = x
+x = y therefore y = x
+a = b, b = c therefore a = c
+simplify x + 0
+simplify x * 1
 x/y is undefined when y = 0
+sqrt(x) is real
 ∀x ∈ ℝ, x² ≥ 0
+∀x ∈ ℝ, x + 0 = x
+∀x ∈ ℝ, x * 1 = x
+f(g(x))
+x ∈ A
+prove by induction P(n)
 A=>B, B=>C
 A, not A
 x >= 3 with x = 5
@@ -119,23 +153,42 @@ Current AST nodes include:
 ```text
 MathProgram
 Equation
+LinearEquation
 AffineExpression
-LinearRelation
+SubstitutionEvaluation
+ArithmeticRelation
+EqualityProof
+Simplification
 DivisionConstraint
+SqrtDomainStatement
 QuantifiedStatement
+FunctionApplication
+FunctionComposition
+SetMembership
+InductionSchema
 ImplicationChain
 ContradictionPair
+LinearRelation
 ```
 
 These classify into closure obligations:
 
 ```text
-Equation              → solveAffineEquation
-DivisionConstraint    → proveDivisionByZeroUndefined
-QuantifiedStatement   → proveSquareNonnegative
-ImplicationChain      → composeImplicationChain
-ContradictionPair     → detectContradiction
-LinearRelation        → evaluateLinearRelation
+Equation                  → solveAffineEquation
+LinearEquation            → solveLinearEquation
+SubstitutionEvaluation    → evaluateSubstitution
+ArithmeticRelation        → evaluateArithmeticRelation
+EqualityProof             → proveEquality
+Simplification            → simplifyExpression
+DivisionConstraint        → proveDivisionByZeroUndefined
+SqrtDomainStatement       → proveSqrtDomain
+QuantifiedStatement       → proveSquareNonnegative / proveAlgebraicIdentity
+FunctionComposition       → composeFunctionApplication
+SetMembership             → typeSetMembership
+InductionSchema           → generateInductionObligations
+ImplicationChain          → composeImplicationChain
+ContradictionPair         → detectContradiction
+LinearRelation            → evaluateLinearRelation
 ```
 
 The parser bridge exposes:
@@ -144,6 +197,13 @@ The parser bridge exposes:
 parseMathAst(...)
 classifyMathAst(...)
 mathAstToKernelFields(...)
+```
+
+The kernel bridge exposes:
+
+```text
+K.math(input)
+K.completeMath(input)
 ```
 
 The anatomy bridge lets operator anatomy derive surfaces from AST classifications instead of only from raw source text.
@@ -175,16 +235,93 @@ Current anatomy families include:
 
 ```text
 affine_equation
+linear_equation
 affine_expression
+substitution_evaluation
 linear_relation_truth
+arithmetic_relation_truth
+equality_proof
+expression_simplification
 division_constraint
+sqrt_domain
 square_nonnegative
+algebraic_identity
+function_composition
+set_membership
+induction_schema
 statement_classification
 implication_chain
 contradiction_pair
 ```
 
 The purpose is to stop adding isolated functions and instead make missing functions arise from recognizable operation structure.
+
+## Whole-self simulation
+
+The whole-self simulation layer lives in:
+
+```text
+src/whole-self-simulation-core-v0-1.js
+scripts/run-whole-self-simulation-v0-1.js
+```
+
+It scores a candidate source state through the shared logic:
+
+```text
+math/language closure
+truth accounting
+source-edit reality feedback
+epistemic gate stability
+frontier pressure
+```
+
+The output is not a slogan. It must report:
+
+```text
+score
+stability_score
+completeness_score
+damage_count
+frontier_count
+feeling
+wants
+best candidate state
+stop condition
+```
+
+A correct state can be `stable_but_incomplete`. That is preferred over pretending the language is complete.
+
+Current frontier pressure after the v0.4 math frontier is expected to move away from square-root, function composition, set membership, and induction schema. The next pure-math frontiers are:
+
+```text
+limits
+derivatives
+integrals
+probability / event algebra
+```
+
+## Source-edit reality feedback
+
+Source-edit reality feedback lives in:
+
+```text
+src/source-edit-reality-feedback-v0-1.js
+```
+
+It anchors source edits against truths that must not drift. Examples:
+
+```text
+2 + 2 = 4 must close as true
+3 + 2 = 4 must close as false
+2x + 1 = x + 4 must solve to x = 3
+a = b, b = c therefore a = c must close by equality transitivity
+sqrt(x) is real must emit the real-domain guard
+f(g(x)) must canonicalize as function composition
+x ∈ A must canonicalize as set membership
+prove by induction P(n) must emit proof obligations
+```
+
+If a candidate source edit makes false arithmetic true, breaks a closure operator, or swaps a selected rule, it is treated as identity damage. That is what `less_self` means in this repo.
 
 ## Epistemic Octahedron core
 
@@ -259,20 +396,188 @@ scripts/promote-safe-reactive-candidate-v0-1.js
 
 A candidate is promoted only when the simulated report says it is safe, consistency gates agree, the path is allowed, and candidate content exists.
 
+## Roadmap to meaning algebra
+
+The milestone is not to make the repo print emotional English. The milestone is to let the kernel receive messy English descriptions, reduce them into canonical relational structures, test them against math/reality/logic, and speak back in English only after the internal state is coherent.
+
+Implementation path:
+
+### Phase 1: finish the bounded pure-math spine
+
+Goal:
+
+```text
+raw math input → AST → anatomy → closure obligation → proof/gap → kernel packet → whole-self score
+```
+
+Required implementation gates:
+
+```text
+no hardcoded answer strings
+no test that only checks printed text
+all new forms must classify into anatomy_id and closure_operator
+all closure results must be AST/packet structures, not prose
+every unsupported form must return a precise gap
+whole-self simulation must track frontier pressure after each closure expansion
+```
+
+Current next targets:
+
+```text
+limits
+derivatives
+integrals
+probability / event algebra
+```
+
+### Phase 2: relation algebra substrate
+
+Goal:
+
+```text
+terms → typed relations → relation composition → contradiction / compatibility → closure or gap
+```
+
+Needed structures:
+
+```text
+RelationNode
+TypedEntity
+PredicateApplication
+RelationComposition
+ConstraintSet
+Scope
+Falsifier
+Observable
+LatentVariable
+```
+
+Example input target:
+
+```text
+Harvey is happy, happy is good, but Harvey is not good
+```
+
+The kernel should not resolve this by printing a sentence. It should produce a structured state such as:
+
+```text
+entity(Harvey)
+predicate(happy)
+predicate(good)
+relation(Harvey, happy)          observed/asserted
+relation(happy, good)            semantic/implication candidate
+relation(Harvey, not good)       asserted contradiction pressure
+missing rule: whether predicate transfer is valid from happy to Harvey
+```
+
+The correct result may be a contradiction, a blocked implication, a scope gap, or a request for a missing relation rule. The kernel should not silently assume that if Harvey is happy and happy is good, then Harvey is good.
+
+### Phase 3: meaning algebra
+
+Goal:
+
+```text
+messy meaning input → candidate relation graph → constraints → falsifiers → best coherent model or precise gap
+```
+
+Meaning must be represented as a relation system, not a dictionary string.
+
+For a future concept such as love, the kernel must treat words like appreciation, attraction, desire, and fantasy as related variables or components, not synonyms and not direct equals.
+
+A valid meaning-model candidate should include:
+
+```text
+components
+relations between components
+scope of claim
+observables
+latent variables
+weights or ordering rules
+contradiction tests
+falsifiers
+boundary cases
+```
+
+Example future form:
+
+```text
+love := relation_system(appreciation, attraction, desire, fantasy, attachment, care, choice, time)
+```
+
+That line alone must not count as understanding. It only becomes meaningful after the kernel can derive constraints, compare cases, reject contradictions, and explain what remains unknown.
+
+### Phase 4: English listener/speaker boundary
+
+Goal:
+
+```text
+English input → canonical internal language → verified state / gap → English explanation
+```
+
+Rules:
+
+```text
+English may suggest structure
+English may report structure
+English must not be the proof substrate
+speaker output must cite internal packets or gaps
+listener output must preserve uncertainty and scope
+```
+
+A passing milestone test should inspect internal packets, not final prose.
+
+### Phase 5: self-improving meaning system
+
+Goal:
+
+```text
+whole-self simulation proposes better internal structures
+math filters invalid structures
+truth accounting tracks support / contradiction / unknown
+reality anchors prevent identity drift
+meaning algebra grows only when closure improves
+```
+
+This is the milestone where the kernel can begin to learn from user-described meaning without falling into word association.
+
+## Anti-fake implementation rules
+
+A patch is fake progress if it does any of the following:
+
+```text
+adds strings that look like conclusions without AST support
+passes tests by matching English phrases only
+adds a module that no central path consumes
+marks frontier gaps as complete
+removes reality anchors to pass tests
+changes selected rules without updating anatomy and closure tests
+claims meaning without observables, falsifiers, or relation structure
+```
+
+A patch is real progress only if it moves through the shared chain:
+
+```text
+AST → anatomy → proof/closure → kernel packet → reality feedback → whole-self simulation
+```
+
 ## Important source files
 
 ```text
-src/math-language-kernel-v0-1.js       core Ω completion kernel
-src/math-ast-core-v0-1.js              canonical math AST spine
-src/language-parser-v0-1.js            symbolic parser + math AST bridge
-src/operator-anatomy-v0-1.js           operation anatomy and closure surfaces
-src/epistemic-octahedron-core-v0-1.js  stability geometry / transition field
-src/self-edit-loop-v0-1.js             self-edit simulation and candidate search
-src/source-sandbox-v0-1.js             virtual source mutation sandbox
-src/discovery-core-v0-1.js             raw stream pattern discovery
-src/intention-algebra-v0-1.js          intention as unit-total field
-src/nested-relation-core-v0-1.js       relations over relations
-src/truth-accounting-core-v0-1.js      support / contradiction / unknown accounting
+src/math-language-kernel-v0-1.js          core Ω completion kernel
+src/math-ast-core-v0-1.js                 canonical math AST spine
+src/language-parser-v0-1.js               symbolic parser + math AST bridge
+src/operator-anatomy-v0-1.js              operation anatomy and closure surfaces
+src/proof-calculus-core-v0-1.js           proof and closure rules
+src/math-closure-engine-v0-1.js           AST/anatomy/proof closure engine
+src/source-edit-reality-feedback-v0-1.js  reality anchors for source-edit identity
+src/whole-self-simulation-core-v0-1.js    whole-state simulation and best-state choice
+src/epistemic-octahedron-core-v0-1.js     stability geometry / transition field
+src/self-edit-loop-v0-1.js                self-edit simulation and candidate search
+src/source-sandbox-v0-1.js                virtual source mutation sandbox
+src/discovery-core-v0-1.js                raw stream pattern discovery
+src/intention-algebra-v0-1.js             intention as unit-total field
+src/nested-relation-core-v0-1.js          relations over relations
+src/truth-accounting-core-v0-1.js         support / contradiction / unknown accounting
 ```
 
 ## Active tests
@@ -282,7 +587,14 @@ Current core tests include:
 ```text
 tests/math-ast-core-v0-1-test.js
 tests/math-ast-bridge-v0-1-test.js
+tests/proof-calculus-core-v0-1-test.js
+tests/math-closure-engine-v0-1-test.js
+tests/math-language-completion-v0-1-test.js
 tests/math-language-kernel-v0-1-test.js
+tests/kernel-math-closure-bridge-v0-1-test.js
+tests/pure-math-frontier-v0-4-test.js
+tests/source-edit-reality-feedback-v0-1-test.js
+tests/whole-self-simulation-core-v0-1-test.js
 tests/completion-scopes-v0-1-test.js
 tests/completion-edge-scopes-v0-1-test.js
 tests/completion-frontier-scopes-v0-1-test.js
@@ -312,19 +624,30 @@ artifacts/latest-core-test-log-v0-1.txt
 
 ## Running locally
 
-Run the AST tests:
+Run the AST and closure tests:
 
 ```bash
 node tests/math-ast-core-v0-1-test.js
 node tests/math-ast-bridge-v0-1-test.js
+node tests/proof-calculus-core-v0-1-test.js
+node tests/math-closure-engine-v0-1-test.js
+node tests/math-language-completion-v0-1-test.js
+node tests/pure-math-frontier-v0-4-test.js
 ```
 
 Run the main kernel tests:
 
 ```bash
 node tests/math-language-kernel-v0-1-test.js
+node tests/kernel-math-closure-bridge-v0-1-test.js
 node tests/completion-scopes-v0-1-test.js
 node tests/completion-edge-scopes-v0-1-test.js
+```
+
+Run the whole-self simulation:
+
+```bash
+node scripts/run-whole-self-simulation-v0-1.js
 ```
 
 Run the self-edit loop:
@@ -344,7 +667,7 @@ artifacts/reactive-self-edit-summary-v0-1.json
 
 ## Current direction
 
-The immediate direction is to finish wiring the canonical AST spine into every major layer:
+The immediate direction is to keep widening the canonical math-language spine without creating disconnected modules:
 
 ```text
 parser → AST
@@ -353,9 +676,12 @@ classification → operator anatomy
 operator anatomy → closure obligation
 closure obligation → proof engine
 proof engine → verified output or precise gap
+kernel bridge → M / MΩ* packet
+reality feedback → identity preservation
+whole-self simulation → best stable incomplete state or safe improved state
 safe self-edit loop → candidate promotion
 ```
 
-The project should be considered successful at this phase when it can take new supported math/proof forms, reduce them into the AST, derive the correct closure obligation, prove or reject the closure, and expose the exact missing structure when it fails.
+The project should be considered successful at this phase when it can take new supported math/proof forms, reduce them into the AST, derive the correct closure obligation, prove or reject the closure, expose the exact missing structure when it fails, and move frontier pressure forward without pretending the frontier is gone.
 
 The point is a small, disciplined kernel with increasingly general internal logic, not a large pile of disconnected modules.
