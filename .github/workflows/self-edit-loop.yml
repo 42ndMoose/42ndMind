@@ -149,6 +149,37 @@ jobs:
           printf '{\n  "frontier_discovery_candidate_exit_code": %s,\n  "ok": %s\n}\n' "$code" "$([ "$code" -eq 0 ] && echo true || echo false)" > artifacts/frontier-discovery-candidate-status-v0-1.json
           echo "FRONTIER_DISCOVERY_CANDIDATE_STATUS=$code" >> "$GITHUB_ENV"
 
+      - name: Promote safe frontier discovery candidate and capture status
+        run: |
+          set +e
+          node scripts/promote-safe-frontier-discovery-candidate-v0-1.js > artifacts/frontier-discovery-candidate-promotion-console-v0-1.txt 2>&1
+          code=$?
+          if [ ! -f artifacts/frontier-discovery-candidate-promotion-status-v0-1.json ]; then
+            printf '{\n  "promoted": false,\n  "reason": "promotion_script_failed_before_status",\n  "exit_code": %s\n}\n' "$code" > artifacts/frontier-discovery-candidate-promotion-status-v0-1.json
+          fi
+          echo "FRONTIER_DISCOVERY_CANDIDATE_PROMOTION_STATUS=$code" >> "$GITHUB_ENV"
+
+      - name: Run core tests after frontier promotion
+        run: |
+          set +e
+          mkdir -p artifacts
+          : > artifacts/core-test-post-frontier-promotion-log-v0-1.txt
+          status=0
+          tests="tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/math-language-kernel-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/pure-math-frontier-v0-4-test.js tests/pure-math-frontier-v0-5-test.js tests/frontier-discovery-core-v0-1-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js"
+          if [ -f tests/frontier-candidate-complex-unit-v0-1-test.js ]; then
+            tests="$tests tests/frontier-candidate-complex-unit-v0-1-test.js"
+          fi
+          for test in $tests
+          do
+            echo "## $test" | tee -a artifacts/core-test-post-frontier-promotion-log-v0-1.txt
+            node "$test" >> artifacts/core-test-post-frontier-promotion-log-v0-1.txt 2>&1
+            code=$?
+            echo "exit_code=$code" | tee -a artifacts/core-test-post-frontier-promotion-log-v0-1.txt
+            if [ "$code" -ne 0 ]; then status=$code; fi
+          done
+          printf '{\n  "core_tests_post_frontier_promotion_exit_code": %s,\n  "ok": %s\n}\n' "$status" "$([ "$status" -eq 0 ] && echo true || echo false)" > artifacts/core-test-post-frontier-promotion-status-v0-1.json
+          echo "CORE_TEST_POST_FRONTIER_PROMOTION_STATUS=$status" >> "$GITHUB_ENV"
+
       - name: Promote safe reactive candidate
         run: node scripts/promote-safe-reactive-candidate-v0-1.js
 
@@ -179,7 +210,7 @@ jobs:
       - name: Ensure report placeholders exist
         run: |
           mkdir -p artifacts
-          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json frontier-discovery-report-v0-1.json frontier-discovery-summary-v0-1.json frontier-discovery-candidate-report-v0-1.json frontier-discovery-candidate-summary-v0-1.json frontier-discovery-candidate-status-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json whole-self-simulation-report-v0-1.json whole-self-simulation-summary-v0-1.json
+          for file in self-edit-loop-report-v0-1.json self-edit-loop-summary-v0-1.json reactive-self-edit-report-v0-1.json reactive-self-edit-summary-v0-1.json frontier-discovery-report-v0-1.json frontier-discovery-summary-v0-1.json frontier-discovery-candidate-report-v0-1.json frontier-discovery-candidate-summary-v0-1.json frontier-discovery-candidate-status-v0-1.json frontier-discovery-candidate-promotion-status-v0-1.json core-test-post-frontier-promotion-status-v0-1.json growth-probe-report-v0-1.json growth-probe-summary-v0-1.json diagnostic-probe-report-v0-1.json diagnostic-probe-summary-v0-1.json reactive-promotion-status-v0-1.json self-edit-loop-post-promotion-status-v0-1.json whole-self-simulation-report-v0-1.json whole-self-simulation-summary-v0-1.json
           do
             if [ ! -f "artifacts/$file" ]; then
               printf '{\n  "missing": true,\n  "file": "%s"\n}\n' "$file" > "artifacts/$file"
@@ -203,6 +234,14 @@ jobs:
           echo "## 42ndMind Frontier Candidate Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat artifacts/frontier-discovery-candidate-summary-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Frontier Candidate Promotion Status" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/frontier-discovery-candidate-promotion-status-v0-1.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## 42ndMind Core Tests After Frontier Promotion" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat artifacts/core-test-post-frontier-promotion-status-v0-1.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "## 42ndMind Self-Edit Loop Summary" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
@@ -230,10 +269,13 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add scripts/run-self-edit-loop-v0-1.js scripts/run-whole-self-simulation-v0-1.js scripts/run-frontier-discovery-candidate-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js scripts/apply-kernel-math-closure-bridge-v0-1.js scripts/apply-pure-math-frontier-v0-4.js scripts/apply-pure-math-frontier-v0-5.js src/self-edit-loop-v0-1.js src/source-edit-reality-feedback-v0-1.js src/whole-self-simulation-core-v0-1.js src/frontier-discovery-core-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-language-kernel-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/pure-math-frontier-v0-4-test.js tests/pure-math-frontier-v0-5-test.js tests/frontier-discovery-core-v0-1-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js tests/self-edit-parser-export-fallback-v0-1-test.cjs
+          git add scripts/run-self-edit-loop-v0-1.js scripts/run-whole-self-simulation-v0-1.js scripts/run-frontier-discovery-candidate-v0-1.js scripts/promote-safe-frontier-discovery-candidate-v0-1.js scripts/apply-self-edit-parser-export-fallback-v0-1.js scripts/apply-kernel-math-closure-bridge-v0-1.js scripts/apply-pure-math-frontier-v0-4.js scripts/apply-pure-math-frontier-v0-5.js src/self-edit-loop-v0-1.js src/source-edit-reality-feedback-v0-1.js src/whole-self-simulation-core-v0-1.js src/frontier-discovery-core-v0-1.js src/language-parser-v0-1.js src/operator-anatomy-v0-1.js src/epistemic-octahedron-core-v0-1.js src/math-language-kernel-v0-1.js src/math-ast-core-v0-1.js src/proof-calculus-core-v0-1.js src/math-closure-engine-v0-1.js tests/math-ast-core-v0-1-test.js tests/math-ast-bridge-v0-1-test.js tests/proof-calculus-core-v0-1-test.js tests/math-closure-engine-v0-1-test.js tests/math-language-completion-v0-1-test.js tests/kernel-math-closure-bridge-v0-1-test.js tests/pure-math-frontier-v0-4-test.js tests/pure-math-frontier-v0-5-test.js tests/frontier-discovery-core-v0-1-test.js tests/source-edit-reality-feedback-v0-1-test.js tests/whole-self-simulation-core-v0-1-test.js tests/self-edit-parser-export-fallback-v0-1-test.cjs
+          [ -f tests/frontier-candidate-complex-unit-v0-1-test.js ] && git add tests/frontier-candidate-complex-unit-v0-1-test.js || true
           git diff --cached --quiet || git commit -m "Wire proof and closure spine [skip ci]"
           cp artifacts/core-test-status-v0-1.json artifacts/latest-core-test-status-v0-1.json
           cp artifacts/core-test-log-v0-1.txt artifacts/latest-core-test-log-v0-1.txt
+          cp artifacts/core-test-post-frontier-promotion-status-v0-1.json artifacts/latest-core-test-post-frontier-promotion-status-v0-1.json
+          cp artifacts/core-test-post-frontier-promotion-log-v0-1.txt artifacts/latest-core-test-post-frontier-promotion-log-v0-1.txt
           cp artifacts/whole-self-simulation-report-v0-1.json artifacts/latest-whole-self-simulation-report-v0-1.json
           cp artifacts/whole-self-simulation-summary-v0-1.json artifacts/latest-whole-self-simulation-summary-v0-1.json
           cp artifacts/frontier-discovery-report-v0-1.json artifacts/latest-frontier-discovery-report-v0-1.json
@@ -241,6 +283,7 @@ jobs:
           cp artifacts/frontier-discovery-candidate-report-v0-1.json artifacts/latest-frontier-discovery-candidate-report-v0-1.json
           cp artifacts/frontier-discovery-candidate-summary-v0-1.json artifacts/latest-frontier-discovery-candidate-summary-v0-1.json
           cp artifacts/frontier-discovery-candidate-status-v0-1.json artifacts/latest-frontier-discovery-candidate-status-v0-1.json
+          cp artifacts/frontier-discovery-candidate-promotion-status-v0-1.json artifacts/latest-frontier-discovery-candidate-promotion-status-v0-1.json
           cp artifacts/self-edit-loop-status-v0-1.json artifacts/latest-self-edit-loop-status-v0-1.json
           cp artifacts/self-edit-loop-post-promotion-status-v0-1.json artifacts/latest-self-edit-loop-post-promotion-status-v0-1.json
           cp artifacts/reactive-promotion-status-v0-1.json artifacts/latest-reactive-promotion-status-v0-1.json
@@ -255,7 +298,7 @@ jobs:
           cp artifacts/diagnostic-probe-report-v0-1.json artifacts/latest-diagnostic-probe-report-v0-1.json
           cp artifacts/diagnostic-probe-summary-v0-1.json artifacts/latest-diagnostic-probe-summary-v0-1.json
           [ -f artifacts/diagnostic-kernel-logic-v0-1.json ] && cp artifacts/diagnostic-kernel-logic-v0-1.json artifacts/latest-diagnostic-kernel-logic-v0-1.json || true
-          git add artifacts/latest-*.json artifacts/latest-core-test-log-v0-1.txt
+          git add artifacts/latest-*.json artifacts/latest-core-test-log-v0-1.txt artifacts/latest-core-test-post-frontier-promotion-log-v0-1.txt
           git diff --cached --quiet || git commit -m "Update latest self-edit diagnostics [skip ci]"
           git pull --rebase || true
           git push
@@ -274,6 +317,8 @@ jobs:
           [ "${CORE_TEST_STATUS:-0}" -eq 0 ] || status=${CORE_TEST_STATUS}
           [ "${SELF_EDIT_STATUS:-0}" -eq 0 ] || status=${SELF_EDIT_STATUS}
           [ "${FRONTIER_DISCOVERY_CANDIDATE_STATUS:-0}" -eq 0 ] || status=${FRONTIER_DISCOVERY_CANDIDATE_STATUS}
+          [ "${FRONTIER_DISCOVERY_CANDIDATE_PROMOTION_STATUS:-0}" -eq 0 ] || status=${FRONTIER_DISCOVERY_CANDIDATE_PROMOTION_STATUS}
+          [ "${CORE_TEST_POST_FRONTIER_PROMOTION_STATUS:-0}" -eq 0 ] || status=${CORE_TEST_POST_FRONTIER_PROMOTION_STATUS}
           [ "${SELF_EDIT_POST_PROMOTION_STATUS:-0}" -eq 0 ] || status=${SELF_EDIT_POST_PROMOTION_STATUS}
           [ "${GROWTH_PROBE_STATUS:-0}" -eq 0 ] || status=${GROWTH_PROBE_STATUS}
           [ "${DIAGNOSTIC_PROBE_STATUS:-0}" -eq 0 ] || status=${DIAGNOSTIC_PROBE_STATUS}
