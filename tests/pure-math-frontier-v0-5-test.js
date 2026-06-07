@@ -8,6 +8,7 @@ const W = require('../src/whole-self-simulation-core-v0-1.js');
 const limCase = 'lim ' + 'x->0 ' + 'sin' + '(x)' + '/' + 'x = 1';
 const derCase = 'd' + '/' + 'dx ' + 'x' + '^' + '2 = 2x';
 const intCase = 'integral ' + '2x ' + 'dx = ' + 'x' + '^' + '2 + C';
+const sequenceCase = 'a_n = n' + '^' + '2';
 
 const rows = [
   [limCase, 'LimitStatement', 'proveLimitStatement', 'limit-sine-over-x'],
@@ -44,14 +45,14 @@ const state = W.evaluateState({ id: 'frontier_after_v0_5' });
 assert.strictEqual(state.ok, true);
 assert.strictEqual(state.stop, false);
 assert.ok(!state.wants.some(row => row.id === 'complex_numbers'));
-assert.ok(state.wants.some(row => row.id === 'sequences'));
-assert.ok(state.wants.some(row => row.id === 'logic_quantifier_exists'));
 assert.ok(!state.wants.some(row => row.id === 'limits'));
 assert.ok(!state.wants.some(row => row.id === 'derivative'));
 assert.ok(!state.wants.some(row => row.id === 'integral'));
 
-const matrix = Closure.close('A B = C');
-if (matrix.ok) assert.strictEqual(matrix.selected_rule, 'matrix-product-dimension-guard');
-else assert.strictEqual(matrix.gaps[0].id, 'unclassified_math_ast');
+const sequence = Closure.close(sequenceCase);
+if (sequence.ok) assert.strictEqual(sequence.selected_rule, 'sequence-term-definition');
+else assert.strictEqual(sequence.gaps[0].id, 'unclassified_math_ast');
+
+assert.ok(state.wants.some(row => row.id === 'logic_quantifier_exists'));
 
 console.log('pure-math-frontier-v0-5 tests passed');
