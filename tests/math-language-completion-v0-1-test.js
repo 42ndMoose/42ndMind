@@ -8,6 +8,8 @@ const derCase = 'd' + '/' + 'dx ' + 'x' + '^' + '2 = 2x';
 const intCase = 'integral ' + '2x ' + 'dx = ' + 'x' + '^' + '2 + C';
 const complexCase = 'i' + '^' + '2 = -1';
 const matrixCase = 'A B = C';
+const sequenceCase = 'a_n = n' + '^' + '2';
+const existsCase = 'exists x in R, x' + '^' + '2 = 2';
 
 const samples = [
   '2x + 1 = 7',
@@ -62,14 +64,15 @@ for (const source of samples) {
 }
 
 const matrix = Closure.close(matrixCase);
-if (matrix.ok) {
-  assert.strictEqual(matrix.selected_rule, 'matrix-product-dimension-guard');
-} else {
-  assert.strictEqual(matrix.gaps[0].id, 'unclassified_math_ast');
-}
+if (matrix.ok) assert.strictEqual(matrix.selected_rule, 'matrix-product-dimension-guard');
+else assert.strictEqual(matrix.gaps[0].id, 'unclassified_math_ast');
 
-const gap = Closure.close('a_n = n' + '^' + '2');
+const sequence = Closure.close(sequenceCase);
+if (sequence.ok) assert.strictEqual(sequence.selected_rule, 'sequence-term-definition');
+else assert.strictEqual(sequence.gaps[0].id, 'unclassified_math_ast');
+
+const gap = Closure.close(existsCase);
 assert.strictEqual(gap.ok, false);
 assert.strictEqual(gap.gaps[0].id, 'unclassified_math_ast');
 
-console.log('math-language-completion-v0-1 tests passed: ' + samples.length + ' stable supported forms, matrix transitional, 1 precise unsupported gap');
+console.log('math-language-completion-v0-1 tests passed: stable supported forms plus matrix/sequence transition checks, 1 precise unsupported gap');
