@@ -477,30 +477,8 @@ exit_code=0
 source-edit-reality-feedback-v0-1 tests passed
 exit_code=0
 ## tests/whole-self-simulation-core-v0-1-test.js
-node:internal/assert/utils:281
-    throw err;
-    ^
-
-AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
-
-  assert.ok(base.wants.some(row => row.id === 'sqrt_real_domain'))
-
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/whole-self-simulation-core-v0-1-test.js:28:8)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
-    at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
-    at node:internal/main/run_main_module:28:49 {
-  generatedMessage: true,
-  code: 'ERR_ASSERTION',
-  actual: false,
-  expected: true,
-  operator: '=='
-}
-
-Node.js v20.20.2
-exit_code=1
+whole-self-simulation-core-v0-1 tests passed
+exit_code=0
 ## tests/mathematical-patch-proposer-v0-1-test.js
 PASS mathematical patch proposer loads
 PASS complete source has no gaps
