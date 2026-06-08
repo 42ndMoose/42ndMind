@@ -13,12 +13,22 @@
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
     .muted { opacity: .72; }
+    .good { color: #167a34; font-weight: 700; }
+    .bad { color: #b42318; font-weight: 700; }
+    .warn { color: #9a6700; font-weight: 700; }
     @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <h1>42ndMind Math Language Lab</h1>
   <p class="muted">Raw symbols update λ, ι, μ, ε, and Ω. Every active field remains unit-total. Ξ stays empty.</p>
+
+  <div class="card">
+    <h2>Plain status</h2>
+    <p id="plainVerdict" class="warn">checking latest repo artifacts...</p>
+    <pre id="plainStatus">No artifact status loaded yet.</pre>
+    <button id="refreshStatus">refresh status</button>
+  </div>
 
   <div class="card">
     <h2>Σ input</h2>
@@ -55,6 +65,56 @@
     const K = FortySecondMindMathLanguageKernel;
     let s = K.create();
     const $ = id => document.getElementById(id);
+
+    async function readJson(path) {
+      const res = await fetch(path + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error(path + ' returned ' + res.status);
+      return res.json();
+    }
+
+    function boolLine(label, ok) {
+      return label + ': ' + (ok === true ? 'PASS' : ok === false ? 'FAIL' : 'UNKNOWN');
+    }
+
+    async function renderPlainStatus() {
+      const verdict = $('plainVerdict');
+      const out = $('plainStatus');
+      verdict.className = 'warn';
+      verdict.textContent = 'checking latest repo artifacts...';
+      try {
+        const core = await readJson('../artifacts/latest-core-test-status-v0-1.json');
+        const whole = await readJson('../artifacts/latest-whole-self-simulation-summary-v0-1.json');
+        const selfEdit = await readJson('../artifacts/latest-self-edit-loop-status-v0-1.json').catch(() => null);
+        const growth = await readJson('../artifacts/latest-growth-probe-status-v0-1.json').catch(() => null);
+        const diagnostic = await readJson('../artifacts/latest-diagnostic-probe-status-v0-1.json').catch(() => null);
+        const lines = [];
+        lines.push(boolLine('Core test suite', core && core.ok));
+        lines.push('Core test exit code: ' + (core && core.core_tests_exit_code));
+        lines.push(boolLine('Whole-self simulation', whole && whole.stop === true && whole.best_damage_count === 0));
+        lines.push('Whole-self decision: ' + (whole && whole.decision || 'unknown'));
+        lines.push('Best feeling: ' + (whole && whole.best_feeling || 'unknown'));
+        lines.push('Reality damage count: ' + (whole && whole.reality ? whole.reality.damage_count : 'unknown'));
+        lines.push(boolLine('Self-edit loop', selfEdit && selfEdit.ok));
+        lines.push(boolLine('Growth probe', growth && growth.ok));
+        lines.push(boolLine('Diagnostic probe', diagnostic && diagnostic.ok));
+        lines.push('');
+        if (core && core.ok && whole && whole.stop === true && whole.best_damage_count === 0) {
+          lines.push('Plain meaning: the checked foundation is green. This does not mean the brain is complete. It means the current tests did not find damage, and the whole-self simulation kept the current state.');
+          verdict.className = 'good';
+          verdict.textContent = 'GREEN: current checked foundation passes.';
+        } else {
+          lines.push('Plain meaning: something is still red or unknown. Check latest-core-test-log-v0-1.txt or ask ChatGPT to read it.');
+          verdict.className = 'bad';
+          verdict.textContent = 'RED/UNKNOWN: latest artifacts show unresolved damage or missing status.';
+        }
+        out.textContent = lines.join('\n');
+      } catch (err) {
+        verdict.className = 'bad';
+        verdict.textContent = 'UNKNOWN: could not read latest artifacts.';
+        out.textContent = String(err && err.message || err);
+      }
+    }
+
     function show(msg) { $('status').textContent = msg; }
     function render() {
       const p = K.packet(s);
@@ -70,10 +130,12 @@
       $('packet').textContent = JSON.stringify(p, null, 2);
       $('trace').textContent = JSON.stringify(s.trace.slice(0, 24), null, 2);
     }
+    $('refreshStatus').onclick = renderPlainStatus;
     $('step').onclick = () => { K.observe(s, $('input').value); show('observed'); render(); };
     $('train').onclick = () => { for (let i = 0; i < 12; i += 1) K.observe(s, $('input').value); show('observed × 12'); render(); };
     $('noise').onclick = () => { $('input').value = 'xqz 91 %% ?? blorp'; K.observe(s, $('input').value); show('irregular stream observed'); render(); };
     $('reset').onclick = () => { s = K.create(); show('reset'); render(); };
+    renderPlainStatus();
     render();
   </script>
 </body>
