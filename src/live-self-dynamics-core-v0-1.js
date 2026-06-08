@@ -13,26 +13,17 @@
   function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }
   function text(value) { return String(value == null ? '' : value); }
   function file(files, path) { return text((files || {})[path]); }
+  function R(value) { return Number((Number(value) || 0).toFixed(6)); }
 
   function preserveCandidate(files) {
-    return {
-      id: 'same_self_preserve_current_operator_anatomy',
-      origin: 'live_self_dynamics',
-      kind: 'preserve_current_state',
-      operations: [{ type: 'replace', path: 'src/operator-anatomy-v0-1.js', content: file(files, 'src/operator-anatomy-v0-1.js') }]
-    };
+    return { id: 'same_self_preserve_current_operator_anatomy', origin: 'live_self_dynamics', kind: 'preserve_current_state', operations: [{ type: 'replace', path: 'src/operator-anatomy-v0-1.js', content: file(files, 'src/operator-anatomy-v0-1.js') }] };
   }
 
   function markerCandidate(files) {
     const path = 'src/operator-anatomy-v0-1.js';
     const content = file(files, path);
     if (!content || content.indexOf('live-self dynamics marker') >= 0) return null;
-    return {
-      id: 'mark_live_self_dynamics_memory',
-      origin: 'live_self_dynamics',
-      kind: 'safe_memory_marker',
-      operations: [{ type: 'replace', path, content: content + '\n// live-self dynamics marker: simulated before application.\n' }]
-    };
+    return { id: 'mark_live_self_dynamics_memory', origin: 'live_self_dynamics', kind: 'safe_memory_marker', operations: [{ type: 'replace', path, content: content + '\n// live-self dynamics marker: simulated before application.\n' }] };
   }
 
   function generate(files, options) {
@@ -71,7 +62,7 @@
       return { candidate, simulation: sim, sensation: sensation(sim) };
     }).sort(rank);
     const best = rows[0] || null;
-    return { packet_type: '42ndMind_live_self_dynamics_step_v0_1', version: VERSION, ok: !!best, generated_count: candidates.length, candidates: rows, best, selected_stage: best ? { id: best.candidate.id, feeling: best.sensation.feeling, self_score: best.sensation.self_score, applyable: best.sensation.applyable } : null, Ξ: '' };
+    return { packet_type: '42ndMind_live_self_dynamics_step_v0_1', version: VERSION, ok: !!best, generated_count: candidates.length, candidates: rows, best, selected_stage: best ? { id: best.candidate.id, feeling: best.sensation.feeling, self_score: best.sensation.self_score, reward: best.sensation.reward, pain: best.sensation.pain, applyable: best.sensation.applyable } : null, Ξ: '' };
   }
 
   function trajectory(files, options) {
@@ -91,5 +82,34 @@
     return { packet_type: '42ndMind_live_self_dynamics_trajectory_v0_1', version: VERSION, ok: trace.length > 0 && finalStep && finalStep.ok === true, steps: trace.length, trace, final_files: current, optimized_stage: finalStep && finalStep.selected_stage || null, final_feeling: finalStep && finalStep.selected_stage && finalStep.selected_stage.feeling || 'unknown', Ξ: '' };
   }
 
-  return Object.freeze({ VERSION, generate, sensation, step, trajectory });
+  function continuous(files, options) {
+    const opts = options || {};
+    const maxIterations = Math.max(1, Math.min(128, Number(opts.max_iterations || 32)));
+    const minGain = Number(opts.min_gain == null ? 0.000001 : opts.min_gain);
+    let current = clone(files || {});
+    let lastScore = -Infinity;
+    const trace = [];
+    let stop_reason = 'max_iterations_reached';
+
+    for (let i = 0; i < maxIterations; i += 1) {
+      const packet = step(current, opts);
+      const best = packet && packet.best;
+      const score = best ? Number(best.sensation.self_score || 0) : -Infinity;
+      const gain = Number.isFinite(lastScore) ? R(score - lastScore) : score;
+      trace.push({ iteration: i, packet, score: R(score), gain: R(gain) });
+
+      if (!packet.ok || !best) { stop_reason = 'no_candidate'; break; }
+      if (!best.sensation.applyable) { stop_reason = 'no_applyable_mutation'; break; }
+      if (best.sensation.less_self) { stop_reason = 'less_self_detected'; break; }
+      if (Number.isFinite(lastScore) && gain <= minGain) { stop_reason = 'stable_no_better_state'; break; }
+
+      if (best.simulation && best.simulation.next_files) current = clone(best.simulation.next_files);
+      lastScore = score;
+    }
+
+    const final = trace[trace.length - 1] || null;
+    return { packet_type: '42ndMind_live_self_dynamics_continuous_v0_1', version: VERSION, ok: trace.length > 0, iterations: trace.length, stop_reason, optimized_stage: final && final.packet && final.packet.selected_stage || null, final_score: final ? final.score : null, final_files: current, trace, Ξ: '' };
+  }
+
+  return Object.freeze({ VERSION, generate, sensation, step, trajectory, continuous });
 });
