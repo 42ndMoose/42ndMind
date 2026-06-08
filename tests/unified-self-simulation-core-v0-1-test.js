@@ -36,10 +36,10 @@ assert.strictEqual(applied.ok, true);
 assert.strictEqual(applied.applied, true);
 assert.strictEqual(applied.feeling, 'same_self');
 
-const damagedProof = files['src/proof-calculus-core-v0-1.js'].replace("if (op === '=') return Math.abs(left - right) <= EPS;", "if (op === '=') return true;");
+const damagedKernel = "module.exports = Object.freeze({ VERSION: '0.1.0' });\n";
 const bad = U.simulate(files, {
-  id: 'less_self_break_false_arithmetic_anchor',
-  operations: [{ type: 'replace', path: 'src/proof-calculus-core-v0-1.js', content: damagedProof }]
+  id: 'less_self_remove_math_kernel_closure',
+  operations: [{ type: 'replace', path: 'src/math-language-kernel-v0-1.js', content: damagedKernel }]
 });
 assert.strictEqual(bad.applyable, false);
 assert.strictEqual(bad.less_self, true);
@@ -49,7 +49,7 @@ assert.strictEqual(bad.reality.accepted_by_reality, false);
 
 const rejected = U.applyIfMoreOrSame(files, {
   id: 'reject_bad_source_edit',
-  operations: [{ type: 'replace', path: 'src/proof-calculus-core-v0-1.js', content: damagedProof }]
+  operations: [{ type: 'replace', path: 'src/math-language-kernel-v0-1.js', content: damagedKernel }]
 });
 assert.strictEqual(rejected.ok, false);
 assert.strictEqual(rejected.applied, false);
