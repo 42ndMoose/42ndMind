@@ -153,7 +153,7 @@
       ]),
       action: organ('action', [
         { id: 'simulate', w: 1 },
-        { id: 'adjust', w: lastSense.applyable && !lastSense.less_self ? 1 : EPS },
+        { id: 'adjust', w: lastSense.applyable && lastSense.more_self && !lastSense.less_self ? 1 : EPS },
         { id: 'do_not_promote', w: 1 }
       ]),
       source: organ('source', [
@@ -230,7 +230,7 @@
     const next = clone(live);
     const f = feeling || {};
     const sense = f.sensation || { feeling: 'unknown', self_score: 0, applyable: false, less_self: true };
-    const canMove = sense.applyable === true && sense.less_self !== true && f.simulation && f.simulation.next_files;
+    const canMove = sense.applyable === true && sense.more_self === true && sense.less_self !== true && f.simulation && f.simulation.next_files;
     const event = {
       t: next.t + 1,
       candidate_id: candidate && candidate.id || null,
