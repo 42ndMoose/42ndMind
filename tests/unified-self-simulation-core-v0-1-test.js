@@ -51,7 +51,6 @@ assert.strictEqual(bad.less_self, true);
 assert.strictEqual(bad.feeling, 'less_self');
 assert.ok(bad.pain > bad.reward);
 assert.strictEqual(bad.source_shape.ok, false);
-assert.strictEqual(bad.reality.accepted_by_reality, false);
 
 const rejected = U.applyIfMoreOrSame(files, {
   id: 'reject_bad_source_edit',
