@@ -14,9 +14,30 @@
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
   function A(value) { return Array.isArray(value) ? value : []; }
   function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }
+  function text(value) { return String(value == null ? '' : value); }
 
   function anchorInputs(anchors) {
     return A(anchors || Reality && Reality.DEFAULT_ANCHORS).map(a => a && a.input).filter(Boolean);
+  }
+
+  function sourceShape(beforeFiles, afterFiles) {
+    const rows = [
+      ['src/math-language-kernel-v0-1.js', ['math', 'completeMath', 'create']],
+      ['src/math-ast-core-v0-1.js', ['parse', 'classify']],
+      ['src/proof-calculus-core-v0-1.js', ['dispatch']],
+      ['src/math-closure-engine-v0-1.js', ['close', 'deriveObligation']],
+      ['src/operator-anatomy-v0-1.js', ['availableSurfaces']]
+    ].map(pair => {
+      const path = pair[0];
+      const needed = pair[1];
+      const before = text(beforeFiles && beforeFiles[path]);
+      const after = text(afterFiles && afterFiles[path]);
+      const missing = needed.filter(mark => after.indexOf(mark) < 0);
+      const tooSmall = before.length > 0 && after.length < before.length * 0.25;
+      return { path, ok: missing.length === 0 && !tooSmall, missing, tooSmall };
+    });
+    const bad = rows.filter(r => !r.ok);
+    return { ok: bad.length === 0, count: bad.length, rows };
   }
 
   function brainFromFiles(files, anchors) {
@@ -28,16 +49,17 @@
     return { growth: Growth && Growth.packet ? Growth.packet(state) : state, brain };
   }
 
-  function editFeeling(sandboxReport, realityReport, brainReport) {
+  function editFeeling(sandboxReport, realityReport, brainReport, shapeReport) {
     const sandboxOk = !!(sandboxReport && sandboxReport.accepted === true);
     const realityOk = !!(realityReport && realityReport.accepted_by_reality === true);
     const brainOk = !!(brainReport && brainReport.ok === true);
-    const damage = Number(realityReport && realityReport.damage_count || 0) + (sandboxOk ? 0 : 1) + (brainOk ? 0 : 1);
+    const shapeOk = !!(shapeReport && shapeReport.ok === true);
+    const damage = Number(realityReport && realityReport.damage_count || 0) + Number(shapeReport && shapeReport.count || 0) + (sandboxOk ? 0 : 1) + (brainOk ? 0 : 1);
     const improvement = Number(realityReport && realityReport.improvement_count || 0);
-    const pain = clamp01((damage ? 0.72 : 0) + (sandboxOk ? 0 : 0.18) + (brainOk ? 0 : 0.10));
-    const reward = clamp01((sandboxOk ? 0.25 : 0) + (realityOk ? 0.35 : 0) + (brainOk ? 0.25 : 0) + (improvement ? 0.15 : 0));
+    const pain = clamp01((damage ? 0.72 : 0) + (sandboxOk ? 0 : 0.18) + (brainOk ? 0 : 0.10) + (shapeOk ? 0 : 0.20));
+    const reward = clamp01((sandboxOk ? 0.25 : 0) + (realityOk ? 0.35 : 0) + (brainOk ? 0.25 : 0) + (shapeOk ? 0.15 : 0) + (improvement ? 0.15 : 0));
     const feeling = pain > reward ? 'less_self' : improvement > 0 ? 'more_self' : 'same_self';
-    return { feeling, pain, reward, damage, improvement, sandbox_ok: sandboxOk, reality_ok: realityOk, brain_ok: brainOk };
+    return { feeling, pain, reward, damage, improvement, sandbox_ok: sandboxOk, reality_ok: realityOk, brain_ok: brainOk, source_shape_ok: shapeOk };
   }
 
   function simulate(files, proposal, options) {
@@ -50,9 +72,10 @@
     const sandboxReport = Sandbox.simulate(sandbox, proposal || { id: 'empty', operations: [] }, tests, [Reality.validator(anchors)]);
     const afterFiles = sandboxReport.accepted ? clone(sandbox.virtual) : clone(baseFiles);
     const realityReport = Reality.compare(baseFiles, afterFiles, anchors);
+    const shapeReport = sourceShape(baseFiles, afterFiles);
     const afterBrain = brainFromFiles(afterFiles, anchors);
-    const affect = editFeeling(sandboxReport, realityReport, afterBrain.brain);
-    const applyable = sandboxReport.accepted === true && realityReport.accepted_by_reality === true && afterBrain.brain.ok === true && affect.feeling !== 'less_self';
+    const affect = editFeeling(sandboxReport, realityReport, afterBrain.brain, shapeReport);
+    const applyable = sandboxReport.accepted === true && realityReport.accepted_by_reality === true && shapeReport.ok === true && afterBrain.brain.ok === true && affect.feeling !== 'less_self';
     return {
       packet_type: '42ndMind_unified_self_simulation_v0_1',
       version: VERSION,
@@ -69,6 +92,7 @@
       after: { brain: afterBrain.brain },
       sandbox: sandboxReport,
       reality: realityReport,
+      source_shape: shapeReport,
       affect,
       next_files: applyable ? afterFiles : null,
       Ξ: ''
@@ -81,5 +105,5 @@
     return { packet_type: '42ndMind_unified_self_apply_v0_1', version: VERSION, ok: true, applied: true, feeling: sim.feeling, pain: sim.pain, reward: sim.reward, simulation: sim, files: sim.next_files, Ξ: '' };
   }
 
-  return Object.freeze({ VERSION, simulate, applyIfMoreOrSame, brainFromFiles, editFeeling });
+  return Object.freeze({ VERSION, simulate, applyIfMoreOrSame, brainFromFiles, editFeeling, sourceShape });
 });
