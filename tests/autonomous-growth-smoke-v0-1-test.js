@@ -64,5 +64,6 @@ nearOne(s.nested_brain.coherence);
 assert.ok(s.optimized_stage.id);
 
 require('./language-organ-core-v0-1-test.js');
+require('./unified-self-simulation-core-v0-1-test.js');
 
-console.log('autonomous-growth-smoke-v0-1 tests passed with language as live brain organ');
+console.log('autonomous-growth-smoke-v0-1 tests passed with language as live brain organ and unified self simulation');
