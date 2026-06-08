@@ -65,5 +65,6 @@ assert.ok(s.optimized_stage.id);
 
 require('./language-organ-core-v0-1-test.js');
 require('./unified-self-simulation-core-v0-1-test.js');
+require('./live-self-dynamics-core-v0-1-test.js');
 
-console.log('autonomous-growth-smoke-v0-1 tests passed with language as live brain organ and unified self simulation');
+console.log('autonomous-growth-smoke-v0-1 tests passed with language as live brain organ, unified self simulation, and continuous live self dynamics');
