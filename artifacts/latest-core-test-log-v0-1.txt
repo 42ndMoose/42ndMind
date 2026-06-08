@@ -643,7 +643,7 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 
 true !== false
 
-    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/unified-self-simulation-core-v0-1-test.js:48:8)
+    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/tests/unified-self-simulation-core-v0-1-test.js:53:8)
     at Module._compile (node:internal/modules/cjs/loader:1521:14)
     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
     at Module.load (node:internal/modules/cjs/loader:1266:32)
