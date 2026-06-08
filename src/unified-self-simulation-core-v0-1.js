@@ -16,6 +16,45 @@
   function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }
   function text(value) { return String(value == null ? '' : value); }
 
+  function applyCandidateOperation(files, op, options) {
+    const next = clone(files || {});
+    const operation = op || {};
+    const path = text(operation.path).trim();
+    if (!path || path.includes('..')) throw new Error('invalid candidate operation path');
+    const type = operation.type || operation.op || 'replace';
+    if (type === 'create') {
+      if (Object.prototype.hasOwnProperty.call(next, path)) throw new Error('candidate create target already exists: ' + path);
+      next[path] = text(operation.content);
+    } else if (type === 'replace') {
+      if (!Object.prototype.hasOwnProperty.call(next, path)) throw new Error('candidate replace target missing: ' + path);
+      next[path] = text(operation.content);
+    } else if (type === 'patch') {
+      if (!Object.prototype.hasOwnProperty.call(next, path)) throw new Error('candidate patch target missing: ' + path);
+      const from = text(operation.from);
+      const current = text(next[path]);
+      if (!from || current.indexOf(from) < 0) throw new Error('candidate patch source not found: ' + path);
+      next[path] = current.replace(from, text(operation.to));
+    } else if (type === 'delete') {
+      if (!(options && options.allowDelete)) throw new Error('candidate delete blocked: ' + path);
+      delete next[path];
+    } else {
+      throw new Error('unknown candidate operation type: ' + type);
+    }
+    return next;
+  }
+
+  function candidateFiles(baseFiles, proposal, options) {
+    let next = clone(baseFiles || {});
+    const ops = A(proposal && proposal.operations);
+    if (!ops.length) return { ok: false, files: clone(baseFiles || {}), error: 'proposal has no operations' };
+    try {
+      ops.forEach(op => { next = applyCandidateOperation(next, op, options || {}); });
+      return { ok: true, files: next, error: null };
+    } catch (err) {
+      return { ok: false, files: clone(baseFiles || {}), error: String(err && err.message || err) };
+    }
+  }
+
   function anchorInputs(anchors) {
     return A(anchors || Reality && Reality.DEFAULT_ANCHORS).map(a => a && a.input).filter(Boolean);
   }
@@ -68,12 +107,14 @@
     const tests = opts.tests || [];
     const baseFiles = clone(files || {});
     const beforeBrain = brainFromFiles(baseFiles, anchors);
-    const sandbox = Sandbox.create(baseFiles, opts.sandbox || { allowDelete: false, maxPatchBytes: 5000000 });
+    const sandboxOptions = opts.sandbox || { allowDelete: false, maxPatchBytes: 5000000 };
+    const sandbox = Sandbox.create(baseFiles, sandboxOptions);
     const sandboxReport = Sandbox.simulate(sandbox, proposal || { id: 'empty', operations: [] }, tests, [Reality.validator(anchors)]);
-    const afterFiles = sandboxReport.accepted ? clone(sandbox.virtual) : clone(baseFiles);
-    const realityReport = Reality.compare(baseFiles, afterFiles, anchors);
-    const shapeReport = sourceShape(baseFiles, afterFiles);
-    const afterBrain = brainFromFiles(afterFiles, anchors);
+    const attempted = candidateFiles(baseFiles, proposal || { id: 'empty', operations: [] }, sandboxOptions);
+    const sensedFiles = attempted.ok ? attempted.files : clone(baseFiles);
+    const realityReport = Reality.compare(baseFiles, sensedFiles, anchors);
+    const shapeReport = sourceShape(baseFiles, sensedFiles);
+    const afterBrain = brainFromFiles(sensedFiles, anchors);
     const affect = editFeeling(sandboxReport, realityReport, afterBrain.brain, shapeReport);
     const applyable = sandboxReport.accepted === true && realityReport.accepted_by_reality === true && shapeReport.ok === true && afterBrain.brain.ok === true && affect.feeling !== 'less_self';
     return {
@@ -93,8 +134,9 @@
       sandbox: sandboxReport,
       reality: realityReport,
       source_shape: shapeReport,
+      candidate_source: { attempted: attempted.ok, error: attempted.error },
       affect,
-      next_files: applyable ? afterFiles : null,
+      next_files: applyable ? sensedFiles : null,
       Ξ: ''
     };
   }
