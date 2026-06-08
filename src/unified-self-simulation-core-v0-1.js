@@ -22,11 +22,11 @@
 
   function sourceShape(beforeFiles, afterFiles) {
     const rows = [
-      ['src/math-language-kernel-v0-1.js', ['math', 'completeMath', 'create']],
-      ['src/math-ast-core-v0-1.js', ['parse', 'classify']],
-      ['src/proof-calculus-core-v0-1.js', ['dispatch']],
-      ['src/math-closure-engine-v0-1.js', ['close', 'deriveObligation']],
-      ['src/operator-anatomy-v0-1.js', ['availableSurfaces']]
+      ['src/math-language-kernel-v0-1.js', ['function math', 'function completeMath', 'function create']],
+      ['src/math-ast-core-v0-1.js', ['function parse', 'function classify']],
+      ['src/proof-calculus-core-v0-1.js', ['function prove', 'function contradiction']],
+      ['src/math-closure-engine-v0-1.js', ['function close', 'function deriveObligation']],
+      ['src/operator-anatomy-v0-1.js', ['CATALOG', 'function catalog']]
     ].map(pair => {
       const path = pair[0];
       const needed = pair[1];
