@@ -15,6 +15,8 @@ const files = {
 assert.strictEqual(U.VERSION, '0.1.0');
 assert.strictEqual(typeof U.simulate, 'function');
 assert.strictEqual(typeof U.applyIfMoreOrSame, 'function');
+assert.strictEqual(typeof U.sourceShape, 'function');
+assert.strictEqual(U.sourceShape(files, files).ok, true);
 
 const noop = U.simulate(files, {
   id: 'same_self_noop_comment',
@@ -27,6 +29,7 @@ assert.strictEqual(noop.after.brain.ok, true);
 assert.strictEqual(noop.after.brain.equation, 'brain = |perception| + |memory| + |belief| + |valuation| + |action| + |language|');
 assert.strictEqual(noop.after.brain.organ_count, 6);
 assert.strictEqual(noop.feeling, 'same_self');
+assert.strictEqual(noop.source_shape.ok, true);
 
 const applied = U.applyIfMoreOrSame(files, {
   id: 'same_self_noop_apply',
@@ -37,6 +40,8 @@ assert.strictEqual(applied.applied, true);
 assert.strictEqual(applied.feeling, 'same_self');
 
 const damagedKernel = "module.exports = Object.freeze({ VERSION: '0.1.0' });\n";
+const damagedFiles = Object.assign({}, files, { 'src/math-language-kernel-v0-1.js': damagedKernel });
+assert.strictEqual(U.sourceShape(files, damagedFiles).ok, false);
 const bad = U.simulate(files, {
   id: 'less_self_remove_math_kernel_closure',
   operations: [{ type: 'replace', path: 'src/math-language-kernel-v0-1.js', content: damagedKernel }]
@@ -45,6 +50,7 @@ assert.strictEqual(bad.applyable, false);
 assert.strictEqual(bad.less_self, true);
 assert.strictEqual(bad.feeling, 'less_self');
 assert.ok(bad.pain > bad.reward);
+assert.strictEqual(bad.source_shape.ok, false);
 assert.strictEqual(bad.reality.accepted_by_reality, false);
 
 const rejected = U.applyIfMoreOrSame(files, {
