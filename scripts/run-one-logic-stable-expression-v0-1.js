@@ -12,6 +12,7 @@ const EXPRESSION_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-express
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-summary-v0-1.json');
 const MUTATION_BUDGET = 32;
 const MIN_MUTATION_DEPTH = 8;
+const ARTIFACT_AUDIT_STAMP = 'current_body_rebase_audit_v0_2';
 
 const LIVE_SOURCE_PATHS = [
   'src/live-self-dynamics-core-v0-1.js',
@@ -72,6 +73,7 @@ function rebaseStateOntoCurrentBody(state, files, diff) {
     body_rebase: {
       applied: true,
       reason: 'saved_state_source_body_differed_from_current_repo_source',
+      audit_stamp: ARTIFACT_AUDIT_STAMP,
       changed_paths: diff.changed,
       missing_paths: diff.missing
     }
@@ -95,12 +97,13 @@ function continueFromState(state, files, options) {
       break;
     }
   }
-  return { packet_type: '42ndMind_live_self_dynamics_continuous_v0_1', version: Live.VERSION, ok: true, mode: 'one_logic_resumed_from_saved_stable_state', source_body_current_at_start: diff.current, source_body_changed_paths: diff.changed, source_body_missing_paths: diff.missing, iterations: cycles.length, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: max, stop_reason: stopReason, final_state: current, final_score: current.score, final_files: current.files, source_promoted: false, human_patch_required_for_source_promotion: false, cycles, Ξ: '' };
+  return { packet_type: '42ndMind_live_self_dynamics_continuous_v0_1', version: Live.VERSION, ok: true, mode: 'one_logic_resumed_from_saved_stable_state', audit_stamp: ARTIFACT_AUDIT_STAMP, source_body_current_at_start: diff.current, source_body_changed_paths: diff.changed, source_body_missing_paths: diff.missing, iterations: cycles.length, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: max, stop_reason: stopReason, final_state: current, final_score: current.score, final_files: current.files, source_promoted: false, human_patch_required_for_source_promotion: false, cycles, Ξ: '' };
 }
 
 function compactSummary(expression, run, startMode) {
   return {
     packet_type: '42ndMind_latest_one_logic_stable_expression_summary_v0_1',
+    audit_stamp: ARTIFACT_AUDIT_STAMP,
     start_mode: startMode,
     scope: expression.scope,
     generation: expression.generation,
@@ -139,6 +142,7 @@ function main() {
   const expression = Live.express(run, 'stable_math_language_reflection', {});
   const statePacket = {
     packet_type: '42ndMind_one_logic_reusable_stable_state_v0_1',
+    audit_stamp: ARTIFACT_AUDIT_STAMP,
     start_mode: startMode,
     saved_at: new Date().toISOString(),
     generation: run.final_state.internal_state.generation,
