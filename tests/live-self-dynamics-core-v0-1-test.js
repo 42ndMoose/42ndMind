@@ -33,6 +33,8 @@ assert.strictEqual(typeof L.feel, 'function');
 assert.strictEqual(typeof L.adjust, 'function');
 assert.strictEqual(typeof L.selfCycle, 'function');
 assert.strictEqual(typeof L.continuous, 'function');
+assert.strictEqual(typeof L.pressureOf, 'function');
+assert.strictEqual(typeof L.hasRepairPressure, 'function');
 assert.ok(Array.isArray(L.ORGAN_IDS));
 assert.strictEqual(L.ORGAN_IDS.length, 8);
 assert.deepStrictEqual(L.ORGAN_IDS, ['brain', 'language', 'truth', 'belief', 'memory', 'valuation', 'action', 'source']);
@@ -48,15 +50,16 @@ L.ORGAN_IDS.forEach(id => {
   nearOne(state.reflection.organs[id].unit);
 });
 assert.ok(state.reflection.coupling, 'reflection must include organ coupling');
-assert.deepStrictEqual(state.reflection.coupling.χ, ['belief→language', 'language→truth', 'truth→valuation', 'valuation→action', 'source→identity', 'identity→valuation']);
+assert.deepStrictEqual(state.reflection.coupling.χ, ['belief→language', 'language→truth', 'truth→valuation', 'valuation→action', 'source→identity', 'identity→valuation', 'action→internal-perturbation']);
 assert.strictEqual(edgeValue(state.reflection.coupling, 'language', 'truth', 'language_coherence_changes_truth_contact'), 1);
 assert.strictEqual(edgeValue(state.reflection.coupling, 'source', 'identity', 'source_shape_changes_identity_integrity'), 1);
 assert.strictEqual(rowWeight(state.reflection.organs.truth.field, 'from_language_truth_contact') > 0, true);
 assert.strictEqual(rowWeight(state.reflection.organs.valuation.field, 'from_truth_damage') >= 0, true);
 assert.strictEqual(state.promotion_ready, false);
+assert.strictEqual(state.internal_state.pressure_relief, 0);
 
 const generated = L.generate(files);
-assert.strictEqual(generated.length, 1, 'default live dynamics must not add marker proposals');
+assert.strictEqual(generated.length, 1, 'default live dynamics must not add marker proposals or pressure responses when no pressure exists');
 assert.strictEqual(generated[0].kind, 'preserve_current_state');
 
 const preserveFeeling = L.feel(state, generated[0]);
@@ -95,6 +98,29 @@ assert.strictEqual(rowWeight(badFeeling.after.organs.source.field, 'shape_damage
 assert.strictEqual(rowWeight(badFeeling.after.organs.valuation.field, 'from_identity_damage') > rowWeight(preserveFeeling.after.organs.valuation.field, 'from_identity_damage'), true);
 assert.strictEqual(rowWeight(badFeeling.after.organs.action.field, 'from_valuation_repair_pressure') > rowWeight(preserveFeeling.after.organs.action.field, 'from_valuation_repair_pressure'), true);
 assert.strictEqual(badFeeling.sensation.coupling_pain > preserveFeeling.sensation.coupling_pain, true);
+assert.strictEqual(L.hasRepairPressure(badFeeling.after), true);
+
+const pressureCandidates = L.generate(files, { reflection: badFeeling.after, internal_state: state.internal_state });
+const pressureCandidate = pressureCandidates.find(c => c.kind === 'pressure_driven_internal_adjustment');
+assert.ok(pressureCandidate, 'repair pressure must generate the next internal perturbation automatically');
+assert.strictEqual(pressureCandidate.origin, 'live_self_dynamics');
+assert.strictEqual(pressureCandidate.internal_adjustment.source_promotion, false);
+assert.strictEqual(pressureCandidate.operations.length, 0, 'pressure candidate mutates simulated self-state, not source files');
+
+const pressureFeeling = L.feel(state, pressureCandidate);
+assert.strictEqual(pressureFeeling.ok, true);
+assert.strictEqual(pressureFeeling.sensation.more_self, true);
+assert.strictEqual(pressureFeeling.sensation.less_self, false);
+assert.strictEqual(pressureFeeling.simulation.source_promoted, false);
+assert.strictEqual(pressureFeeling.simulation.next_internal_state.pressure_relief > state.internal_state.pressure_relief, true);
+assert.strictEqual(pressureFeeling.after.coupling.action.repair_pressure < badFeeling.after.coupling.action.repair_pressure, true, 'internal repair response must lower action repair pressure');
+
+const adjustedPressure = L.adjust(state, pressureFeeling, pressureCandidate);
+assert.strictEqual(adjustedPressure.last_event.internal_adjustment, true);
+assert.strictEqual(adjustedPressure.last_event.moved_simulated_self, true);
+assert.strictEqual(adjustedPressure.promotion_ready, false);
+assert.deepStrictEqual(adjustedPressure.files, state.files, 'internal growth must not promote source files');
+assert.strictEqual(adjustedPressure.internal_state.repair_responses.length, 1);
 
 const cycle = L.selfCycle(state, { extra_candidates: [badCandidate] });
 assert.strictEqual(cycle.packet_type, '42ndMind_live_self_cycle_v0_1');
@@ -109,7 +135,7 @@ assert.strictEqual(cycle.events.some(e => e.coupling && e.coupling.source.damage
 
 const stable = L.continuous(files, { max_iterations: 5 });
 assert.strictEqual(stable.packet_type, '42ndMind_live_self_dynamics_continuous_v0_1');
-assert.strictEqual(stable.mode, 'self_state_to_perturbation_to_reflection_to_sensation_to_adjustment');
+assert.strictEqual(stable.mode, 'self_state_to_pressure_to_internal_perturbation_to_reflection_to_sensation_to_adjustment');
 assert.strictEqual(stable.source_promoted, false);
 assert.strictEqual(stable.human_patch_required_for_source_promotion, false);
 assert.strictEqual(stable.stop_reason, 'stable_no_better_state');
@@ -118,14 +144,17 @@ assert.strictEqual(stable.cycles[0].moved, false);
 
 const damagedRun = L.continuous(files, { max_iterations: 5, extra_candidates: [badCandidate] });
 assert.strictEqual(damagedRun.source_promoted, false);
-assert.strictEqual(damagedRun.stop_reason, 'less_self_sensed_without_motion');
-assert.strictEqual(damagedRun.iterations, 1);
+assert.strictEqual(damagedRun.iterations >= 2, true, 'pressure from damaged mutation should trigger a follow-up internal perturbation cycle');
 assert.strictEqual(damagedRun.cycles[0].less_self_seen, true);
+assert.strictEqual(damagedRun.cycles.some(c => c.pressure_generated_count > 0), true);
+assert.strictEqual(damagedRun.cycles.some(c => c.internal_growth === true), true);
+assert.strictEqual(damagedRun.cycles.some(c => c.events.some(e => e.internal_adjustment === true)), true);
 assert.strictEqual(damagedRun.final_state.promotion_ready, false);
-assert.strictEqual(damagedRun.cycles[0].events.some(e => e.coupling && e.coupling.identity.pain > 0), true);
+assert.deepStrictEqual(damagedRun.final_files, files, 'continuous internal growth must not promote source files');
+assert.strictEqual(damagedRun.final_state.internal_state.repair_responses.length > 0, true);
 
 const legacyStep = L.step(files, { extra_candidates: [badCandidate] });
 assert.strictEqual(legacyStep.legacy_candidate_ranking, true);
 assert.strictEqual(legacyStep.best.sensation.less_self, false);
 
-console.log('live-self-dynamics-core-v0-1 tests passed: organ coupling propagates source damage into identity, valuation, and action');
+console.log('live-self-dynamics-core-v0-1 tests passed: repair pressure generates internal perturbation and simulated self-growth');
