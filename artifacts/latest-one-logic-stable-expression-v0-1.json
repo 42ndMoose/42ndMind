@@ -53,7 +53,17 @@
     ],
     "rule_sources": [
       "math_kernel",
-      "structural_reality_rule"
+      "proof_obligation_engine"
+    ],
+    "operator_families": [
+      "division_identity",
+      "equality_transitivity",
+      "kernel_supported",
+      "numeric_relation",
+      "sqrt_square_identity",
+      "strict_order_symmetry_test",
+      "strict_order_transitivity",
+      "universal_additive_identity"
     ],
     "failures": [],
     "cases": [
@@ -61,9 +71,18 @@
         "id": "arithmetic_truth",
         "expected_verdict": "verified",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "2 + 2 = 4",
         "normalized": "2+2=4",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "numeric_relation",
+        "operators": [
+          {
+            "type": "numeric_relation",
+            "op": "="
+          }
+        ],
+        "obligations": [],
         "verdict": "verified",
         "reason": "numeric_relation_true",
         "value": {
@@ -89,30 +108,71 @@
           "closure_operator": "solveLinearEquation",
           "selected_rule": "linear-equation-solve",
           "gap_count": 0
-        }
+        },
+        "operators": [],
+        "obligations": [],
+        "family": "kernel_supported"
       },
       {
         "id": "division_identity_guarded",
         "expected_verdict": "conditional",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "x / x = 1 with x != 0",
         "normalized": "x/x=1withx!=0",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "division_identity",
+        "operators": [
+          {
+            "type": "division",
+            "numerator": "x",
+            "denominator": "x"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "denominator_nonzero",
+            "operator": "division",
+            "variable": "x",
+            "required_guard": "x != 0",
+            "satisfied": true
+          }
+        ],
         "verdict": "conditional",
-        "reason": "division_identity_requires_nonzero_denominator",
+        "reason": "division_identity_guard_satisfied",
         "conditions": [
           "x != 0"
-        ]
+        ],
+        "missing_conditions": []
       },
       {
         "id": "division_identity_unguarded",
         "expected_verdict": "under_guarded",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "x / x = 1",
         "normalized": "x/x=1",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "division_identity",
+        "operators": [
+          {
+            "type": "division",
+            "numerator": "x",
+            "denominator": "x"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "denominator_nonzero",
+            "operator": "division",
+            "variable": "x",
+            "required_guard": "x != 0",
+            "satisfied": false
+          }
+        ],
         "verdict": "under_guarded",
         "reason": "division_identity_missing_nonzero_denominator_guard",
+        "conditions": [],
         "missing_conditions": [
           "x != 0"
         ]
@@ -121,12 +181,36 @@
         "id": "sqrt_square_sign_guard",
         "expected_verdict": "conditional",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "sqrt(x^2) = x",
         "normalized": "sqrt(x^2)=x",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "sqrt_square_identity",
+        "operators": [
+          {
+            "type": "sqrt",
+            "argument": "x^2"
+          },
+          {
+            "type": "square",
+            "argument": "x"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "nonnegative_radical_source",
+            "operator": "sqrt_square",
+            "variable": "x",
+            "required_guard": "x >= 0",
+            "satisfied": false
+          }
+        ],
         "verdict": "conditional",
-        "reason": "sqrt_of_square_is_absolute_value_not_unconditional_identity",
+        "reason": "sqrt_square_identity_requires_sign_guard",
         "conditions": [
+          "x >= 0"
+        ],
+        "missing_conditions": [
           "x >= 0"
         ],
         "corrected_form": "sqrt(x^2)=|x|"
@@ -135,9 +219,26 @@
         "id": "equality_transitivity",
         "expected_verdict": "verified",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "a = b, b = c therefore a = c",
         "normalized": "a=b,b=cthereforea=c",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "equality_transitivity",
+        "operators": [
+          {
+            "type": "equality"
+          },
+          {
+            "type": "transitive_chain"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "middle_term_matches",
+            "required_guard": "b == b",
+            "satisfied": true
+          }
+        ],
         "verdict": "verified",
         "reason": "equality_transitivity_valid"
       },
@@ -145,9 +246,26 @@
         "id": "order_transitivity",
         "expected_verdict": "verified",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "a < b, b < c therefore a < c",
         "normalized": "a<b,b<cthereforea<c",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "strict_order_transitivity",
+        "operators": [
+          {
+            "type": "strict_order"
+          },
+          {
+            "type": "transitive_chain"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "middle_term_matches",
+            "required_guard": "b == b",
+            "satisfied": true
+          }
+        ],
         "verdict": "verified",
         "reason": "strict_order_transitivity_valid"
       },
@@ -155,9 +273,26 @@
         "id": "order_reversal_invalid",
         "expected_verdict": "rejected",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "a < b therefore b < a",
         "normalized": "a<bthereforeb<a",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "strict_order_symmetry_test",
+        "operators": [
+          {
+            "type": "strict_order"
+          },
+          {
+            "type": "symmetry_claim"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "strict_order_not_symmetric",
+            "required_guard": "do_not_reverse_<",
+            "satisfied": false
+          }
+        ],
         "verdict": "rejected",
         "reason": "strict_order_is_not_symmetric"
       },
@@ -165,9 +300,26 @@
         "id": "universal_additive_identity",
         "expected_verdict": "universal_verified",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "forall x in R, x + 0 = x",
         "normalized": "forallxinr,x+0=x",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "universal_additive_identity",
+        "operators": [
+          {
+            "type": "forall"
+          },
+          {
+            "type": "additive_identity"
+          }
+        ],
+        "obligations": [
+          {
+            "id": "schema_level_not_example",
+            "required_guard": "universal_quantifier",
+            "satisfied": true
+          }
+        ],
         "verdict": "universal_verified",
         "reason": "additive_identity_verified_as_schema",
         "variable": "x",
@@ -177,9 +329,18 @@
         "id": "false_arithmetic",
         "expected_verdict": "rejected",
         "ok": true,
+        "rule_source": "proof_obligation_engine",
         "input": "2 + 2 = 5",
         "normalized": "2+2=5",
-        "rule_source": "structural_reality_rule",
+        "engine": "proof_obligation_engine_v0_1",
+        "family": "numeric_relation",
+        "operators": [
+          {
+            "type": "numeric_relation",
+            "op": "="
+          }
+        ],
+        "obligations": [],
         "verdict": "rejected",
         "reason": "numeric_relation_false",
         "value": {
@@ -190,7 +351,7 @@
       }
     ],
     "chi": [
-      "structural rules distinguish true false conditional under_guarded unsupported universal",
+      "operator anatomy creates obligations",
       "completion cannot mean only self-generated closure"
     ],
     "empty_text": "",
