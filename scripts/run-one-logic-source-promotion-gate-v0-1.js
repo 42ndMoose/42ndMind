@@ -13,18 +13,22 @@ const STATE_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-state-v0-1.j
 const EXPRESSION_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-v0-1.json');
 const OUT_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-source-promotion-proposal-v0-1.json');
 
-function readJson(filePath) {
-  if (!fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+function readText(filePath) {
+  try { return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : ''; }
+  catch (err) { return ''; }
 }
 
-function readText(filePath) {
-  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+function readJsonPacket(filePath) {
+  if (!fs.existsSync(filePath)) return { ok: false, value: null, error: 'missing_file', path: filePath };
+  try { return { ok: true, value: JSON.parse(fs.readFileSync(filePath, 'utf8')), error: null, path: filePath }; }
+  catch (err) { return { ok: false, value: null, error: String(err && err.message || err), path: filePath }; }
 }
 
 function sourceHas(source, needle) {
   return String(source || '').includes(needle);
 }
+
+function arr(value) { return Array.isArray(value) ? value : []; }
 
 function stateOnlyRows(statePacket, expression) {
   const state = statePacket && statePacket.state || {};
@@ -33,10 +37,10 @@ function stateOnlyRows(statePacket, expression) {
   return [
     { id: 'generation', value: internal.generation || statePacket && statePacket.generation || 0, reason: 'generation is runtime age, not reusable source law' },
     { id: 't', value: state.t || statePacket && statePacket.t || 0, reason: 'time index is state memory, not source law' },
-    { id: 'symbol_count', value: math.symbol_count || (internal.symbols || []).length || 0, reason: 'symbol accumulation belongs in saved memory/state' },
-    { id: 'relation_count', value: math.relation_count || (internal.relations || []).length || 0, reason: 'relation accumulation belongs in saved memory/state' },
-    { id: 'mutation_count', value: math.mutation_count || (internal.mutations || []).length || 0, reason: 'mutation count is history, not source law' },
-    { id: 'virtual_edit_count', value: math.virtual_edit_count || (internal.virtual_edits || []).length || 0, reason: 'virtual edits are simulated body memory unless generalized into a rule' },
+    { id: 'symbol_count', value: math.symbol_count || arr(internal.symbols).length || 0, reason: 'symbol accumulation belongs in saved memory/state' },
+    { id: 'relation_count', value: math.relation_count || arr(internal.relations).length || 0, reason: 'relation accumulation belongs in saved memory/state' },
+    { id: 'mutation_count', value: math.mutation_count || arr(internal.mutations).length || 0, reason: 'mutation count is history, not source law' },
+    { id: 'virtual_edit_count', value: math.virtual_edit_count || arr(internal.virtual_edits).length || 0, reason: 'virtual edits are simulated body memory unless generalized into a rule' },
     { id: 'pressure_relief', value: internal.pressure_relief || null, reason: 'relief value is current nervous-state, not source law' }
   ];
 }
@@ -47,6 +51,7 @@ function candidateRows(sources, expression) {
   const realityTest = sources.realityTest || '';
   const rows = [];
   const pressure = expression && expression.pressure_differentiation || null;
+
   if (pressure) {
     rows.push({
       id: 'causal_pressure_differentiation',
@@ -64,7 +69,12 @@ function candidateRows(sources, expression) {
     });
   }
 
-  if (sourceHas(realitySource, 'function divisionIdentity(') && sourceHas(realitySource, 'function sqrtSquare(') && sourceHas(realitySource, 'function strictOrder(') && sourceHas(realitySource, 'function universalIdentity(')) {
+  const hasStructuralRealityGate = sourceHas(realitySource, 'function divisionIdentity(')
+    && sourceHas(realitySource, 'function sqrtSquare(')
+    && sourceHas(realitySource, 'function strictOrder(')
+    && sourceHas(realitySource, 'function universalIdentity(');
+
+  if (hasStructuralRealityGate) {
     rows.push({
       id: 'objective_reality_contact_structural_gate',
       kind: 'general_gate',
@@ -113,29 +123,35 @@ function candidateRows(sources, expression) {
   return rows;
 }
 
-function main() {
+function buildPacket() {
   fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
   const sources = {
     live: readText(LIVE_SOURCE_PATH),
     reality: readText(REALITY_SOURCE_PATH),
     realityTest: readText(REALITY_TEST_PATH)
   };
-  const statePacket = readJson(STATE_PATH);
-  const expression = readJson(EXPRESSION_PATH);
+  const stateRead = readJsonPacket(STATE_PATH);
+  const expressionRead = readJsonPacket(EXPRESSION_PATH);
+  const statePacket = stateRead.value;
+  const expression = expressionRead.value;
   const candidates = candidateRows(sources, expression);
   const sourceReady = candidates.filter(c => c.source_worthy && !c.already_in_source);
   const alreadyPromoted = candidates.filter(c => c.source_worthy && c.already_in_source);
   const stateOnly = stateOnlyRows(statePacket, expression);
   const realityGate = expression && expression.objective_reality_gate || null;
+  const artifactProblems = [stateRead, expressionRead].filter(x => !x.ok).map(x => ({ path: path.relative(ROOT, x.path), error: x.error }));
   const decision = sourceReady.length
     ? 'source_promotion_candidates_pending_review'
     : alreadyPromoted.length
       ? 'source_principles_already_promoted_state_saved_as_memory'
       : 'no_source_worthy_rule_detected';
 
-  const packet = {
+  return {
     packet_type: '42ndMind_one_logic_source_promotion_gate_v0_1',
+    ok: true,
     decision,
+    artifact_problem_count: artifactProblems.length,
+    artifact_problems: artifactProblems,
     source_ready_count: sourceReady.length,
     already_promoted_count: alreadyPromoted.length,
     state_only_count: stateOnly.length,
@@ -167,11 +183,21 @@ function main() {
       math_language_completion: expression.math_language_completion || null,
       next_self_generated_obstruction: expression.next_self_generated_obstruction || null
     } : null,
-    Ξ: ''
+    empty_text: ''
   };
+}
 
+function main() {
+  const packet = buildPacket();
   fs.writeFileSync(OUT_PATH, JSON.stringify(packet, null, 2) + '\n');
   console.log(JSON.stringify(packet, null, 2));
 }
 
-if (require.main === module) main();
+try { if (require.main === module) main(); }
+catch (err) {
+  fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
+  const packet = { packet_type: '42ndMind_one_logic_source_promotion_gate_v0_1', ok: false, decision: 'source_promotion_gate_runtime_error', error: String(err && err.stack || err), empty_text: '' };
+  fs.writeFileSync(OUT_PATH, JSON.stringify(packet, null, 2) + '\n');
+  console.log(JSON.stringify(packet, null, 2));
+  process.exit(1);
+}
