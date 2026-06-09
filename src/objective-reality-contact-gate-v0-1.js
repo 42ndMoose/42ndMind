@@ -10,18 +10,19 @@
 
   function A(value) { return Array.isArray(value) ? value : []; }
   function R(value) { return Number((Number(value) || 0).toFixed(6)); }
-  function key(input) {
+  function text(input) {
     return String(input == null ? '' : input)
-      .replace(/⟹|⇒/g, 'therefore')
-      .replace(/≠/g, '!=')
-      .replace(/≥/g, '>=')
-      .replace(/≤/g, '<=')
-      .replace(/∀/g, 'forall')
+      .replace(/⟹|⇒/g, ' therefore ')
+      .replace(/≠/g, ' != ')
+      .replace(/≥/g, ' >= ')
+      .replace(/≤/g, ' <= ')
+      .replace(/∀/g, 'forall ')
       .replace(/ℝ/g, 'R')
       .replace(/²/g, '^2')
-      .replace(/\s+/g, '')
-      .toLowerCase();
+      .replace(/\s+/g, ' ')
+      .trim();
   }
+  function compact(input) { return text(input).replace(/\s+/g, '').toLowerCase(); }
 
   function defaultCases() {
     return [
@@ -38,17 +39,82 @@
     ];
   }
 
-  const EXACT = {
-    '2+2=4': { verdict: 'verified', reason: 'numeric_relation_true' },
-    '2+2=5': { verdict: 'rejected', reason: 'numeric_relation_false' },
-    'x/x=1withx!=0': { verdict: 'conditional', reason: 'division_identity_requires_nonzero_denominator', conditions: ['x != 0'] },
-    'x/x=1': { verdict: 'under_guarded', reason: 'missing_nonzero_denominator_guard', missing_conditions: ['x != 0'] },
-    'sqrt(x^2)=x': { verdict: 'conditional', reason: 'sqrt_x_squared_equals_absolute_value_not_plain_x', conditions: ['x >= 0'], corrected_form: 'sqrt(x^2)=|x|' },
-    'a=b,b=cthereforea=c': { verdict: 'verified', reason: 'equality_transitivity_valid' },
-    'a<b,b<cthereforea<c': { verdict: 'verified', reason: 'strict_order_transitivity_valid' },
-    'a<bthereforeb<a': { verdict: 'rejected', reason: 'strict_order_is_not_symmetric' },
-    'forallxinr,x+0=x': { verdict: 'universal_verified', reason: 'universal_identity_schema_not_single_example' }
-  };
+  function simpleNumericExpression(raw) {
+    const s = String(raw || '').replace(/\s+/g, '');
+    if (/^-?\d+(?:\.\d+)?$/.test(s)) return Number(s);
+    const m = /^(-?\d+(?:\.\d+)?)([+\-*/])(-?\d+(?:\.\d+)?)$/.exec(s);
+    if (!m) return NaN;
+    const a = Number(m[1]), b = Number(m[3]);
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+    if (m[2] === '+') return a + b;
+    if (m[2] === '-') return a - b;
+    if (m[2] === '*') return a * b;
+    if (m[2] === '/') return b === 0 ? NaN : a / b;
+    return NaN;
+  }
+
+  function numericRelation(input) {
+    const s = compact(input);
+    if (/[a-z]/.test(s)) return null;
+    const m = /^(.+?)(>=|<=|=|>|<)(.+)$/.exec(s);
+    if (!m) return null;
+    const left = simpleNumericExpression(m[1]);
+    const right = simpleNumericExpression(m[3]);
+    if (!Number.isFinite(left) || !Number.isFinite(right)) return null;
+    const op = m[2];
+    const truth = op === '=' ? Math.abs(left - right) < 1e-12 : op === '>' ? left > right : op === '<' ? left < right : op === '>=' ? left >= right : left <= right;
+    return { verdict: truth ? 'verified' : 'rejected', reason: truth ? 'numeric_relation_true' : 'numeric_relation_false', value: { left: R(left), op, right: R(right) } };
+  }
+
+  function divisionIdentity(input) {
+    const s = compact(input);
+    const m = /^([a-z][a-z0-9_]*)\/\1=1(?:with|where)?(.*)$/.exec(s);
+    if (!m) return null;
+    const v = m[1];
+    const tail = m[2] || '';
+    const guarded = tail.includes(v + '!=0') || tail.includes(v + '>0') || tail.includes(v + '<0');
+    return guarded
+      ? { verdict: 'conditional', reason: 'division_identity_requires_nonzero_denominator', conditions: [v + ' != 0'] }
+      : { verdict: 'under_guarded', reason: 'division_identity_missing_nonzero_denominator_guard', missing_conditions: [v + ' != 0'] };
+  }
+
+  function sqrtSquare(input) {
+    const s = compact(input);
+    const m = /^sqrt\(([a-z][a-z0-9_]*)\^2\)=\1$/.exec(s);
+    if (!m) return null;
+    const v = m[1];
+    return { verdict: 'conditional', reason: 'sqrt_of_square_is_absolute_value_not_unconditional_identity', conditions: [v + ' >= 0'], corrected_form: 'sqrt(' + v + '^2)=|' + v + '|' };
+  }
+
+  function equalityTransitivity(input) {
+    const s = compact(input);
+    const m = /^([a-z][a-z0-9_]*)=([a-z][a-z0-9_]*),([a-z][a-z0-9_]*)=([a-z][a-z0-9_]*)therefore([a-z][a-z0-9_]*)=([a-z][a-z0-9_]*)$/.exec(s);
+    if (!m) return null;
+    const valid = m[2] === m[3] && m[1] === m[5] && m[4] === m[6];
+    return { verdict: valid ? 'verified' : 'rejected', reason: valid ? 'equality_transitivity_valid' : 'equality_transitivity_invalid' };
+  }
+
+  function strictOrder(input) {
+    const s = compact(input);
+    let m = /^([a-z][a-z0-9_]*)<([a-z][a-z0-9_]*),([a-z][a-z0-9_]*)<([a-z][a-z0-9_]*)therefore([a-z][a-z0-9_]*)<([a-z][a-z0-9_]*)$/.exec(s);
+    if (m) {
+      const valid = m[2] === m[3] && m[1] === m[5] && m[4] === m[6];
+      return { verdict: valid ? 'verified' : 'rejected', reason: valid ? 'strict_order_transitivity_valid' : 'strict_order_transitivity_invalid' };
+    }
+    m = /^([a-z][a-z0-9_]*)<([a-z][a-z0-9_]*)therefore([a-z][a-z0-9_]*)<([a-z][a-z0-9_]*)$/.exec(s);
+    if (!m) return null;
+    const reversed = m[1] === m[4] && m[2] === m[3];
+    return { verdict: reversed ? 'rejected' : 'unsupported', reason: reversed ? 'strict_order_is_not_symmetric' : 'single_order_premise_has_no_supported_rule' };
+  }
+
+  function universalIdentity(input) {
+    const s = compact(input);
+    let m = /^forall([a-z][a-z0-9_]*)(?:inr|inreals|inreal)?,?\1\+0=\1$/.exec(s);
+    if (m) return { verdict: 'universal_verified', reason: 'additive_identity_verified_as_schema', variable: m[1], schema: 'forall v in R, v + 0 = v' };
+    m = /^forall([a-z][a-z0-9_]*)(?:inr|inreals|inreal)?,?0\+\1=\1$/.exec(s);
+    if (m) return { verdict: 'universal_verified', reason: 'additive_identity_verified_as_schema', variable: m[1], schema: 'forall v in R, 0 + v = v' };
+    return null;
+  }
 
   function kernel(input) {
     if (!MathKernel || typeof MathKernel.math !== 'function') return { available: false, verified: false, ok: false, gap_count: 1 };
@@ -61,11 +127,14 @@
   }
 
   function evaluate(input) {
-    const k = key(input);
-    if (EXACT[k]) return Object.assign({ input: String(input), normalized: k }, EXACT[k]);
+    const checks = [numericRelation, divisionIdentity, sqrtSquare, equalityTransitivity, strictOrder, universalIdentity];
+    for (const check of checks) {
+      const hit = check(input);
+      if (hit) return Object.assign({ input: text(input), normalized: compact(input), rule_source: 'structural_reality_rule' }, hit);
+    }
     const kp = kernel(input);
-    if (kp.verified || kp.ok) return { input: String(input), normalized: k, verdict: 'verified', reason: 'kernel_verified_supported_case', kernel: kp };
-    return { input: String(input), normalized: k, verdict: 'unsupported', reason: 'no_exact_adversarial_rule_or_kernel_verification', kernel: kp };
+    if (kp.verified || kp.ok) return { input: text(input), normalized: compact(input), verdict: 'verified', reason: 'kernel_verified_supported_case', rule_source: 'math_kernel', kernel: kp };
+    return { input: text(input), normalized: compact(input), verdict: 'unsupported', reason: 'no_structural_rule_or_kernel_verification', rule_source: 'none', kernel: kp };
   }
 
   function run(cases) {
@@ -75,7 +144,7 @@
       return Object.assign({ id: c.id || c.input, expected_verdict: expected, ok: actual.verdict === expected }, actual);
     });
     const failures = rows.filter(row => !row.ok);
-    return { packet_type: '42ndMind_objective_reality_contact_gate_v0_1', version: VERSION, ok: failures.length === 0, status: failures.length === 0 ? 'adversarial_reality_contact_passed' : 'adversarial_reality_contact_failed', pass_count: rows.length - failures.length, case_count: rows.length, score: R((rows.length - failures.length) / Math.max(1, rows.length)), verdict_classes: Array.from(new Set(rows.map(row => row.verdict))).sort(), failures, cases: rows, chi: ['distinguish true false conditional under_guarded unsupported', 'completion cannot mean only self-generated closure'], empty_text: '' };
+    return { packet_type: '42ndMind_objective_reality_contact_gate_v0_1', version: VERSION, ok: failures.length === 0, status: failures.length === 0 ? 'adversarial_reality_contact_passed' : 'adversarial_reality_contact_failed', pass_count: rows.length - failures.length, case_count: rows.length, score: R((rows.length - failures.length) / Math.max(1, rows.length)), verdict_classes: Array.from(new Set(rows.map(row => row.verdict))).sort(), rule_sources: Array.from(new Set(rows.map(row => row.rule_source))).sort(), failures, cases: rows, chi: ['structural rules distinguish true false conditional under_guarded unsupported universal', 'completion cannot mean only self-generated closure'], empty_text: '' };
   }
 
   return Object.freeze({ VERSION, defaultCases, evaluate, run });
