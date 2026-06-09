@@ -4,12 +4,19 @@ const path = require('path');
 const L = require('../src/live-self-dynamics-core-v0-1.js');
 
 const root = path.resolve(__dirname, '..');
+function source(relativePath) {
+  return fs.readFileSync(path.join(root, relativePath), 'utf8');
+}
+
 const files = {
-  'src/math-language-kernel-v0-1.js': fs.readFileSync(path.join(root, 'src/math-language-kernel-v0-1.js'), 'utf8'),
-  'src/math-ast-core-v0-1.js': fs.readFileSync(path.join(root, 'src/math-ast-core-v0-1.js'), 'utf8'),
-  'src/operator-anatomy-v0-1.js': fs.readFileSync(path.join(root, 'src/operator-anatomy-v0-1.js'), 'utf8'),
-  'src/proof-calculus-core-v0-1.js': fs.readFileSync(path.join(root, 'src/proof-calculus-core-v0-1.js'), 'utf8'),
-  'src/math-closure-engine-v0-1.js': fs.readFileSync(path.join(root, 'src/math-closure-engine-v0-1.js'), 'utf8')
+  'src/live-self-dynamics-core-v0-1.js': source('src/live-self-dynamics-core-v0-1.js'),
+  'src/math-language-kernel-v0-1.js': source('src/math-language-kernel-v0-1.js'),
+  'src/math-ast-core-v0-1.js': source('src/math-ast-core-v0-1.js'),
+  'src/operator-anatomy-v0-1.js': source('src/operator-anatomy-v0-1.js'),
+  'src/proof-calculus-core-v0-1.js': source('src/proof-calculus-core-v0-1.js'),
+  'src/math-closure-engine-v0-1.js': source('src/math-closure-engine-v0-1.js'),
+  'src/objective-reality-contact-gate-v0-1.js': source('src/objective-reality-contact-gate-v0-1.js'),
+  'src/proof-obligation-engine-v0-1.js': source('src/proof-obligation-engine-v0-1.js')
 };
 
 function nearOne(value) {
@@ -26,6 +33,20 @@ function edgeValue(coupling, from, to, signal) {
   return row ? Number(row.value) : 0;
 }
 
+function includes(list, value) {
+  return Array.isArray(list) && list.includes(value);
+}
+
+function assertObligationBackedRealityGate(expression) {
+  assert.ok(expression.objective_reality_gate, 'live expression must expose objective reality gate result');
+  assert.strictEqual(expression.objective_reality_gate.ok, true, 'live objective reality gate must pass');
+  assert.strictEqual(expression.objective_reality_gate.status, 'adversarial_reality_contact_passed');
+  assert.strictEqual(includes(expression.objective_reality_gate.rule_sources, 'proof_obligation_engine'), true, 'proof obligation engine must be active in live reality gate, not dormant');
+  assert.strictEqual(includes(expression.objective_reality_gate.operator_families, 'division_identity'), true, 'live reality gate must report division obligation family');
+  assert.strictEqual(includes(expression.objective_reality_gate.operator_families, 'sqrt_square_identity'), true, 'live reality gate must report sqrt-square obligation family');
+  assert.strictEqual(expression.objective_completion_status, 'adversarially_contacted_minimum_core');
+}
+
 assert.strictEqual(L.VERSION, '0.1.0');
 assert.strictEqual(typeof L.create, 'function');
 assert.strictEqual(typeof L.reflect, 'function');
@@ -37,6 +58,8 @@ assert.strictEqual(typeof L.autonomous, 'function');
 assert.strictEqual(typeof L.express, 'function');
 assert.strictEqual(typeof L.stableExpression, 'function');
 assert.strictEqual(typeof L.mathLanguageCompletion, 'function');
+assert.strictEqual(typeof L.objectiveRealityCases, 'function');
+assert.strictEqual(typeof L.objectiveLanguageRealityGate, 'function');
 assert.strictEqual(typeof L.differentiatePressureByConsequence, 'function');
 assert.strictEqual(typeof L.octahedronPosition, 'function');
 assert.strictEqual(typeof L.pressureOf, 'function');
@@ -44,6 +67,8 @@ assert.strictEqual(typeof L.hasRepairPressure, 'function');
 assert.strictEqual(typeof L.AUTONOMOUS_STATE_PATH, 'string');
 assert.ok(Array.isArray(L.ORGAN_IDS));
 assert.deepStrictEqual(L.ORGAN_IDS, ['brain', 'language', 'truth', 'belief', 'memory', 'valuation', 'action', 'source']);
+assert.strictEqual(Object.prototype.hasOwnProperty.call(files, 'src/proof-obligation-engine-v0-1.js'), true, 'proof obligation engine must be part of the reflected live source body');
+assert.strictEqual(files['src/objective-reality-contact-gate-v0-1.js'].includes('Obligations.analyze(input)'), true, 'objective gate must delegate through proof obligations');
 
 const state = L.create(files);
 assert.strictEqual(state.packet_type, '42ndMind_live_self_state_v0_1');
@@ -168,6 +193,7 @@ assert.strictEqual(shortExpression.math_language_completion.symbol_count, shortR
 assert.strictEqual(shortExpression.octahedron_position.model, 'epistemic_octahedron_surface_projection_v0_1');
 assert.strictEqual(shortExpression.octahedron_position.coordinates.l1 <= 1.000001, true);
 assert.strictEqual(shortExpression.stable_diff.final_generation, shortRun.final_state.internal_state.generation);
+assertObligationBackedRealityGate(shortExpression);
 
 const matureRun = L.autonomous(files, { max_iterations: 8 });
 const expression = L.express(matureRun, 'stable_math_language_reflection');
@@ -179,6 +205,7 @@ assert.strictEqual(expression.math_language_completion.generative_pressure > 0, 
 assert.strictEqual(expression.math_language_completion.missing.length, 0, 'life-pressure must not masquerade as incompletion');
 assert.strictEqual(expression.next_self_generated_obstruction, null);
 assert.strictEqual(expression.expression, 'stable_state_reports_objective_math_language_provisionally_complete');
+assertObligationBackedRealityGate(expression);
 
 const stableExpression = L.stableExpression(files, { max_iterations: 8 });
 assert.strictEqual(stableExpression.packet_type, '42ndMind_one_logic_self_expression_v0_1');
@@ -188,6 +215,7 @@ assert.strictEqual(stableExpression.math_language_completion.status, 'provisiona
 assert.strictEqual(stableExpression.stable_diff.iterations >= 1, true);
 assert.strictEqual(stableExpression.stable_diff.autonomous_total > 0, true);
 assert.strictEqual(stableExpression.obstruction_stack.length, 0);
+assertObligationBackedRealityGate(stableExpression);
 
 const damagedRun = L.autonomous(files, { max_iterations: 4, extra_candidates: [badCandidate] });
 assert.strictEqual(damagedRun.source_promoted, false);
@@ -201,4 +229,4 @@ const legacyStep = L.step(files, { extra_candidates: [badCandidate] });
 assert.strictEqual(legacyStep.legacy_candidate_ranking, true);
 assert.strictEqual(legacyStep.best.sensation.less_self, false);
 
-console.log('live-self-dynamics-core-v0-1 tests passed: one logic differentiates life-pressure before stable completion');
+console.log('live-self-dynamics-core-v0-1 tests passed: one logic actively uses proof obligations in live reality contact');
