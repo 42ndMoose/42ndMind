@@ -165,9 +165,9 @@ function buildPacket() {
       'structural reality rules are source-worthy only when they generalize beyond exact strings',
       'all source promotion remains proposal-first, not automatic self-rewrite'
     ],
-    source_ready,
+    source_ready: sourceReady,
     already_promoted: alreadyPromoted,
-    state_only,
+    state_only: stateOnly,
     state_memory: statePacket ? {
       available: true,
       generation: statePacket.generation,
