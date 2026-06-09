@@ -45,7 +45,12 @@ jobs:
         run: node scripts/run-one-logic-stable-expression-v0-1.js > artifacts/one-logic-stable-expression-console-v0-1.txt 2>&1
 
       - name: Run source promotion gate
-        run: node scripts/run-one-logic-source-promotion-gate-v0-1.js > artifacts/one-logic-source-promotion-console-v0-1.txt 2>&1
+        run: |
+          set +e
+          node scripts/run-one-logic-source-promotion-gate-v0-1.js > artifacts/one-logic-source-promotion-console-v0-1.txt 2>&1
+          status=$?
+          cat artifacts/one-logic-source-promotion-console-v0-1.txt
+          exit $status
 
       - name: Run diagnostic probe
         run: node scripts/run-diagnostic-probe-v0-1.js > artifacts/diagnostic-probe-console-v0-1.txt 2>&1
