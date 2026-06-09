@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>42ndMind One Logic Sandbox</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; margin: 24px; max-width: 1220px; line-height: 1.45; }
+    button, input, select, textarea { font: inherit; }
+    button { padding: 8px 12px; margin: 4px 6px 4px 0; cursor: pointer; }
+    input[type="range"] { width: min(420px, 100%); }
+    textarea { width: 100%; min-height: 120px; }
+    pre { background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
+    .metric { border: 1px solid rgba(127,127,127,.22); border-radius: 10px; padding: 10px; }
+    .metric strong { display: block; font-size: 1.35rem; }
+    .ok { color: #168a38; font-weight: 700; }
+    .bad { color: #b00020; font-weight: 700; }
+    .muted { opacity: .72; }
+    meter { width: 100%; height: 18px; }
+    @media (max-width: 850px) { .grid, .metrics { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>42ndMind One Logic Sandbox</h1>
+  <p>This page runs the live self-state loop in the browser. The browser tab is the temporary body. It does not write to GitHub; it mutates the simulated files object and persists the current state in localStorage.</p>
+
+  <div class="card">
+    <button id="boot">Boot / reload source body</button>
+    <button id="start">Start living loop</button>
+    <button id="pause">Pause</button>
+    <button id="step">Step once</button>
+    <button id="reset">Reset stored state</button>
+    <button id="copy">Copy state packet for review</button>
+    <button id="download">Download state packet</button>
+    <span id="status" class="muted">Not booted.</span>
+    <p>
+      Tick interval: <strong id="speedText">300ms</strong><br>
+      <input id="speed" type="range" min="40" max="2000" step="20" value="300">
+    </p>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><span class="muted">Ticks</span><strong id="ticks">0</strong></div>
+    <div class="metric"><span class="muted">Generation</span><strong id="generation">0</strong></div>
+    <div class="metric"><span class="muted">Symbols</span><strong id="symbols">0</strong></div>
+    <div class="metric"><span class="muted">Virtual edits</span><strong id="virtualEdits">0</strong></div>
+  </div>
+
+  <div class="card">
+    <h2>Pressure / reward surface</h2>
+    <p>Self score</p><meter id="scoreMeter" min="0" max="1" value="0"></meter><pre id="scoreText">No state yet.</pre>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Current state packet</h2>
+      <pre id="packet">No packet yet.</pre>
+    </div>
+    <div class="card">
+      <h2>Recent motion</h2>
+      <pre id="motion">No motion yet.</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Import state packet</h2>
+    <p class="muted">Paste a packet here to resume a state that was exported earlier.</p>
+    <textarea id="importBox" placeholder="Paste exported one-logic state packet JSON here"></textarea>
+    <p><button id="importBtn">Import packet</button></p>
+  </div>
+
+  <script src="../src/live-self-dynamics-core-v0-1.js?v=one-logic-sandbox-20260608-1"></script>
+  <script>
+    const SOURCE_PATHS = [
+      'src/live-self-dynamics-core-v0-1.js',
+      'src/math-language-kernel-v0-1.js',
+      'src/math-ast-core-v0-1.js',
+      'src/operator-anatomy-v0-1.js',
+      'src/proof-calculus-core-v0-1.js',
+      'src/math-closure-engine-v0-1.js',
+      'src/unified-self-simulation-core-v0-1.js',
+      'src/autonomous-brain-growth-core-v0-1.js',
+      'src/nested-brain-core-v0-1.js',
+      'src/one-logic-direction-contract-v0-1.js'
+    ];
+
+    const STORAGE_KEY = '42ndMind.oneLogicSandbox.v0.1.liveState';
+    const TRACE_LIMIT = 40;
+    const L = globalThis.FortySecondMindLiveSelfDynamicsCore;
+
+    let baseFiles = null;
+    let live = null;
+    let trace = [];
+    let timer = null;
+    let tickCount = 0;
+
+    const statusEl = document.getElementById('status');
+    const ticksEl = document.getElementById('ticks');
+    const generationEl = document.getElementById('generation');
+    const symbolsEl = document.getElementById('symbols');
+    const virtualEditsEl = document.getElementById('virtualEdits');
+    const scoreMeter = document.getElementById('scoreMeter');
+    const scoreText = document.getElementById('scoreText');
+    const packetEl = document.getElementById('packet');
+    const motionEl = document.getElementById('motion');
+    const speed = document.getElementById('speed');
+    const speedText = document.getElementById('speedText');
+
+    function setStatus(text, ok) {
+      statusEl.textContent = text;
+      statusEl.className = ok === true ? 'ok' : ok === false ? 'bad' : 'muted';
+    }
+
+    function relativeSourcePath(path) {
+      return '../' + path + '?v=' + Date.now();
+    }
+
+    async function loadSourceBody() {
+      const rows = await Promise.all(SOURCE_PATHS.map(async path => {
+        const res = await fetch(relativeSourcePath(path));
+        if (!res.ok) throw new Error('failed to load ' + path + ': ' + res.status);
+        return [path, await res.text()];
+      }));
+      return Object.fromEntries(rows);
+    }
+
+    function compactState() {
+      const reflection = live && live.reflection || {};
+      const coupling = reflection.coupling || {};
+      const internal = live && live.internal_state || {};
+      const last = live && live.last_event || null;
+      return {
+        packet_type: '42ndMind_one_logic_browser_live_packet_v0_1',
+        tick: tickCount,
+        t: live ? live.t : 0,
+        generation: internal.generation || 0,
+        score: live ? live.score : 0,
+        pressure: L.pressureOf(reflection),
+        symbols: (internal.symbols || []).length,
+        relations: (internal.relations || []).length,
+        mutations: (internal.mutations || []).length,
+        virtual_edits: (internal.virtual_edits || []).length,
+        sandbox_body_path: L.AUTONOMOUS_STATE_PATH,
+        has_virtual_body: !!(live && live.files && live.files[L.AUTONOMOUS_STATE_PATH]),
+        coupling: {
+          language: coupling.language || null,
+          truth: coupling.truth || null,
+          valuation: coupling.valuation || null,
+          action: coupling.action || null,
+          novelty: coupling.novelty || null,
+          relief: coupling.relief
+        },
+        last_event: last ? {
+          candidate_kind: last.candidate_kind,
+          feeling: last.feeling,
+          internal_adjustment: last.internal_adjustment,
+          virtual_state_mutation: last.virtual_state_mutation,
+          moved_simulated_self: last.moved_simulated_self
+        } : null,
+        recent_trace: trace.slice(-12),
+        export_note: 'Paste this packet into ChatGPT to let the assistant inspect the current live state.'
+      };
+    }
+
+    function fullExportPacket() {
+      return {
+        packet_type: '42ndMind_one_logic_browser_live_export_v0_1',
+        created_at: new Date().toISOString(),
+        source_paths: SOURCE_PATHS,
+        tick: tickCount,
+        base_files_loaded: !!baseFiles,
+        compact: compactState(),
+        live_state: live,
+        trace
+      };
+    }
+
+    function persist() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ live, trace, tickCount }));
+      } catch (err) {
+        setStatus('Could not persist state: ' + err.message, false);
+      }
+    }
+
+    function restore() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const packet = JSON.parse(raw);
+        if (!packet || !packet.live) return false;
+        live = packet.live;
+        trace = Array.isArray(packet.trace) ? packet.trace.slice(-TRACE_LIMIT) : [];
+        tickCount = Number(packet.tickCount || 0);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function refresh() {
+      const packet = compactState();
+      ticksEl.textContent = String(packet.tick);
+      generationEl.textContent = String(packet.generation);
+      symbolsEl.textContent = String(packet.symbols);
+      virtualEditsEl.textContent = String(packet.virtual_edits);
+      scoreMeter.value = Number(packet.score || 0);
+      scoreText.textContent = JSON.stringify({ score: packet.score, pressure: packet.pressure, coupling: packet.coupling }, null, 2);
+      packetEl.textContent = JSON.stringify(packet, null, 2);
+      motionEl.textContent = JSON.stringify(trace.slice(-16), null, 2);
+    }
+
+    function recordCycle(cycle) {
+      const event = {
+        tick: tickCount,
+        generated: cycle.generated_count,
+        autonomous: cycle.autonomous_generated_count,
+        pressure: cycle.pressure_generated_count,
+        internal_growth: cycle.internal_growth,
+        virtual_state_growth: cycle.virtual_state_growth,
+        less_self_seen: cycle.less_self_seen,
+        score: cycle.score,
+        event_kinds: (cycle.events || []).map(e => e.candidate_kind)
+      };
+      trace.push(event);
+      trace = trace.slice(-TRACE_LIMIT);
+    }
+
+    function stepOnce() {
+      if (!live || !baseFiles) {
+        setStatus('Boot first.', false);
+        return;
+      }
+      const cycle = L.selfCycle(live, {});
+      live = cycle.state;
+      tickCount += 1;
+      recordCycle(cycle);
+      persist();
+      refresh();
+      setStatus('Running one-logic tick ' + tickCount + '.', true);
+    }
+
+    function loop() {
+      stepOnce();
+      timer = setTimeout(loop, Number(speed.value));
+    }
+
+    function start() {
+      if (timer) return;
+      if (!live) {
+        setStatus('Boot first.', false);
+        return;
+      }
+      setStatus('Living loop running.', true);
+      timer = setTimeout(loop, Number(speed.value));
+    }
+
+    function pause() {
+      if (timer) clearTimeout(timer);
+      timer = null;
+      setStatus('Paused. State is retained in browser storage.', null);
+    }
+
+    async function boot(forceReset) {
+      pause();
+      setStatus('Loading source body...', null);
+      try {
+        baseFiles = await loadSourceBody();
+        if (!forceReset && restore()) {
+          setStatus('Restored stored live state.', true);
+        } else {
+          live = L.create(baseFiles, {});
+          trace = [];
+          tickCount = 0;
+          persist();
+          setStatus('Booted fresh one-logic sandbox body.', true);
+        }
+        refresh();
+      } catch (err) {
+        setStatus(err.message, false);
+      }
+    }
+
+    async function copyPacket() {
+      const text = JSON.stringify(fullExportPacket(), null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus('State packet copied.', true);
+      } catch (_) {
+        packetEl.textContent = text;
+        setStatus('Clipboard blocked. Packet shown in state panel.', false);
+      }
+    }
+
+    function downloadPacket() {
+      const blob = new Blob([JSON.stringify(fullExportPacket(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '42ndMind-one-logic-live-state.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importPacket() {
+      try {
+        const raw = document.getElementById('importBox').value;
+        const packet = JSON.parse(raw);
+        const state = packet.live_state || packet.live || packet.final_state;
+        if (!state || !state.files || !state.internal_state) throw new Error('packet does not contain a live_state/final_state');
+        live = state;
+        trace = Array.isArray(packet.trace) ? packet.trace.slice(-TRACE_LIMIT) : [];
+        tickCount = Number(packet.tick || packet.compact && packet.compact.tick || live.t || 0);
+        persist();
+        refresh();
+        setStatus('Imported live state packet.', true);
+      } catch (err) {
+        setStatus('Import failed: ' + err.message, false);
+      }
+    }
+
+    speed.oninput = () => { speedText.textContent = speed.value + 'ms'; };
+    document.getElementById('boot').onclick = () => boot(false);
+    document.getElementById('start').onclick = start;
+    document.getElementById('pause').onclick = pause;
+    document.getElementById('step').onclick = stepOnce;
+    document.getElementById('reset').onclick = () => { localStorage.removeItem(STORAGE_KEY); boot(true); };
+    document.getElementById('copy').onclick = copyPacket;
+    document.getElementById('download').onclick = downloadPacket;
+    document.getElementById('importBtn').onclick = importPacket;
+
+    boot(false);
+  </script>
+</body>
+</html>
