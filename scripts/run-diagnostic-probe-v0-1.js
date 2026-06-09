@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const L = require('../src/self-edit-loop-v0-1.js');
 const K = require('../src/math-language-kernel-v0-1.js');
+const Live = require('../src/live-self-dynamics-core-v0-1.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
@@ -12,7 +13,24 @@ const REPORT_PATH = path.join(ARTIFACT_DIR, 'diagnostic-probe-report-v0-1.json')
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'diagnostic-probe-summary-v0-1.json');
 const KERNEL_DISCREPANCY_PATH = path.join(ARTIFACT_DIR, 'diagnostic-kernel-discrepancy-v0-1.json');
 const KERNEL_LOGIC_PATH = path.join(ARTIFACT_DIR, 'diagnostic-kernel-logic-v0-1.json');
+const ONE_LOGIC_EXPRESSION_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-v0-1.json');
+const ONE_LOGIC_EXPRESSION_SUMMARY_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-summary-v0-1.json');
 const PROBE_TEST = 'tests/diagnostic-probe-v0-1-test.js';
+const LIVE_SOURCE_PATHS = [
+  'src/live-self-dynamics-core-v0-1.js',
+  'src/math-language-kernel-v0-1.js',
+  'src/math-ast-core-v0-1.js',
+  'src/operator-anatomy-v0-1.js',
+  'src/proof-calculus-core-v0-1.js',
+  'src/math-closure-engine-v0-1.js',
+  'src/unified-self-simulation-core-v0-1.js',
+  'src/autonomous-brain-growth-core-v0-1.js',
+  'src/nested-brain-core-v0-1.js',
+  'src/one-logic-direction-contract-v0-1.js',
+  'src/source-sandbox-v0-1.js',
+  'src/source-edit-reality-feedback-v0-1.js',
+  'src/truth-accounting-core-v0-1.js'
+];
 
 function readIfExists(relativePath) {
   const full = path.join(ROOT, relativePath);
@@ -31,53 +49,24 @@ function collectFiles() {
   return files;
 }
 
-function compactGap(packet) {
-  return { φ: packet.φ, ω: packet.ω, score: packet.score, z: packet.z, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
+function collectLiveFiles() {
+  const files = {};
+  LIVE_SOURCE_PATHS.forEach(relativePath => {
+    const content = readIfExists(relativePath);
+    if (content != null) files[relativePath] = content;
+  });
+  return files;
 }
 
-function compactCorrection(packet) {
-  return {
-    φ: packet.φ,
-    method: packet.method,
-    chosen: packet.chosen,
-    reduced: packet.reduced,
-    before: compactGap(packet.before),
-    after: compactGap(packet.after),
-    transformed: packet.transformed,
-    candidates: packet.candidates,
-    u: packet.u,
-    χ: packet.χ,
-    Ξ: packet.Ξ
-  };
-}
-
-function compactCanonical(packet) {
-  return { φ: packet.φ, id: packet.id, F: packet.F, body: packet.body, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
-}
-
-function compactEquivalence(packet) {
-  return { φ: packet.φ, true: packet.true, distance: packet.distance, a: packet.a, b: packet.b, χ: packet.χ, Ξ: packet.Ξ };
-}
-
-function compactClosure(packet) {
-  return { φ: packet.φ, field_count: packet.fields.length, fields: packet.fields, gaps: packet.gaps, transforms: packet.transforms, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
-}
-
-function compactProof(packet) {
-  return { φ: packet.φ, true: packet.true, valid: packet.valid, reduced: packet.reduced, before: packet.before, after: packet.after, transform: packet.transform, χ: packet.χ, Ξ: packet.Ξ };
-}
-
-function compactConvergence(packet) {
-  return { φ: packet.φ, stable: packet.stable, score: packet.score, final: packet.final, trace: packet.trace, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
-}
-
-function compactGround(packet) {
-  return { φ: packet.φ, mode: packet.mode, formal: packet.formal, observed: packet.observed, true: packet.true, id: packet.id, χ: packet.χ, Ξ: packet.Ξ };
-}
-
-function compactLexicon(packet) {
-  return { φ: packet.φ, Λ: packet.Λ, count: packet.count, entries: packet.entries, u: packet.u, χ: packet.χ, Ξ: packet.Ξ };
-}
+function compactGap(packet) { return { φ: packet.φ, ω: packet.ω, score: packet.score, z: packet.z, u: packet.u, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactCorrection(packet) { return { φ: packet.φ, method: packet.method, chosen: packet.chosen, reduced: packet.reduced, before: compactGap(packet.before), after: compactGap(packet.after), transformed: packet.transformed, candidates: packet.candidates, u: packet.u, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactCanonical(packet) { return { φ: packet.φ, id: packet.id, F: packet.F, body: packet.body, u: packet.u, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactEquivalence(packet) { return { φ: packet.φ, true: packet.true, distance: packet.distance, a: packet.a, b: packet.b, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactClosure(packet) { return { φ: packet.φ, field_count: packet.fields.length, fields: packet.fields, gaps: packet.gaps, transforms: packet.transforms, u: packet.u, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactProof(packet) { return { φ: packet.φ, true: packet.true, valid: packet.valid, reduced: packet.reduced, before: packet.before, after: packet.after, transform: packet.transform, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactConvergence(packet) { return { φ: packet.φ, stable: packet.stable, score: packet.score, final: packet.final, trace: packet.trace, u: packet.u, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactGround(packet) { return { φ: packet.φ, mode: packet.mode, formal: packet.formal, observed: packet.observed, true: packet.true, id: packet.id, χ: packet.χ, Ξ: packet.Ξ }; }
+function compactLexicon(packet) { return { φ: packet.φ, Λ: packet.Λ, count: packet.count, entries: packet.entries, u: packet.u, χ: packet.χ, Ξ: packet.Ξ }; }
 
 function main() {
   const files = collectFiles();
@@ -89,6 +78,24 @@ function main() {
 
   const rawInput = Object.keys(files).sort().map(key => '--- ' + key + '\n' + files[key]).join('\n');
   const report = L.run(files, { rawInput, tests: [PROBE_TEST], sandboxOptions: { allowDelete: false, maxPatchBytes: 5_000_000 } });
+
+  const liveExpression = Live.stableExpression(collectLiveFiles(), { max_iterations: 8, scope: 'stable_math_language_reflection' });
+  const liveExpressionSummary = {
+    packet_type: '42ndMind_latest_one_logic_stable_expression_summary_v0_1',
+    scope: liveExpression.scope,
+    generation: liveExpression.generation,
+    t: liveExpression.t,
+    stable_score: liveExpression.stable_score,
+    pressure: liveExpression.pressure,
+    octahedron_position: liveExpression.octahedron_position,
+    math_language_completion: liveExpression.math_language_completion,
+    stable_diff: liveExpression.stable_diff,
+    organ_unison_status: liveExpression.organ_unison_status,
+    next_self_generated_obstruction: liveExpression.next_self_generated_obstruction,
+    obstruction_stack: liveExpression.obstruction_stack,
+    expression: liveExpression.expression,
+    Ξ: ''
+  };
 
   const kernelClosedDiscrepancy = K.discrepancy(1, 1, 'diagnostic:closed-discrepancy');
   const kernelDiscrepancy = K.discrepancy(0, 1, 'tests/diagnostic-probe-v0-1-test.js');
@@ -108,17 +115,7 @@ function main() {
   const kernelConvergence = K.converge(current, target, { steps: 4 });
   const kernelFormalGround = K.ground(current);
   const kernelObservedGround = K.ground(current, [{ source: 'diagnostic', value: current }]);
-  const kernelLexicon = K.deriveLexicon([
-    kernelClosedGap,
-    kernelClosedDiscrepancy,
-    kernelCorrection,
-    kernelProof,
-    kernelConvergence,
-    kernelFormalGround,
-    kernelObservedGround,
-    kernelEquivalentSame,
-    kernelEquivalentDifferent
-  ]);
+  const kernelLexicon = K.deriveLexicon([kernelClosedGap, kernelClosedDiscrepancy, kernelCorrection, kernelProof, kernelConvergence, kernelFormalGround, kernelObservedGround, kernelEquivalentSame, kernelEquivalentDifferent]);
   const kernelResolvedClosedGap = K.resolveLexeme('Λ:Δ0', kernelLexicon);
 
   const kernelLogic = {
@@ -150,6 +147,8 @@ function main() {
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + '\n');
   fs.writeFileSync(KERNEL_DISCREPANCY_PATH, JSON.stringify(kernelDiscrepancy, null, 2) + '\n');
   fs.writeFileSync(KERNEL_LOGIC_PATH, JSON.stringify(kernelLogic, null, 2) + '\n');
+  fs.writeFileSync(ONE_LOGIC_EXPRESSION_PATH, JSON.stringify(liveExpression, null, 2) + '\n');
+  fs.writeFileSync(ONE_LOGIC_EXPRESSION_SUMMARY_PATH, JSON.stringify(liveExpressionSummary, null, 2) + '\n');
 
   const failedTests = report.sandbox_report.tests.filter(t => !t.ok).map(t => ({ path: t.path, error: t.error }));
   const summary = {
@@ -160,9 +159,8 @@ function main() {
     mathematical_gap_count: report.math_patch ? report.math_patch.gaps.length : null,
     operator_candidate_count: report.operator_synthesis && report.operator_synthesis.candidates ? report.operator_synthesis.candidates.length : 0,
     operator_decision: report.operator_synthesis ? report.operator_synthesis.decision : null,
-    operator_candidates: report.operator_synthesis && report.operator_synthesis.candidates
-      ? report.operator_synthesis.candidates.map(c => ({ operator: c.operator, target: c.target, rule: c.rule, source_failure: c.source_failure }))
-      : [],
+    operator_candidates: report.operator_synthesis && report.operator_synthesis.candidates ? report.operator_synthesis.candidates.map(c => ({ operator: c.operator, target: c.target, rule: c.rule, source_failure: c.source_failure })) : [],
+    one_logic_stable_expression: liveExpressionSummary,
     kernel_logic: {
       definitions: kernelLogic.definitions,
       invariant_count: kernelLogic.invariants.length,
