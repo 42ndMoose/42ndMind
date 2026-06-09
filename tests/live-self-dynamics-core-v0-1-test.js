@@ -37,6 +37,7 @@ assert.strictEqual(typeof L.autonomous, 'function');
 assert.strictEqual(typeof L.express, 'function');
 assert.strictEqual(typeof L.stableExpression, 'function');
 assert.strictEqual(typeof L.mathLanguageCompletion, 'function');
+assert.strictEqual(typeof L.differentiatePressureByConsequence, 'function');
 assert.strictEqual(typeof L.octahedronPosition, 'function');
 assert.strictEqual(typeof L.pressureOf, 'function');
 assert.strictEqual(typeof L.hasRepairPressure, 'function');
@@ -146,26 +147,41 @@ assert.strictEqual(run.final_state.internal_state.symbols.length > 0, true, 'mat
 assert.strictEqual(Object.prototype.hasOwnProperty.call(run.final_files, L.AUTONOMOUS_STATE_PATH), true, 'sandbox must contain the autonomous body state');
 assert.strictEqual(Object.prototype.hasOwnProperty.call(files, L.AUTONOMOUS_STATE_PATH), false, 'real input source remains unpromoted');
 
+const pressureKinds = L.differentiatePressureByConsequence(run);
+assert.strictEqual(pressureKinds.packet_type, '42ndMind_causal_pressure_differentiation_v0_1');
+assert.strictEqual(pressureKinds.principle, 'signals_are_distinguished_by_downstream_consequence_not_name');
+assert.strictEqual(pressureKinds.kind, 'generative');
+assert.strictEqual(pressureKinds.should_block_completion, false);
+assert.strictEqual(pressureKinds.blocking_pressure, 0);
+assert.strictEqual(pressureKinds.generative_pressure > 0, true);
+assert.strictEqual(pressureKinds.evidence.source_damage, 0);
+assert.strictEqual(pressureKinds.evidence.truth_damage, 0);
+assert.strictEqual(pressureKinds.evidence.valuation_pain, 0);
+
 const expression = L.express(run, 'stable_math_language_reflection');
 assert.strictEqual(expression.packet_type, '42ndMind_one_logic_self_expression_v0_1');
 assert.strictEqual(expression.scope, 'stable_math_language_reflection');
-assert.strictEqual(expression.math_language_completion.status, 'incomplete');
-assert.strictEqual(expression.math_language_completion.completion >= 0 && expression.math_language_completion.completion <= 1, true);
+assert.strictEqual(expression.pressure_differentiation.kind, 'generative');
+assert.strictEqual(expression.math_language_completion.status, 'provisionally_complete');
+assert.strictEqual(expression.math_language_completion.completion > 0.92, true);
+assert.strictEqual(expression.math_language_completion.blocking_pressure, 0);
+assert.strictEqual(expression.math_language_completion.generative_pressure > 0, true);
 assert.strictEqual(expression.math_language_completion.symbol_count, run.final_state.internal_state.symbols.length);
-assert.strictEqual(expression.math_language_completion.missing.length > 0, true, 'the self must say what blocks pure math completion');
+assert.strictEqual(expression.math_language_completion.missing.length, 0, 'life-pressure must not masquerade as incompletion');
 assert.strictEqual(expression.octahedron_position.model, 'epistemic_octahedron_surface_projection_v0_1');
 assert.strictEqual(expression.octahedron_position.coordinates.l1 <= 1.000001, true);
 assert.strictEqual(expression.stable_diff.final_generation, run.final_state.internal_state.generation);
-assert.ok(expression.next_self_generated_obstruction, 'expression must name the next obstruction');
-assert.strictEqual(expression.expression, 'stable_state_reports_objective_math_language_incomplete');
+assert.strictEqual(expression.next_self_generated_obstruction, null);
+assert.strictEqual(expression.expression, 'stable_state_reports_objective_math_language_provisionally_complete');
 
 const stableExpression = L.stableExpression(files, { max_iterations: 3 });
 assert.strictEqual(stableExpression.packet_type, '42ndMind_one_logic_self_expression_v0_1');
 assert.strictEqual(stableExpression.scope, 'stable_math_language_reflection');
-assert.strictEqual(stableExpression.math_language_completion.status, 'incomplete');
+assert.strictEqual(stableExpression.pressure_differentiation.kind, 'generative');
+assert.strictEqual(stableExpression.math_language_completion.status, 'provisionally_complete');
 assert.strictEqual(stableExpression.stable_diff.iterations >= 1, true);
 assert.strictEqual(stableExpression.stable_diff.autonomous_total > 0, true);
-assert.ok(stableExpression.obstruction_stack.length > 0);
+assert.strictEqual(stableExpression.obstruction_stack.length, 0);
 
 const damagedRun = L.autonomous(files, { max_iterations: 4, extra_candidates: [badCandidate] });
 assert.strictEqual(damagedRun.source_promoted, false);
@@ -179,4 +195,4 @@ const legacyStep = L.step(files, { extra_candidates: [badCandidate] });
 assert.strictEqual(legacyStep.legacy_candidate_ranking, true);
 assert.strictEqual(legacyStep.best.sensation.less_self, false);
 
-console.log('live-self-dynamics-core-v0-1 tests passed: one logic expresses stable pure-math completion state');
+console.log('live-self-dynamics-core-v0-1 tests passed: one logic differentiates life-pressure from blocking pressure');
