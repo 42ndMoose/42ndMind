@@ -6,8 +6,10 @@ on:
     paths:
       - 'src/live-self-dynamics-core-v0-1.js'
       - 'src/objective-reality-contact-gate-v0-1.js'
+      - 'src/proof-obligation-engine-v0-1.js'
       - 'tests/live-self-dynamics-core-v0-1-test.js'
       - 'tests/objective-reality-contact-gate-v0-1-test.js'
+      - 'tests/proof-obligation-engine-v0-1-test.js'
       - 'scripts/run-diagnostic-probe-v0-1.js'
       - 'scripts/run-one-logic-stable-expression-v0-1.js'
       - 'scripts/run-one-logic-source-promotion-gate-v0-1.js'
@@ -35,6 +37,9 @@ jobs:
       - name: Apply objective reality gate
         run: node scripts/apply-live-self-reality-gate-v0-1.js
 
+      - name: Run proof obligation engine proof
+        run: node tests/proof-obligation-engine-v0-1-test.js
+
       - name: Run adversarial reality contact proof
         run: node tests/objective-reality-contact-gate-v0-1-test.js
 
@@ -60,8 +65,8 @@ jobs:
           mkdir -p artifacts
           git config user.name "42ndMind Bot"
           git config user.email "actions@github.com"
-          git add src/live-self-dynamics-core-v0-1.js src/objective-reality-contact-gate-v0-1.js tests/live-self-dynamics-core-v0-1-test.js tests/objective-reality-contact-gate-v0-1-test.js scripts/apply-live-self-pressure-differentiation-v0-1.js scripts/apply-live-self-reality-gate-v0-1.js scripts/run-one-logic-stable-expression-v0-1.js scripts/run-one-logic-source-promotion-gate-v0-1.js artifacts/latest-one-logic-stable-state-v0-1.json artifacts/latest-one-logic-stable-expression-v0-1.json artifacts/latest-one-logic-stable-expression-summary-v0-1.json artifacts/latest-one-logic-source-promotion-proposal-v0-1.json artifacts/one-logic-stable-expression-console-v0-1.txt artifacts/one-logic-source-promotion-console-v0-1.txt artifacts/diagnostic-probe-summary-v0-1.json artifacts/diagnostic-probe-console-v0-1.txt
-          git diff --cached --quiet || git commit -m "Update adversarially reality-gated one logic [skip ci]"
+          git add src/live-self-dynamics-core-v0-1.js src/objective-reality-contact-gate-v0-1.js src/proof-obligation-engine-v0-1.js tests/live-self-dynamics-core-v0-1-test.js tests/objective-reality-contact-gate-v0-1-test.js tests/proof-obligation-engine-v0-1-test.js scripts/apply-live-self-pressure-differentiation-v0-1.js scripts/apply-live-self-reality-gate-v0-1.js scripts/run-one-logic-stable-expression-v0-1.js scripts/run-one-logic-source-promotion-gate-v0-1.js artifacts/latest-one-logic-stable-state-v0-1.json artifacts/latest-one-logic-stable-expression-v0-1.json artifacts/latest-one-logic-stable-expression-summary-v0-1.json artifacts/latest-one-logic-source-promotion-proposal-v0-1.json artifacts/one-logic-stable-expression-console-v0-1.txt artifacts/one-logic-source-promotion-console-v0-1.txt artifacts/diagnostic-probe-summary-v0-1.json artifacts/diagnostic-probe-console-v0-1.txt
+          git diff --cached --quiet || git commit -m "Update obligation-gated one logic [skip ci]"
           git pull --rebase || true
           git push
 
