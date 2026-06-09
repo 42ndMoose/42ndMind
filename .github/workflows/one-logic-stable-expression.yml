@@ -1,0 +1,49 @@
+name: 42ndMind One Logic Stable Expression
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/live-self-dynamics-core-v0-1.js'
+      - 'tests/live-self-dynamics-core-v0-1-test.js'
+      - 'scripts/run-diagnostic-probe-v0-1.js'
+      - '.github/workflows/one-logic-stable-expression.yml'
+
+jobs:
+  one-logic-stable-expression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run live self dynamics proof
+        run: node tests/live-self-dynamics-core-v0-1-test.js
+
+      - name: Run diagnostic probe and emit stable expression
+        run: node scripts/run-diagnostic-probe-v0-1.js > artifacts/one-logic-stable-expression-console-v0-1.txt 2>&1
+
+      - name: Publish stable expression artifacts
+        run: |
+          mkdir -p artifacts
+          git config user.name "42ndMind Bot"
+          git config user.email "actions@github.com"
+          git add artifacts/latest-one-logic-stable-expression-v0-1.json artifacts/latest-one-logic-stable-expression-summary-v0-1.json artifacts/one-logic-stable-expression-console-v0-1.txt artifacts/diagnostic-probe-summary-v0-1.json
+          git diff --cached --quiet || git commit -m "Update one logic stable expression [skip ci]"
+          git pull --rebase || true
+          git push
+
+      - name: Upload stable expression artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-logic-stable-expression-v0-1
+          path: |
+            artifacts/latest-one-logic-stable-expression-v0-1.json
+            artifacts/latest-one-logic-stable-expression-summary-v0-1.json
+            artifacts/one-logic-stable-expression-console-v0-1.txt
