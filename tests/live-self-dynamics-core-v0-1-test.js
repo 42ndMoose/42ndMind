@@ -34,6 +34,10 @@ assert.strictEqual(typeof L.adjust, 'function');
 assert.strictEqual(typeof L.selfCycle, 'function');
 assert.strictEqual(typeof L.continuous, 'function');
 assert.strictEqual(typeof L.autonomous, 'function');
+assert.strictEqual(typeof L.express, 'function');
+assert.strictEqual(typeof L.stableExpression, 'function');
+assert.strictEqual(typeof L.mathLanguageCompletion, 'function');
+assert.strictEqual(typeof L.octahedronPosition, 'function');
 assert.strictEqual(typeof L.pressureOf, 'function');
 assert.strictEqual(typeof L.hasRepairPressure, 'function');
 assert.strictEqual(typeof L.AUTONOMOUS_STATE_PATH, 'string');
@@ -142,6 +146,27 @@ assert.strictEqual(run.final_state.internal_state.symbols.length > 0, true, 'mat
 assert.strictEqual(Object.prototype.hasOwnProperty.call(run.final_files, L.AUTONOMOUS_STATE_PATH), true, 'sandbox must contain the autonomous body state');
 assert.strictEqual(Object.prototype.hasOwnProperty.call(files, L.AUTONOMOUS_STATE_PATH), false, 'real input source remains unpromoted');
 
+const expression = L.express(run, 'stable_math_language_reflection');
+assert.strictEqual(expression.packet_type, '42ndMind_one_logic_self_expression_v0_1');
+assert.strictEqual(expression.scope, 'stable_math_language_reflection');
+assert.strictEqual(expression.math_language_completion.status, 'incomplete');
+assert.strictEqual(expression.math_language_completion.completion >= 0 && expression.math_language_completion.completion <= 1, true);
+assert.strictEqual(expression.math_language_completion.symbol_count, run.final_state.internal_state.symbols.length);
+assert.strictEqual(expression.math_language_completion.missing.length > 0, true, 'the self must say what blocks pure math completion');
+assert.strictEqual(expression.octahedron_position.model, 'epistemic_octahedron_surface_projection_v0_1');
+assert.strictEqual(expression.octahedron_position.coordinates.l1 <= 1.000001, true);
+assert.strictEqual(expression.stable_diff.final_generation, run.final_state.internal_state.generation);
+assert.ok(expression.next_self_generated_obstruction, 'expression must name the next obstruction');
+assert.strictEqual(expression.expression, 'stable_state_reports_objective_math_language_incomplete');
+
+const stableExpression = L.stableExpression(files, { max_iterations: 3 });
+assert.strictEqual(stableExpression.packet_type, '42ndMind_one_logic_self_expression_v0_1');
+assert.strictEqual(stableExpression.scope, 'stable_math_language_reflection');
+assert.strictEqual(stableExpression.math_language_completion.status, 'incomplete');
+assert.strictEqual(stableExpression.stable_diff.iterations >= 1, true);
+assert.strictEqual(stableExpression.stable_diff.autonomous_total > 0, true);
+assert.ok(stableExpression.obstruction_stack.length > 0);
+
 const damagedRun = L.autonomous(files, { max_iterations: 4, extra_candidates: [badCandidate] });
 assert.strictEqual(damagedRun.source_promoted, false);
 assert.strictEqual(damagedRun.cycles.some(c => c.less_self_seen === true), true);
@@ -154,4 +179,4 @@ const legacyStep = L.step(files, { extra_candidates: [badCandidate] });
 assert.strictEqual(legacyStep.legacy_candidate_ranking, true);
 assert.strictEqual(legacyStep.best.sensation.less_self, false);
 
-console.log('live-self-dynamics-core-v0-1 tests passed: one logic lives as autonomous simulated sandbox self and grows its math language');
+console.log('live-self-dynamics-core-v0-1 tests passed: one logic expresses stable pure-math completion state');
