@@ -6,6 +6,7 @@
 
   const VERSION = '0.1.0';
   const EPS = 1e-9;
+  const PRESSURE_THRESHOLD = 0.05;
   const ORGAN_IDS = Object.freeze(['brain', 'language', 'truth', 'belief', 'memory', 'valuation', 'action', 'source']);
   let Unified = null, Language = null, Direction = null;
   try { if (typeof require === 'function') Unified = require('./unified-self-simulation-core-v0-1.js'); } catch (_) { Unified = null; }
@@ -91,18 +92,6 @@
     return { id: 'legacy_mark_live_self_dynamics_memory', origin: 'live_self_dynamics', kind: 'legacy_safe_memory_marker', operations: [{ type: 'replace', path, content: content + '\n// live-self dynamics marker: simulated before application.\n' }] };
   }
 
-  function generate(files, options) {
-    const opts = options || {};
-    const candidates = [];
-    candidates.push(preserveCandidate(files));
-    if (opts.allow_marker_candidate === true) {
-      const marker = markerCandidate(files);
-      if (marker) candidates.push(marker);
-    }
-    A(opts.extra_candidates).forEach(c => candidates.push(c));
-    return candidates.filter(Boolean);
-  }
-
   function sourceShape(files) {
     if (Unified && typeof Unified.sourceShape === 'function') return Unified.sourceShape(files, files);
     return { ok: false, count: 1, rows: [], missing_unified_source_shape: true };
@@ -137,14 +126,50 @@
     return { ok: verification.ok === true, packet, verification };
   }
 
+  function emptyInternalState() {
+    return { pressure_relief: 0, repair_responses: [], last_pressure: 0, Ξ: '' };
+  }
+
+  function internalState(value) {
+    const state = value || {};
+    return {
+      pressure_relief: R(clamp01(state.pressure_relief || 0)),
+      repair_responses: A(state.repair_responses).slice(-64),
+      last_pressure: R(clamp01(state.last_pressure || 0)),
+      Ξ: ''
+    };
+  }
+
   function edge(from, to, signal, value) {
     return { from, to, signal, value: R(clamp01(value)) };
+  }
+
+  function pressureOf(reflection) {
+    const c = reflection && reflection.coupling || {};
+    const action = c.action || {};
+    const source = c.source || {};
+    const identity = c.identity || {};
+    const language = c.language || {};
+    const truth = c.truth || {};
+    return R(Math.max(
+      Number(action.repair_pressure || 0),
+      Number(source.damage || 0),
+      Number(identity.pain || 0),
+      Number(language.repair_pressure || 0),
+      Number(truth.damage || 0)
+    ));
+  }
+
+  function hasRepairPressure(reflection) {
+    return pressureOf(reflection) > PRESSURE_THRESHOLD;
   }
 
   function couplingFrom(parts) {
     const events = A(parts.events);
     const eventTotal = Math.max(1, events.length);
     const lastSense = parts.lastSense || {};
+    const internal = internalState(parts.internal_state || {});
+    const relief = clamp01(internal.pressure_relief || 0);
     const lessCount = Number(parts.lessCount || 0);
     const moreCount = Number(parts.moreCount || 0);
     const sameCount = Number(parts.sameCount || 0);
@@ -152,17 +177,21 @@
     const brainOk = !!(parts.brain && parts.brain.ok);
     const sourceOk = !!(parts.shape && parts.shape.ok);
     const directionOk = !!(parts.direction && parts.direction.ok);
-    const beliefAlarm = clamp01((lessCount / eventTotal) + (lastSense.less_self ? 0.5 : 0));
-    const beliefConfidence = clamp01(((sameCount + moreCount) / eventTotal) + (lastSense.more_self ? 0.25 : 0));
+    const rawBeliefAlarm = clamp01((lessCount / eventTotal) + (lastSense.less_self ? 0.5 : 0));
+    const beliefAlarm = clamp01(rawBeliefAlarm - relief);
+    const beliefConfidence = clamp01(((sameCount + moreCount) / eventTotal) + (lastSense.more_self ? 0.25 : 0) + (relief * 0.25));
     const languageCoherence = languageOk ? 1 : 0;
-    const languageRepair = clamp01((1 - languageCoherence) + beliefAlarm);
+    const languageRepair = clamp01((1 - languageCoherence) + beliefAlarm - relief);
     const sourceIdentity = sourceOk && brainOk ? 1 : 0;
-    const sourceDamage = clamp01(sourceOk ? 0 : Math.max(0.25, Number(parts.shape && parts.shape.count || 1) / 4));
+    const rawSourceDamage = clamp01(sourceOk ? 0 : Math.max(0.25, Number(parts.shape && parts.shape.count || 1) / 4));
+    const sourceDamage = clamp01(rawSourceDamage - relief);
     const truthContact = clamp01((languageCoherence + sourceIdentity + (directionOk ? 1 : 0)) / 3);
-    const truthDamage = clamp01((1 - truthContact) + (sourceDamage * 0.5));
-    const valuationPain = clamp01(Number(lastSense.pain || 0) + (truthDamage * 0.45) + (sourceDamage * 0.45) + (beliefAlarm * 0.25));
-    const valuationReward = clamp01(Number(lastSense.reward || 0) + (truthContact * 0.25) + (beliefConfidence * 0.25) + (sourceIdentity * 0.15));
-    const actionRepair = clamp01(valuationPain + languageRepair + sourceDamage);
+    const truthDamage = clamp01((1 - truthContact) + (sourceDamage * 0.5) - relief);
+    const lastPain = Math.max(0, Number(lastSense.pain || 0) - relief);
+    const lastReward = Number(lastSense.reward || 0);
+    const valuationPain = clamp01(lastPain + (truthDamage * 0.45) + (sourceDamage * 0.45) + (beliefAlarm * 0.25));
+    const valuationReward = clamp01(lastReward + (truthContact * 0.25) + (beliefConfidence * 0.25) + (sourceIdentity * 0.15) + (relief * 0.35));
+    const actionRepair = clamp01(valuationPain + languageRepair + sourceDamage - relief);
     const actionContinue = clamp01(valuationReward + (moreCount / eventTotal));
     const actionMutation = clamp01(actionRepair > actionContinue ? actionRepair : actionContinue);
     const edges = [
@@ -172,18 +201,82 @@
       edge('valuation', 'action', 'pain_reward_changes_action_pressure', actionMutation),
       edge('source', 'identity', 'source_shape_changes_identity_integrity', sourceIdentity),
       edge('identity', 'valuation', 'identity_damage_changes_pain', sourceDamage),
-      edge('action', 'source', 'action_marks_source_promotion_blocked', 1)
+      edge('action', 'source', 'action_marks_source_promotion_blocked', 1),
+      edge('action', 'memory', 'repair_pressure_generates_internal_response_memory', relief)
     ];
     return {
       belief: { alarm: R(beliefAlarm), confidence: R(beliefConfidence) },
       language: { coherence: R(languageCoherence), repair_pressure: R(languageRepair) },
       truth: { contact: R(truthContact), damage: R(truthDamage) },
-      source: { identity: R(sourceIdentity), damage: R(sourceDamage) },
+      source: { identity: R(sourceIdentity), damage: R(sourceDamage), raw_damage: R(rawSourceDamage) },
       identity: { integrity: R(sourceIdentity), pain: R(sourceDamage) },
       valuation: { pain: R(valuationPain), reward: R(valuationReward) },
       action: { repair_pressure: R(actionRepair), continue_pressure: R(actionContinue), mutation_pressure: R(actionMutation), promotion_blocked: true },
+      relief: R(relief),
       edges,
-      χ: ['belief→language', 'language→truth', 'truth→valuation', 'valuation→action', 'source→identity', 'identity→valuation']
+      χ: ['belief→language', 'language→truth', 'truth→valuation', 'valuation→action', 'source→identity', 'identity→valuation', 'action→internal-perturbation']
+    };
+  }
+
+  function pressureCandidate(reflection, internal) {
+    const pressure = pressureOf(reflection);
+    if (pressure <= PRESSURE_THRESHOLD) return null;
+    const c = reflection && reflection.coupling || {};
+    const target = Number(c.source && c.source.damage || 0) > 0 || Number(c.identity && c.identity.pain || 0) > 0
+      ? 'source_identity_boundary'
+      : Number(c.language && c.language.repair_pressure || 0) > 0
+        ? 'language_truth_repair'
+        : 'valuation_action_repair';
+    return {
+      id: 'pressure_generated_internal_repair_' + target,
+      origin: 'live_self_dynamics',
+      kind: 'pressure_driven_internal_adjustment',
+      pressure,
+      internal_adjustment: {
+        target,
+        pressure,
+        prior_relief: internalState(internal).pressure_relief,
+        action: 'absorb_repair_pressure_into_simulated_self_state',
+        source_promotion: false
+      },
+      operations: []
+    };
+  }
+
+  function generate(files, options) {
+    const opts = options || {};
+    const candidates = [];
+    candidates.push(preserveCandidate(files));
+    const internal = internalState(opts.internal_state || {});
+    const reflected = opts.reflection || null;
+    const pressure = reflected ? pressureCandidate(reflected, internal) : null;
+    if (pressure) candidates.push(pressure);
+    if (opts.allow_marker_candidate === true) {
+      const marker = markerCandidate(files);
+      if (marker) candidates.push(marker);
+    }
+    A(opts.extra_candidates).forEach(c => candidates.push(c));
+    return candidates.filter(Boolean);
+  }
+
+  function applyInternalAdjustment(internal, candidate) {
+    const base = internalState(internal);
+    const adj = candidate && candidate.internal_adjustment || {};
+    const pressure = clamp01(adj.pressure || candidate && candidate.pressure || 0);
+    const relief = R(Math.max(Number(base.pressure_relief || 0), pressure));
+    const response = {
+      id: candidate && candidate.id || 'pressure_generated_internal_repair',
+      target: adj.target || 'valuation_action_repair',
+      pressure: R(pressure),
+      relief,
+      source_promotion: false,
+      action: adj.action || 'absorb_repair_pressure_into_simulated_self_state'
+    };
+    return {
+      pressure_relief: relief,
+      repair_responses: A(base.repair_responses).concat([response]).slice(-64),
+      last_pressure: R(pressure),
+      Ξ: ''
     };
   }
 
@@ -218,7 +311,8 @@
     const lessCount = events.filter(e => e.sensation && e.sensation.less_self).length;
     const moreCount = events.filter(e => e.sensation && e.sensation.more_self).length;
     const sameCount = events.filter(e => e.sensation && e.sensation.same_self).length;
-    const coupling = couplingFrom({ events, lastSense, brain, language, shape, direction, lessCount, moreCount, sameCount });
+    const internal = internalState(opts.internal_state || {});
+    const coupling = couplingFrom({ events, lastSense, brain, language, shape, direction, lessCount, moreCount, sameCount, internal_state: internal });
     const organs = {
       brain: organ('brain', [
         { id: 'coherence', w: brain && brain.ok ? 1 : EPS },
@@ -245,19 +339,22 @@
         { id: 'events', w: events.length + EPS },
         { id: 'source_paths', w: stats.keys.length + EPS },
         { id: 'source_bytes', w: Math.max(1, stats.bytes) },
-        { id: 'coupling_edges', w: coupling.edges.length + EPS }
+        { id: 'coupling_edges', w: coupling.edges.length + EPS },
+        { id: 'internal_repair_responses', w: internal.repair_responses.length + EPS }
       ]),
       valuation: organ('valuation', [
         { id: 'reward', w: Number(lastSense.reward || 0) + EPS },
         { id: 'pain', w: Number(lastSense.pain || 0) + EPS },
         { id: 'from_truth_damage', w: coupling.truth.damage + EPS },
         { id: 'from_identity_damage', w: coupling.identity.pain + EPS },
+        { id: 'from_internal_relief', w: coupling.relief + EPS },
         { id: 'integrity', w: coupling.identity.integrity + EPS }
       ]),
       action: organ('action', [
         { id: 'simulate', w: 1 },
         { id: 'from_valuation_repair_pressure', w: coupling.action.repair_pressure + EPS },
         { id: 'from_valuation_continue_pressure', w: coupling.action.continue_pressure + EPS },
+        { id: 'pressure_generated_internal_perturbation', w: hasRepairPressure({ coupling }) ? 1 : EPS },
         { id: 'adjust', w: lastSense.applyable && lastSense.more_self && !lastSense.less_self ? 1 : EPS },
         { id: 'do_not_promote', w: 1 }
       ]),
@@ -279,6 +376,7 @@
       whole,
       organs,
       coupling,
+      internal_state: internal,
       direction,
       last_sensation: clone(lastSense),
       χ: [
@@ -286,7 +384,8 @@
         'mutation is allowed inside simulation before promotion',
         'sensation reports more_self/same_self/less_self after perturbation',
         'source edits are not promoted by this core',
-        'organs are coupled by propagated pressure, not merely listed side by side'
+        'organs are coupled by propagated pressure, not merely listed side by side',
+        'repair pressure generates internal perturbation candidates'
       ],
       Ξ: ''
     };
@@ -295,13 +394,15 @@
   function create(files, options) {
     const base = clone(files || {});
     const history = [];
-    const reflection = reflect(base, history, options || {});
+    const internal = internalState(options && options.internal_state || emptyInternalState());
+    const reflection = reflect(base, history, Object.assign({}, options || {}, { internal_state: internal }));
     return {
       packet_type: '42ndMind_live_self_state_v0_1',
       version: VERSION,
       t: 0,
       base_files: clone(base),
       files: clone(base),
+      internal_state: internal,
       history,
       reflection,
       score: R(reflection.organ_ok_ratio),
@@ -310,17 +411,53 @@
     };
   }
 
+  function feelInternal(live, candidate, options) {
+    const opts = options || {};
+    const before = reflect(live.files, live.history, Object.assign({}, opts, { internal_state: live.internal_state }));
+    const pressure = pressureOf(before);
+    const nextInternal = applyInternalAdjustment(live.internal_state, candidate);
+    const sim = {
+      feeling: 'more_self',
+      more_self: true,
+      same_self: false,
+      less_self: false,
+      pain: 0,
+      reward: pressure,
+      applyable: true,
+      next_internal_state: nextInternal,
+      source_promoted: false
+    };
+    const previewSense = { feeling: 'more_self', more_self: true, same_self: false, less_self: false, pain: 0, reward: pressure, applyable: true, self_score: 1 };
+    const previewHistory = A(live.history).concat([{ candidate_id: candidate && candidate.id || null, sensation: previewSense, internal_adjustment: true, applied_to_simulation: false }]);
+    const after = reflect(live.files, previewHistory, Object.assign({}, opts, { internal_state: nextInternal }));
+    const sense = sensationFromParts(sim, after);
+    return {
+      packet_type: '42ndMind_live_self_feeling_v0_1',
+      version: VERSION,
+      ok: true,
+      candidate_id: candidate && candidate.id || null,
+      candidate_kind: candidate && candidate.kind || null,
+      before,
+      simulation: sim,
+      candidate_source: { attempted: false, changed: [], error: null, internal_adjustment: true },
+      after,
+      sensation: sense,
+      Ξ: ''
+    };
+  }
+
   function feel(live, candidate, options) {
+    if (candidate && candidate.kind === 'pressure_driven_internal_adjustment') return feelInternal(live, candidate, options || {});
     if (!Unified || typeof Unified.simulate !== 'function') {
       return { packet_type: '42ndMind_live_self_feeling_v0_1', version: VERSION, ok: false, reason: 'unified_self_simulation_unavailable', Ξ: '' };
     }
     const opts = options || {};
-    const before = reflect(live.files, live.history, opts);
+    const before = reflect(live.files, live.history, Object.assign({}, opts, { internal_state: live.internal_state }));
     const sim = Unified.simulate(live.files, candidate, opts.unified || {});
     const attempted = candidateFiles(live.files, candidate, opts.sandbox || {});
     const sensedFiles = attempted.ok ? attempted.files : clone(live.files);
     const previewHistory = A(live.history).concat([{ candidate_id: candidate && candidate.id || null, sensation: sensationFromParts(sim, before), applied_to_simulation: false }]);
-    const after = reflect(sensedFiles, previewHistory, opts);
+    const after = reflect(sensedFiles, previewHistory, Object.assign({}, opts, { internal_state: live.internal_state }));
     const sense = sensationFromParts(sim, after);
     return {
       packet_type: '42ndMind_live_self_feeling_v0_1',
@@ -341,7 +478,9 @@
     const next = clone(live);
     const f = feeling || {};
     const sense = f.sensation || { feeling: 'unknown', self_score: 0, applyable: false, less_self: true };
-    const canMove = sense.applyable === true && sense.more_self === true && sense.less_self !== true && f.simulation && f.simulation.next_files;
+    const internalMove = candidate && candidate.kind === 'pressure_driven_internal_adjustment' && sense.more_self === true && sense.less_self !== true && f.simulation && f.simulation.next_internal_state;
+    const sourceMove = sense.applyable === true && sense.more_self === true && sense.less_self !== true && f.simulation && f.simulation.next_files;
+    const canMove = internalMove || sourceMove;
     const event = {
       t: next.t + 1,
       candidate_id: candidate && candidate.id || null,
@@ -349,15 +488,17 @@
       feeling: sense.feeling,
       sensation: clone(sense),
       coupling: f.after && f.after.coupling ? clone(f.after.coupling) : null,
+      internal_adjustment: !!internalMove,
       moved_simulated_self: !!canMove,
       promoted_source: false
     };
-    if (canMove) next.files = clone(f.simulation.next_files);
+    if (sourceMove) next.files = clone(f.simulation.next_files);
+    if (internalMove) next.internal_state = internalState(f.simulation.next_internal_state);
     next.t += 1;
     next.history = A(next.history).concat([event]).slice(-256);
-    next.reflection = reflect(next.files, next.history, options || {});
+    next.reflection = reflect(next.files, next.history, Object.assign({}, options || {}, { internal_state: next.internal_state }));
     next.score = R(Math.max(Number(next.score || 0), Number(sense.self_score || 0), Number(next.reflection.organ_ok_ratio || 0)));
-    next.promotion_ready = !!canMove && sense.more_self === true;
+    next.promotion_ready = !!sourceMove && sense.more_self === true;
     next.last_event = event;
     return next;
   }
@@ -365,11 +506,14 @@
   function selfCycle(live, options) {
     const opts = options || {};
     let current = clone(live || create({}, opts));
-    const candidates = generate(current.files, opts);
+    current.internal_state = internalState(current.internal_state || {});
+    current.reflection = current.reflection || reflect(current.files, current.history, Object.assign({}, opts, { internal_state: current.internal_state }));
+    const candidates = generate(current.files, Object.assign({}, opts, { reflection: current.reflection, internal_state: current.internal_state, history: current.history }));
     const events = [];
     let improved = false;
     let moved = false;
     let less = false;
+    let internalGrowth = false;
     let bestScore = Number(current.score || 0);
 
     candidates.forEach(candidate => {
@@ -380,9 +524,10 @@
       const gain = R(afterScore - beforeScore);
       improved = improved || gain > Number(opts.min_gain == null ? 0.000001 : opts.min_gain);
       moved = moved || !!(current.last_event && current.last_event.moved_simulated_self);
+      internalGrowth = internalGrowth || !!(current.last_event && current.last_event.internal_adjustment);
       less = less || !!(feeling && feeling.sensation && feeling.sensation.less_self);
       bestScore = Math.max(bestScore, afterScore);
-      events.push({ candidate_id: candidate && candidate.id || null, candidate_kind: candidate && candidate.kind || null, feeling: feeling.sensation, coupling: feeling.after && feeling.after.coupling || null, gain, moved_simulated_self: current.last_event && current.last_event.moved_simulated_self === true });
+      events.push({ candidate_id: candidate && candidate.id || null, candidate_kind: candidate && candidate.kind || null, feeling: feeling.sensation, coupling: feeling.after && feeling.after.coupling || null, gain, internal_adjustment: current.last_event && current.last_event.internal_adjustment === true, moved_simulated_self: current.last_event && current.last_event.moved_simulated_self === true });
     });
 
     return {
@@ -391,8 +536,10 @@
       ok: true,
       mode: 'self_state_perturbation_reflection_sensation_adjustment',
       generated_count: candidates.length,
+      pressure_generated_count: candidates.filter(c => c.kind === 'pressure_driven_internal_adjustment').length,
       improved,
       moved,
+      internal_growth: internalGrowth,
       less_self_seen: less,
       score: R(bestScore),
       state: current,
@@ -430,10 +577,11 @@
       const cycle = selfCycle(current, opts);
       trace.push(cycle);
       current = cycle.state;
-      if (!cycle.moved || !cycle.improved || cycle.less_self_seen) break;
+      if (!cycle.moved && !hasRepairPressure(current.reflection)) break;
+      if (!cycle.improved && !hasRepairPressure(current.reflection)) break;
     }
     const final = trace[trace.length - 1] || null;
-    return { packet_type: '42ndMind_live_self_dynamics_trajectory_v0_1', version: VERSION, ok: trace.length > 0, mode: 'continuous_self_reflection', steps: trace.length, trace, final_state: current, final_files: current.files, optimized_stage: final ? { score: final.score, moved: final.moved, improved: final.improved } : null, final_feeling: current.last_event && current.last_event.feeling || 'same_self', Ξ: '' };
+    return { packet_type: '42ndMind_live_self_dynamics_trajectory_v0_1', version: VERSION, ok: trace.length > 0, mode: 'continuous_self_reflection', steps: trace.length, trace, final_state: current, final_files: current.files, optimized_stage: final ? { score: final.score, moved: final.moved, improved: final.improved, internal_growth: final.internal_growth } : null, final_feeling: current.last_event && current.last_event.feeling || 'same_self', Ξ: '' };
   }
 
   function continuous(files, options) {
@@ -445,9 +593,12 @@
 
     for (let i = 0; i < maxIterations; i += 1) {
       const cycle = selfCycle(current, opts);
-      cycles.push({ iteration: i, generated_count: cycle.generated_count, improved: cycle.improved, moved: cycle.moved, less_self_seen: cycle.less_self_seen, score: cycle.score, events: cycle.events });
+      cycles.push({ iteration: i, generated_count: cycle.generated_count, pressure_generated_count: cycle.pressure_generated_count, improved: cycle.improved, moved: cycle.moved, internal_growth: cycle.internal_growth, less_self_seen: cycle.less_self_seen, score: cycle.score, events: cycle.events });
       current = cycle.state;
+      if (cycle.internal_growth && cycle.less_self_seen) { stop_reason = 'repair_pressure_generated_internal_growth'; break; }
+      if (cycle.less_self_seen && !cycle.moved && hasRepairPressure(current.reflection)) continue;
       if (cycle.less_self_seen && !cycle.moved) { stop_reason = 'less_self_sensed_without_motion'; break; }
+      if (!cycle.moved && !cycle.improved && hasRepairPressure(current.reflection)) continue;
       if (!cycle.moved && !cycle.improved) { stop_reason = 'stable_no_better_state'; break; }
       if (!cycle.generated_count) { stop_reason = 'no_perturbation'; break; }
     }
@@ -456,7 +607,7 @@
       packet_type: '42ndMind_live_self_dynamics_continuous_v0_1',
       version: VERSION,
       ok: cycles.length > 0,
-      mode: 'self_state_to_perturbation_to_reflection_to_sensation_to_adjustment',
+      mode: 'self_state_to_pressure_to_internal_perturbation_to_reflection_to_sensation_to_adjustment',
       iterations: cycles.length,
       stop_reason,
       final_state: current,
@@ -469,5 +620,5 @@
     };
   }
 
-  return Object.freeze({ VERSION, ORGAN_IDS, normalize, l1, organ, generate, candidateFiles, sensation, reflect, create, feel, adjust, selfCycle, step, trajectory, continuous });
+  return Object.freeze({ VERSION, ORGAN_IDS, PRESSURE_THRESHOLD, normalize, l1, organ, generate, candidateFiles, pressureOf, hasRepairPressure, sensation, reflect, create, feel, adjust, selfCycle, step, trajectory, continuous });
 });
