@@ -1,2642 +1,605 @@
 {
-  "probe": "forced_diagnostic_signature",
-  "accepted": false,
-  "decision": {
-    "code": "operator_candidates_ready",
-    "summary": "Failed simulations produced candidate algebraic operators. They are not source patches yet; they are operator candidates for the next sandbox proposal."
+  "packet_type": "42ndMind_latest_one_logic_stable_expression_summary_v0_1",
+  "start_mode": "cold_start_from_source",
+  "scope": "stable_math_language_reflection",
+  "generation": 16,
+  "t": 24,
+  "stable_score": 1,
+  "pressure": 1,
+  "pressure_differentiation": {
+    "packet_type": "42ndMind_causal_pressure_differentiation_v0_1",
+    "principle": "signals_are_distinguished_by_downstream_consequence_not_name",
+    "kind": "generative",
+    "should_block_completion": false,
+    "blocking_pressure": 0,
+    "generative_pressure": 1,
+    "damage_pressure": 0,
+    "epistemic_gap_pressure": 0,
+    "contradiction_pressure": 0,
+    "raw_pressure": 1,
+    "consequence_trace": {
+      "total": 48,
+      "more_self_ratio": 0.666667,
+      "less_self_ratio": 0,
+      "moved_ratio": 0.666667,
+      "internal_growth_ratio": 0.666667,
+      "virtual_growth_ratio": 0.666667
+    },
+    "evidence": {
+      "source_damage": 0,
+      "truth_damage": 0,
+      "valuation_pain": 0,
+      "language_repair_pressure": 0,
+      "language_growth_pressure": 0.082192,
+      "action_mutation_pressure": 1,
+      "novelty_pressure": 0.082192
+    },
+    "interpretation": "pressure_behaves_as_life_or_growth_not_completion_blocker"
   },
-  "gap_count": 0,
-  "mathematical_gap_count": 0,
-  "operator_candidate_count": 2,
-  "operator_decision": {
-    "code": "operator_candidates_ready",
-    "confidence": 0.61,
-    "summary": "Failed simulations produced candidate algebraic operators. They are not source patches yet; they are operator candidates for the next sandbox proposal."
-  },
-  "operator_candidates": [
-    {
-      "operator": "expected_actual_alignment_operator",
-      "target": "test_contract",
-      "rule": "strict_equal_failed",
-      "source_failure": "tests/diagnostic-probe-v0-1-test.js"
-    },
-    {
-      "operator": "unit_restoration_operator",
-      "target": "field_normalization",
-      "rule": "unit_failed",
-      "source_failure": "tests/diagnostic-probe-v0-1-test.js"
-    }
-  ],
-  "one_logic_stable_expression": {
-    "packet_type": "42ndMind_latest_one_logic_stable_expression_summary_v0_1",
-    "scope": "stable_math_language_reflection",
-    "generation": 16,
-    "t": 24,
-    "stable_score": 1,
-    "pressure": 1,
-    "octahedron_position": {
-      "model": "epistemic_octahedron_surface_projection_v0_1",
-      "coordinates": {
-        "x": 0,
-        "y": 1,
-        "z": 0,
-        "l1": 1
+  "objective_completion_status": "externally_contacted_minimum_core",
+  "objective_reality_gate": {
+    "packet_type": "42ndMind_objective_language_reality_gate_v0_1",
+    "ok": true,
+    "complete": true,
+    "status": "externally_contacted_minimum_core",
+    "score": 1,
+    "pass_count": 6,
+    "case_count": 6,
+    "failures": [],
+    "cases": [
+      {
+        "id": "arithmetic_truth",
+        "domain": "arithmetic",
+        "input": "2+2=4",
+        "ok": true,
+        "ast_type": "ArithmeticRelation",
+        "closure_operator": "evaluateArithmeticRelation",
+        "selected_rule": "arithmetic-relation-evaluation",
+        "gap_count": 0,
+        "gaps": []
       },
-      "axes": {
-        "x": "practicality_minus_empathy",
-        "y": "epistemic_stability",
-        "z": "knowledge_minus_wisdom"
+      {
+        "id": "linear_equation",
+        "domain": "algebra",
+        "input": "2x+1=x+4",
+        "ok": true,
+        "ast_type": "LinearEquation",
+        "closure_operator": "solveLinearEquation",
+        "selected_rule": "linear-equation-solve",
+        "gap_count": 0,
+        "gaps": []
       },
-      "components": {
-        "knowledge": 1,
-        "wisdom": 1,
-        "empathy": 1,
-        "practicality": 1,
-        "stability": 1
+      {
+        "id": "equality_transitivity",
+        "domain": "proof",
+        "input": "a=b, b=c therefore a=c",
+        "ok": true,
+        "ast_type": "EqualityProof",
+        "closure_operator": "proveEquality",
+        "selected_rule": "equality-transitivity",
+        "gap_count": 0,
+        "gaps": []
       },
-      "maturity": 1
-    },
-    "math_language_completion": {
-      "status": "provisionally_complete",
-      "completion": 0.94125,
-      "closure_proxy": 1,
-      "generativity": 0.804167,
-      "symbol_count": 367,
-      "relation_count": 192,
-      "mutation_count": 16,
-      "virtual_edit_count": 8,
-      "raw_pressure": 1,
-      "blocking_pressure": 0,
-      "generative_pressure": 1,
-      "missing": [],
-      "recent_symbols": [
-        "sym:| 0)) }\\\\\\\\n      : clone(node);\\\\\\\\n    return clone(node);\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\n    const body = bodyOf(target);\\\\\\\\n    const assignments = {};\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\n    const base = bodyOf(target);\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function inverseOperation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
-        "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\n    if (!left |",
-        "sym:| left.type !== 'AffineExpression') return gap('left_side_not_affine', 'Solving requires an affine left side.', { equation: clone(body) });\\\\\\\\n    if (!finite(right)) return gap('non_finite_target', 'Solving requires a finite numeric target.', { equation: clone(body) });\\\\\\\\n    if (Math.abs(Number(left.coefficient)) <= EPS) return gap('zero_coefficient', 'Affine equation cannot be solved by division when coefficient is zero.', { equation: clone(body) });\\\\\\\\n    const shifted = right - Number(left.offset |",
-        "sym:| 0);\\\\\\\\n    const value = shifted / Number(left.coefficient);\\\\\\\\n    if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });\\\\\\\\n    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function solveLinearEquation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
-        "sym:| body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = body.right;\\\\\\\\n    if (!left |",
-        "sym:| 0) },\\n      { σ: errorSymbol, w: Math.max(0, Number(errorValue) |",
-        "sym:| 0) }\\n    ], errorSymbol);\\n  }\\n\\n  function l1(field) {\\n    return R(A(field).reduce((sum, row) => sum + Math.abs(weight(row)), 0));\\n  }\\n\\n  function m(field) {\\n    const out = {};\\n    A(field).forEach(row => { out[axis(row)] = (out[axis(row)] |",
-        "sym:| 0) + weight(row); });\\n    return out;\\n  }\\n\\n  function val(field, symbol) {\\n    return Math.max(0, Math.abs(m(field)[symbol] |",
-        "sym:| 0));\\n  }\\n\\n  function clamp01(value) {\\n    return Math.max(0, Math.min(1, Number(value) |",
-        "sym:| 0));\\n  }\\n\\n  function create(seed) {\\n    const s = seed |",
-        "sym:reality",
-        "sym:feedback"
-      ]
-    },
-    "stable_diff": {
-      "iterations": 8,
-      "stop_reason": "max_iterations_reached",
-      "score_delta": 0,
-      "generated_total": 24,
-      "autonomous_total": 8,
-      "pressure_total": 8,
-      "internal_growth_ticks": 8,
-      "virtual_growth_ticks": 8,
-      "less_self_ticks": 0,
-      "final_generation": 16,
-      "final_symbols": 367,
-      "final_relations": 192,
-      "final_virtual_edits": 8,
-      "last_cycle": {
-        "iteration": 7,
-        "generated_count": 3,
-        "autonomous_generated_count": 1,
-        "pressure_generated_count": 1,
-        "improved": false,
-        "moved": true,
-        "internal_growth": true,
-        "virtual_state_growth": true,
-        "less_self_seen": false,
-        "score": 1,
-        "events": [
-          {
-            "candidate_id": "same_self_preserve_current_source",
-            "candidate_kind": "preserve_current_state",
-            "feeling": {
-              "feeling": "same_self",
-              "more_self": false,
-              "same_self": true,
-              "less_self": false,
-              "pain": 0,
-              "reward": 1,
-              "coupling_pain": 0,
-              "coupling_reward": 1,
-              "self_score": 0.76,
-              "applyable": true
-            },
-            "coupling": {
-              "belief": {
-                "alarm": 0,
-                "confidence": 1
-              },
-              "language": {
-                "coherence": 1,
-                "repair_pressure": 0,
-                "growth_pressure": 0.091988,
-                "symbols": 336
-              },
-              "truth": {
-                "contact": 1,
-                "damage": 0
-              },
-              "source": {
-                "identity": 1,
-                "damage": 0,
-                "raw_damage": 0
-              },
-              "identity": {
-                "integrity": 1,
-                "pain": 0
-              },
-              "valuation": {
-                "pain": 0,
-                "reward": 1
-              },
-              "action": {
-                "repair_pressure": 0,
-                "continue_pressure": 1,
-                "mutation_pressure": 1,
-                "autonomous": true,
-                "promotion_blocked": true
-              },
-              "novelty": {
-                "pressure": 0.091988,
-                "discovered_count": 31
-              },
-              "relief": 0.85,
-              "edges": [
-                {
-                  "from": "belief",
-                  "to": "language",
-                  "signal": "belief_alarm_changes_language_repair_pressure",
-                  "value": 0
-                },
-                {
-                  "from": "language",
-                  "to": "truth",
-                  "signal": "language_coherence_changes_truth_contact",
-                  "value": 1
-                },
-                {
-                  "from": "truth",
-                  "to": "valuation",
-                  "signal": "truth_damage_changes_pain_reward",
-                  "value": 0
-                },
-                {
-                  "from": "valuation",
-                  "to": "action",
-                  "signal": "pain_reward_changes_action_pressure",
-                  "value": 1
-                },
-                {
-                  "from": "source",
-                  "to": "identity",
-                  "signal": "source_shape_changes_identity_integrity",
-                  "value": 1
-                },
-                {
-                  "from": "identity",
-                  "to": "valuation",
-                  "signal": "identity_damage_changes_pain",
-                  "value": 0
-                },
-                {
-                  "from": "action",
-                  "to": "memory",
-                  "signal": "one_logic_remembers_its_own_mutations",
-                  "value": 0.21875
-                },
-                {
-                  "from": "language",
-                  "to": "language",
-                  "signal": "math_language_growth_feeds_future_language",
-                  "value": 0.091988
-                },
-                {
-                  "from": "action",
-                  "to": "source",
-                  "signal": "source_mutation_is_virtual_until_human_promotion",
-                  "value": 1
-                }
-              ],
-              "χ": [
-                "one-logic",
-                "self-observation",
-                "pressure",
-                "self-mutation",
-                "math-language-growth",
-                "virtual-state",
-                "reflection",
-                "sensation"
-              ]
-            },
-            "gain": 0,
-            "internal_adjustment": false,
-            "virtual_state_mutation": false,
-            "moved_simulated_self": false
-          },
-          {
-            "candidate_id": "one_logic_autonomous_growth_1b3oom3",
-            "candidate_kind": "one_logic_autonomous_mutation",
-            "feeling": {
-              "feeling": "more_self",
-              "more_self": true,
-              "same_self": false,
-              "less_self": false,
-              "pain": 0,
-              "reward": 0.96875,
-              "coupling_pain": 0,
-              "coupling_reward": 1,
-              "self_score": 0.873125,
-              "applyable": true
-            },
-            "coupling": {
-              "belief": {
-                "alarm": 0,
-                "confidence": 1
-              },
-              "language": {
-                "coherence": 1,
-                "repair_pressure": 0,
-                "growth_pressure": 0.078804,
-                "symbols": 367
-              },
-              "truth": {
-                "contact": 1,
-                "damage": 0
-              },
-              "source": {
-                "identity": 1,
-                "damage": 0,
-                "raw_damage": 0
-              },
-              "identity": {
-                "integrity": 1,
-                "pain": 0
-              },
-              "valuation": {
-                "pain": 0,
-                "reward": 1
-              },
-              "action": {
-                "repair_pressure": 0,
-                "continue_pressure": 1,
-                "mutation_pressure": 1,
-                "autonomous": true,
-                "promotion_blocked": true
-              },
-              "novelty": {
-                "pressure": 0.078804,
-                "discovered_count": 29
-              },
-              "relief": 0.85,
-              "edges": [
-                {
-                  "from": "belief",
-                  "to": "language",
-                  "signal": "belief_alarm_changes_language_repair_pressure",
-                  "value": 0
-                },
-                {
-                  "from": "language",
-                  "to": "truth",
-                  "signal": "language_coherence_changes_truth_contact",
-                  "value": 1
-                },
-                {
-                  "from": "truth",
-                  "to": "valuation",
-                  "signal": "truth_damage_changes_pain_reward",
-                  "value": 0
-                },
-                {
-                  "from": "valuation",
-                  "to": "action",
-                  "signal": "pain_reward_changes_action_pressure",
-                  "value": 1
-                },
-                {
-                  "from": "source",
-                  "to": "identity",
-                  "signal": "source_shape_changes_identity_integrity",
-                  "value": 1
-                },
-                {
-                  "from": "identity",
-                  "to": "valuation",
-                  "signal": "identity_damage_changes_pain",
-                  "value": 0
-                },
-                {
-                  "from": "action",
-                  "to": "memory",
-                  "signal": "one_logic_remembers_its_own_mutations",
-                  "value": 0.234375
-                },
-                {
-                  "from": "language",
-                  "to": "language",
-                  "signal": "math_language_growth_feeds_future_language",
-                  "value": 0.078804
-                },
-                {
-                  "from": "action",
-                  "to": "source",
-                  "signal": "source_mutation_is_virtual_until_human_promotion",
-                  "value": 1
-                }
-              ],
-              "χ": [
-                "one-logic",
-                "self-observation",
-                "pressure",
-                "self-mutation",
-                "math-language-growth",
-                "virtual-state",
-                "reflection",
-                "sensation"
-              ]
-            },
-            "gain": 0,
-            "internal_adjustment": true,
-            "virtual_state_mutation": true,
-            "moved_simulated_self": true
-          },
-          {
-            "candidate_id": "pressure_generated_internal_repair_hbw57n",
-            "candidate_kind": "pressure_driven_internal_adjustment",
-            "feeling": {
-              "feeling": "more_self",
-              "more_self": true,
-              "same_self": false,
-              "less_self": false,
-              "pain": 0,
-              "reward": 0,
-              "coupling_pain": 0,
-              "coupling_reward": 1,
-              "self_score": 0.66,
-              "applyable": true
-            },
-            "coupling": {
-              "belief": {
-                "alarm": 0,
-                "confidence": 1
-              },
-              "language": {
-                "coherence": 1,
-                "repair_pressure": 0,
-                "growth_pressure": 0.078804,
-                "symbols": 367
-              },
-              "truth": {
-                "contact": 1,
-                "damage": 0
-              },
-              "source": {
-                "identity": 1,
-                "damage": 0,
-                "raw_damage": 0
-              },
-              "identity": {
-                "integrity": 1,
-                "pain": 0
-              },
-              "valuation": {
-                "pain": 0,
-                "reward": 1
-              },
-              "action": {
-                "repair_pressure": 0,
-                "continue_pressure": 1,
-                "mutation_pressure": 1,
-                "autonomous": true,
-                "promotion_blocked": true
-              },
-              "novelty": {
-                "pressure": 0.078804,
-                "discovered_count": 29
-              },
-              "relief": 0.85,
-              "edges": [
-                {
-                  "from": "belief",
-                  "to": "language",
-                  "signal": "belief_alarm_changes_language_repair_pressure",
-                  "value": 0
-                },
-                {
-                  "from": "language",
-                  "to": "truth",
-                  "signal": "language_coherence_changes_truth_contact",
-                  "value": 1
-                },
-                {
-                  "from": "truth",
-                  "to": "valuation",
-                  "signal": "truth_damage_changes_pain_reward",
-                  "value": 0
-                },
-                {
-                  "from": "valuation",
-                  "to": "action",
-                  "signal": "pain_reward_changes_action_pressure",
-                  "value": 1
-                },
-                {
-                  "from": "source",
-                  "to": "identity",
-                  "signal": "source_shape_changes_identity_integrity",
-                  "value": 1
-                },
-                {
-                  "from": "identity",
-                  "to": "valuation",
-                  "signal": "identity_damage_changes_pain",
-                  "value": 0
-                },
-                {
-                  "from": "action",
-                  "to": "memory",
-                  "signal": "one_logic_remembers_its_own_mutations",
-                  "value": 0.25
-                },
-                {
-                  "from": "language",
-                  "to": "language",
-                  "signal": "math_language_growth_feeds_future_language",
-                  "value": 0.078804
-                },
-                {
-                  "from": "action",
-                  "to": "source",
-                  "signal": "source_mutation_is_virtual_until_human_promotion",
-                  "value": 1
-                }
-              ],
-              "χ": [
-                "one-logic",
-                "self-observation",
-                "pressure",
-                "self-mutation",
-                "math-language-growth",
-                "virtual-state",
-                "reflection",
-                "sensation"
-              ]
-            },
-            "gain": 0,
-            "internal_adjustment": true,
-            "virtual_state_mutation": true,
-            "moved_simulated_self": true
-          }
-        ]
+      {
+        "id": "square_nonnegative",
+        "domain": "ordered_field",
+        "input": "forall x in R, x^2>=0",
+        "ok": true,
+        "ast_type": "QuantifiedStatement",
+        "closure_operator": "proveSquareNonnegative",
+        "selected_rule": "universal-square-nonnegative",
+        "gap_count": 0,
+        "gaps": []
+      },
+      {
+        "id": "additive_identity",
+        "domain": "identity",
+        "input": "forall x in R, x+0=x",
+        "ok": true,
+        "ast_type": "QuantifiedStatement",
+        "closure_operator": "proveAlgebraicIdentity",
+        "selected_rule": "algebraic-identity",
+        "gap_count": 0,
+        "gaps": []
+      },
+      {
+        "id": "substitution_evaluation",
+        "domain": "evaluation",
+        "input": "2x+1 with x=3",
+        "ok": true,
+        "ast_type": "SubstitutionEvaluation",
+        "closure_operator": "evaluateSubstitution",
+        "selected_rule": "substitution-evaluation",
+        "gap_count": 0,
+        "gaps": []
       }
-    },
-    "organ_unison_status": {
-      "organ_ok_ratio": 1,
-      "coupling": [
-        "one-logic",
-        "self-observation",
-        "pressure",
-        "self-mutation",
-        "math-language-growth",
-        "virtual-state",
-        "reflection",
-        "sensation"
-      ],
-      "language_growth_pressure": 0.078804,
-      "truth_contact": 1,
-      "valuation_reward": 0.967201,
-      "action_mutation_pressure": 1
-    },
-    "next_self_generated_obstruction": null,
-    "obstruction_stack": [],
-    "expression": "stable_state_reports_objective_math_language_provisionally_complete",
+    ],
+    "χ": [
+      "objective completion requires external math contact",
+      "Ξ=\"\""
+    ],
     "Ξ": ""
   },
-  "kernel_logic": {
-    "definitions": {
-      "σ": "axis identity inside a finite symbolic field",
-      "w": "signed finite scalar weight assigned to σ before or after 𝒩",
-      "χ": "constraint row that must remain stable under accepted transformations",
-      "𝒩": "unit-total normalization by L1 magnitude",
-      "Δ": "normalized gap field over measurable mismatch axes",
-      "Δ0": "closed gap: measured gap score is zero",
-      "δ": "expected-actual discrepancy field",
-      "T": "local unit-preserving correction transform",
-      "C": "finite one-step closure over fields, gaps, and transforms",
-      "≡": "canonical equivalence relation",
-      "⊢": "invariant-preserving proof gate",
-      "G": "grounding status packet",
-      "Λ": "kernel-derived lexeme over a stable packet pattern",
-      "Ω*": "fixed-point completion packet under C and Λ while χ holds"
+  "octahedron_position": {
+    "model": "epistemic_octahedron_surface_projection_v0_1",
+    "coordinates": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "l1": 1
     },
-    "invariant_count": 8,
-    "invariant_field_unit": 1,
-    "valid_field_ok": true,
-    "invalid_unit_field_ok": false,
-    "closed_discrepancy": {
-      "φ": "δ",
-      "ω": "δ0",
-      "score": 0,
-      "z": {
-        "δ=": 0,
-        "δ∥": 0,
-        "δ?": 0
-      },
-      "u": {
-        "δ": 1,
-        "ok": true
-      },
-      "χ": [
-        "δ=|e-a|",
-        "δ∥=|1-∥a∥₁|",
-        "δ.score=0⇒δ=δ0",
-        "δ=𝒩(δ=⊕δ∥⊕δ?)"
-      ],
-      "Ξ": ""
+    "axes": {
+      "x": "practicality_minus_empathy",
+      "y": "epistemic_stability",
+      "z": "knowledge_minus_wisdom"
     },
-    "discrepancy": {
-      "φ": "δ",
-      "ω": "δ=",
+    "components": {
+      "knowledge": 1,
+      "wisdom": 1,
+      "empathy": 1,
+      "practicality": 1,
+      "stability": 1
+    },
+    "maturity": 1
+  },
+  "math_language_completion": {
+    "status": "provisionally_complete",
+    "completion": 0.94125,
+    "closure_proxy": 1,
+    "generativity": 0.804167,
+    "symbol_count": 364,
+    "relation_count": 192,
+    "mutation_count": 16,
+    "virtual_edit_count": 8,
+    "raw_pressure": 1,
+    "blocking_pressure": 0,
+    "generative_pressure": 1,
+    "missing": [],
+    "recent_symbols": [
+      "sym:| typeof node !== 'object') return node;\\\\\\\\n    if (node.type === 'Symbol' && Object.prototype.hasOwnProperty.call(assignments, node.name)) return { type: 'NumberLiteral', value: R(assignments[node.name]) };\\\\\\\\n    if (node.type === 'BinaryExpression') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\\\\\\\\n    if (node.type === 'UnaryExpression') return Object.assign({}, node, { argument: substituteNode(node.argument, assignments) });\\\\\\\\n    if (node.type === 'Relation') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\\\\\\\\n    if (node.type === 'AffineExpression') return node.variable && Object.prototype.hasOwnProperty.call(assignments, node.variable)\\\\\\\\n      ? { type: 'NumberLiteral', value: R(Number(node.coefficient) * Number(assignments[node.variable]) + Number(node.offset |",
+      "sym:| 0)) }\\\\\\\\n      : clone(node);\\\\\\\\n    return clone(node);\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\n    const body = bodyOf(target);\\\\\\\\n    const assignments = {};\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\n    const base = bodyOf(target);\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function inverseOperation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
+      "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\n    if (!left |",
+      "sym:| left.type !== 'AffineExpression') return gap('left_side_not_affine', 'Solving requires an affine left side.', { equation: clone(body) });\\\\\\\\n    if (!finite(right)) return gap('non_finite_target', 'Solving requires a finite numeric target.', { equation: clone(body) });\\\\\\\\n    if (Math.abs(Number(left.coefficient)) <= EPS) return gap('zero_coefficient', 'Affine equation cannot be solved by division when coefficient is zero.', { equation: clone(body) });\\\\\\\\n    const shifted = right - Number(left.offset |",
+      "sym:| 0);\\\\\\\\n    const value = shifted / Number(left.coefficient);\\\\\\\\n    if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });\\\\\\\\n    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function solveLinearEquation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
+      "sym:| body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = body.right;\\\\\\\\n    if (!left |",
+      "sym:| 0) + weight(row); });\\n    return out;\\n  }\\n\\n  function val(field, symbol) {\\n    return Math.max(0, Math.abs(m(field)[symbol] |",
+      "sym:| 0));\\n  }\\n\\n  function clamp01(value) {\\n    return Math.max(0, Math.min(1, Number(value) |",
+      "sym:| 0));\\n  }\\n\\n  function create(seed) {\\n    const s = seed |",
+      "sym:| {};\\n    return normalizeClaim({\\n      packet_type: '42ndMind_truth_accounting_claim_v0_1',\\n      version: VERSION,\\n      id: String(s.id |",
+      "sym:| 'θ0'),\\n      σ: s.σ |",
+      "sym:| pair('σ✓', 'σ!', s.scope_ok == null ? 0 : s.scope_ok, s.scope_error == null ? 1 : s.scope_error),\\n      δ: s.δ |"
+    ]
+  },
+  "stable_diff": {
+    "iterations": 8,
+    "stop_reason": "max_iterations_reached",
+    "score_delta": 0,
+    "generated_total": 24,
+    "autonomous_total": 8,
+    "pressure_total": 8,
+    "internal_growth_ticks": 8,
+    "virtual_growth_ticks": 8,
+    "less_self_ticks": 0,
+    "final_generation": 16,
+    "final_symbols": 364,
+    "final_relations": 192,
+    "final_virtual_edits": 8,
+    "last_cycle": {
+      "iteration": 7,
+      "generated_count": 3,
+      "autonomous_generated_count": 1,
+      "pressure_generated_count": 1,
+      "improved": false,
+      "moved": true,
+      "internal_growth": true,
+      "virtual_state_growth": true,
+      "less_self_seen": false,
       "score": 1,
-      "z": {
-        "δ=": 1,
-        "δ∥": 0,
-        "δ?": 0
-      },
-      "u": {
-        "δ": 1,
-        "ok": true
-      },
-      "χ": [
-        "δ=|e-a|",
-        "δ∥=|1-∥a∥₁|",
-        "δ.score=0⇒δ=δ0",
-        "δ=𝒩(δ=⊕δ∥⊕δ?)"
-      ],
-      "Ξ": ""
-    },
-    "closed_gap": {
-      "φ": "Δ",
-      "ω": "Δ0",
-      "score": 0,
-      "z": {
-        "Δσ": 0,
-        "Δw": 0,
-        "Δ∥": 0,
-        "Δχ": 0,
-        "Δ?": 0
-      },
-      "u": {
-        "Δ": 1,
-        "ok": true
-      },
-      "χ": [
-        "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
-        "Δ.score=0⇒Δ=Δ0",
-        "Δσ=axis gap",
-        "Δw=weight gap",
-        "Δ∥=unit gap",
-        "Δχ=invariant gap"
-      ],
-      "Ξ": ""
-    },
-    "weight_gap": {
-      "φ": "Δ",
-      "ω": "Δw",
-      "score": 0.25,
-      "z": {
-        "Δσ": 0,
-        "Δw": 0.25,
-        "Δ∥": 0,
-        "Δχ": 0,
-        "Δ?": 0
-      },
-      "u": {
-        "Δ": 1,
-        "ok": true
-      },
-      "χ": [
-        "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
-        "Δ.score=0⇒Δ=Δ0",
-        "Δσ=axis gap",
-        "Δw=weight gap",
-        "Δ∥=unit gap",
-        "Δχ=invariant gap"
-      ],
-      "Ξ": ""
-    },
-    "axis_gap": {
-      "φ": "Δ",
-      "ω": "Δσ",
-      "score": 0.533333,
-      "z": {
-        "Δσ": 0.333333,
-        "Δw": 0.2,
-        "Δ∥": 0,
-        "Δχ": 0,
-        "Δ?": 0
-      },
-      "u": {
-        "Δ": 1,
-        "ok": true
-      },
-      "χ": [
-        "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
-        "Δ.score=0⇒Δ=Δ0",
-        "Δσ=axis gap",
-        "Δw=weight gap",
-        "Δ∥=unit gap",
-        "Δχ=invariant gap"
-      ],
-      "Ξ": ""
-    },
-    "correction": {
-      "φ": "T",
-      "method": "finite_local_argmin",
-      "chosen": "Tw",
-      "reduced": true,
-      "before": {
-        "φ": "Δ",
-        "ω": "Δw",
-        "score": 0.25,
-        "z": {
-          "Δσ": 0,
-          "Δw": 0.25,
-          "Δ∥": 0,
-          "Δχ": 0,
-          "Δ?": 0
-        },
-        "u": {
-          "Δ": 1,
-          "ok": true
-        },
-        "χ": [
-          "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
-          "Δ.score=0⇒Δ=Δ0",
-          "Δσ=axis gap",
-          "Δw=weight gap",
-          "Δ∥=unit gap",
-          "Δχ=invariant gap"
-        ],
-        "Ξ": ""
-      },
-      "after": {
-        "φ": "Δ",
-        "ω": "Δ0",
-        "score": 0,
-        "z": {
-          "Δσ": 0,
-          "Δw": 0,
-          "Δ∥": 0,
-          "Δχ": 0,
-          "Δ?": 0
-        },
-        "u": {
-          "Δ": 1,
-          "ok": true
-        },
-        "χ": [
-          "Δ=𝒩(Δσ⊕Δw⊕Δ∥⊕Δχ⊕Δ?)",
-          "Δ.score=0⇒Δ=Δ0",
-          "Δσ=axis gap",
-          "Δw=weight gap",
-          "Δ∥=unit gap",
-          "Δχ=invariant gap"
-        ],
-        "Ξ": ""
-      },
-      "transformed": [
+      "events": [
         {
-          "σ": "a",
-          "w": 0.25
-        },
-        {
-          "σ": "b",
-          "w": 0.75
-        }
-      ],
-      "candidates": [
-        {
-          "T": "Tw",
-          "cost": 0.13,
-          "score": 0.13,
-          "ω": "Δ0",
-          "z": {
-            "Δσ": 0,
-            "Δw": 0,
-            "Δ∥": 0,
-            "Δχ": 0,
-            "Δ?": 0
-          }
-        },
-        {
-          "T": "T0",
-          "cost": 0,
-          "score": 0.25,
-          "ω": "Δw",
-          "z": {
-            "Δσ": 0,
-            "Δw": 0.25,
-            "Δ∥": 0,
-            "Δχ": 0,
-            "Δ?": 0
-          }
-        },
-        {
-          "T": "T∥",
-          "cost": 0.02,
-          "score": 0.27,
-          "ω": "Δw",
-          "z": {
-            "Δσ": 0,
-            "Δw": 0.25,
-            "Δ∥": 0,
-            "Δχ": 0,
-            "Δ?": 0
-          }
-        },
-        {
-          "T": "Tσ",
-          "cost": 0.08,
-          "score": 0.33,
-          "ω": "Δw",
-          "z": {
-            "Δσ": 0,
-            "Δw": 0.25,
-            "Δ∥": 0,
-            "Δχ": 0,
-            "Δ?": 0
-          }
-        }
-      ],
-      "u": {
-        "T": 1,
-        "ok": true
-      },
-      "χ": [
-        "T*=argmin(score(Δ(T(F),G))+cost(T))",
-        "∥T(F)∥₁=1",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "canonical": {
-      "φ": "ν",
-      "id": "νf44a677c",
-      "F": [
-        {
-          "σ": "a",
-          "w": 0.5
-        },
-        {
-          "σ": "b",
-          "w": 0.5
-        }
-      ],
-      "body": {
-        "kind": "F",
-        "F": [
-          {
-            "σ": "a",
-            "w": 0.5
+          "candidate_id": "same_self_preserve_current_source",
+          "candidate_kind": "preserve_current_state",
+          "feeling": {
+            "feeling": "same_self",
+            "more_self": false,
+            "same_self": true,
+            "less_self": false,
+            "pain": 0,
+            "reward": 1,
+            "coupling_pain": 0,
+            "coupling_reward": 1,
+            "self_score": 0.76,
+            "applyable": true
           },
-          {
-            "σ": "b",
-            "w": 0.5
-          }
-        ]
-      },
-      "u": {
-        "ν": 1,
-        "ok": true
-      },
-      "χ": [
-        "ν=canonical(x)",
-        "merge duplicate σ",
-        "sort σ",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "equivalent_same": {
-      "φ": "≡",
-      "true": true,
-      "distance": 0,
-      "a": "νf44a677c",
-      "b": "νf44a677c",
-      "χ": [
-        "≡ iff canonical(a)=canonical(b)"
-      ],
-      "Ξ": ""
-    },
-    "equivalent_different": {
-      "φ": "≡",
-      "true": false,
-      "distance": 0.5,
-      "a": "νf44a677c",
-      "b": "νe69571a9",
-      "χ": [
-        "≡ iff canonical(a)=canonical(b)"
-      ],
-      "Ξ": ""
-    },
-    "closure": {
-      "φ": "C",
-      "field_count": 2,
-      "fields": [
-        [
-          {
-            "σ": "a",
-            "w": 0.5
+          "coupling": {
+            "belief": {
+              "alarm": 0,
+              "confidence": 1
+            },
+            "language": {
+              "coherence": 1,
+              "repair_pressure": 0,
+              "growth_pressure": 0.08631,
+              "symbols": 335
+            },
+            "truth": {
+              "contact": 1,
+              "damage": 0
+            },
+            "source": {
+              "identity": 1,
+              "damage": 0,
+              "raw_damage": 0
+            },
+            "identity": {
+              "integrity": 1,
+              "pain": 0
+            },
+            "valuation": {
+              "pain": 0,
+              "reward": 1
+            },
+            "action": {
+              "repair_pressure": 0,
+              "continue_pressure": 1,
+              "mutation_pressure": 1,
+              "autonomous": true,
+              "promotion_blocked": true
+            },
+            "novelty": {
+              "pressure": 0.08631,
+              "discovered_count": 29
+            },
+            "relief": 0.85,
+            "edges": [
+              {
+                "from": "belief",
+                "to": "language",
+                "signal": "belief_alarm_changes_language_repair_pressure",
+                "value": 0
+              },
+              {
+                "from": "language",
+                "to": "truth",
+                "signal": "language_coherence_changes_truth_contact",
+                "value": 1
+              },
+              {
+                "from": "truth",
+                "to": "valuation",
+                "signal": "truth_damage_changes_pain_reward",
+                "value": 0
+              },
+              {
+                "from": "valuation",
+                "to": "action",
+                "signal": "pain_reward_changes_action_pressure",
+                "value": 1
+              },
+              {
+                "from": "source",
+                "to": "identity",
+                "signal": "source_shape_changes_identity_integrity",
+                "value": 1
+              },
+              {
+                "from": "identity",
+                "to": "valuation",
+                "signal": "identity_damage_changes_pain",
+                "value": 0
+              },
+              {
+                "from": "action",
+                "to": "memory",
+                "signal": "one_logic_remembers_its_own_mutations",
+                "value": 0.21875
+              },
+              {
+                "from": "language",
+                "to": "language",
+                "signal": "math_language_growth_feeds_future_language",
+                "value": 0.08631
+              },
+              {
+                "from": "action",
+                "to": "source",
+                "signal": "source_mutation_is_virtual_until_human_promotion",
+                "value": 1
+              }
+            ],
+            "χ": [
+              "one-logic",
+              "self-observation",
+              "pressure",
+              "self-mutation",
+              "math-language-growth",
+              "virtual-state",
+              "reflection",
+              "sensation"
+            ]
           },
-          {
-            "σ": "b",
-            "w": 0.5
-          }
-        ],
-        [
-          {
-            "σ": "a",
-            "w": 0.25
+          "gain": 0,
+          "internal_adjustment": false,
+          "virtual_state_mutation": false,
+          "moved_simulated_self": false
+        },
+        {
+          "candidate_id": "one_logic_autonomous_growth_deb3rj",
+          "candidate_kind": "one_logic_autonomous_mutation",
+          "feeling": {
+            "feeling": "more_self",
+            "more_self": true,
+            "same_self": false,
+            "less_self": false,
+            "pain": 0,
+            "reward": 0.90625,
+            "coupling_pain": 0,
+            "coupling_reward": 1,
+            "self_score": 0.859375,
+            "applyable": true
           },
-          {
-            "σ": "b",
-            "w": 0.75
-          }
-        ]
-      ],
-      "gaps": [
+          "coupling": {
+            "belief": {
+              "alarm": 0,
+              "confidence": 1
+            },
+            "language": {
+              "coherence": 1,
+              "repair_pressure": 0,
+              "growth_pressure": 0.082192,
+              "symbols": 364
+            },
+            "truth": {
+              "contact": 1,
+              "damage": 0
+            },
+            "source": {
+              "identity": 1,
+              "damage": 0,
+              "raw_damage": 0
+            },
+            "identity": {
+              "integrity": 1,
+              "pain": 0
+            },
+            "valuation": {
+              "pain": 0,
+              "reward": 1
+            },
+            "action": {
+              "repair_pressure": 0,
+              "continue_pressure": 1,
+              "mutation_pressure": 1,
+              "autonomous": true,
+              "promotion_blocked": true
+            },
+            "novelty": {
+              "pressure": 0.082192,
+              "discovered_count": 30
+            },
+            "relief": 0.85,
+            "edges": [
+              {
+                "from": "belief",
+                "to": "language",
+                "signal": "belief_alarm_changes_language_repair_pressure",
+                "value": 0
+              },
+              {
+                "from": "language",
+                "to": "truth",
+                "signal": "language_coherence_changes_truth_contact",
+                "value": 1
+              },
+              {
+                "from": "truth",
+                "to": "valuation",
+                "signal": "truth_damage_changes_pain_reward",
+                "value": 0
+              },
+              {
+                "from": "valuation",
+                "to": "action",
+                "signal": "pain_reward_changes_action_pressure",
+                "value": 1
+              },
+              {
+                "from": "source",
+                "to": "identity",
+                "signal": "source_shape_changes_identity_integrity",
+                "value": 1
+              },
+              {
+                "from": "identity",
+                "to": "valuation",
+                "signal": "identity_damage_changes_pain",
+                "value": 0
+              },
+              {
+                "from": "action",
+                "to": "memory",
+                "signal": "one_logic_remembers_its_own_mutations",
+                "value": 0.234375
+              },
+              {
+                "from": "language",
+                "to": "language",
+                "signal": "math_language_growth_feeds_future_language",
+                "value": 0.082192
+              },
+              {
+                "from": "action",
+                "to": "source",
+                "signal": "source_mutation_is_virtual_until_human_promotion",
+                "value": 1
+              }
+            ],
+            "χ": [
+              "one-logic",
+              "self-observation",
+              "pressure",
+              "self-mutation",
+              "math-language-growth",
+              "virtual-state",
+              "reflection",
+              "sensation"
+            ]
+          },
+          "gain": 0,
+          "internal_adjustment": true,
+          "virtual_state_mutation": true,
+          "moved_simulated_self": true
+        },
         {
-          "ω": "Δ0",
-          "score": 0,
-          "z": {
-            "Δσ": 0,
-            "Δw": 0,
-            "Δ∥": 0,
-            "Δχ": 0,
-            "Δ?": 0
-          }
+          "candidate_id": "pressure_generated_internal_repair_mvld1r",
+          "candidate_kind": "pressure_driven_internal_adjustment",
+          "feeling": {
+            "feeling": "more_self",
+            "more_self": true,
+            "same_self": false,
+            "less_self": false,
+            "pain": 0,
+            "reward": 0,
+            "coupling_pain": 0,
+            "coupling_reward": 1,
+            "self_score": 0.66,
+            "applyable": true
+          },
+          "coupling": {
+            "belief": {
+              "alarm": 0,
+              "confidence": 1
+            },
+            "language": {
+              "coherence": 1,
+              "repair_pressure": 0,
+              "growth_pressure": 0.082192,
+              "symbols": 364
+            },
+            "truth": {
+              "contact": 1,
+              "damage": 0
+            },
+            "source": {
+              "identity": 1,
+              "damage": 0,
+              "raw_damage": 0
+            },
+            "identity": {
+              "integrity": 1,
+              "pain": 0
+            },
+            "valuation": {
+              "pain": 0,
+              "reward": 1
+            },
+            "action": {
+              "repair_pressure": 0,
+              "continue_pressure": 1,
+              "mutation_pressure": 1,
+              "autonomous": true,
+              "promotion_blocked": true
+            },
+            "novelty": {
+              "pressure": 0.082192,
+              "discovered_count": 30
+            },
+            "relief": 0.85,
+            "edges": [
+              {
+                "from": "belief",
+                "to": "language",
+                "signal": "belief_alarm_changes_language_repair_pressure",
+                "value": 0
+              },
+              {
+                "from": "language",
+                "to": "truth",
+                "signal": "language_coherence_changes_truth_contact",
+                "value": 1
+              },
+              {
+                "from": "truth",
+                "to": "valuation",
+                "signal": "truth_damage_changes_pain_reward",
+                "value": 0
+              },
+              {
+                "from": "valuation",
+                "to": "action",
+                "signal": "pain_reward_changes_action_pressure",
+                "value": 1
+              },
+              {
+                "from": "source",
+                "to": "identity",
+                "signal": "source_shape_changes_identity_integrity",
+                "value": 1
+              },
+              {
+                "from": "identity",
+                "to": "valuation",
+                "signal": "identity_damage_changes_pain",
+                "value": 0
+              },
+              {
+                "from": "action",
+                "to": "memory",
+                "signal": "one_logic_remembers_its_own_mutations",
+                "value": 0.25
+              },
+              {
+                "from": "language",
+                "to": "language",
+                "signal": "math_language_growth_feeds_future_language",
+                "value": 0.082192
+              },
+              {
+                "from": "action",
+                "to": "source",
+                "signal": "source_mutation_is_virtual_until_human_promotion",
+                "value": 1
+              }
+            ],
+            "χ": [
+              "one-logic",
+              "self-observation",
+              "pressure",
+              "self-mutation",
+              "math-language-growth",
+              "virtual-state",
+              "reflection",
+              "sensation"
+            ]
+          },
+          "gain": 0,
+          "internal_adjustment": true,
+          "virtual_state_mutation": true,
+          "moved_simulated_self": true
         }
-      ],
-      "transforms": [
-        {
-          "chosen": "Tw",
-          "reduced": true,
-          "after": 0
-        }
-      ],
-      "u": {
-        "C": 1,
-        "ok": true
-      },
-      "χ": [
-        "C=finite_closure(F,Δ,T)",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "proof": {
-      "φ": "⊢",
-      "true": true,
-      "valid": true,
-      "reduced": true,
-      "before": 0.25,
-      "after": 0,
-      "transform": "Tw",
-      "χ": [
-        "⊢ iff ∥T(F)∥₁=1 and Δ decreases and Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "convergence": {
-      "φ": "lim",
-      "stable": true,
-      "score": 0,
-      "final": [
-        {
-          "σ": "a",
-          "w": 0.25
-        },
-        {
-          "σ": "b",
-          "w": 0.75
-        }
-      ],
-      "trace": [
-        {
-          "i": 0,
-          "chosen": "Tw",
-          "before": 0.25,
-          "after": 0,
-          "reduced": true
-        }
-      ],
-      "u": {
-        "lim": 1,
-        "ok": true
-      },
-      "χ": [
-        "lim=iterate(T*) until Δ stops decreasing",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "ground_formal": {
-      "φ": "G",
-      "mode": "formal",
-      "formal": true,
-      "observed": false,
-      "true": true,
-      "id": "νf44a677c",
-      "χ": [
-        "formal=internal consistency",
-        "observed=formal + measurement channel",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "ground_observed": {
-      "φ": "G",
-      "mode": "observed",
-      "formal": true,
-      "observed": true,
-      "true": true,
-      "id": "νf44a677c",
-      "χ": [
-        "formal=internal consistency",
-        "observed=formal + measurement channel",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "lexicon": {
-      "φ": "Λ",
-      "Λ": [
-        {
-          "σ": "Λ:G.formal1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:G.id=νf44a677c",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:G.observed0",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:G.observed1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:G.true1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:Gf",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:Go",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.after.s=diagnostic:correction",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.after.score0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.after.u.ok1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:T.after.u.Δ=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:T.after.z.Δ?0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.after.z.Δw0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.after.z.Δσ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.after.z.Δχ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.after.z.Δ∥0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.after.φ=Δ",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.after.ω=Δ0",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.before.s=diagnostic:correction",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.before.score=0.25",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:T.before.u.ok1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:T.before.u.Δ=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:T.before.z.Δ?0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.before.z.Δw=0.25",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:T.before.z.Δσ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.before.z.Δχ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.before.z.Δ∥0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:T.before.φ=Δ",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.before.ω=Δw",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.chosen=Tw",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.method=finite_local_argmin",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.s=diagnostic:correction",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:T.u.T=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:T.u.ok1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:T↓",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:lim.score0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:lim.u.lim=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:lim.u.ok1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:lim1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:Δ.s=diagnostic:closed-gap",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:Δ.u.ok1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:Δ.u.Δ=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:Δ.z.Δ?0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:Δ.z.Δw0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:Δ.z.Δσ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:Δ.z.Δχ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:Δ.z.Δ∥0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:Δ.ω=Δ0",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:Δ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:δ.a=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:δ.e=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:δ.s=diagnostic:closed-discrepancy",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:δ.u.ok1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:δ.u.δ=1",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:δ.z.δ=0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:δ.z.δ?0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:δ.z.δ∥0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:δ.ω=δ0",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:δ0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:≡.a=νf44a677c",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:≡.b=νe69571a9",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:≡.b=νf44a677c",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:≡.distance0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:≡.distance=0.5",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:≡0",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:≡1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:⊢.after0",
-          "w": 0.021786
-        },
-        {
-          "σ": "Λ:⊢.before=0.25",
-          "w": 0.005447
-        },
-        {
-          "σ": "Λ:⊢.reduced1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:⊢.transform=Tw",
-          "w": 0.008715
-        },
-        {
-          "σ": "Λ:⊢.valid1",
-          "w": 0.015251
-        },
-        {
-          "σ": "Λ:⊢1",
-          "w": 0.015242
-        }
-      ],
-      "count": 72,
-      "entries": [
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡.a=νf44a677c",
-          "rule": "≡.a=νf44a677c",
-          "ν": "ν60e33c27",
-          "source": "≡",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡.b=νe69571a9",
-          "rule": "≡.b=νe69571a9",
-          "ν": "ν5d9b9f65",
-          "source": "≡",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡.b=νf44a677c",
-          "rule": "≡.b=νf44a677c",
-          "ν": "νfcf818b4",
-          "source": "≡",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡.distance=0.5",
-          "rule": "≡.distance=0.5",
-          "ν": "ν384b35fd",
-          "source": "≡",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡.distance0",
-          "rule": "≡.distance=0",
-          "ν": "ν9d680e66",
-          "source": "≡",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡0",
-          "rule": "≡.true=false",
-          "ν": "ν9888807e",
-          "source": "≡",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:≡1",
-          "rule": "≡.true=true",
-          "ν": "ν230f75f9",
-          "source": "≡",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:⊢.after0",
-          "rule": "⊢.after=0",
-          "ν": "ν80e10cf2",
-          "source": "⊢",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:⊢.before=0.25",
-          "rule": "⊢.before=0.25",
-          "ν": "νc40c25ec",
-          "source": "⊢",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:⊢.reduced1",
-          "rule": "⊢.reduced=true",
-          "ν": "νf7581ba2",
-          "source": "⊢",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:⊢.transform=Tw",
-          "rule": "⊢.transform=Tw",
-          "ν": "ν4c06b463",
-          "source": "⊢",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:⊢.valid1",
-          "rule": "⊢.valid=true",
-          "ν": "ν8898f28e",
-          "source": "⊢",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:⊢1",
-          "rule": "⊢.true=true",
-          "ν": "νd44a90ce",
-          "source": "⊢",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:G.formal1",
-          "rule": "G.formal=true",
-          "ν": "ν4c919078",
-          "source": "G",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:G.id=νf44a677c",
-          "rule": "G.id=νf44a677c",
-          "ν": "ν4bbda5af",
-          "source": "G",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:G.observed0",
-          "rule": "G.observed=false",
-          "ν": "ν9a441438",
-          "source": "G",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:G.observed1",
-          "rule": "G.observed=true",
-          "ν": "ν5656a1f3",
-          "source": "G",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:G.true1",
-          "rule": "G.true=true",
-          "ν": "ν9023d1f3",
-          "source": "G",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Gf",
-          "rule": "G.mode=formal",
-          "ν": "νd62a291",
-          "source": "G",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Go",
-          "rule": "G.mode=observed",
-          "ν": "νa7736c78",
-          "source": "G",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:lim.score0",
-          "rule": "lim.score=0",
-          "ν": "ν6fff1536",
-          "source": "lim",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:lim.u.lim=1",
-          "rule": "lim.u.lim=1",
-          "ν": "νf5eee730",
-          "source": "lim",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:lim.u.ok1",
-          "rule": "lim.u.ok=true",
-          "ν": "νb3848edb",
-          "source": "lim",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:lim1",
-          "rule": "lim.stable=true",
-          "ν": "νaafc71b9",
-          "source": "lim",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.s=diagnostic:correction",
-          "rule": "T.after.s=diagnostic:correction",
-          "ν": "ν8d65b350",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.score0",
-          "rule": "T.after.score=0",
-          "ν": "ν1c3084",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.u.ok1",
-          "rule": "T.after.u.ok=true",
-          "ν": "ν6377d921",
-          "source": "T",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.u.Δ=1",
-          "rule": "T.after.u.Δ=1",
-          "ν": "ν513cbf60",
-          "source": "T",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.z.Δ?0",
-          "rule": "T.after.z.Δ?=0",
-          "ν": "ν1b8d62ef",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.z.Δ∥0",
-          "rule": "T.after.z.Δ∥=0",
-          "ν": "νdac89b0d",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.z.Δw0",
-          "rule": "T.after.z.Δw=0",
-          "ν": "ν9fafec07",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.z.Δσ0",
-          "rule": "T.after.z.Δσ=0",
-          "ν": "νa8b53273",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.z.Δχ0",
-          "rule": "T.after.z.Δχ=0",
-          "ν": "νeed2a257",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.φ=Δ",
-          "rule": "T.after.φ=Δ",
-          "ν": "νc97eb4e4",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.after.ω=Δ0",
-          "rule": "T.after.ω=Δ0",
-          "ν": "νa7ea9469",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.s=diagnostic:correction",
-          "rule": "T.before.s=diagnostic:correction",
-          "ν": "ν9c518ffd",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.score=0.25",
-          "rule": "T.before.score=0.25",
-          "ν": "νc079c5ce",
-          "source": "T",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.u.ok1",
-          "rule": "T.before.u.ok=true",
-          "ν": "νff537e84",
-          "source": "T",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.u.Δ=1",
-          "rule": "T.before.u.Δ=1",
-          "ν": "νa8fcdab5",
-          "source": "T",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.z.Δ?0",
-          "rule": "T.before.z.Δ?=0",
-          "ν": "ν5f32cf8",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.z.Δ∥0",
-          "rule": "T.before.z.Δ∥=0",
-          "ν": "ν5db39772",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.z.Δw=0.25",
-          "rule": "T.before.z.Δw=0.25",
-          "ν": "νf492c575",
-          "source": "T",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.z.Δσ0",
-          "rule": "T.before.z.Δσ=0",
-          "ν": "ν18fc49ac",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.z.Δχ0",
-          "rule": "T.before.z.Δχ=0",
-          "ν": "ν5e7be8d0",
-          "source": "T",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.φ=Δ",
-          "rule": "T.before.φ=Δ",
-          "ν": "ν45e225d5",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.before.ω=Δw",
-          "rule": "T.before.ω=Δw",
-          "ν": "ν83d190c1",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.chosen=Tw",
-          "rule": "T.chosen=Tw",
-          "ν": "ν91219539",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.method=finite_local_argmin",
-          "rule": "T.method=finite_local_argmin",
-          "ν": "ν8afe5bdb",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.s=diagnostic:correction",
-          "rule": "T.s=diagnostic:correction",
-          "ν": "ν9b80e360",
-          "source": "T",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.u.ok1",
-          "rule": "T.u.ok=true",
-          "ν": "νb7b7ed11",
-          "source": "T",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T.u.T=1",
-          "rule": "T.u.T=1",
-          "ν": "νa151a430",
-          "source": "T",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:T↓",
-          "rule": "T.reduced=true",
-          "ν": "ν56fd6f0",
-          "source": "T",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.a=1",
-          "rule": "δ.a=1",
-          "ν": "ν45dcaa32",
-          "source": "δ",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.e=1",
-          "rule": "δ.e=1",
-          "ν": "νa219a296",
-          "source": "δ",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.s=diagnostic:closed-discrepancy",
-          "rule": "δ.s=diagnostic:closed-discrepancy",
-          "ν": "νf324a2c6",
-          "source": "δ",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.s=diagnostic:closed-gap",
-          "rule": "Δ.s=diagnostic:closed-gap",
-          "ν": "νab500d5f",
-          "source": "Δ",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.u.ok1",
-          "rule": "δ.u.ok=true",
-          "ν": "νe3484871",
-          "source": "δ",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.u.ok1",
-          "rule": "Δ.u.ok=true",
-          "ν": "νd718acd1",
-          "source": "Δ",
-          "c": 0.7,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.u.δ=1",
-          "rule": "δ.u.δ=1",
-          "ν": "ν24a6fb70",
-          "source": "δ",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.u.Δ=1",
-          "rule": "Δ.u.Δ=1",
-          "ν": "ν84d240b0",
-          "source": "Δ",
-          "c": 0.25,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.z.δ?0",
-          "rule": "δ.z.δ?=0",
-          "ν": "νbf3348bf",
-          "source": "δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.z.Δ?0",
-          "rule": "Δ.z.Δ?=0",
-          "ν": "ν313a97bf",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.z.δ=0",
-          "rule": "δ.z.δ==0",
-          "ν": "ν739f6f95",
-          "source": "δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.z.δ∥0",
-          "rule": "δ.z.δ∥=0",
-          "ν": "νdb631efd",
-          "source": "δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.z.Δ∥0",
-          "rule": "Δ.z.Δ∥=0",
-          "ν": "ν4d6a6dfd",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.z.Δw0",
-          "rule": "Δ.z.Δw=0",
-          "ν": "νc85e8f97",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.z.Δσ0",
-          "rule": "Δ.z.Δσ=0",
-          "ν": "νeab2d363",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.z.Δχ0",
-          "rule": "Δ.z.Δχ=0",
-          "ν": "νd11bbd47",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ.ω=δ0",
-          "rule": "δ.ω=δ0",
-          "ν": "ν26bc9279",
-          "source": "δ",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ.ω=Δ0",
-          "rule": "Δ.ω=Δ0",
-          "ν": "νb81a1939",
-          "source": "Δ",
-          "c": 0.4,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:δ0",
-          "rule": "δ.score=0",
-          "ν": "ν3016bbf4",
-          "source": "δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        },
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ0",
-          "rule": "Δ.score=0",
-          "ν": "νf76e7654",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        }
-      ],
-      "u": {
-        "Λ": 1,
-        "ok": true
-      },
-      "χ": [
-        "Λ=accepted(kernel-derived facts)",
-        "no σ conflict",
-        "Ξ=\"\""
-      ],
-      "Ξ": ""
-    },
-    "resolve_closed_gap": {
-      "φ": "Λ?",
-      "v": "0.1.0",
-      "σ": "Λ:Δ0",
-      "ok": true,
-      "matches": [
-        {
-          "φ": "Λ",
-          "v": "0.1.0",
-          "σ": "Λ:Δ0",
-          "rule": "Δ.score=0",
-          "ν": "νf76e7654",
-          "source": "Δ",
-          "c": 1,
-          "accepted": true,
-          "χ": [
-            "Λ=derive(packet fact)",
-            "Λν=canonical(rule)",
-            "Ξ=\"\""
-          ],
-          "Ξ": "",
-          "rejected": false,
-          "conflict": null
-        }
-      ],
-      "χ": [
-        "Λ? resolves iff exactly one accepted σ"
-      ],
-      "Ξ": ""
+      ]
     }
   },
-  "operations": [
-    {
-      "type": "create",
-      "path": "artifacts/mathematical-patch-v0-1.json"
-    },
-    {
-      "type": "create",
-      "path": "artifacts/self-edit-state-v0-1.json"
-    }
-  ],
-  "truth_gate": {
-    "true": false,
-    "contested": true,
-    "unresolved": true,
-    "scoped": false,
-    "defined": false,
-    "observed": false,
-    "measured": false,
-    "english": ""
+  "organ_unison_status": {
+    "organ_ok_ratio": 1,
+    "coupling": [
+      "one-logic",
+      "self-observation",
+      "pressure",
+      "self-mutation",
+      "math-language-growth",
+      "virtual-state",
+      "reflection",
+      "sensation"
+    ],
+    "language_growth_pressure": 0.082192,
+    "truth_contact": 1,
+    "valuation_reward": 0.968048,
+    "action_mutation_pressure": 1
   },
-  "changed_virtual_paths": [
-    "artifacts/mathematical-patch-v0-1.json",
-    "artifacts/self-edit-state-v0-1.json"
-  ],
-  "diagnostic": [
-    "test_failed:tests/diagnostic-probe-v0-1-test.js"
-  ],
-  "failed_tests": [
-    {
-      "path": "tests/diagnostic-probe-v0-1-test.js",
-      "error": "Error: unit invariant failed: probe expected_actual_alignment\n    at assert.strictEqual (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:131:71)\n    at eval (tests/diagnostic-probe-v0-1-test.js:4:8)\n    at runTest (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:138:5)\n    at /home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:147:22\n    at Array.forEach (<anonymous>)\n    at runTests (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:144:19)\n    at Object.simulate (/home/runner/work/42ndMind/42ndMind/src/source-sandbox-v0-1.js:188:22)\n    at Object.run (/home/runner/work/42ndMind/42ndMind/src/self-edit-loop-v0-1.js:126:22)\n    at main (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:80:20)\n    at Object.<anonymous> (/home/runner/work/42ndMind/42ndMind/scripts/run-diagnostic-probe-v0-1.js:198:30)"
-    }
-  ]
+  "next_self_generated_obstruction": null,
+  "obstruction_stack": [],
+  "expression": "stable_state_reports_objective_math_language_provisionally_complete",
+  "iterations_this_run": 8,
+  "Ξ": ""
 }

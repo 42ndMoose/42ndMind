@@ -32,7 +32,7 @@
     "completion": 0.94125,
     "closure_proxy": 1,
     "generativity": 0.804167,
-    "symbol_count": 367,
+    "symbol_count": 364,
     "relation_count": 192,
     "mutation_count": 16,
     "virtual_edit_count": 8,
@@ -41,18 +41,18 @@
     "generative_pressure": 1,
     "missing": [],
     "recent_symbols": [
+      "sym:| typeof node !== 'object') return node;\\\\\\\\n    if (node.type === 'Symbol' && Object.prototype.hasOwnProperty.call(assignments, node.name)) return { type: 'NumberLiteral', value: R(assignments[node.name]) };\\\\\\\\n    if (node.type === 'BinaryExpression') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\\\\\\\\n    if (node.type === 'UnaryExpression') return Object.assign({}, node, { argument: substituteNode(node.argument, assignments) });\\\\\\\\n    if (node.type === 'Relation') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\\\\\\\\n    if (node.type === 'AffineExpression') return node.variable && Object.prototype.hasOwnProperty.call(assignments, node.variable)\\\\\\\\n      ? { type: 'NumberLiteral', value: R(Number(node.coefficient) * Number(assignments[node.variable]) + Number(node.offset |",
       "sym:| 0)) }\\\\\\\\n      : clone(node);\\\\\\\\n    return clone(node);\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\n    const body = bodyOf(target);\\\\\\\\n    const assignments = {};\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\n    const base = bodyOf(target);\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function inverseOperation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
       "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\n    if (!left |",
       "sym:| left.type !== 'AffineExpression') return gap('left_side_not_affine', 'Solving requires an affine left side.', { equation: clone(body) });\\\\\\\\n    if (!finite(right)) return gap('non_finite_target', 'Solving requires a finite numeric target.', { equation: clone(body) });\\\\\\\\n    if (Math.abs(Number(left.coefficient)) <= EPS) return gap('zero_coefficient', 'Affine equation cannot be solved by division when coefficient is zero.', { equation: clone(body) });\\\\\\\\n    const shifted = right - Number(left.offset |",
       "sym:| 0);\\\\\\\\n    const value = shifted / Number(left.coefficient);\\\\\\\\n    if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });\\\\\\\\n    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function solveLinearEquation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
       "sym:| body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = body.right;\\\\\\\\n    if (!left |",
-      "sym:| 0) },\\n      { σ: errorSymbol, w: Math.max(0, Number(errorValue) |",
-      "sym:| 0) }\\n    ], errorSymbol);\\n  }\\n\\n  function l1(field) {\\n    return R(A(field).reduce((sum, row) => sum + Math.abs(weight(row)), 0));\\n  }\\n\\n  function m(field) {\\n    const out = {};\\n    A(field).forEach(row => { out[axis(row)] = (out[axis(row)] |",
       "sym:| 0) + weight(row); });\\n    return out;\\n  }\\n\\n  function val(field, symbol) {\\n    return Math.max(0, Math.abs(m(field)[symbol] |",
       "sym:| 0));\\n  }\\n\\n  function clamp01(value) {\\n    return Math.max(0, Math.min(1, Number(value) |",
       "sym:| 0));\\n  }\\n\\n  function create(seed) {\\n    const s = seed |",
-      "sym:reality",
-      "sym:feedback"
+      "sym:| {};\\n    return normalizeClaim({\\n      packet_type: '42ndMind_truth_accounting_claim_v0_1',\\n      version: VERSION,\\n      id: String(s.id |",
+      "sym:| 'θ0'),\\n      σ: s.σ |",
+      "sym:| pair('σ✓', 'σ!', s.scope_ok == null ? 0 : s.scope_ok, s.scope_error == null ? 1 : s.scope_error),\\n      δ: s.δ |"
     ]
   },
   "stable_diff": {
@@ -66,7 +66,7 @@
     "virtual_growth_ticks": 8,
     "less_self_ticks": 0,
     "final_generation": 16,
-    "final_symbols": 367,
+    "final_symbols": 364,
     "final_relations": 192,
     "final_virtual_edits": 8,
     "last_cycle": {
@@ -104,8 +104,8 @@
             "language": {
               "coherence": 1,
               "repair_pressure": 0,
-              "growth_pressure": 0.091988,
-              "symbols": 336
+              "growth_pressure": 0.08631,
+              "symbols": 335
             },
             "truth": {
               "contact": 1,
@@ -132,8 +132,8 @@
               "promotion_blocked": true
             },
             "novelty": {
-              "pressure": 0.091988,
-              "discovered_count": 31
+              "pressure": 0.08631,
+              "discovered_count": 29
             },
             "relief": 0.85,
             "edges": [
@@ -183,7 +183,7 @@
                 "from": "language",
                 "to": "language",
                 "signal": "math_language_growth_feeds_future_language",
-                "value": 0.091988
+                "value": 0.08631
               },
               {
                 "from": "action",
@@ -209,7 +209,7 @@
           "moved_simulated_self": false
         },
         {
-          "candidate_id": "one_logic_autonomous_growth_1b3oom3",
+          "candidate_id": "one_logic_autonomous_growth_deb3rj",
           "candidate_kind": "one_logic_autonomous_mutation",
           "feeling": {
             "feeling": "more_self",
@@ -217,10 +217,10 @@
             "same_self": false,
             "less_self": false,
             "pain": 0,
-            "reward": 0.96875,
+            "reward": 0.90625,
             "coupling_pain": 0,
             "coupling_reward": 1,
-            "self_score": 0.873125,
+            "self_score": 0.859375,
             "applyable": true
           },
           "coupling": {
@@ -231,8 +231,8 @@
             "language": {
               "coherence": 1,
               "repair_pressure": 0,
-              "growth_pressure": 0.078804,
-              "symbols": 367
+              "growth_pressure": 0.082192,
+              "symbols": 364
             },
             "truth": {
               "contact": 1,
@@ -259,8 +259,8 @@
               "promotion_blocked": true
             },
             "novelty": {
-              "pressure": 0.078804,
-              "discovered_count": 29
+              "pressure": 0.082192,
+              "discovered_count": 30
             },
             "relief": 0.85,
             "edges": [
@@ -310,7 +310,7 @@
                 "from": "language",
                 "to": "language",
                 "signal": "math_language_growth_feeds_future_language",
-                "value": 0.078804
+                "value": 0.082192
               },
               {
                 "from": "action",
@@ -336,7 +336,7 @@
           "moved_simulated_self": true
         },
         {
-          "candidate_id": "pressure_generated_internal_repair_hbw57n",
+          "candidate_id": "pressure_generated_internal_repair_mvld1r",
           "candidate_kind": "pressure_driven_internal_adjustment",
           "feeling": {
             "feeling": "more_self",
@@ -358,8 +358,8 @@
             "language": {
               "coherence": 1,
               "repair_pressure": 0,
-              "growth_pressure": 0.078804,
-              "symbols": 367
+              "growth_pressure": 0.082192,
+              "symbols": 364
             },
             "truth": {
               "contact": 1,
@@ -386,8 +386,8 @@
               "promotion_blocked": true
             },
             "novelty": {
-              "pressure": 0.078804,
-              "discovered_count": 29
+              "pressure": 0.082192,
+              "discovered_count": 30
             },
             "relief": 0.85,
             "edges": [
@@ -437,7 +437,7 @@
                 "from": "language",
                 "to": "language",
                 "signal": "math_language_growth_feeds_future_language",
-                "value": 0.078804
+                "value": 0.082192
               },
               {
                 "from": "action",
@@ -477,9 +477,9 @@
       "reflection",
       "sensation"
     ],
-    "language_growth_pressure": 0.078804,
+    "language_growth_pressure": 0.082192,
     "truth_contact": 1,
-    "valuation_reward": 0.967201,
+    "valuation_reward": 0.968048,
     "action_mutation_pressure": 1
   },
   "next_self_generated_obstruction": null,
