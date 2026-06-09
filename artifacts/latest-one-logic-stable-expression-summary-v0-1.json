@@ -1,0 +1,503 @@
+{
+  "packet_type": "42ndMind_latest_one_logic_stable_expression_summary_v0_1",
+  "scope": "stable_math_language_reflection",
+  "generation": 16,
+  "t": 24,
+  "stable_score": 1,
+  "pressure": 1,
+  "octahedron_position": {
+    "model": "epistemic_octahedron_surface_projection_v0_1",
+    "coordinates": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "l1": 1
+    },
+    "axes": {
+      "x": "practicality_minus_empathy",
+      "y": "epistemic_stability",
+      "z": "knowledge_minus_wisdom"
+    },
+    "components": {
+      "knowledge": 1,
+      "wisdom": 1,
+      "empathy": 1,
+      "practicality": 1,
+      "stability": 1
+    },
+    "maturity": 1
+  },
+  "math_language_completion": {
+    "status": "incomplete",
+    "completion": 0.76125,
+    "closure_proxy": 1,
+    "generativity": 0.704167,
+    "symbol_count": 367,
+    "relation_count": 192,
+    "mutation_count": 16,
+    "virtual_edit_count": 8,
+    "missing": [
+      "residual_pressure_present"
+    ],
+    "recent_symbols": [
+      "sym:| 0)) }\\\\\\\\n      : clone(node);\\\\\\\\n    return clone(node);\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\n    const body = bodyOf(target);\\\\\\\\n    const assignments = {};\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\n    const base = bodyOf(target);\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function inverseOperation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
+      "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\n    if (!left |",
+      "sym:| left.type !== 'AffineExpression') return gap('left_side_not_affine', 'Solving requires an affine left side.', { equation: clone(body) });\\\\\\\\n    if (!finite(right)) return gap('non_finite_target', 'Solving requires a finite numeric target.', { equation: clone(body) });\\\\\\\\n    if (Math.abs(Number(left.coefficient)) <= EPS) return gap('zero_coefficient', 'Affine equation cannot be solved by division when coefficient is zero.', { equation: clone(body) });\\\\\\\\n    const shifted = right - Number(left.offset |",
+      "sym:| 0);\\\\\\\\n    const value = shifted / Number(left.coefficient);\\\\\\\\n    if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });\\\\\\\\n    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function solveLinearEquation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
+      "sym:| body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = body.right;\\\\\\\\n    if (!left |",
+      "sym:| 0) },\\n      { σ: errorSymbol, w: Math.max(0, Number(errorValue) |",
+      "sym:| 0) }\\n    ], errorSymbol);\\n  }\\n\\n  function l1(field) {\\n    return R(A(field).reduce((sum, row) => sum + Math.abs(weight(row)), 0));\\n  }\\n\\n  function m(field) {\\n    const out = {};\\n    A(field).forEach(row => { out[axis(row)] = (out[axis(row)] |",
+      "sym:| 0) + weight(row); });\\n    return out;\\n  }\\n\\n  function val(field, symbol) {\\n    return Math.max(0, Math.abs(m(field)[symbol] |",
+      "sym:| 0));\\n  }\\n\\n  function clamp01(value) {\\n    return Math.max(0, Math.min(1, Number(value) |",
+      "sym:| 0));\\n  }\\n\\n  function create(seed) {\\n    const s = seed |",
+      "sym:reality",
+      "sym:feedback"
+    ]
+  },
+  "stable_diff": {
+    "iterations": 8,
+    "stop_reason": "max_iterations_reached",
+    "score_delta": 0,
+    "generated_total": 24,
+    "autonomous_total": 8,
+    "pressure_total": 8,
+    "internal_growth_ticks": 8,
+    "virtual_growth_ticks": 8,
+    "less_self_ticks": 0,
+    "final_generation": 16,
+    "final_symbols": 367,
+    "final_relations": 192,
+    "final_virtual_edits": 8,
+    "last_cycle": {
+      "iteration": 7,
+      "generated_count": 3,
+      "autonomous_generated_count": 1,
+      "pressure_generated_count": 1,
+      "improved": false,
+      "moved": true,
+      "internal_growth": true,
+      "virtual_state_growth": true,
+      "less_self_seen": false,
+      "score": 1,
+      "events": [
+        {
+          "candidate_id": "same_self_preserve_current_source",
+          "candidate_kind": "preserve_current_state",
+          "feeling": {
+            "feeling": "same_self",
+            "more_self": false,
+            "same_self": true,
+            "less_self": false,
+            "pain": 0,
+            "reward": 1,
+            "coupling_pain": 0,
+            "coupling_reward": 1,
+            "self_score": 0.76,
+            "applyable": true
+          },
+          "coupling": {
+            "belief": {
+              "alarm": 0,
+              "confidence": 1
+            },
+            "language": {
+              "coherence": 1,
+              "repair_pressure": 0,
+              "growth_pressure": 0.091988,
+              "symbols": 336
+            },
+            "truth": {
+              "contact": 1,
+              "damage": 0
+            },
+            "source": {
+              "identity": 1,
+              "damage": 0,
+              "raw_damage": 0
+            },
+            "identity": {
+              "integrity": 1,
+              "pain": 0
+            },
+            "valuation": {
+              "pain": 0,
+              "reward": 1
+            },
+            "action": {
+              "repair_pressure": 0,
+              "continue_pressure": 1,
+              "mutation_pressure": 1,
+              "autonomous": true,
+              "promotion_blocked": true
+            },
+            "novelty": {
+              "pressure": 0.091988,
+              "discovered_count": 31
+            },
+            "relief": 0.85,
+            "edges": [
+              {
+                "from": "belief",
+                "to": "language",
+                "signal": "belief_alarm_changes_language_repair_pressure",
+                "value": 0
+              },
+              {
+                "from": "language",
+                "to": "truth",
+                "signal": "language_coherence_changes_truth_contact",
+                "value": 1
+              },
+              {
+                "from": "truth",
+                "to": "valuation",
+                "signal": "truth_damage_changes_pain_reward",
+                "value": 0
+              },
+              {
+                "from": "valuation",
+                "to": "action",
+                "signal": "pain_reward_changes_action_pressure",
+                "value": 1
+              },
+              {
+                "from": "source",
+                "to": "identity",
+                "signal": "source_shape_changes_identity_integrity",
+                "value": 1
+              },
+              {
+                "from": "identity",
+                "to": "valuation",
+                "signal": "identity_damage_changes_pain",
+                "value": 0
+              },
+              {
+                "from": "action",
+                "to": "memory",
+                "signal": "one_logic_remembers_its_own_mutations",
+                "value": 0.21875
+              },
+              {
+                "from": "language",
+                "to": "language",
+                "signal": "math_language_growth_feeds_future_language",
+                "value": 0.091988
+              },
+              {
+                "from": "action",
+                "to": "source",
+                "signal": "source_mutation_is_virtual_until_human_promotion",
+                "value": 1
+              }
+            ],
+            "χ": [
+              "one-logic",
+              "self-observation",
+              "pressure",
+              "self-mutation",
+              "math-language-growth",
+              "virtual-state",
+              "reflection",
+              "sensation"
+            ]
+          },
+          "gain": 0,
+          "internal_adjustment": false,
+          "virtual_state_mutation": false,
+          "moved_simulated_self": false
+        },
+        {
+          "candidate_id": "one_logic_autonomous_growth_1b3oom3",
+          "candidate_kind": "one_logic_autonomous_mutation",
+          "feeling": {
+            "feeling": "more_self",
+            "more_self": true,
+            "same_self": false,
+            "less_self": false,
+            "pain": 0,
+            "reward": 0.96875,
+            "coupling_pain": 0,
+            "coupling_reward": 1,
+            "self_score": 0.873125,
+            "applyable": true
+          },
+          "coupling": {
+            "belief": {
+              "alarm": 0,
+              "confidence": 1
+            },
+            "language": {
+              "coherence": 1,
+              "repair_pressure": 0,
+              "growth_pressure": 0.078804,
+              "symbols": 367
+            },
+            "truth": {
+              "contact": 1,
+              "damage": 0
+            },
+            "source": {
+              "identity": 1,
+              "damage": 0,
+              "raw_damage": 0
+            },
+            "identity": {
+              "integrity": 1,
+              "pain": 0
+            },
+            "valuation": {
+              "pain": 0,
+              "reward": 1
+            },
+            "action": {
+              "repair_pressure": 0,
+              "continue_pressure": 1,
+              "mutation_pressure": 1,
+              "autonomous": true,
+              "promotion_blocked": true
+            },
+            "novelty": {
+              "pressure": 0.078804,
+              "discovered_count": 29
+            },
+            "relief": 0.85,
+            "edges": [
+              {
+                "from": "belief",
+                "to": "language",
+                "signal": "belief_alarm_changes_language_repair_pressure",
+                "value": 0
+              },
+              {
+                "from": "language",
+                "to": "truth",
+                "signal": "language_coherence_changes_truth_contact",
+                "value": 1
+              },
+              {
+                "from": "truth",
+                "to": "valuation",
+                "signal": "truth_damage_changes_pain_reward",
+                "value": 0
+              },
+              {
+                "from": "valuation",
+                "to": "action",
+                "signal": "pain_reward_changes_action_pressure",
+                "value": 1
+              },
+              {
+                "from": "source",
+                "to": "identity",
+                "signal": "source_shape_changes_identity_integrity",
+                "value": 1
+              },
+              {
+                "from": "identity",
+                "to": "valuation",
+                "signal": "identity_damage_changes_pain",
+                "value": 0
+              },
+              {
+                "from": "action",
+                "to": "memory",
+                "signal": "one_logic_remembers_its_own_mutations",
+                "value": 0.234375
+              },
+              {
+                "from": "language",
+                "to": "language",
+                "signal": "math_language_growth_feeds_future_language",
+                "value": 0.078804
+              },
+              {
+                "from": "action",
+                "to": "source",
+                "signal": "source_mutation_is_virtual_until_human_promotion",
+                "value": 1
+              }
+            ],
+            "χ": [
+              "one-logic",
+              "self-observation",
+              "pressure",
+              "self-mutation",
+              "math-language-growth",
+              "virtual-state",
+              "reflection",
+              "sensation"
+            ]
+          },
+          "gain": 0,
+          "internal_adjustment": true,
+          "virtual_state_mutation": true,
+          "moved_simulated_self": true
+        },
+        {
+          "candidate_id": "pressure_generated_internal_repair_hbw57n",
+          "candidate_kind": "pressure_driven_internal_adjustment",
+          "feeling": {
+            "feeling": "more_self",
+            "more_self": true,
+            "same_self": false,
+            "less_self": false,
+            "pain": 0,
+            "reward": 0,
+            "coupling_pain": 0,
+            "coupling_reward": 1,
+            "self_score": 0.66,
+            "applyable": true
+          },
+          "coupling": {
+            "belief": {
+              "alarm": 0,
+              "confidence": 1
+            },
+            "language": {
+              "coherence": 1,
+              "repair_pressure": 0,
+              "growth_pressure": 0.078804,
+              "symbols": 367
+            },
+            "truth": {
+              "contact": 1,
+              "damage": 0
+            },
+            "source": {
+              "identity": 1,
+              "damage": 0,
+              "raw_damage": 0
+            },
+            "identity": {
+              "integrity": 1,
+              "pain": 0
+            },
+            "valuation": {
+              "pain": 0,
+              "reward": 1
+            },
+            "action": {
+              "repair_pressure": 0,
+              "continue_pressure": 1,
+              "mutation_pressure": 1,
+              "autonomous": true,
+              "promotion_blocked": true
+            },
+            "novelty": {
+              "pressure": 0.078804,
+              "discovered_count": 29
+            },
+            "relief": 0.85,
+            "edges": [
+              {
+                "from": "belief",
+                "to": "language",
+                "signal": "belief_alarm_changes_language_repair_pressure",
+                "value": 0
+              },
+              {
+                "from": "language",
+                "to": "truth",
+                "signal": "language_coherence_changes_truth_contact",
+                "value": 1
+              },
+              {
+                "from": "truth",
+                "to": "valuation",
+                "signal": "truth_damage_changes_pain_reward",
+                "value": 0
+              },
+              {
+                "from": "valuation",
+                "to": "action",
+                "signal": "pain_reward_changes_action_pressure",
+                "value": 1
+              },
+              {
+                "from": "source",
+                "to": "identity",
+                "signal": "source_shape_changes_identity_integrity",
+                "value": 1
+              },
+              {
+                "from": "identity",
+                "to": "valuation",
+                "signal": "identity_damage_changes_pain",
+                "value": 0
+              },
+              {
+                "from": "action",
+                "to": "memory",
+                "signal": "one_logic_remembers_its_own_mutations",
+                "value": 0.25
+              },
+              {
+                "from": "language",
+                "to": "language",
+                "signal": "math_language_growth_feeds_future_language",
+                "value": 0.078804
+              },
+              {
+                "from": "action",
+                "to": "source",
+                "signal": "source_mutation_is_virtual_until_human_promotion",
+                "value": 1
+              }
+            ],
+            "χ": [
+              "one-logic",
+              "self-observation",
+              "pressure",
+              "self-mutation",
+              "math-language-growth",
+              "virtual-state",
+              "reflection",
+              "sensation"
+            ]
+          },
+          "gain": 0,
+          "internal_adjustment": true,
+          "virtual_state_mutation": true,
+          "moved_simulated_self": true
+        }
+      ]
+    }
+  },
+  "organ_unison_status": {
+    "organ_ok_ratio": 1,
+    "coupling": [
+      "one-logic",
+      "self-observation",
+      "pressure",
+      "self-mutation",
+      "math-language-growth",
+      "virtual-state",
+      "reflection",
+      "sensation"
+    ],
+    "language_growth_pressure": 0.078804,
+    "truth_contact": 1,
+    "valuation_reward": 0.967201,
+    "action_mutation_pressure": 1
+  },
+  "next_self_generated_obstruction": {
+    "id": "residual_pressure_present",
+    "pressure": 1,
+    "source": "math_language_completion"
+  },
+  "obstruction_stack": [
+    {
+      "id": "residual_pressure_present",
+      "pressure": 1,
+      "source": "math_language_completion"
+    },
+    {
+      "id": "residual_pressure",
+      "pressure": 1,
+      "source": "whole_self"
+    }
+  ],
+  "expression": "stable_state_reports_objective_math_language_incomplete",
+  "Ξ": ""
+}
