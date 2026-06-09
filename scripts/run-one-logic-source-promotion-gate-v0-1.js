@@ -6,7 +6,9 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
-const SOURCE_PATH = path.join(ROOT, 'src/live-self-dynamics-core-v0-1.js');
+const LIVE_SOURCE_PATH = path.join(ROOT, 'src/live-self-dynamics-core-v0-1.js');
+const REALITY_SOURCE_PATH = path.join(ROOT, 'src/objective-reality-contact-gate-v0-1.js');
+const REALITY_TEST_PATH = path.join(ROOT, 'tests/objective-reality-contact-gate-v0-1-test.js');
 const STATE_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-state-v0-1.json');
 const EXPRESSION_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-v0-1.json');
 const OUT_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-source-promotion-proposal-v0-1.json');
@@ -14,6 +16,10 @@ const OUT_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-source-promotion-prop
 function readJson(filePath) {
   if (!fs.existsSync(filePath)) return null;
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function readText(filePath) {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
 }
 
 function sourceHas(source, needle) {
@@ -35,7 +41,10 @@ function stateOnlyRows(statePacket, expression) {
   ];
 }
 
-function candidateRows(source, expression) {
+function candidateRows(sources, expression) {
+  const liveSource = sources.live || '';
+  const realitySource = sources.reality || '';
+  const realityTest = sources.realityTest || '';
   const rows = [];
   const pressure = expression && expression.pressure_differentiation || null;
   if (pressure) {
@@ -43,7 +52,7 @@ function candidateRows(source, expression) {
       id: 'causal_pressure_differentiation',
       kind: 'general_rule',
       source_worthy: true,
-      already_in_source: sourceHas(source, 'function differentiatePressureByConsequence('),
+      already_in_source: sourceHas(liveSource, 'function differentiatePressureByConsequence('),
       evidence: {
         principle: pressure.principle,
         kind: pressure.kind,
@@ -55,21 +64,37 @@ function candidateRows(source, expression) {
     });
   }
 
+  if (sourceHas(realitySource, 'function divisionIdentity(') && sourceHas(realitySource, 'function sqrtSquare(') && sourceHas(realitySource, 'function strictOrder(') && sourceHas(realitySource, 'function universalIdentity(')) {
+    rows.push({
+      id: 'objective_reality_contact_structural_gate',
+      kind: 'general_gate',
+      source_worthy: true,
+      already_in_source: true,
+      evidence: {
+        structural_rules: ['numeric_relation', 'division_identity_guard', 'sqrt_square_sign_guard', 'equality_transitivity', 'strict_order', 'universal_identity'],
+        test_requires_generalized_variables: sourceHas(realityTest, 'y / y = 1') && sourceHas(realityTest, 'm < n, n < o') && sourceHas(realityTest, 'forall y in R')
+      },
+      promotion_rule: 'promote because objective language must classify truth, falsehood, condition, missing guard, and universal schema structurally rather than by exact answer key'
+    });
+  }
+
   const gate = expression && expression.objective_reality_gate || null;
   if (gate) {
     rows.push({
-      id: 'objective_language_reality_gate',
-      kind: 'general_gate',
+      id: 'objective_language_reality_gate_runtime_contact',
+      kind: 'general_gate_runtime_result',
       source_worthy: true,
-      already_in_source: sourceHas(source, 'function objectiveLanguageRealityGate('),
+      already_in_source: sourceHas(liveSource, 'function objectiveLanguageRealityGate('),
       evidence: {
         status: gate.status,
         score: gate.score,
         pass_count: gate.pass_count,
         case_count: gate.case_count,
+        verdict_classes: gate.verdict_classes || [],
+        rule_sources: gate.rule_sources || [],
         failures: gate.failures || []
       },
-      promotion_rule: 'promote because objective completion must survive external math contact, not only self-generated closure'
+      promotion_rule: 'promote because live completion must depend on adversarial reality contact, not only self-generated closure'
     });
   }
 
@@ -79,9 +104,9 @@ function candidateRows(source, expression) {
       id: 'objective_completion_status_classifier',
       kind: 'general_status_rule',
       source_worthy: true,
-      already_in_source: sourceHas(source, 'objective_completion_status'),
+      already_in_source: sourceHas(liveSource, 'objective_completion_status'),
       evidence: { objective_completion_status: objectiveStatus },
-      promotion_rule: 'promote because internal completion and externally-contacted completion must be separate statuses'
+      promotion_rule: 'promote because internal completion and adversarially-contacted completion must be separate statuses'
     });
   }
 
@@ -90,10 +115,14 @@ function candidateRows(source, expression) {
 
 function main() {
   fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
-  const source = fs.existsSync(SOURCE_PATH) ? fs.readFileSync(SOURCE_PATH, 'utf8') : '';
+  const sources = {
+    live: readText(LIVE_SOURCE_PATH),
+    reality: readText(REALITY_SOURCE_PATH),
+    realityTest: readText(REALITY_TEST_PATH)
+  };
   const statePacket = readJson(STATE_PATH);
   const expression = readJson(EXPRESSION_PATH);
-  const candidates = candidateRows(source, expression);
+  const candidates = candidateRows(sources, expression);
   const sourceReady = candidates.filter(c => c.source_worthy && !c.already_in_source);
   const alreadyPromoted = candidates.filter(c => c.source_worthy && c.already_in_source);
   const stateOnly = stateOnlyRows(statePacket, expression);
@@ -116,7 +145,8 @@ function main() {
       'promote only reusable rules or gates into source',
       'save generation, symbols, relations, pressure relief, and virtual edits as state memory',
       'do not promote scalar optimal-state values into source',
-      'require external reality contact before objective completion becomes source-trustworthy',
+      'require adversarial reality contact before objective completion becomes source-trustworthy',
+      'structural reality rules are source-worthy only when they generalize beyond exact strings',
       'all source promotion remains proposal-first, not automatic self-rewrite'
     ],
     source_ready,
@@ -133,6 +163,7 @@ function main() {
       expression: expression.expression,
       pressure: expression.pressure,
       pressure_differentiation: expression.pressure_differentiation || null,
+      objective_reality_gate: expression.objective_reality_gate || null,
       math_language_completion: expression.math_language_completion || null,
       next_self_generated_obstruction: expression.next_self_generated_obstruction || null
     } : null,
