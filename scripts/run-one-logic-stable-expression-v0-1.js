@@ -18,6 +18,8 @@ const LIVE_SOURCE_PATHS = [
   'src/operator-anatomy-v0-1.js',
   'src/proof-calculus-core-v0-1.js',
   'src/math-closure-engine-v0-1.js',
+  'src/objective-reality-contact-gate-v0-1.js',
+  'src/proof-obligation-engine-v0-1.js',
   'src/unified-self-simulation-core-v0-1.js',
   'src/autonomous-brain-growth-core-v0-1.js',
   'src/nested-brain-core-v0-1.js',
@@ -50,11 +52,16 @@ function readPriorStableState() {
   return null;
 }
 
-function continueFromState(state, options) {
+function stateContainsCurrentBody(state, files) {
+  if (!state || !state.files) return false;
+  return LIVE_SOURCE_PATHS.every(relativePath => typeof files[relativePath] === 'string' && typeof state.files[relativePath] === 'string');
+}
+
+function continueFromState(state, files, options) {
   const opts = options || {};
-  let current = state;
+  let current = stateContainsCurrentBody(state, files) ? state : Live.create(files, opts);
   const cycles = [];
-  const max = Math.max(1, Number(opts.max_iterations || 2));
+  const max = Math.max(1, Number(opts.max_iterations || 8));
   for (let i = 0; i < max; i += 1) {
     const cycle = Live.selfCycle(current, opts);
     cycles.push({ iteration: i, generated_count: cycle.generated_count, autonomous_generated_count: cycle.autonomous_generated_count, pressure_generated_count: cycle.pressure_generated_count, internal_growth: cycle.internal_growth, virtual_state_growth: cycle.virtual_state_growth, less_self_seen: cycle.less_self_seen, score: cycle.score, events: cycle.events });
@@ -83,6 +90,8 @@ function compactSummary(expression, run, startMode) {
     obstruction_stack: expression.obstruction_stack,
     expression: expression.expression,
     iterations_this_run: run.iterations,
+    live_source_path_count: LIVE_SOURCE_PATHS.length,
+    live_source_paths: LIVE_SOURCE_PATHS,
     Ξ: ''
   };
 }
@@ -92,7 +101,7 @@ function main() {
   const files = collectLiveFiles();
   const prior = readPriorStableState();
   const startMode = prior ? 'resume_saved_stable_state' : 'cold_start_from_source';
-  const run = prior ? continueFromState(prior, { max_iterations: 2 }) : Live.autonomous(files, { max_iterations: 8 });
+  const run = prior ? continueFromState(prior, files, { max_iterations: 8 }) : Live.autonomous(files, { max_iterations: 8 });
   const expression = Live.express(run, 'stable_math_language_reflection', {});
   const statePacket = {
     packet_type: '42ndMind_one_logic_reusable_stable_state_v0_1',
