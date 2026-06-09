@@ -39,14 +39,18 @@ const generalized = {
 Object.keys(generalized).forEach(input => {
   const actual = Gate.evaluate(input);
   assert.strictEqual(actual.verdict, generalized[input], input + ' expected generalized ' + generalized[input] + ' got ' + actual.verdict);
-  assert.strictEqual(actual.rule_source, 'structural_reality_rule', input + ' should come from structural rule');
+  assert.strictEqual(actual.rule_source, 'proof_obligation_engine', input + ' should come from proof obligation engine');
+  assert.ok(Array.isArray(actual.operators), input + ' should expose operators');
+  assert.ok(Array.isArray(actual.obligations), input + ' should expose obligations');
 });
 
 const guarded = Gate.evaluate('y / y = 1 with y != 0');
 assert.deepStrictEqual(guarded.conditions, ['y != 0']);
+assert.strictEqual(guarded.obligations[0].satisfied, true);
 
 const unguarded = Gate.evaluate('z / z = 1');
 assert.deepStrictEqual(unguarded.missing_conditions, ['z != 0']);
+assert.strictEqual(unguarded.obligations[0].satisfied, false);
 
 const sqrt = Gate.evaluate('sqrt(y^2) = y');
 assert.deepStrictEqual(sqrt.conditions, ['y >= 0']);
@@ -63,6 +67,9 @@ assert.ok(report.verdict_classes.includes('conditional'));
 assert.ok(report.verdict_classes.includes('under_guarded'));
 assert.ok(report.verdict_classes.includes('rejected'));
 assert.ok(report.verdict_classes.includes('universal_verified'));
-assert.ok(report.rule_sources.includes('structural_reality_rule'));
+assert.ok(report.rule_sources.includes('proof_obligation_engine'));
+assert.ok(report.rule_sources.includes('math_kernel'));
+assert.ok(report.operator_families.includes('division_identity'));
+assert.ok(report.operator_families.includes('sqrt_square_identity'));
 
-console.log('objective-reality-contact-gate-v0-1 structural tests passed');
+console.log('objective-reality-contact-gate-v0-1 obligation-backed tests passed');
