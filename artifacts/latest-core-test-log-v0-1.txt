@@ -636,7 +636,7 @@ exit_code=0
 ## tests/truth-accounting-core-v0-1-test.js
 language-organ-core-v0-1 tests passed
 unified-self-simulation-core-v0-1 tests passed
-live-self-dynamics-core-v0-1 tests passed: continuous self-state senses without fake promotion
+live-self-dynamics-core-v0-1 tests passed: organ coupling propagates source damage into identity, valuation, and action
 autonomous-growth-smoke-v0-1 tests passed with language as live brain organ, unified self simulation, and continuous live self dynamics
 cognitive-organism-core-v0-1 tests passed with brain=1 invariant and autonomous growth smoke proof
 PASS truth accounting core loads
