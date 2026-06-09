@@ -38,88 +38,165 @@
   },
   "objective_reality_gate": {
     "packet_type": "42ndMind_objective_language_reality_gate_v0_1",
+    "version": "0.1.0",
     "ok": true,
-    "complete": true,
-    "status": "externally_contacted_minimum_core",
+    "status": "adversarial_reality_contact_passed",
+    "pass_count": 10,
+    "case_count": 10,
     "score": 1,
-    "pass_count": 6,
-    "case_count": 6,
+    "verdict_classes": [
+      "conditional",
+      "rejected",
+      "under_guarded",
+      "universal_verified",
+      "verified"
+    ],
+    "rule_sources": [
+      "math_kernel",
+      "structural_reality_rule"
+    ],
     "failures": [],
     "cases": [
       {
         "id": "arithmetic_truth",
-        "domain": "arithmetic",
-        "input": "2+2=4",
+        "expected_verdict": "verified",
         "ok": true,
-        "ast_type": "ArithmeticRelation",
-        "closure_operator": "evaluateArithmeticRelation",
-        "selected_rule": "arithmetic-relation-evaluation",
-        "gap_count": 0,
-        "gaps": []
+        "input": "2 + 2 = 4",
+        "normalized": "2+2=4",
+        "rule_source": "structural_reality_rule",
+        "verdict": "verified",
+        "reason": "numeric_relation_true",
+        "value": {
+          "left": 4,
+          "op": "=",
+          "right": 4
+        }
       },
       {
-        "id": "linear_equation",
-        "domain": "algebra",
-        "input": "2x+1=x+4",
+        "id": "linear_equation_solution",
+        "expected_verdict": "verified",
         "ok": true,
-        "ast_type": "LinearEquation",
-        "closure_operator": "solveLinearEquation",
-        "selected_rule": "linear-equation-solve",
-        "gap_count": 0,
-        "gaps": []
+        "input": "2x + 1 = x + 4",
+        "normalized": "2x+1=x+4",
+        "verdict": "verified",
+        "reason": "kernel_verified_supported_case",
+        "rule_source": "math_kernel",
+        "kernel": {
+          "available": true,
+          "verified": true,
+          "ok": true,
+          "ast_type": "LinearEquation",
+          "closure_operator": "solveLinearEquation",
+          "selected_rule": "linear-equation-solve",
+          "gap_count": 0
+        }
+      },
+      {
+        "id": "division_identity_guarded",
+        "expected_verdict": "conditional",
+        "ok": true,
+        "input": "x / x = 1 with x != 0",
+        "normalized": "x/x=1withx!=0",
+        "rule_source": "structural_reality_rule",
+        "verdict": "conditional",
+        "reason": "division_identity_requires_nonzero_denominator",
+        "conditions": [
+          "x != 0"
+        ]
+      },
+      {
+        "id": "division_identity_unguarded",
+        "expected_verdict": "under_guarded",
+        "ok": true,
+        "input": "x / x = 1",
+        "normalized": "x/x=1",
+        "rule_source": "structural_reality_rule",
+        "verdict": "under_guarded",
+        "reason": "division_identity_missing_nonzero_denominator_guard",
+        "missing_conditions": [
+          "x != 0"
+        ]
+      },
+      {
+        "id": "sqrt_square_sign_guard",
+        "expected_verdict": "conditional",
+        "ok": true,
+        "input": "sqrt(x^2) = x",
+        "normalized": "sqrt(x^2)=x",
+        "rule_source": "structural_reality_rule",
+        "verdict": "conditional",
+        "reason": "sqrt_of_square_is_absolute_value_not_unconditional_identity",
+        "conditions": [
+          "x >= 0"
+        ],
+        "corrected_form": "sqrt(x^2)=|x|"
       },
       {
         "id": "equality_transitivity",
-        "domain": "proof",
-        "input": "a=b, b=c therefore a=c",
+        "expected_verdict": "verified",
         "ok": true,
-        "ast_type": "EqualityProof",
-        "closure_operator": "proveEquality",
-        "selected_rule": "equality-transitivity",
-        "gap_count": 0,
-        "gaps": []
+        "input": "a = b, b = c therefore a = c",
+        "normalized": "a=b,b=cthereforea=c",
+        "rule_source": "structural_reality_rule",
+        "verdict": "verified",
+        "reason": "equality_transitivity_valid"
       },
       {
-        "id": "square_nonnegative",
-        "domain": "ordered_field",
-        "input": "forall x in R, x^2>=0",
+        "id": "order_transitivity",
+        "expected_verdict": "verified",
         "ok": true,
-        "ast_type": "QuantifiedStatement",
-        "closure_operator": "proveSquareNonnegative",
-        "selected_rule": "universal-square-nonnegative",
-        "gap_count": 0,
-        "gaps": []
+        "input": "a < b, b < c therefore a < c",
+        "normalized": "a<b,b<cthereforea<c",
+        "rule_source": "structural_reality_rule",
+        "verdict": "verified",
+        "reason": "strict_order_transitivity_valid"
       },
       {
-        "id": "additive_identity",
-        "domain": "identity",
-        "input": "forall x in R, x+0=x",
+        "id": "order_reversal_invalid",
+        "expected_verdict": "rejected",
         "ok": true,
-        "ast_type": "QuantifiedStatement",
-        "closure_operator": "proveAlgebraicIdentity",
-        "selected_rule": "algebraic-identity",
-        "gap_count": 0,
-        "gaps": []
+        "input": "a < b therefore b < a",
+        "normalized": "a<bthereforeb<a",
+        "rule_source": "structural_reality_rule",
+        "verdict": "rejected",
+        "reason": "strict_order_is_not_symmetric"
       },
       {
-        "id": "substitution_evaluation",
-        "domain": "evaluation",
-        "input": "2x+1 with x=3",
+        "id": "universal_additive_identity",
+        "expected_verdict": "universal_verified",
         "ok": true,
-        "ast_type": "SubstitutionEvaluation",
-        "closure_operator": "evaluateSubstitution",
-        "selected_rule": "substitution-evaluation",
-        "gap_count": 0,
-        "gaps": []
+        "input": "forall x in R, x + 0 = x",
+        "normalized": "forallxinr,x+0=x",
+        "rule_source": "structural_reality_rule",
+        "verdict": "universal_verified",
+        "reason": "additive_identity_verified_as_schema",
+        "variable": "x",
+        "schema": "forall v in R, v + 0 = v"
+      },
+      {
+        "id": "false_arithmetic",
+        "expected_verdict": "rejected",
+        "ok": true,
+        "input": "2 + 2 = 5",
+        "normalized": "2+2=5",
+        "rule_source": "structural_reality_rule",
+        "verdict": "rejected",
+        "reason": "numeric_relation_false",
+        "value": {
+          "left": 4,
+          "op": "=",
+          "right": 5
+        }
       }
     ],
-    "χ": [
-      "objective completion requires external math contact",
-      "Ξ=\"\""
+    "chi": [
+      "structural rules distinguish true false conditional under_guarded unsupported universal",
+      "completion cannot mean only self-generated closure"
     ],
-    "Ξ": ""
+    "empty_text": "",
+    "complete": true
   },
-  "objective_completion_status": "externally_contacted_minimum_core",
+  "objective_completion_status": "adversarially_contacted_minimum_core",
   "octahedron_position": {
     "model": "epistemic_octahedron_surface_projection_v0_1",
     "coordinates": {
