@@ -24,15 +24,33 @@ Object.keys(expected).forEach(input => {
   assert.strictEqual(actual.verdict, expected[input], input + ' expected ' + expected[input] + ' got ' + actual.verdict);
 });
 
-const guarded = Gate.evaluate('x / x = 1 with x != 0');
-assert.deepStrictEqual(guarded.conditions, ['x != 0']);
+const generalized = {
+  'y / y = 1 with y != 0': 'conditional',
+  'z / z = 1': 'under_guarded',
+  'sqrt(y^2) = y': 'conditional',
+  'p = q, q = r therefore p = r': 'verified',
+  'm < n, n < o therefore m < o': 'verified',
+  'm < n therefore n < m': 'rejected',
+  'forall y in R, y + 0 = y': 'universal_verified',
+  '7 - 3 = 4': 'verified',
+  '7 - 3 = 5': 'rejected'
+};
 
-const unguarded = Gate.evaluate('x / x = 1');
-assert.deepStrictEqual(unguarded.missing_conditions, ['x != 0']);
+Object.keys(generalized).forEach(input => {
+  const actual = Gate.evaluate(input);
+  assert.strictEqual(actual.verdict, generalized[input], input + ' expected generalized ' + generalized[input] + ' got ' + actual.verdict);
+  assert.strictEqual(actual.rule_source, 'structural_reality_rule', input + ' should come from structural rule');
+});
 
-const sqrt = Gate.evaluate('sqrt(x^2) = x');
-assert.deepStrictEqual(sqrt.conditions, ['x >= 0']);
-assert.strictEqual(sqrt.corrected_form, 'sqrt(x^2)=|x|');
+const guarded = Gate.evaluate('y / y = 1 with y != 0');
+assert.deepStrictEqual(guarded.conditions, ['y != 0']);
+
+const unguarded = Gate.evaluate('z / z = 1');
+assert.deepStrictEqual(unguarded.missing_conditions, ['z != 0']);
+
+const sqrt = Gate.evaluate('sqrt(y^2) = y');
+assert.deepStrictEqual(sqrt.conditions, ['y >= 0']);
+assert.strictEqual(sqrt.corrected_form, 'sqrt(y^2)=|y|');
 
 const report = Gate.run();
 assert.strictEqual(report.packet_type, '42ndMind_objective_reality_contact_gate_v0_1');
@@ -45,5 +63,6 @@ assert.ok(report.verdict_classes.includes('conditional'));
 assert.ok(report.verdict_classes.includes('under_guarded'));
 assert.ok(report.verdict_classes.includes('rejected'));
 assert.ok(report.verdict_classes.includes('universal_verified'));
+assert.ok(report.rule_sources.includes('structural_reality_rule'));
 
-console.log('objective-reality-contact-gate-v0-1 tests passed');
+console.log('objective-reality-contact-gate-v0-1 structural tests passed');
