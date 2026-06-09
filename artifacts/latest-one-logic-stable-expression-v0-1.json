@@ -6,6 +6,36 @@
   "generation": 16,
   "stable_score": 1,
   "pressure": 1,
+  "pressure_differentiation": {
+    "packet_type": "42ndMind_causal_pressure_differentiation_v0_1",
+    "principle": "signals_are_distinguished_by_downstream_consequence_not_name",
+    "kind": "generative",
+    "should_block_completion": false,
+    "blocking_pressure": 0,
+    "generative_pressure": 1,
+    "damage_pressure": 0,
+    "epistemic_gap_pressure": 0,
+    "contradiction_pressure": 0,
+    "raw_pressure": 1,
+    "consequence_trace": {
+      "total": 48,
+      "more_self_ratio": 0.666667,
+      "less_self_ratio": 0,
+      "moved_ratio": 0.666667,
+      "internal_growth_ratio": 0.666667,
+      "virtual_growth_ratio": 0.666667
+    },
+    "evidence": {
+      "source_damage": 0,
+      "truth_damage": 0,
+      "valuation_pain": 0,
+      "language_repair_pressure": 0,
+      "language_growth_pressure": 0.078804,
+      "action_mutation_pressure": 1,
+      "novelty_pressure": 0.078804
+    },
+    "interpretation": "pressure_behaves_as_life_or_growth_not_completion_blocker"
+  },
   "octahedron_position": {
     "model": "epistemic_octahedron_surface_projection_v0_1",
     "coordinates": {
@@ -29,17 +59,18 @@
     "maturity": 1
   },
   "math_language_completion": {
-    "status": "incomplete",
-    "completion": 0.76125,
+    "status": "provisionally_complete",
+    "completion": 0.94125,
     "closure_proxy": 1,
-    "generativity": 0.704167,
+    "generativity": 0.804167,
     "symbol_count": 367,
     "relation_count": 192,
     "mutation_count": 16,
     "virtual_edit_count": 8,
-    "missing": [
-      "residual_pressure_present"
-    ],
+    "raw_pressure": 1,
+    "blocking_pressure": 0,
+    "generative_pressure": 1,
+    "missing": [],
     "recent_symbols": [
       "sym:| 0)) }\\\\\\\\n      : clone(node);\\\\\\\\n    return clone(node);\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\n    const body = bodyOf(target);\\\\\\\\n    const assignments = {};\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\n    const base = bodyOf(target);\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function inverseOperation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
       "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\n    if (!left |",
@@ -489,23 +520,8 @@
     "virtual_state_mutation": true,
     "moved_simulated_self": true
   },
-  "next_self_generated_obstruction": {
-    "id": "residual_pressure_present",
-    "pressure": 1,
-    "source": "math_language_completion"
-  },
-  "obstruction_stack": [
-    {
-      "id": "residual_pressure_present",
-      "pressure": 1,
-      "source": "math_language_completion"
-    },
-    {
-      "id": "residual_pressure",
-      "pressure": 1,
-      "source": "whole_self"
-    }
-  ],
-  "expression": "stable_state_reports_objective_math_language_incomplete",
+  "next_self_generated_obstruction": null,
+  "obstruction_stack": [],
+  "expression": "stable_state_reports_objective_math_language_provisionally_complete",
   "Ξ": ""
 }

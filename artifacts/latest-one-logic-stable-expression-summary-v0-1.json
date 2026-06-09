@@ -28,17 +28,18 @@
     "maturity": 1
   },
   "math_language_completion": {
-    "status": "incomplete",
-    "completion": 0.76125,
+    "status": "provisionally_complete",
+    "completion": 0.94125,
     "closure_proxy": 1,
-    "generativity": 0.704167,
+    "generativity": 0.804167,
     "symbol_count": 367,
     "relation_count": 192,
     "mutation_count": 16,
     "virtual_edit_count": 8,
-    "missing": [
-      "residual_pressure_present"
-    ],
+    "raw_pressure": 1,
+    "blocking_pressure": 0,
+    "generative_pressure": 1,
+    "missing": [],
     "recent_symbols": [
       "sym:| 0)) }\\\\\\\\n      : clone(node);\\\\\\\\n    return clone(node);\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\n    const body = bodyOf(target);\\\\\\\\n    const assignments = {};\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\n    const base = bodyOf(target);\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function inverseOperation(input) {\\\\\\\\n    const body = bodyOf(input);\\\\\\\\n    if (!body |",
       "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\n    const left = body.left;\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\n    if (!left |",
@@ -481,23 +482,8 @@
     "valuation_reward": 0.967201,
     "action_mutation_pressure": 1
   },
-  "next_self_generated_obstruction": {
-    "id": "residual_pressure_present",
-    "pressure": 1,
-    "source": "math_language_completion"
-  },
-  "obstruction_stack": [
-    {
-      "id": "residual_pressure_present",
-      "pressure": 1,
-      "source": "math_language_completion"
-    },
-    {
-      "id": "residual_pressure",
-      "pressure": 1,
-      "source": "whole_self"
-    }
-  ],
-  "expression": "stable_state_reports_objective_math_language_incomplete",
+  "next_self_generated_obstruction": null,
+  "obstruction_stack": [],
+  "expression": "stable_state_reports_objective_math_language_provisionally_complete",
   "Ξ": ""
 }
