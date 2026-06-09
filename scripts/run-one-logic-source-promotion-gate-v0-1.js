@@ -8,7 +8,9 @@ const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const LIVE_SOURCE_PATH = path.join(ROOT, 'src/live-self-dynamics-core-v0-1.js');
 const REALITY_SOURCE_PATH = path.join(ROOT, 'src/objective-reality-contact-gate-v0-1.js');
+const OBLIGATION_SOURCE_PATH = path.join(ROOT, 'src/proof-obligation-engine-v0-1.js');
 const REALITY_TEST_PATH = path.join(ROOT, 'tests/objective-reality-contact-gate-v0-1-test.js');
+const OBLIGATION_TEST_PATH = path.join(ROOT, 'tests/proof-obligation-engine-v0-1-test.js');
 const STATE_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-state-v0-1.json');
 const EXPRESSION_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-v0-1.json');
 const OUT_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-source-promotion-proposal-v0-1.json');
@@ -48,7 +50,9 @@ function stateOnlyRows(statePacket, expression) {
 function candidateRows(sources, expression) {
   const liveSource = sources.live || '';
   const realitySource = sources.reality || '';
+  const obligationSource = sources.obligations || '';
   const realityTest = sources.realityTest || '';
+  const obligationTest = sources.obligationTest || '';
   const rows = [];
   const pressure = expression && expression.pressure_differentiation || null;
 
@@ -69,22 +73,25 @@ function candidateRows(sources, expression) {
     });
   }
 
-  const hasStructuralRealityGate = sourceHas(realitySource, 'function divisionIdentity(')
-    && sourceHas(realitySource, 'function sqrtSquare(')
-    && sourceHas(realitySource, 'function strictOrder(')
-    && sourceHas(realitySource, 'function universalIdentity(');
+  const hasProofObligationEngine = sourceHas(obligationSource, 'function divisionIdentity(')
+    && sourceHas(obligationSource, 'function sqrtSquare(')
+    && sourceHas(obligationSource, 'function strictOrder(')
+    && sourceHas(obligationSource, 'function universalIdentity(')
+    && sourceHas(obligationSource, 'function analyze(');
 
-  if (hasStructuralRealityGate) {
+  if (hasProofObligationEngine) {
     rows.push({
-      id: 'objective_reality_contact_structural_gate',
-      kind: 'general_gate',
+      id: 'proof_obligation_engine',
+      kind: 'general_meta_gate',
       source_worthy: true,
       already_in_source: true,
       evidence: {
-        structural_rules: ['numeric_relation', 'division_identity_guard', 'sqrt_square_sign_guard', 'equality_transitivity', 'strict_order', 'universal_identity'],
-        test_requires_generalized_variables: sourceHas(realityTest, 'y / y = 1') && sourceHas(realityTest, 'm < n, n < o') && sourceHas(realityTest, 'forall y in R')
+        principle: 'operators_create_truth_obligations_before_verdicts_are_assigned',
+        structural_families: ['numeric_relation', 'division_identity', 'sqrt_square_identity', 'equality_transitivity', 'strict_order_transitivity', 'universal_additive_identity'],
+        test_requires_obligations: sourceHas(obligationTest, 'obligations[0].satisfied') && sourceHas(obligationTest, 'missing_conditions') && sourceHas(obligationTest, 'operator_families'),
+        reality_gate_delegates_to_engine: sourceHas(realitySource, "Obligations.analyze(input)") || sourceHas(realitySource, 'Obligations.analyze')
       },
-      promotion_rule: 'promote because objective language must classify truth, falsehood, condition, missing guard, and universal schema structurally rather than by exact answer key'
+      promotion_rule: 'promote because the language must derive verdicts from operator-created obligations rather than hand-coded case answers'
     });
   }
 
@@ -102,6 +109,7 @@ function candidateRows(sources, expression) {
         case_count: gate.case_count,
         verdict_classes: gate.verdict_classes || [],
         rule_sources: gate.rule_sources || [],
+        operator_families: gate.operator_families || [],
         failures: gate.failures || []
       },
       promotion_rule: 'promote because live completion must depend on adversarial reality contact, not only self-generated closure'
@@ -128,7 +136,9 @@ function buildPacket() {
   const sources = {
     live: readText(LIVE_SOURCE_PATH),
     reality: readText(REALITY_SOURCE_PATH),
-    realityTest: readText(REALITY_TEST_PATH)
+    obligations: readText(OBLIGATION_SOURCE_PATH),
+    realityTest: readText(REALITY_TEST_PATH),
+    obligationTest: readText(OBLIGATION_TEST_PATH)
   };
   const stateRead = readJsonPacket(STATE_PATH);
   const expressionRead = readJsonPacket(EXPRESSION_PATH);
@@ -162,7 +172,7 @@ function buildPacket() {
       'save generation, symbols, relations, pressure relief, and virtual edits as state memory',
       'do not promote scalar optimal-state values into source',
       'require adversarial reality contact before objective completion becomes source-trustworthy',
-      'structural reality rules are source-worthy only when they generalize beyond exact strings',
+      'operator-created obligations are source-worthy when they generalize beyond exact strings',
       'all source promotion remains proposal-first, not automatic self-rewrite'
     ],
     source_ready: sourceReady,
@@ -173,7 +183,10 @@ function buildPacket() {
       generation: statePacket.generation,
       t: statePacket.t,
       score: statePacket.score,
-      objective_completion_status: statePacket.objective_completion_status
+      objective_completion_status: statePacket.objective_completion_status,
+      mutation_budget: statePacket.mutation_budget || null,
+      iterations_this_run: statePacket.iterations_this_run || null,
+      stop_reason: statePacket.stop_reason || null
     } : { available: false },
     expression_digest: expression ? {
       expression: expression.expression,
