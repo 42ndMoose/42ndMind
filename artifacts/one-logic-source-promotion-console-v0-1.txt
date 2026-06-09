@@ -1,0 +1,272 @@
+{
+  "packet_type": "42ndMind_one_logic_source_promotion_gate_v0_1",
+  "ok": true,
+  "decision": "source_principles_already_promoted_state_saved_as_memory",
+  "artifact_problem_count": 0,
+  "artifact_problems": [],
+  "source_ready_count": 0,
+  "already_promoted_count": 4,
+  "state_only_count": 7,
+  "objective_completion_status": "externally_contacted_minimum_core",
+  "objective_reality_gate_status": "externally_contacted_minimum_core",
+  "rules": [
+    "promote only reusable rules or gates into source",
+    "save generation, symbols, relations, pressure relief, and virtual edits as state memory",
+    "do not promote scalar optimal-state values into source",
+    "require adversarial reality contact before objective completion becomes source-trustworthy",
+    "structural reality rules are source-worthy only when they generalize beyond exact strings",
+    "all source promotion remains proposal-first, not automatic self-rewrite"
+  ],
+  "source_ready": [],
+  "already_promoted": [
+    {
+      "id": "causal_pressure_differentiation",
+      "kind": "general_rule",
+      "source_worthy": true,
+      "already_in_source": true,
+      "evidence": {
+        "principle": "signals_are_distinguished_by_downstream_consequence_not_name",
+        "kind": "generative",
+        "blocking_pressure": 0,
+        "generative_pressure": 1,
+        "interpretation": "pressure_behaves_as_life_or_growth_not_completion_blocker"
+      },
+      "promotion_rule": "promote because it distinguishes a signal by downstream consequence, not by a memorized scalar state"
+    },
+    {
+      "id": "objective_reality_contact_structural_gate",
+      "kind": "general_gate",
+      "source_worthy": true,
+      "already_in_source": true,
+      "evidence": {
+        "structural_rules": [
+          "numeric_relation",
+          "division_identity_guard",
+          "sqrt_square_sign_guard",
+          "equality_transitivity",
+          "strict_order",
+          "universal_identity"
+        ],
+        "test_requires_generalized_variables": true
+      },
+      "promotion_rule": "promote because objective language must classify truth, falsehood, condition, missing guard, and universal schema structurally rather than by exact answer key"
+    },
+    {
+      "id": "objective_language_reality_gate_runtime_contact",
+      "kind": "general_gate_runtime_result",
+      "source_worthy": true,
+      "already_in_source": true,
+      "evidence": {
+        "status": "externally_contacted_minimum_core",
+        "score": 1,
+        "pass_count": 6,
+        "case_count": 6,
+        "verdict_classes": [],
+        "rule_sources": [],
+        "failures": []
+      },
+      "promotion_rule": "promote because live completion must depend on adversarial reality contact, not only self-generated closure"
+    },
+    {
+      "id": "objective_completion_status_classifier",
+      "kind": "general_status_rule",
+      "source_worthy": true,
+      "already_in_source": true,
+      "evidence": {
+        "objective_completion_status": "externally_contacted_minimum_core"
+      },
+      "promotion_rule": "promote because internal completion and adversarially-contacted completion must be separate statuses"
+    }
+  ],
+  "state_only": [
+    {
+      "id": "generation",
+      "value": 20,
+      "reason": "generation is runtime age, not reusable source law"
+    },
+    {
+      "id": "t",
+      "value": 30,
+      "reason": "time index is state memory, not source law"
+    },
+    {
+      "id": "symbol_count",
+      "value": 423,
+      "reason": "symbol accumulation belongs in saved memory/state"
+    },
+    {
+      "id": "relation_count",
+      "value": 240,
+      "reason": "relation accumulation belongs in saved memory/state"
+    },
+    {
+      "id": "mutation_count",
+      "value": 20,
+      "reason": "mutation count is history, not source law"
+    },
+    {
+      "id": "virtual_edit_count",
+      "value": 10,
+      "reason": "virtual edits are simulated body memory unless generalized into a rule"
+    },
+    {
+      "id": "pressure_relief",
+      "value": 0.85,
+      "reason": "relief value is current nervous-state, not source law"
+    }
+  ],
+  "state_memory": {
+    "available": true,
+    "generation": 20,
+    "t": 30,
+    "score": 1,
+    "objective_completion_status": "externally_contacted_minimum_core"
+  },
+  "expression_digest": {
+    "expression": "stable_state_reports_objective_math_language_provisionally_complete",
+    "pressure": 1,
+    "pressure_differentiation": {
+      "packet_type": "42ndMind_causal_pressure_differentiation_v0_1",
+      "principle": "signals_are_distinguished_by_downstream_consequence_not_name",
+      "kind": "generative",
+      "should_block_completion": false,
+      "blocking_pressure": 0,
+      "generative_pressure": 1,
+      "damage_pressure": 0,
+      "epistemic_gap_pressure": 0,
+      "contradiction_pressure": 0,
+      "raw_pressure": 1,
+      "consequence_trace": {
+        "total": 36,
+        "more_self_ratio": 0.666667,
+        "less_self_ratio": 0,
+        "moved_ratio": 0.666667,
+        "internal_growth_ratio": 0.666667,
+        "virtual_growth_ratio": 0.666667
+      },
+      "evidence": {
+        "source_damage": 0,
+        "truth_damage": 0,
+        "valuation_pain": 0,
+        "language_repair_pressure": 0,
+        "language_growth_pressure": 0.068396,
+        "action_mutation_pressure": 1,
+        "novelty_pressure": 0.068396
+      },
+      "interpretation": "pressure_behaves_as_life_or_growth_not_completion_blocker"
+    },
+    "objective_reality_gate": {
+      "packet_type": "42ndMind_objective_language_reality_gate_v0_1",
+      "ok": true,
+      "complete": true,
+      "status": "externally_contacted_minimum_core",
+      "score": 1,
+      "pass_count": 6,
+      "case_count": 6,
+      "failures": [],
+      "cases": [
+        {
+          "id": "arithmetic_truth",
+          "domain": "arithmetic",
+          "input": "2+2=4",
+          "ok": true,
+          "ast_type": "ArithmeticRelation",
+          "closure_operator": "evaluateArithmeticRelation",
+          "selected_rule": "arithmetic-relation-evaluation",
+          "gap_count": 0,
+          "gaps": []
+        },
+        {
+          "id": "linear_equation",
+          "domain": "algebra",
+          "input": "2x+1=x+4",
+          "ok": true,
+          "ast_type": "LinearEquation",
+          "closure_operator": "solveLinearEquation",
+          "selected_rule": "linear-equation-solve",
+          "gap_count": 0,
+          "gaps": []
+        },
+        {
+          "id": "equality_transitivity",
+          "domain": "proof",
+          "input": "a=b, b=c therefore a=c",
+          "ok": true,
+          "ast_type": "EqualityProof",
+          "closure_operator": "proveEquality",
+          "selected_rule": "equality-transitivity",
+          "gap_count": 0,
+          "gaps": []
+        },
+        {
+          "id": "square_nonnegative",
+          "domain": "ordered_field",
+          "input": "forall x in R, x^2>=0",
+          "ok": true,
+          "ast_type": "QuantifiedStatement",
+          "closure_operator": "proveSquareNonnegative",
+          "selected_rule": "universal-square-nonnegative",
+          "gap_count": 0,
+          "gaps": []
+        },
+        {
+          "id": "additive_identity",
+          "domain": "identity",
+          "input": "forall x in R, x+0=x",
+          "ok": true,
+          "ast_type": "QuantifiedStatement",
+          "closure_operator": "proveAlgebraicIdentity",
+          "selected_rule": "algebraic-identity",
+          "gap_count": 0,
+          "gaps": []
+        },
+        {
+          "id": "substitution_evaluation",
+          "domain": "evaluation",
+          "input": "2x+1 with x=3",
+          "ok": true,
+          "ast_type": "SubstitutionEvaluation",
+          "closure_operator": "evaluateSubstitution",
+          "selected_rule": "substitution-evaluation",
+          "gap_count": 0,
+          "gaps": []
+        }
+      ],
+      "χ": [
+        "objective completion requires external math contact",
+        "Ξ=\"\""
+      ],
+      "Ξ": ""
+    },
+    "math_language_completion": {
+      "status": "provisionally_complete",
+      "completion": 0.955313,
+      "closure_proxy": 1,
+      "generativity": 0.851042,
+      "symbol_count": 423,
+      "relation_count": 240,
+      "mutation_count": 20,
+      "virtual_edit_count": 10,
+      "raw_pressure": 1,
+      "blocking_pressure": 0,
+      "generative_pressure": 1,
+      "missing": [],
+      "recent_symbols": [
+        "sym:| typeof node !== 'object') return node;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (node.type === 'Symbol' && Object.prototype.hasOwnProperty.call(assignments, node.name)) return { type: 'NumberLiteral', value: R(assignments[node.name]) };\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (node.type === 'BinaryExpression') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (node.type === 'UnaryExpression') return Object.assign({}, node, { argument: substituteNode(node.argument, assignments) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (node.type === 'Relation') return Object.assign({}, node, { left: substituteNode(node.left, assignments), right: substituteNode(node.right, assignments) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (node.type === 'AffineExpression') return node.variable && Object.prototype.hasOwnProperty.call(assignments, node.variable)\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n      ? { type: 'NumberLiteral', value: R(Number(node.coefficient) * Number(assignments[node.variable]) + Number(node.offset |",
+        "sym:| 0)) }\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n      : clone(node);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    return clone(node);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  }\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  function substitution(target, assignment) {\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const body = bodyOf(target);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const assignments = {};\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (assignment && assignment.type === 'Assignment') assignments[assignment.variable] = valueOf(assignment.value);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    else if (assignment && typeof assignment === 'object') Object.keys(assignment).forEach(key => { if (finite(assignment[key])) assignments[key] = Number(assignment[key]); });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!Object.keys(assignments).length) return gap('missing_substitution_assignment', 'Substitution requires a finite assignment.');\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const substituted = substituteNode(body, assignments);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    return verified('substitution', { input: clone(body), assignment: clone(assignments), conclusion: substituted });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  }\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  function equivalenceRewrite(target, from, to) {\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const base = bodyOf(target);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!same(base, from)) return gap('rewrite_source_mismatch', 'Equivalence rewrite requires the source pattern to match the target.', { target: clone(base), from: clone(from), to: clone(to) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    return verified('equivalence-rewrite', { input: clone(base), from: clone(from), to: clone(to), conclusion: clone(to) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  }\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  function inverseOperation(input) {\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const body = bodyOf(input);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!body |",
+        "sym:| body.type !== 'Equation') return gap('unsupported_inverse_operation', 'Inverse operation currently supports Equation AST nodes.');\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const left = body.left;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const right = valueOf(body.right);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!left |",
+        "sym:| left.type !== 'AffineExpression') return gap('left_side_not_affine', 'Solving requires an affine left side.', { equation: clone(body) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!finite(right)) return gap('non_finite_target', 'Solving requires a finite numeric target.', { equation: clone(body) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (Math.abs(Number(left.coefficient)) <= EPS) return gap('zero_coefficient', 'Affine equation cannot be solved by division when coefficient is zero.', { equation: clone(body) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const shifted = right - Number(left.offset |",
+        "sym:| 0);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const value = shifted / Number(left.coefficient);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!Number.isFinite(value)) return gap('non_finite_solution', 'Inverse operation produced a non-finite solution.', { equation: clone(body) });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    return verified('inverse-operation', { operator: 'solveAffineEquation', variable: left.variable, value: R(value), conclusion: { type: 'Assignment', variable: left.variable, value: { type: 'NumberLiteral', value: R(value) } }, steps: ['identity-equation', 'subtract-offset', 'divide-by-coefficient'] });\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  }\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n  function solveLinearEquation(input) {\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const body = bodyOf(input);\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!body |",
+        "sym:| body.type !== 'LinearEquation') return gap('unsupported_linear_equation', 'Linear equation solving requires a LinearEquation AST node.');\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const left = body.left;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    const right = body.right;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n    if (!left |",
+        "sym:| 0) + weight(row); });\\\\\\\\n    return out;\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function val(field, symbol) {\\\\\\\\n    return Math.max(0, Math.abs(m(field)[symbol] |",
+        "sym:| 0));\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function clamp01(value) {\\\\\\\\n    return Math.max(0, Math.min(1, Number(value) |",
+        "sym:| 0));\\\\\\\\n  }\\\\\\\\n\\\\\\\\n  function create(seed) {\\\\\\\\n    const s = seed |",
+        "sym:| {};\\\\\\\\n    return normalizeClaim({\\\\\\\\n      packet_type: '42ndMind_truth_accounting_claim_v0_1',\\\\\\\\n      version: VERSION,\\\\\\\\n      id: String(s.id |",
+        "sym:| 'θ0'),\\\\\\\\n      σ: s.σ |",
+        "sym:| pair('σ✓', 'σ!', s.scope_ok == null ? 0 : s.scope_ok, s.scope_error == null ? 1 : s.scope_error),\\\\\\\\n      δ: s.δ |"
+      ]
+    },
+    "next_self_generated_obstruction": null
+  },
+  "empty_text": ""
+}
