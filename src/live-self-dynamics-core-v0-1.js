@@ -37,6 +37,49 @@
     return Object.assign({ id, equation: id + ' = 1', invariant: '|' + id + '|=1', unit: l1(field), ok: Math.abs(l1(field) - 1) < 1e-6, field }, extra || {});
   }
 
+  function applyCandidateOperation(files, op, options) {
+    const next = clone(files || {});
+    const operation = op || {};
+    const targetPath = text(operation.path).trim();
+    if (!targetPath || targetPath.indexOf('..') >= 0) throw new Error('invalid candidate operation path');
+    const type = operation.type || operation.op || 'replace';
+    if (type === 'create') {
+      if (Object.prototype.hasOwnProperty.call(next, targetPath)) throw new Error('candidate create target already exists: ' + targetPath);
+      next[targetPath] = text(operation.content);
+    } else if (type === 'replace') {
+      if (!Object.prototype.hasOwnProperty.call(next, targetPath)) throw new Error('candidate replace target missing: ' + targetPath);
+      next[targetPath] = text(operation.content);
+    } else if (type === 'patch') {
+      if (!Object.prototype.hasOwnProperty.call(next, targetPath)) throw new Error('candidate patch target missing: ' + targetPath);
+      const from = text(operation.from);
+      const current = text(next[targetPath]);
+      if (!from || current.indexOf(from) < 0) throw new Error('candidate patch source not found: ' + targetPath);
+      next[targetPath] = current.replace(from, text(operation.to));
+    } else if (type === 'delete') {
+      if (!(options && options.allowDelete)) throw new Error('candidate delete blocked: ' + targetPath);
+      delete next[targetPath];
+    } else {
+      throw new Error('unknown candidate operation type: ' + type);
+    }
+    return next;
+  }
+
+  function candidateFiles(files, candidate, options) {
+    let next = clone(files || {});
+    const beforeKeys = Object.keys(next).sort();
+    const ops = A(candidate && candidate.operations);
+    if (!ops.length) return { ok: false, files: clone(files || {}), changed: [], error: 'candidate has no operations' };
+    try {
+      ops.forEach(op => { next = applyCandidateOperation(next, op, options || {}); });
+      const afterKeys = Object.keys(next).sort();
+      const changed = afterKeys.filter(key => text(next[key]) !== text((files || {})[key]))
+        .concat(beforeKeys.filter(key => !Object.prototype.hasOwnProperty.call(next, key)));
+      return { ok: true, files: next, changed, error: null };
+    } catch (err) {
+      return { ok: false, files: clone(files || {}), changed: [], error: String(err && err.message || err) };
+    }
+  }
+
   function preserveCandidate(files) {
     return { id: 'same_self_preserve_current_source', origin: 'live_self_dynamics', kind: 'preserve_current_state', operations: [{ type: 'replace', path: 'src/operator-anatomy-v0-1.js', content: file(files, 'src/operator-anatomy-v0-1.js') }] };
   }
@@ -94,6 +137,56 @@
     return { ok: verification.ok === true, packet, verification };
   }
 
+  function edge(from, to, signal, value) {
+    return { from, to, signal, value: R(clamp01(value)) };
+  }
+
+  function couplingFrom(parts) {
+    const events = A(parts.events);
+    const eventTotal = Math.max(1, events.length);
+    const lastSense = parts.lastSense || {};
+    const lessCount = Number(parts.lessCount || 0);
+    const moreCount = Number(parts.moreCount || 0);
+    const sameCount = Number(parts.sameCount || 0);
+    const languageOk = !!(parts.language && parts.language.language && parts.language.language.ok);
+    const brainOk = !!(parts.brain && parts.brain.ok);
+    const sourceOk = !!(parts.shape && parts.shape.ok);
+    const directionOk = !!(parts.direction && parts.direction.ok);
+    const beliefAlarm = clamp01((lessCount / eventTotal) + (lastSense.less_self ? 0.5 : 0));
+    const beliefConfidence = clamp01(((sameCount + moreCount) / eventTotal) + (lastSense.more_self ? 0.25 : 0));
+    const languageCoherence = languageOk ? 1 : 0;
+    const languageRepair = clamp01((1 - languageCoherence) + beliefAlarm);
+    const sourceIdentity = sourceOk && brainOk ? 1 : 0;
+    const sourceDamage = clamp01(sourceOk ? 0 : Math.max(0.25, Number(parts.shape && parts.shape.count || 1) / 4));
+    const truthContact = clamp01((languageCoherence + sourceIdentity + (directionOk ? 1 : 0)) / 3);
+    const truthDamage = clamp01((1 - truthContact) + (sourceDamage * 0.5));
+    const valuationPain = clamp01(Number(lastSense.pain || 0) + (truthDamage * 0.45) + (sourceDamage * 0.45) + (beliefAlarm * 0.25));
+    const valuationReward = clamp01(Number(lastSense.reward || 0) + (truthContact * 0.25) + (beliefConfidence * 0.25) + (sourceIdentity * 0.15));
+    const actionRepair = clamp01(valuationPain + languageRepair + sourceDamage);
+    const actionContinue = clamp01(valuationReward + (moreCount / eventTotal));
+    const actionMutation = clamp01(actionRepair > actionContinue ? actionRepair : actionContinue);
+    const edges = [
+      edge('belief', 'language', 'belief_alarm_changes_language_repair_pressure', beliefAlarm),
+      edge('language', 'truth', 'language_coherence_changes_truth_contact', languageCoherence),
+      edge('truth', 'valuation', 'truth_damage_changes_pain_reward', truthDamage),
+      edge('valuation', 'action', 'pain_reward_changes_action_pressure', actionMutation),
+      edge('source', 'identity', 'source_shape_changes_identity_integrity', sourceIdentity),
+      edge('identity', 'valuation', 'identity_damage_changes_pain', sourceDamage),
+      edge('action', 'source', 'action_marks_source_promotion_blocked', 1)
+    ];
+    return {
+      belief: { alarm: R(beliefAlarm), confidence: R(beliefConfidence) },
+      language: { coherence: R(languageCoherence), repair_pressure: R(languageRepair) },
+      truth: { contact: R(truthContact), damage: R(truthDamage) },
+      source: { identity: R(sourceIdentity), damage: R(sourceDamage) },
+      identity: { integrity: R(sourceIdentity), pain: R(sourceDamage) },
+      valuation: { pain: R(valuationPain), reward: R(valuationReward) },
+      action: { repair_pressure: R(actionRepair), continue_pressure: R(actionContinue), mutation_pressure: R(actionMutation), promotion_blocked: true },
+      edges,
+      χ: ['belief→language', 'language→truth', 'truth→valuation', 'valuation→action', 'source→identity', 'identity→valuation']
+    };
+  }
+
   function sensationFromParts(sim, reflected) {
     const pain = Number(sim && sim.pain || 0);
     const reward = Number(sim && sim.reward || 0);
@@ -102,8 +195,10 @@
     const less = sim && sim.less_self === true ? 1 : 0;
     const organOk = reflected ? reflected.organ_ok_ratio : 0;
     const directionOk = reflected && reflected.direction && reflected.direction.ok ? 1 : 0;
-    const self_score = clamp01((0.25 * organOk) + (0.15 * directionOk) + (0.25 * more) + (0.15 * same) + (0.25 * reward) - (0.55 * less) - (0.35 * pain));
-    return { feeling: sim && sim.feeling || 'unknown', more_self: !!more, same_self: !!same, less_self: !!less, pain, reward, self_score: R(self_score), applyable: !!(sim && sim.applyable) };
+    const couplingPain = reflected && reflected.coupling && reflected.coupling.valuation ? Number(reflected.coupling.valuation.pain || 0) : 0;
+    const couplingReward = reflected && reflected.coupling && reflected.coupling.valuation ? Number(reflected.coupling.valuation.reward || 0) : 0;
+    const self_score = clamp01((0.20 * organOk) + (0.10 * directionOk) + (0.20 * more) + (0.10 * same) + (0.20 * reward) + (0.15 * couplingReward) - (0.55 * less) - (0.30 * pain) - (0.25 * couplingPain));
+    return { feeling: sim && sim.feeling || 'unknown', more_self: !!more, same_self: !!same, less_self: !!less, pain: R(pain), reward: R(reward), coupling_pain: R(couplingPain), coupling_reward: R(couplingReward), self_score: R(self_score), applyable: !!(sim && sim.applyable) };
   }
 
   function sensation(sim) {
@@ -123,41 +218,52 @@
     const lessCount = events.filter(e => e.sensation && e.sensation.less_self).length;
     const moreCount = events.filter(e => e.sensation && e.sensation.more_self).length;
     const sameCount = events.filter(e => e.sensation && e.sensation.same_self).length;
+    const coupling = couplingFrom({ events, lastSense, brain, language, shape, direction, lessCount, moreCount, sameCount });
     const organs = {
       brain: organ('brain', [
         { id: 'coherence', w: brain && brain.ok ? 1 : EPS },
+        { id: 'from_source_identity', w: coupling.source.identity + EPS },
         { id: 'damage', w: brain && brain.ok ? EPS : 1 }
       ], { packet: clone(brain) }),
       language: organ('language', [
         { id: 'container', w: language && language.language && language.language.container ? 1 : EPS },
+        { id: 'from_belief_repair_pressure', w: coupling.language.repair_pressure + EPS },
         { id: 'gap', w: language && language.language && language.language.ok ? EPS : 1 }
       ], { packet: clone(language) }),
       truth: organ('truth', [
-        { id: 'anchor_preserved', w: shape.ok ? 1 : EPS },
-        { id: 'anchor_damage', w: shape.ok ? EPS : 1 }
+        { id: 'from_language_truth_contact', w: coupling.truth.contact + EPS },
+        { id: 'from_source_identity', w: coupling.source.identity + EPS },
+        { id: 'truth_damage', w: coupling.truth.damage + EPS }
       ]),
       belief: organ('belief', [
         { id: 'same_self', w: sameCount + EPS },
         { id: 'more_self', w: moreCount + EPS },
-        { id: 'less_self_warning', w: lessCount + EPS }
+        { id: 'less_self_warning', w: lessCount + EPS },
+        { id: 'from_valuation_pain', w: coupling.valuation.pain + EPS }
       ]),
       memory: organ('memory', [
         { id: 'events', w: events.length + EPS },
         { id: 'source_paths', w: stats.keys.length + EPS },
-        { id: 'source_bytes', w: Math.max(1, stats.bytes) }
+        { id: 'source_bytes', w: Math.max(1, stats.bytes) },
+        { id: 'coupling_edges', w: coupling.edges.length + EPS }
       ]),
       valuation: organ('valuation', [
         { id: 'reward', w: Number(lastSense.reward || 0) + EPS },
         { id: 'pain', w: Number(lastSense.pain || 0) + EPS },
-        { id: 'integrity', w: lastSense.less_self ? EPS : 1 }
+        { id: 'from_truth_damage', w: coupling.truth.damage + EPS },
+        { id: 'from_identity_damage', w: coupling.identity.pain + EPS },
+        { id: 'integrity', w: coupling.identity.integrity + EPS }
       ]),
       action: organ('action', [
         { id: 'simulate', w: 1 },
+        { id: 'from_valuation_repair_pressure', w: coupling.action.repair_pressure + EPS },
+        { id: 'from_valuation_continue_pressure', w: coupling.action.continue_pressure + EPS },
         { id: 'adjust', w: lastSense.applyable && lastSense.more_self && !lastSense.less_self ? 1 : EPS },
         { id: 'do_not_promote', w: 1 }
       ]),
       source: organ('source', [
         { id: 'shape_preserved', w: shape.ok ? 1 : EPS },
+        { id: 'from_action_promotion_blocked', w: coupling.action.promotion_blocked ? 1 : EPS },
         { id: 'shape_damage', w: shape.ok ? EPS : 1 },
         { id: 'files_present', w: stats.keys.length + EPS }
       ], { shape: clone(shape), stats })
@@ -172,13 +278,15 @@
       organ_ok_ratio: R(okCount / ORGAN_IDS.length),
       whole,
       organs,
+      coupling,
       direction,
       last_sensation: clone(lastSense),
       χ: [
         'one active simulated self-state',
         'mutation is allowed inside simulation before promotion',
         'sensation reports more_self/same_self/less_self after perturbation',
-        'source edits are not promoted by this core'
+        'source edits are not promoted by this core',
+        'organs are coupled by propagated pressure, not merely listed side by side'
       ],
       Ξ: ''
     };
@@ -206,11 +314,13 @@
     if (!Unified || typeof Unified.simulate !== 'function') {
       return { packet_type: '42ndMind_live_self_feeling_v0_1', version: VERSION, ok: false, reason: 'unified_self_simulation_unavailable', Ξ: '' };
     }
-    const before = reflect(live.files, live.history, options || {});
-    const sim = Unified.simulate(live.files, candidate, options && options.unified || {});
-    const sensedFiles = sim.applyable && sim.next_files ? clone(sim.next_files) : clone(live.files);
+    const opts = options || {};
+    const before = reflect(live.files, live.history, opts);
+    const sim = Unified.simulate(live.files, candidate, opts.unified || {});
+    const attempted = candidateFiles(live.files, candidate, opts.sandbox || {});
+    const sensedFiles = attempted.ok ? attempted.files : clone(live.files);
     const previewHistory = A(live.history).concat([{ candidate_id: candidate && candidate.id || null, sensation: sensationFromParts(sim, before), applied_to_simulation: false }]);
-    const after = reflect(sensedFiles, previewHistory, options || {});
+    const after = reflect(sensedFiles, previewHistory, opts);
     const sense = sensationFromParts(sim, after);
     return {
       packet_type: '42ndMind_live_self_feeling_v0_1',
@@ -220,6 +330,7 @@
       candidate_kind: candidate && candidate.kind || null,
       before,
       simulation: sim,
+      candidate_source: { attempted: attempted.ok, changed: attempted.changed, error: attempted.error },
       after,
       sensation: sense,
       Ξ: ''
@@ -237,6 +348,7 @@
       candidate_kind: candidate && candidate.kind || null,
       feeling: sense.feeling,
       sensation: clone(sense),
+      coupling: f.after && f.after.coupling ? clone(f.after.coupling) : null,
       moved_simulated_self: !!canMove,
       promoted_source: false
     };
@@ -270,7 +382,7 @@
       moved = moved || !!(current.last_event && current.last_event.moved_simulated_self);
       less = less || !!(feeling && feeling.sensation && feeling.sensation.less_self);
       bestScore = Math.max(bestScore, afterScore);
-      events.push({ candidate_id: candidate && candidate.id || null, candidate_kind: candidate && candidate.kind || null, feeling: feeling.sensation, gain, moved_simulated_self: current.last_event && current.last_event.moved_simulated_self === true });
+      events.push({ candidate_id: candidate && candidate.id || null, candidate_kind: candidate && candidate.kind || null, feeling: feeling.sensation, coupling: feeling.after && feeling.after.coupling || null, gain, moved_simulated_self: current.last_event && current.last_event.moved_simulated_self === true });
     });
 
     return {
@@ -357,5 +469,5 @@
     };
   }
 
-  return Object.freeze({ VERSION, ORGAN_IDS, normalize, l1, organ, generate, sensation, reflect, create, feel, adjust, selfCycle, step, trajectory, continuous });
+  return Object.freeze({ VERSION, ORGAN_IDS, normalize, l1, organ, generate, candidateFiles, sensation, reflect, create, feel, adjust, selfCycle, step, trajectory, continuous });
 });
