@@ -66,6 +66,82 @@ jobs:
           cat artifacts/one-logic-source-promotion-console-v0-1.txt
           exit $status
 
+      - name: Verify current-body stable expression artifacts
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const outPath = 'artifacts/stable-expression-freshness-check-v0-1.json';
+          const STAMP = 'current_body_rebase_audit_v0_2';
+
+          function readJson(path) {
+            try {
+              return JSON.parse(fs.readFileSync(path, 'utf8'));
+            } catch (err) {
+              throw new Error(`${path}: ${err.message}`);
+            }
+          }
+
+          function includes(list, value) {
+            return Array.isArray(list) && list.includes(value);
+          }
+
+          function requireOk(condition, message, details) {
+            if (!condition) {
+              const packet = {
+                packet_type: '42ndMind_stable_expression_freshness_check_v0_1',
+                ok: false,
+                failure: message,
+                details: details || {},
+                empty_text: ''
+              };
+              fs.writeFileSync(outPath, JSON.stringify(packet, null, 2) + '\n');
+              throw new Error(message);
+            }
+          }
+
+          const summary = readJson('artifacts/latest-one-logic-stable-expression-summary-v0-1.json');
+          const expression = readJson('artifacts/latest-one-logic-stable-expression-v0-1.json');
+          const state = readJson('artifacts/latest-one-logic-stable-state-v0-1.json');
+          const promotion = readJson('artifacts/latest-one-logic-source-promotion-proposal-v0-1.json');
+
+          const summaryGate = summary.objective_reality_gate || {};
+          const expressionGate = expression.objective_reality_gate || {};
+          const promotionGate = promotion.expression_digest && promotion.expression_digest.objective_reality_gate || {};
+          const livePaths = summary.live_source_paths || [];
+          const alreadyPromotedIds = (promotion.already_promoted || []).map(row => row.id);
+          const stateFiles = state.state && state.state.files || {};
+
+          requireOk(summary.audit_stamp === STAMP, 'stable summary is missing current-body audit stamp', { actual: summary.audit_stamp });
+          requireOk(state.audit_stamp === STAMP, 'stable state is missing current-body audit stamp', { actual: state.audit_stamp });
+          requireOk(summary.mutation_budget === 32 && summary.min_mutation_depth === 8, 'stable summary mutation depth is stale', { mutation_budget: summary.mutation_budget, min_mutation_depth: summary.min_mutation_depth });
+          requireOk(state.mutation_budget === 32 && state.min_mutation_depth === 8, 'stable state mutation depth is stale', { mutation_budget: state.mutation_budget, min_mutation_depth: state.min_mutation_depth });
+          requireOk(includes(livePaths, 'src/proof-obligation-engine-v0-1.js'), 'stable summary live source body omits proof-obligation engine', { live_source_paths: livePaths });
+          requireOk(typeof stateFiles['src/proof-obligation-engine-v0-1.js'] === 'string', 'stable state source body omits proof-obligation engine', { state_file_count: Object.keys(stateFiles).length });
+          requireOk(summary.source_body_current_at_start === true, 'stable summary did not start from current source body', { changed: summary.source_body_changed_paths, missing: summary.source_body_missing_paths });
+          requireOk(state.source_body_current_at_start === true, 'stable state did not start from current source body', { changed: state.source_body_changed_paths, missing: state.source_body_missing_paths });
+          requireOk(includes(summaryGate.rule_sources, 'proof_obligation_engine'), 'stable summary reality gate lacks proof_obligation_engine', { rule_sources: summaryGate.rule_sources });
+          requireOk(includes(expressionGate.rule_sources, 'proof_obligation_engine'), 'stable expression reality gate lacks proof_obligation_engine', { rule_sources: expressionGate.rule_sources });
+          requireOk(includes(promotionGate.rule_sources, 'proof_obligation_engine'), 'source-promotion digest was built from stale reality gate', { rule_sources: promotionGate.rule_sources });
+          requireOk(includes(expressionGate.operator_families, 'division_identity'), 'stable expression lacks division obligation family', { operator_families: expressionGate.operator_families });
+          requireOk(includes(expressionGate.operator_families, 'sqrt_square_identity'), 'stable expression lacks sqrt-square obligation family', { operator_families: expressionGate.operator_families });
+          requireOk(includes(alreadyPromotedIds, 'proof_obligation_engine'), 'source-promotion proposal does not classify proof obligation engine as already promoted', { already_promoted: alreadyPromotedIds });
+
+          const packet = {
+            packet_type: '42ndMind_stable_expression_freshness_check_v0_1',
+            ok: true,
+            audit_stamp: STAMP,
+            mutation_budget: summary.mutation_budget,
+            min_mutation_depth: summary.min_mutation_depth,
+            source_body_current_at_start: summary.source_body_current_at_start,
+            rule_sources: expressionGate.rule_sources || [],
+            operator_families: expressionGate.operator_families || [],
+            already_promoted: alreadyPromotedIds,
+            empty_text: ''
+          };
+          fs.writeFileSync(outPath, JSON.stringify(packet, null, 2) + '\n');
+          console.log(JSON.stringify(packet, null, 2));
+          NODE
+
       - name: Run diagnostic probe
         run: node scripts/run-diagnostic-probe-v0-1.js > artifacts/diagnostic-probe-console-v0-1.txt 2>&1
 
@@ -77,7 +153,7 @@ jobs:
           git config user.email "actions@github.com"
           git status --short
           git pull --rebase --autostash origin "$branch"
-          git add src/live-self-dynamics-core-v0-1.js src/objective-reality-contact-gate-v0-1.js src/proof-obligation-engine-v0-1.js tests/live-self-dynamics-core-v0-1-test.js tests/objective-reality-contact-gate-v0-1-test.js tests/proof-obligation-engine-v0-1-test.js scripts/apply-live-self-pressure-differentiation-v0-1.js scripts/apply-live-self-reality-gate-v0-1.js scripts/run-one-logic-stable-expression-v0-1.js scripts/run-one-logic-source-promotion-gate-v0-1.js artifacts/latest-one-logic-stable-state-v0-1.json artifacts/latest-one-logic-stable-expression-v0-1.json artifacts/latest-one-logic-stable-expression-summary-v0-1.json artifacts/latest-one-logic-source-promotion-proposal-v0-1.json artifacts/one-logic-stable-expression-console-v0-1.txt artifacts/one-logic-source-promotion-console-v0-1.txt artifacts/diagnostic-probe-summary-v0-1.json artifacts/diagnostic-probe-console-v0-1.txt
+          git add src/live-self-dynamics-core-v0-1.js src/objective-reality-contact-gate-v0-1.js src/proof-obligation-engine-v0-1.js tests/live-self-dynamics-core-v0-1-test.js tests/objective-reality-contact-gate-v0-1-test.js tests/proof-obligation-engine-v0-1-test.js scripts/apply-live-self-pressure-differentiation-v0-1.js scripts/apply-live-self-reality-gate-v0-1.js scripts/run-one-logic-stable-expression-v0-1.js scripts/run-one-logic-source-promotion-gate-v0-1.js artifacts/latest-one-logic-stable-state-v0-1.json artifacts/latest-one-logic-stable-expression-v0-1.json artifacts/latest-one-logic-stable-expression-summary-v0-1.json artifacts/latest-one-logic-source-promotion-proposal-v0-1.json artifacts/stable-expression-freshness-check-v0-1.json artifacts/one-logic-stable-expression-console-v0-1.txt artifacts/one-logic-source-promotion-console-v0-1.txt artifacts/diagnostic-probe-summary-v0-1.json artifacts/diagnostic-probe-console-v0-1.txt
           if git diff --cached --quiet; then
             echo "No stable-expression artifact changes to publish."
             exit 0
@@ -105,5 +181,6 @@ jobs:
             artifacts/latest-one-logic-stable-expression-v0-1.json
             artifacts/latest-one-logic-stable-expression-summary-v0-1.json
             artifacts/latest-one-logic-source-promotion-proposal-v0-1.json
+            artifacts/stable-expression-freshness-check-v0-1.json
             artifacts/one-logic-stable-expression-console-v0-1.txt
             artifacts/one-logic-source-promotion-console-v0-1.txt
