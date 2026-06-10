@@ -1,0 +1,84 @@
+const assert = require('assert');
+const UnitBrain = require('../src/recursive-unit-brain-core-v0-1.js');
+
+function near(value, target, message) {
+  assert.ok(Math.abs(Number(value) - Number(target)) < 1e-6, message || `expected ${value} near ${target}`);
+}
+
+assert.strictEqual(UnitBrain.VERSION, '0.1.0');
+assert.strictEqual(typeof UnitBrain.normalizeNode, 'function');
+assert.strictEqual(typeof UnitBrain.project, 'function');
+assert.strictEqual(typeof UnitBrain.refineByContact, 'function');
+assert.strictEqual(typeof UnitBrain.liveProjection, 'function');
+
+const root = UnitBrain.project({
+  id: 'brain',
+  children: [
+    { id: 'language', w: 2, children: [
+      { id: 'syntax', w: 1 },
+      { id: 'semantics', w: 1 },
+      { id: 'proof', w: 2 }
+    ] },
+    { id: 'truth', w: 1 },
+    { id: 'memory', w: 1 }
+  ]
+});
+
+assert.strictEqual(root.packet_type, '42ndMind_recursive_unit_brain_projection_v0_1');
+assert.strictEqual(root.ok, true);
+assert.strictEqual(root.principle, 'recursive_unit_total_state_projected_through_kernel_constraints');
+near(root.root.child_total, 1, 'root children must normalize to one');
+near(root.root.children.find(x => x.id === 'language').child_total, 1, 'language children must normalize to one');
+assert.strictEqual(root.unit_violation_count, 0);
+assert.strictEqual(root.max_depth >= 2, true);
+assert.strictEqual(root.root.children.find(x => x.id === 'truth').vague, true, 'undefined leaves remain vague valid units');
+
+const refined = UnitBrain.refineByContact(root.root, {
+  path: ['brain', 'truth'],
+  children: [
+    { id: 'contact', w: 3 },
+    { id: 'contradiction_guard', w: 1 },
+    { id: 'belief_separation', w: 2 }
+  ]
+});
+
+assert.strictEqual(refined.ok, true);
+assert.deepStrictEqual(refined.refinement.path, ['brain', 'truth']);
+const truth = refined.root.children.find(x => x.id === 'truth');
+assert.strictEqual(truth.vague, false);
+near(truth.child_total, 1, 'refined truth children must conserve one');
+assert.strictEqual(truth.children.length, 3);
+
+const live = UnitBrain.liveProjection({
+  state: {
+    t: 4,
+    internal_state: {
+      generation: 3,
+      symbols: ['a', 'b', 'c'],
+      relations: [{ id: 'r1' }],
+      mutations: [{ id: 'm1' }],
+      virtual_edits: [{ path: 'virtual' }]
+    },
+    reflection: {
+      coupling: {
+        language: { coherence: 1, growth_pressure: 0.25 },
+        truth: { contact: 1, damage: 0 },
+        source: { identity: 1 },
+        action: { mutation_pressure: 0.5 }
+      }
+    }
+  },
+  expression: {
+    objective_reality_gate: { score: 1 }
+  }
+});
+
+assert.strictEqual(live.ok, true);
+assert.strictEqual(live.root.id, 'one_logic_brain');
+assert.strictEqual(live.contact.truth_contact, 1);
+assert.strictEqual(live.contact.language_growth_pressure, 0.25);
+near(live.root.child_total, 1, 'live projection root must conserve one');
+live.root.children.forEach(child => near(child.child_total, 1, `${child.id} must conserve one`));
+assert.strictEqual(live.node_count > 10, true, 'live projection must materialize the current one-logic body as recursive units');
+
+console.log('recursive-unit-brain-core-v0-1-test: all checks passed');
