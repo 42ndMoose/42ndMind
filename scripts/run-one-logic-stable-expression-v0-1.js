@@ -4,12 +4,14 @@
 const fs = require('fs');
 const path = require('path');
 const Live = require('../src/live-self-dynamics-core-v0-1.js');
+const UnitBrain = require('../src/recursive-unit-brain-core-v0-1.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const ARTIFACT_DIR = path.join(ROOT, 'artifacts');
 const STATE_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-state-v0-1.json');
 const EXPRESSION_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-v0-1.json');
 const SUMMARY_PATH = path.join(ARTIFACT_DIR, 'latest-one-logic-stable-expression-summary-v0-1.json');
+const UNIT_BRAIN_PATH = path.join(ARTIFACT_DIR, 'latest-recursive-unit-brain-projection-v0-1.json');
 const MUTATION_BUDGET = 32;
 const MIN_MUTATION_DEPTH = 8;
 const ARTIFACT_AUDIT_STAMP = 'current_body_rebase_audit_v0_2';
@@ -17,6 +19,7 @@ const VIRTUAL_STATE_PATH = Live.AUTONOMOUS_STATE_PATH || 'artifacts/live-self-au
 
 const LIVE_SOURCE_PATHS = [
   'src/live-self-dynamics-core-v0-1.js',
+  'src/recursive-unit-brain-core-v0-1.js',
   'src/math-language-kernel-v0-1.js',
   'src/math-ast-core-v0-1.js',
   'src/operator-anatomy-v0-1.js',
@@ -175,7 +178,23 @@ function coldStart(files, options) {
   return Object.assign({}, run, { audit_stamp: ARTIFACT_AUDIT_STAMP, source_body_current_at_start: true, source_body_changed_paths: [], source_body_missing_paths: [], source_body_extra_paths: [], final_state_extra_paths: finalExtra, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: Math.max(MIN_MUTATION_DEPTH, Number(options && options.max_iterations || MUTATION_BUDGET)), final_state: finalState, final_score: finalState.score, final_files: finalState.files });
 }
 
-function compactSummary(expression, run, startMode) {
+function compactUnitBrain(projection) {
+  return {
+    packet_type: projection.packet_type,
+    principle: projection.principle,
+    ok: projection.ok,
+    invariant: projection.invariant,
+    kernel_error: projection.kernel_error,
+    unit_violation_count: projection.unit_violation_count,
+    node_count: projection.node_count,
+    leaf_count: projection.leaf_count,
+    vague_mass: projection.vague_mass,
+    max_depth: projection.max_depth,
+    contact: projection.contact || null
+  };
+}
+
+function compactSummary(expression, run, startMode, unitBrainProjection) {
   return {
     packet_type: '42ndMind_latest_one_logic_stable_expression_summary_v0_1',
     audit_stamp: ARTIFACT_AUDIT_STAMP,
@@ -188,6 +207,7 @@ function compactSummary(expression, run, startMode) {
     pressure_differentiation: expression.pressure_differentiation,
     objective_completion_status: expression.objective_completion_status,
     objective_reality_gate: expression.objective_reality_gate,
+    recursive_unit_brain_projection: compactUnitBrain(unitBrainProjection),
     octahedron_position: expression.octahedron_position,
     math_language_completion: expression.math_language_completion,
     stable_diff: expression.stable_diff,
@@ -217,6 +237,7 @@ function main() {
   const startMode = prior ? 'resume_saved_stable_state' : 'cold_start_from_source';
   const run = prior ? continueFromState(prior, files, { max_iterations: MUTATION_BUDGET }) : coldStart(files, { max_iterations: MUTATION_BUDGET });
   const expression = Live.express(run, 'stable_math_language_reflection', {});
+  const unitBrainProjection = UnitBrain.liveProjection({ state: run.final_state, expression });
   const statePacket = {
     packet_type: '42ndMind_one_logic_reusable_stable_state_v0_1',
     audit_stamp: ARTIFACT_AUDIT_STAMP,
@@ -226,6 +247,7 @@ function main() {
     t: run.final_state.t,
     score: run.final_state.score,
     objective_completion_status: expression.objective_completion_status,
+    recursive_unit_brain_projection: compactUnitBrain(unitBrainProjection),
     mutation_budget: run.mutation_budget || MUTATION_BUDGET,
     min_mutation_depth: run.min_mutation_depth || MIN_MUTATION_DEPTH,
     iterations_this_run: run.iterations,
@@ -240,14 +262,16 @@ function main() {
       status: expression.expression,
       math_language_completion: expression.math_language_completion,
       objective_reality_gate: expression.objective_reality_gate,
+      recursive_unit_brain_projection: compactUnitBrain(unitBrainProjection),
       pressure_differentiation: expression.pressure_differentiation
     },
     Ξ: ''
   };
   fs.writeFileSync(STATE_PATH, JSON.stringify(statePacket, null, 2) + '\n');
   fs.writeFileSync(EXPRESSION_PATH, JSON.stringify(expression, null, 2) + '\n');
-  fs.writeFileSync(SUMMARY_PATH, JSON.stringify(compactSummary(expression, run, startMode), null, 2) + '\n');
-  console.log(JSON.stringify(compactSummary(expression, run, startMode), null, 2));
+  fs.writeFileSync(UNIT_BRAIN_PATH, JSON.stringify(unitBrainProjection, null, 2) + '\n');
+  fs.writeFileSync(SUMMARY_PATH, JSON.stringify(compactSummary(expression, run, startMode, unitBrainProjection), null, 2) + '\n');
+  console.log(JSON.stringify(compactSummary(expression, run, startMode, unitBrainProjection), null, 2));
 }
 
 if (require.main === module) main();
