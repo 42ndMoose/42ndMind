@@ -85,6 +85,10 @@ jobs:
             return Array.isArray(list) && list.includes(value);
           }
 
+          function array(value) {
+            return Array.isArray(value) ? value : [];
+          }
+
           function requireOk(condition, message, details) {
             if (!condition) {
               const packet = {
@@ -110,6 +114,11 @@ jobs:
           const livePaths = summary.live_source_paths || [];
           const alreadyPromotedIds = (promotion.already_promoted || []).map(row => row.id);
           const stateFiles = state.state && state.state.files || {};
+          const rebase = state.state && state.state.body_rebase || {};
+          const rebaseApplied = rebase.applied === true && rebase.audit_stamp === STAMP;
+          const summaryStartedCurrent = summary.source_body_current_at_start === true;
+          const stateStartedCurrent = state.source_body_current_at_start === true;
+          const sourceBodyMode = summaryStartedCurrent && stateStartedCurrent ? 'started_current_body' : rebaseApplied ? 'rebased_onto_current_body' : 'invalid_or_stale_body';
 
           requireOk(summary.audit_stamp === STAMP, 'stable summary is missing current-body audit stamp', { actual: summary.audit_stamp });
           requireOk(state.audit_stamp === STAMP, 'stable state is missing current-body audit stamp', { actual: state.audit_stamp });
@@ -117,8 +126,9 @@ jobs:
           requireOk(state.mutation_budget === 32 && state.min_mutation_depth === 8, 'stable state mutation depth is stale', { mutation_budget: state.mutation_budget, min_mutation_depth: state.min_mutation_depth });
           requireOk(includes(livePaths, 'src/proof-obligation-engine-v0-1.js'), 'stable summary live source body omits proof-obligation engine', { live_source_paths: livePaths });
           requireOk(typeof stateFiles['src/proof-obligation-engine-v0-1.js'] === 'string', 'stable state source body omits proof-obligation engine', { state_file_count: Object.keys(stateFiles).length });
-          requireOk(summary.source_body_current_at_start === true, 'stable summary did not start from current source body', { changed: summary.source_body_changed_paths, missing: summary.source_body_missing_paths });
-          requireOk(state.source_body_current_at_start === true, 'stable state did not start from current source body', { changed: state.source_body_changed_paths, missing: state.source_body_missing_paths });
+          requireOk(summaryStartedCurrent || rebaseApplied, 'stable summary lacks current-body or verified-rebase evidence', { source_body_current_at_start: summary.source_body_current_at_start, changed: array(summary.source_body_changed_paths), missing: array(summary.source_body_missing_paths), rebase });
+          requireOk(stateStartedCurrent || rebaseApplied, 'stable state lacks current-body or verified-rebase evidence', { source_body_current_at_start: state.source_body_current_at_start, changed: array(state.source_body_changed_paths), missing: array(state.source_body_missing_paths), rebase });
+          requireOk(!array(summary.source_body_missing_paths).length && !array(state.source_body_missing_paths).length, 'stable artifact has missing live source paths after run', { summary_missing: array(summary.source_body_missing_paths), state_missing: array(state.source_body_missing_paths) });
           requireOk(includes(summaryGate.rule_sources, 'proof_obligation_engine'), 'stable summary reality gate lacks proof_obligation_engine', { rule_sources: summaryGate.rule_sources });
           requireOk(includes(expressionGate.rule_sources, 'proof_obligation_engine'), 'stable expression reality gate lacks proof_obligation_engine', { rule_sources: expressionGate.rule_sources });
           requireOk(includes(promotionGate.rule_sources, 'proof_obligation_engine'), 'source-promotion digest was built from stale reality gate', { rule_sources: promotionGate.rule_sources });
@@ -130,9 +140,12 @@ jobs:
             packet_type: '42ndMind_stable_expression_freshness_check_v0_1',
             ok: true,
             audit_stamp: STAMP,
+            source_body_mode: sourceBodyMode,
             mutation_budget: summary.mutation_budget,
             min_mutation_depth: summary.min_mutation_depth,
             source_body_current_at_start: summary.source_body_current_at_start,
+            source_body_changed_paths: array(summary.source_body_changed_paths),
+            source_body_missing_paths: array(summary.source_body_missing_paths),
             rule_sources: expressionGate.rule_sources || [],
             operator_families: expressionGate.operator_families || [],
             already_promoted: alreadyPromotedIds,
