@@ -44,6 +44,9 @@ function assertObligationBackedRealityGate(expression) {
   assert.strictEqual(includes(expression.objective_reality_gate.rule_sources, 'proof_obligation_engine'), true, 'proof obligation engine must be active in live reality gate, not dormant');
   assert.strictEqual(includes(expression.objective_reality_gate.operator_families, 'division_identity'), true, 'live reality gate must report division obligation family');
   assert.strictEqual(includes(expression.objective_reality_gate.operator_families, 'sqrt_square_identity'), true, 'live reality gate must report sqrt-square obligation family');
+}
+
+function assertAdversarialMinimumCore(expression) {
   assert.strictEqual(expression.objective_completion_status, 'adversarially_contacted_minimum_core');
 }
 
@@ -206,6 +209,7 @@ assert.strictEqual(expression.math_language_completion.missing.length, 0, 'life-
 assert.strictEqual(expression.next_self_generated_obstruction, null);
 assert.strictEqual(expression.expression, 'stable_state_reports_objective_math_language_provisionally_complete');
 assertObligationBackedRealityGate(expression);
+assertAdversarialMinimumCore(expression);
 
 const stableExpression = L.stableExpression(files, { max_iterations: 8 });
 assert.strictEqual(stableExpression.packet_type, '42ndMind_one_logic_self_expression_v0_1');
@@ -216,6 +220,7 @@ assert.strictEqual(stableExpression.stable_diff.iterations >= 1, true);
 assert.strictEqual(stableExpression.stable_diff.autonomous_total > 0, true);
 assert.strictEqual(stableExpression.obstruction_stack.length, 0);
 assertObligationBackedRealityGate(stableExpression);
+assertAdversarialMinimumCore(stableExpression);
 
 const damagedRun = L.autonomous(files, { max_iterations: 4, extra_candidates: [badCandidate] });
 assert.strictEqual(damagedRun.source_promoted, false);
