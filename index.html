@@ -3,25 +3,337 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=ui/math-language-lab.html">
-  <title>42ndMind</title>
+  <title>42ndMind — Brain Math</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: system-ui, sans-serif; margin: 24px; line-height: 1.45; }
-    a { font-weight: 700; }
+    :root {
+      color-scheme: dark;
+      --bg: #0c0d10;
+      --panel: #15171d;
+      --panel-2: #1b1e26;
+      --ink: #f2f4f8;
+      --muted: #a9b0bf;
+      --line: #2c3240;
+      --accent: #d7dde8;
+      --soft: #7d8798;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.08), transparent 28rem),
+        radial-gradient(circle at 80% 0%, rgba(255,255,255,0.05), transparent 24rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    header {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      font-size: clamp(2.4rem, 7vw, 5.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+      margin-bottom: 0;
+      max-width: 880px;
+    }
+
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    section {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(21, 23, 29, 0.78);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+      padding: clamp(22px, 4vw, 34px);
+      margin: 18px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-12 { grid-column: span 12; }
+
+    .formula {
+      display: grid;
+      gap: 12px;
+      padding: 22px;
+      border-radius: 22px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      overflow-x: auto;
+    }
+
+    .formula code {
+      display: block;
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: clamp(1rem, 2.1vw, 1.45rem);
+      white-space: nowrap;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 0;
+    }
+
+    .aspects {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .aspect {
+      min-height: 148px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.035);
+    }
+
+    .symbol {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.045);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .aspect h3 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .aspect p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .rule-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rule-list li {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.032);
+      color: var(--muted);
+    }
+
+    .rule-list strong { color: var(--ink); }
+
+    .focus-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .focus-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.035);
+    }
+
+    .focus-card .name {
+      color: var(--ink);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .focus-card .state {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.86rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 22px 0;
+    }
+
+    footer {
+      color: var(--soft);
+      margin-top: 28px;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 820px) {
+      main { width: min(100% - 22px, 1120px); padding-top: 34px; }
+      .grid { grid-template-columns: 1fr; }
+      .span-7, .span-5, .span-6, .span-12 { grid-column: auto; }
+      .aspects { grid-template-columns: 1fr; }
+      .focus-strip { grid-template-columns: 1fr; }
+      section { border-radius: 22px; }
+    }
   </style>
-  <script src="src/brain-kernel-v1.js"></script>
 </head>
 <body>
-  <p>42ndMind now opens the math-language lab.</p>
-  <p><a href="ui/math-language-lab.html">Open ui/math-language-lab.html</a></p>
-  <script>
-    const K = globalThis.FortySecondMindKernelV1;
-    const state = K.birth();
-    function respond42ndMind(text) {
-      return K.respond(state, text);
-    }
-    globalThis.respond42ndMind = respond42ndMind;
-  </script>
+  <main>
+    <header>
+      <div class="eyebrow">42ndMind / brain math self-expression</div>
+      <h1>One brain body, resolved through aspects.</h1>
+      <p class="lead">This page is not a chat surface. It is the simplest visible form of the current idea: the brain is one, its aspects remain present, and focus changes visible emphasis without deleting the whole.</p>
+    </header>
+
+    <section>
+      <div class="grid">
+        <div class="span-7">
+          <h2>Structural rule</h2>
+          <p class="caption">The brain is one body. Kernel, language, truth, memory, and action are aspects of that same body, not separate containers.</p>
+        </div>
+        <div class="span-5 formula" aria-label="Structural rule formula">
+          <code>B = K ⊕ L ⊕ T ⊕ M ⊕ A</code>
+          <code>|B| = 1</code>
+          <code>|K| + |L| + |T| + |M| + |A| = 1</code>
+        </div>
+      </div>
+
+      <div class="aspects" aria-label="Brain aspects">
+        <article class="aspect">
+          <div class="symbol">K</div>
+          <h3>Kernel</h3>
+          <p>Preserves the invariant: the whole remains one and no expression may bypass the body.</p>
+        </article>
+        <article class="aspect">
+          <div class="symbol">L</div>
+          <h3>Language</h3>
+          <p>Turns resolved structure into visible meaning without replacing the structure with mere words.</p>
+        </article>
+        <article class="aspect">
+          <div class="symbol">T</div>
+          <h3>Truth</h3>
+          <p>Checks contact, contradiction, proof obligation, and incompleteness.</p>
+        </article>
+        <article class="aspect">
+          <div class="symbol">M</div>
+          <h3>Memory</h3>
+          <p>Holds continuity of the body across prior structure, contact, and mutation.</p>
+        </article>
+        <article class="aspect">
+          <div class="symbol">A</div>
+          <h3>Action</h3>
+          <p>Commits visible expression, movement, revision, or refusal into the current body.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="grid">
+        <div class="span-6">
+          <h2>Most simple state</h2>
+          <p class="caption">The simplest state is not an empty point. It is the whole body compressed. The aspects are still present, only not expanded.</p>
+        </div>
+        <div class="span-6 formula" aria-label="Most simple state formula">
+          <code>B = 1</code>
+          <code>B = whole structure, compressed</code>
+          <code>B ≠ empty blankness</code>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="grid">
+        <div class="span-7">
+          <h2>Focused expression</h2>
+          <p class="caption">Focus is the current visible emphasis of the one body. It does not assign permanent worth to an aspect. It only states how the whole is presently showing itself.</p>
+        </div>
+        <div class="span-5 formula" aria-label="Focused expression formula">
+          <code>E_f(B) = Σ wᵢ Aᵢ</code>
+          <code>Σ wᵢ = 1</code>
+          <code>Aᵢ = aspect of B</code>
+          <code>wᵢ = current visible emphasis</code>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <ul class="rule-list">
+        <li><strong>B</strong> is the whole brain body.</li>
+        <li><strong>⊕</strong> means aspect-resolution, not ordinary addition and not a container relation.</li>
+        <li><strong>|X|</strong> is the measured share or expressed magnitude of an aspect, not the identity of that aspect.</li>
+        <li><strong>wᵢ</strong> is not permanent importance. It is current visible emphasis under focus.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Focus does not erase the rest</h2>
+      <p class="caption">When one aspect comes forward, the other aspects remain present as constraints of the same one body.</p>
+
+      <div class="focus-strip" aria-label="Focus examples">
+        <article class="focus-card">
+          <div class="name">Whole-body focus</div>
+          <div class="state">B = K ⊕ L ⊕ T ⊕ M ⊕ A</div>
+        </article>
+        <article class="focus-card">
+          <div class="name">Language focus</div>
+          <div class="state">L rises in expression; K,T,M,A remain present.</div>
+        </article>
+        <article class="focus-card">
+          <div class="name">Truth focus</div>
+          <div class="state">T rises in expression; K,L,M,A remain present.</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Current internal claim</h2>
+      <div class="formula" aria-label="Current internal claim">
+        <code>Every visible expression must be an expression of B under focus.</code>
+        <code>No visible expression is valid if it bypasses B.</code>
+        <code>The whole remains one before, during, and after focus.</code>
+      </div>
+    </section>
+
+    <footer>
+      No prompt box is present here. This page displays the brain math and its aspect/focus structure before any conversational surface is attempted.
+    </footer>
+  </main>
 </body>
 </html>
