@@ -16,6 +16,7 @@ const MUTATION_BUDGET = 32;
 const MIN_MUTATION_DEPTH = 8;
 const ARTIFACT_AUDIT_STAMP = 'current_body_rebase_audit_v0_2';
 const VIRTUAL_STATE_PATH = Live.AUTONOMOUS_STATE_PATH || 'artifacts/live-self-autonomous-state-v0-1.json';
+const STABLE_CYCLE_OPTIONS = Object.freeze({ disable_autonomy: true, disable_pressure_reflex: false });
 
 const LIVE_SOURCE_PATHS = [
   'src/live-self-dynamics-core-v0-1.js',
@@ -90,11 +91,29 @@ function compactHistory(history) {
         applyable: s.applyable === true
       },
       internal_adjustment: e.internal_adjustment === true,
-      virtual_state_mutation: e.virtual_state_mutation === true,
-      moved_simulated_self: e.moved_simulated_self === true,
+      virtual_state_mutation: false,
+      moved_simulated_self: false,
       promoted_source: false
     };
   });
+}
+
+function compactInternalState(internal) {
+  const source = O(internal);
+  return {
+    generation: Math.max(0, Number(source.generation || 0)),
+    pressure_relief: Number(source.pressure_relief || 0),
+    repair_responses: A(source.repair_responses).slice(-32),
+    symbols: Array.from(new Set(A(source.symbols))).slice(-128),
+    relations: A(source.relations).slice(-128),
+    mutations: A(source.mutations).slice(-64),
+    virtual_edits: [],
+    seen_files: Array.from(new Set(A(source.seen_files))).slice(-128),
+    last_pressure: Number(source.last_pressure || 0),
+    novelty: Number(source.novelty || 0),
+    expressions: A(source.expressions).slice(-32),
+    Ξ: ''
+  };
 }
 
 function bodyDiff(state, files) {
@@ -112,7 +131,7 @@ function bodyDiff(state, files) {
 
 function stateOnCurrentBody(state, files, diff, reason) {
   const sourceState = O(state);
-  const rebased = Live.create(files, { internal_state: O(sourceState.internal_state) });
+  const rebased = Live.create(files, { internal_state: compactInternalState(sourceState.internal_state) });
   const oldExtra = extraFilePaths(sourceState.files);
   const compactedHistory = compactHistory(sourceState.history);
   rebased.t = Math.max(0, Number(sourceState.t || 0));
@@ -128,7 +147,8 @@ function stateOnCurrentBody(state, files, diff, reason) {
     missing_paths: A(diff && diff.missing),
     extra_paths: A(diff && diff.extra).concat(oldExtra.filter(p => !A(diff && diff.extra).includes(p))).sort(),
     stripped_virtual_paths: oldExtra.filter(p => p === VIRTUAL_STATE_PATH),
-    live_source_path_count: LIVE_SOURCE_PATHS.length
+    live_source_path_count: LIVE_SOURCE_PATHS.length,
+    stable_publication_growth_bound: STABLE_CYCLE_OPTIONS
   };
   return rebased;
 }
@@ -150,7 +170,7 @@ function cleanedFinalState(state, files, initialDiff) {
 }
 
 function continueFromState(state, files, options) {
-  const opts = options || {};
+  const opts = Object.assign({}, STABLE_CYCLE_OPTIONS, options || {});
   const diff = bodyDiff(state, files);
   let current = stateOnCurrentBody(state, files, diff);
   const cycles = [];
@@ -158,24 +178,25 @@ function continueFromState(state, files, options) {
   let stopReason = 'mutation_budget_reached';
   for (let i = 0; i < max; i += 1) {
     const cycle = Live.selfCycle(current, opts);
-    cycles.push({ iteration: i, generated_count: cycle.generated_count, autonomous_generated_count: cycle.autonomous_generated_count, pressure_generated_count: cycle.pressure_generated_count, moved: cycle.moved, improved: cycle.improved, internal_growth: cycle.internal_growth, virtual_state_growth: cycle.virtual_state_growth, less_self_seen: cycle.less_self_seen, score: cycle.score, events: cycle.events });
+    cycles.push({ iteration: i, generated_count: cycle.generated_count, autonomous_generated_count: cycle.autonomous_generated_count, pressure_generated_count: cycle.pressure_generated_count, moved: cycle.moved, improved: cycle.improved, internal_growth: cycle.internal_growth, virtual_state_growth: false, less_self_seen: cycle.less_self_seen, score: cycle.score, events: cycle.events });
     current = cycle.state;
-    if (i + 1 >= MIN_MUTATION_DEPTH && !cycle.moved && !cycle.internal_growth && !cycle.virtual_state_growth && !cycle.improved) {
+    if (i + 1 >= MIN_MUTATION_DEPTH && !cycle.moved && !cycle.internal_growth && !cycle.improved) {
       stopReason = 'stabilized_after_minimum_mutation_depth';
       break;
     }
   }
   const finalExtra = extraFilePaths(current.files);
   const finalState = cleanedFinalState(current, files, diff);
-  return { packet_type: '42ndMind_live_self_dynamics_continuous_v0_1', version: Live.VERSION, ok: true, mode: 'one_logic_resumed_from_saved_stable_state', audit_stamp: ARTIFACT_AUDIT_STAMP, source_body_current_at_start: diff.current, source_body_changed_paths: diff.changed, source_body_missing_paths: diff.missing, source_body_extra_paths: diff.extra, final_state_extra_paths: finalExtra, iterations: cycles.length, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: max, stop_reason: stopReason, final_state: finalState, final_score: finalState.score, final_files: finalState.files, source_promoted: false, human_patch_required_for_source_promotion: false, cycles, Ξ: '' };
+  return { packet_type: '42ndMind_live_self_dynamics_continuous_v0_1', version: Live.VERSION, ok: true, mode: 'one_logic_resumed_from_saved_stable_state', audit_stamp: ARTIFACT_AUDIT_STAMP, stable_publication_growth_bound: STABLE_CYCLE_OPTIONS, source_body_current_at_start: diff.current, source_body_changed_paths: diff.changed, source_body_missing_paths: diff.missing, source_body_extra_paths: diff.extra, final_state_extra_paths: finalExtra, iterations: cycles.length, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: max, stop_reason: stopReason, final_state: finalState, final_score: finalState.score, final_files: finalState.files, source_promoted: false, human_patch_required_for_source_promotion: false, cycles, Ξ: '' };
 }
 
 function coldStart(files, options) {
-  const run = Live.autonomous(files, options || { max_iterations: MUTATION_BUDGET });
+  const opts = Object.assign({}, STABLE_CYCLE_OPTIONS, options || { max_iterations: MUTATION_BUDGET });
+  const run = Live.continuous(files, opts);
   const diff = { current: true, changed: [], missing: [], extra: [] };
   const finalExtra = extraFilePaths(run.final_state && run.final_state.files);
   const finalState = cleanedFinalState(run.final_state, files, diff);
-  return Object.assign({}, run, { audit_stamp: ARTIFACT_AUDIT_STAMP, source_body_current_at_start: true, source_body_changed_paths: [], source_body_missing_paths: [], source_body_extra_paths: [], final_state_extra_paths: finalExtra, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: Math.max(MIN_MUTATION_DEPTH, Number(options && options.max_iterations || MUTATION_BUDGET)), final_state: finalState, final_score: finalState.score, final_files: finalState.files });
+  return Object.assign({}, run, { audit_stamp: ARTIFACT_AUDIT_STAMP, stable_publication_growth_bound: STABLE_CYCLE_OPTIONS, source_body_current_at_start: true, source_body_changed_paths: [], source_body_missing_paths: [], source_body_extra_paths: [], final_state_extra_paths: finalExtra, min_mutation_depth: MIN_MUTATION_DEPTH, mutation_budget: Math.max(MIN_MUTATION_DEPTH, Number(options && options.max_iterations || MUTATION_BUDGET)), final_state: finalState, final_score: finalState.score, final_files: finalState.files });
 }
 
 function compactUnitBrain(projection) {
@@ -190,6 +211,14 @@ function compactUnitBrain(projection) {
     leaf_count: projection.leaf_count,
     vague_mass: projection.vague_mass,
     max_depth: projection.max_depth,
+    self_definition: projection.self_definition ? {
+      packet_type: projection.self_definition.packet_type,
+      root_id: projection.self_definition.root_id,
+      root_formulas: projection.self_definition.root_formulas,
+      immediate_aspect_count: projection.self_definition.immediate_aspects.length,
+      local_one_count: projection.self_definition.local_ones.length
+    } : null,
+    focus_expression_demonstrations: projection.focus_expression_demonstrations || [],
     contact: projection.contact || null
   };
 }
@@ -219,6 +248,7 @@ function compactSummary(expression, run, startMode, unitBrainProjection) {
     mutation_budget: run.mutation_budget || MUTATION_BUDGET,
     min_mutation_depth: run.min_mutation_depth || MIN_MUTATION_DEPTH,
     stop_reason: run.stop_reason,
+    stable_publication_growth_bound: run.stable_publication_growth_bound || STABLE_CYCLE_OPTIONS,
     source_body_current_at_start: run.source_body_current_at_start == null ? true : run.source_body_current_at_start,
     source_body_changed_paths: run.source_body_changed_paths || [],
     source_body_missing_paths: run.source_body_missing_paths || [],
@@ -252,6 +282,7 @@ function main() {
     min_mutation_depth: run.min_mutation_depth || MIN_MUTATION_DEPTH,
     iterations_this_run: run.iterations,
     stop_reason: run.stop_reason,
+    stable_publication_growth_bound: run.stable_publication_growth_bound || STABLE_CYCLE_OPTIONS,
     source_body_current_at_start: run.source_body_current_at_start == null ? true : run.source_body_current_at_start,
     source_body_changed_paths: run.source_body_changed_paths || [],
     source_body_missing_paths: run.source_body_missing_paths || [],
