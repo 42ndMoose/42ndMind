@@ -4,23 +4,16 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.2.0';
+  const VERSION = '0.3.0';
   const EPS = 1e-9;
 
   function A(value) { return Array.isArray(value) ? value : []; }
   function O(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
   function text(value) { return String(value == null ? '' : value); }
   function R(value) { return Number((Number(value) || 0).toFixed(6)); }
-  function clamp01(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0;
-  }
+  function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
-
-  function cleanId(value) {
-    const s = text(value).trim();
-    return s || 'unit';
-  }
+  function cleanId(value) { const s = text(value).trim(); return s || 'unit'; }
 
   function rawWeight(row) {
     const value = row && row.w != null ? row.w : row && row.weight != null ? row.weight : 1;
@@ -30,10 +23,7 @@
   function normalizeWeights(rows) {
     const clean = A(rows).map((row, index) => {
       const source = O(row);
-      return Object.assign({}, source, {
-        id: cleanId(source.id || source.dimension || source.name || ('aspect_' + index)),
-        raw: rawWeight(source)
-      });
+      return Object.assign({}, source, { id: cleanId(source.id || source.dimension || source.name || ('aspect_' + index)), raw: rawWeight(source) });
     }).filter(row => row.id);
     if (!clean.length) return [];
     const total = clean.reduce((sum, row) => sum + row.raw, 0) || 1;
@@ -47,9 +37,7 @@
     });
   }
 
-  function l1(children) {
-    return R(A(children).reduce((sum, child) => sum + Math.abs(Number(child.w || 0)), 0));
-  }
+  function l1(children) { return R(A(children).reduce((sum, child) => sum + Math.abs(Number(child.w || 0)), 0)); }
 
   function normalizeNode(input) {
     const source = O(input);
@@ -92,16 +80,7 @@
     const unitViolations = rows.filter(row => !row.ok);
     const vagueMass = rows.filter(row => row.vague).reduce((sum, row) => sum + Number(row.w || 0), 0);
     const maxDepth = rows.reduce((max, row) => Math.max(max, row.path.split('/').length), 0);
-    return {
-      node_count: rows.length,
-      leaf_count: rows.filter(row => row.leaf).length,
-      vague_count: rows.filter(row => row.vague).length,
-      vague_mass: R(vagueMass),
-      max_depth: maxDepth,
-      unit_violation_count: unitViolations.length,
-      unit_violations: unitViolations,
-      rows
-    };
+    return { node_count: rows.length, leaf_count: rows.filter(row => row.leaf).length, vague_count: rows.filter(row => row.vague).length, vague_mass: R(vagueMass), max_depth: maxDepth, unit_violation_count: unitViolations.length, unit_violations: unitViolations, rows };
   }
 
   function symbolBase(id, fallback) {
@@ -110,8 +89,7 @@
   }
 
   function symbolMap(root) {
-    const map = {};
-    const used = {};
+    const map = {}, used = {};
     map[root.id] = 'B';
     (function visit(node) {
       A(node.children).forEach((child, index) => {
@@ -130,50 +108,7 @@
     const children = A(node.children);
     if (!children.length) return [s + ' = 1', s + ' = unresolved local one'];
     const terms = children.map(child => symbols[child.id] || symbolBase(child.id));
-    return [
-      s + ' = ' + terms.join(' ⊕ '),
-      '|' + s + '| = 1',
-      terms.map(term => '|' + term + '|').join(' + ') + ' = 1',
-      s + '_current = ' + children.map(child => R(child.w) + '·' + (symbols[child.id] || symbolBase(child.id))).join(' + ')
-    ];
-  }
-
-  function selfDefine(root) {
-    const symbols = symbolMap(root);
-    const rows = walk(root, [], []);
-    const localOnes = rows.map(row => {
-      const node = findPath(root, row.path.split('/'));
-      return {
-        id: row.id,
-        symbol: symbols[row.id] || symbolBase(row.id),
-        path: row.path,
-        leaf: row.leaf,
-        vague: row.vague,
-        ok: row.ok,
-        child_count: row.child_count,
-        child_total: row.child_total,
-        formulas: node ? formulasFor(node, symbols) : []
-      };
-    });
-    return {
-      packet_type: '42ndMind_recursive_unit_self_definition_v0_1',
-      root_id: root.id,
-      root_symbol: 'B',
-      statement: 'the current body defines its visible law from its active aspect structure',
-      symbols,
-      root_formulas: formulasFor(root, symbols),
-      immediate_aspects: A(root.children).map(child => ({
-        id: child.id,
-        symbol: symbols[child.id] || symbolBase(child.id),
-        weight: child.w,
-        child_total: child.child_total,
-        child_count: A(child.children).length,
-        vague: child.vague,
-        ok: child.ok
-      })),
-      local_ones: localOnes,
-      empty_text: ''
-    };
+    return [s + ' = ' + terms.join(' ⊕ '), '|' + s + '| = 1', terms.map(term => '|' + term + '|').join(' + ') + ' = 1', s + '_current = ' + children.map(child => R(child.w) + '·' + (symbols[child.id] || symbolBase(child.id))).join(' + ')];
   }
 
   function findPath(root, path) {
@@ -188,34 +123,58 @@
     return node;
   }
 
-  function findToken(root, token) {
+  function constructedSequence(node) {
+    const meta = O(node && node.meta);
+    const children = A(node && node.children);
+    if (meta.expression_construction !== 'ordered_symbol_sequence' || !children.length) return null;
+    const parts = children.map((child, index) => {
+      const m = O(child.meta);
+      const position = Number(m.position || index + 1);
+      const symbol = text(m.symbol_letter || m.letter || '').trim();
+      return { id: child.id, position, symbol, ok: !!symbol && Number.isFinite(position) };
+    }).sort((a, b) => a.position - b.position);
+    const ok = parts.length > 0 && parts.every(part => part.ok);
+    const visible = ok ? parts.map(part => part.symbol).join('') : '';
+    return { operator: 'ordered_symbol_sequence', ok, visible_expression: visible, parts, reduction: ok ? parts.map(part => part.symbol).join(' + ') + ' -> ' + visible : '' };
+  }
+
+  function findConstructedToken(root, wanted) {
     const rows = walk(root, [], []);
-    const wanted = text(token).trim();
-    const row = rows.find(item => O(item.meta).expression_token === wanted);
-    return row || null;
+    for (const row of rows) {
+      const node = findPath(root, row.path.split('/'));
+      const construction = constructedSequence(node);
+      if (construction && construction.ok && construction.visible_expression === wanted) return { row, node, construction };
+    }
+    return null;
+  }
+
+  function selfDefine(root) {
+    const symbols = symbolMap(root);
+    const rows = walk(root, [], []);
+    const localOnes = rows.map(row => {
+      const node = findPath(root, row.path.split('/'));
+      const construction = constructedSequence(node);
+      return { id: row.id, symbol: symbols[row.id] || symbolBase(row.id), path: row.path, leaf: row.leaf, vague: row.vague, ok: row.ok, child_count: row.child_count, child_total: row.child_total, formulas: node ? formulasFor(node, symbols) : [], construction: construction || null };
+    });
+    return {
+      packet_type: '42ndMind_recursive_unit_self_definition_v0_1',
+      root_id: root.id,
+      root_symbol: 'B',
+      statement: 'the current body defines its visible law from its active aspect structure',
+      symbols,
+      root_formulas: formulasFor(root, symbols),
+      immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })),
+      constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })),
+      local_ones: localOnes,
+      empty_text: ''
+    };
   }
 
   function project(input, context) {
     const root = normalizeNode(input || { id: 'brain' });
     const s = stats(root);
     const kernelError = R(s.unit_violation_count ? 1 : 0);
-    return {
-      packet_type: '42ndMind_recursive_unit_brain_projection_v0_1',
-      version: VERSION,
-      principle: 'recursive_unit_total_state_projected_through_kernel_constraints',
-      ok: kernelError === 0,
-      invariant: 'every defined local one normalizes its aspects to one; undefined leaves remain valid vague units',
-      root,
-      self_definition: selfDefine(root),
-      kernel_error: kernelError,
-      unit_violation_count: s.unit_violation_count,
-      vague_mass: s.vague_mass,
-      node_count: s.node_count,
-      leaf_count: s.leaf_count,
-      max_depth: s.max_depth,
-      context: O(context),
-      empty_text: ''
-    };
+    return { packet_type: '42ndMind_recursive_unit_brain_projection_v0_1', version: VERSION, principle: 'recursive_unit_total_state_projected_through_kernel_constraints', ok: kernelError === 0, invariant: 'every defined local one normalizes its aspects to one; undefined leaves remain valid vague units', root, self_definition: selfDefine(root), kernel_error: kernelError, unit_violation_count: s.unit_violation_count, vague_mass: s.vague_mass, node_count: s.node_count, leaf_count: s.leaf_count, max_depth: s.max_depth, context: O(context), empty_text: '' };
   }
 
   function focusExpression(projectionOrRoot, focus) {
@@ -223,32 +182,30 @@
     const root = packet.root;
     const f = O(focus);
     const token = text(f.expression_token || f.token || 'potato').trim();
-    const tokenRow = findToken(root, token);
-    const focusPath = A(f.path).length ? A(f.path).join('/') : tokenRow && tokenRow.path;
+    const found = findConstructedToken(root, token);
+    const focusPath = A(f.path).length ? A(f.path).join('/') : found && found.row.path;
     const node = focusPath ? findPath(root, focusPath.split('/')) : null;
-    const fromBody = !!(node && O(node.meta).expression_token === token);
+    const construction = constructedSequence(node);
+    const derived = construction && construction.ok ? construction.visible_expression : '';
+    const fromBody = !!(construction && construction.ok && derived === token);
     const ok = packet.ok === true && fromBody;
     return {
       packet_type: '42ndMind_recursive_unit_focus_expression_v0_1',
       focus_id: cleanId(f.id || 'symbolic_token_focus'),
       ok,
-      visible_expression: ok ? token : '',
-      expression_token: token,
+      visible_expression: ok ? derived : '',
+      requested_expression: token,
       whole_body_present: true,
       selective_focus: true,
-      source: ok ? 'body_node_meta_expression_token' : 'no_body_node_supplied_the_requested_token',
+      source: ok ? 'body_ordered_symbol_sequence' : 'no_body_ordered_sequence_derived_the_requested_expression',
       body_packet_type: packet.packet_type,
       body_root_id: root.id,
       body_ok: packet.ok === true,
       body_kernel_error: packet.kernel_error,
       focus_path: focusPath || null,
       trace: focusPath ? focusPath.split('/') : [],
-      obligation: {
-        token_must_exist_inside_current_body: true,
-        body_must_preserve_unit_total: true,
-        expression_must_not_bypass_body: true,
-        satisfied: ok
-      },
+      construction: construction || null,
+      obligation: { requested_expression_must_be_derived_from_ordered_body_parts: true, body_must_preserve_unit_total: true, expression_must_not_bypass_body: true, satisfied: ok },
       empty_text: ''
     };
   }
@@ -267,13 +224,9 @@
   function refineAt(node, path, children) {
     const target = A(path);
     if (!target.length || target[0] === node.id) {
-      if (target.length <= 1) {
-        return normalizeNode(Object.assign({}, node, { children: mergeChildren(node.children, children), vague: false }));
-      }
+      if (target.length <= 1) return normalizeNode(Object.assign({}, node, { children: mergeChildren(node.children, children), vague: false }));
       const rest = target.slice(1);
-      return normalizeNode(Object.assign({}, node, {
-        children: A(node.children).map(child => child.id === rest[0] ? refineAt(child, rest, children) : child)
-      }));
+      return normalizeNode(Object.assign({}, node, { children: A(node.children).map(child => child.id === rest[0] ? refineAt(child, rest, children) : child) }));
     }
     return normalizeNode(node);
   }
@@ -283,13 +236,12 @@
     const path = A(contact && contact.path).length ? A(contact.path) : [base.id];
     const children = A(contact && contact.children).length ? A(contact.children) : A(contact && contact.dimensions);
     const refined = refineAt(base, path, children);
-    return Object.assign(project(refined, { contact: O(contact) }), {
-      refinement: {
-        path,
-        added_or_reweighted_children: children.map(row => cleanId(row.id || row.dimension || row.name)),
-        source: 'contact_defined_vague_or_underweighted_unit'
-      }
-    });
+    return Object.assign(project(refined, { contact: O(contact) }), { refinement: { path, added_or_reweighted_children: children.map(row => cleanId(row.id || row.dimension || row.name)), source: 'contact_defined_vague_or_underweighted_unit' } });
+  }
+
+  function letter(id, symbol, position) { return { id, w: 1, vague: false, meta: { symbol_letter: symbol, position } }; }
+  function potatoConstruction() {
+    return { id: 'symbolic_token_potato', w: EPS, vague: false, meta: { role: 'controlled_focus_proof_token', expression_construction: 'ordered_symbol_sequence' }, children: [letter('letter_p_1', 'p', 1), letter('letter_o_2', 'o', 2), letter('letter_t_3', 't', 3), letter('letter_a_4', 'a', 4), letter('letter_t_5', 't', 5), letter('letter_o_6', 'o', 6)] };
   }
 
   function liveProjection(input) {
@@ -307,48 +259,15 @@
     const relations = Math.min(1, A(internal.relations).length / 128);
     const mutations = Math.min(1, A(internal.mutations).length / 32);
     const virtualEdits = Math.min(1, A(internal.virtual_edits).length / 32);
-    const root = {
-      id: 'one_logic_brain',
-      children: [
-        { id: 'kernel', w: 1, children: [
-          { id: 'unit_total_constraint', w: 1 },
-          { id: 'proof_obligation_constraint', w: expression.objective_reality_gate ? 1 : 0.5 },
-          { id: 'reality_contact_constraint', w: truthContact + EPS },
-          { id: 'source_body_identity_constraint', w: sourceIdentity + EPS }
-        ] },
-        { id: 'language', w: 1, children: [
-          { id: 'coherence', w: languageCoherence + EPS },
-          { id: 'symbol_memory', w: symbols + EPS },
-          { id: 'relation_memory', w: relations + EPS },
-          { id: 'growth_pressure', w: languageGrowth + EPS },
-          { id: 'vague_abstraction_capacity', w: Math.max(EPS, 1 - Math.max(symbols, relations)) },
-          { id: 'symbolic_token_potato', w: EPS, vague: false, meta: { expression_token: 'potato', role: 'controlled_focus_proof_token' } }
-        ] },
-        { id: 'truth', w: 1, children: [
-          { id: 'contact', w: truthContact + EPS },
-          { id: 'damage_guard', w: Math.max(EPS, 1 - truthDamage) },
-          { id: 'belief_separation', w: 1 }
-        ] },
-        { id: 'memory', w: 1, children: [
-          { id: 'mutation_memory', w: mutations + EPS },
-          { id: 'virtual_state_memory', w: virtualEdits + EPS },
-          { id: 'current_body_memory', w: 1 }
-        ] },
-        { id: 'action', w: 1, children: [
-          { id: 'mutation_pressure', w: actionMutation + EPS },
-          { id: 'source_promotion_boundary', w: 1 }
-        ] }
-      ]
-    };
+    const root = { id: 'one_logic_brain', children: [
+      { id: 'kernel', w: 1, children: [ { id: 'unit_total_constraint', w: 1 }, { id: 'proof_obligation_constraint', w: expression.objective_reality_gate ? 1 : 0.5 }, { id: 'reality_contact_constraint', w: truthContact + EPS }, { id: 'source_body_identity_constraint', w: sourceIdentity + EPS } ] },
+      { id: 'language', w: 1, children: [ { id: 'coherence', w: languageCoherence + EPS }, { id: 'symbol_memory', w: symbols + EPS }, { id: 'relation_memory', w: relations + EPS }, { id: 'growth_pressure', w: languageGrowth + EPS }, { id: 'vague_abstraction_capacity', w: Math.max(EPS, 1 - Math.max(symbols, relations)) }, potatoConstruction() ] },
+      { id: 'truth', w: 1, children: [ { id: 'contact', w: truthContact + EPS }, { id: 'damage_guard', w: Math.max(EPS, 1 - truthDamage) }, { id: 'belief_separation', w: 1 } ] },
+      { id: 'memory', w: 1, children: [ { id: 'mutation_memory', w: mutations + EPS }, { id: 'virtual_state_memory', w: virtualEdits + EPS }, { id: 'current_body_memory', w: 1 } ] },
+      { id: 'action', w: 1, children: [ { id: 'mutation_pressure', w: actionMutation + EPS }, { id: 'source_promotion_boundary', w: 1 } ] }
+    ] };
     const projection = project(root, { source: 'live_self_stable_expression', generation: internal.generation || 0, t: value.state && value.state.t || 0 });
-    projection.contact = {
-      truth_contact: R(truthContact),
-      language_growth_pressure: R(languageGrowth),
-      source_identity: R(sourceIdentity),
-      mutation_pressure: R(actionMutation),
-      symbol_memory: R(symbols),
-      relation_memory: R(relations)
-    };
+    projection.contact = { truth_contact: R(truthContact), language_growth_pressure: R(languageGrowth), source_identity: R(sourceIdentity), mutation_pressure: R(actionMutation), symbol_memory: R(symbols), relation_memory: R(relations) };
     projection.focus_expression_demonstrations = [focusExpression(projection, { id: 'potato_symbolic_focus', token: 'potato' })];
     return projection;
   }
