@@ -4,7 +4,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.3.0';
+  const VERSION = '0.4.0';
   const EPS = 1e-9;
 
   function A(value) { return Array.isArray(value) ? value : []; }
@@ -51,21 +51,7 @@
     const id = cleanId(source.id || source.dimension || source.name || 'unit');
     const childTotal = l1(children);
     const leaf = children.length === 0;
-    return {
-      id,
-      equation: id + ' = 1',
-      invariant: 'sum(aspects) = 1 when defined; leaf remains vague unit',
-      unit: 1,
-      w: source.w == null ? 1 : R(source.w),
-      parent_weight: source.parent_weight == null ? source.w == null ? 1 : R(source.w) : R(source.parent_weight),
-      child_total: leaf ? 0 : childTotal,
-      ok: leaf || Math.abs(childTotal - 1) < 1e-6,
-      leaf,
-      vague: leaf && source.vague !== false,
-      children,
-      meta: O(source.meta),
-      empty_text: ''
-    };
+    return { id, equation: id + ' = 1', invariant: 'sum(aspects) = 1 when defined; leaf remains vague unit', unit: 1, w: source.w == null ? 1 : R(source.w), parent_weight: source.parent_weight == null ? source.w == null ? 1 : R(source.w) : R(source.parent_weight), child_total: leaf ? 0 : childTotal, ok: leaf || Math.abs(childTotal - 1) < 1e-6, leaf, vague: leaf && source.vague !== false, children, meta: O(source.meta), empty_text: '' };
   }
 
   function walk(node, path, out) {
@@ -123,6 +109,12 @@
     return node;
   }
 
+  function child(node, id) { return A(node && node.children).find(row => row.id === id) || null; }
+  function pathOf(root, targetId) {
+    const row = walk(root, [], []).find(item => item.id === targetId);
+    return row ? row.path : null;
+  }
+
   function constructedSequence(node) {
     const meta = O(node && node.meta);
     const children = A(node && node.children);
@@ -136,6 +128,36 @@
     const ok = parts.length > 0 && parts.every(part => part.ok);
     const visible = ok ? parts.map(part => part.symbol).join('') : '';
     return { operator: 'ordered_symbol_sequence', ok, visible_expression: visible, parts, reduction: ok ? parts.map(part => part.symbol).join(' + ') + ' -> ' + visible : '' };
+  }
+
+  function candidateExpression(candidate) {
+    const direct = constructedSequence(candidate);
+    if (direct && direct.ok) return { visible_expression: direct.visible_expression, construction: direct, construction_node_id: candidate.id };
+    const childConstruction = A(candidate && candidate.children).map(node => ({ node, construction: constructedSequence(node) })).find(row => row.construction && row.construction.ok);
+    if (childConstruction) return { visible_expression: childConstruction.construction.visible_expression, construction: childConstruction.construction, construction_node_id: childConstruction.node.id };
+    const metaText = text(O(candidate && candidate.meta).candidate_expression).trim();
+    return metaText ? { visible_expression: metaText, construction: null, construction_node_id: null } : null;
+  }
+
+  function semanticFocus(root, requested) {
+    const routeNodes = [root, child(root, 'language')];
+    routeNodes.push(child(routeNodes[1], 'word_class_noun'));
+    routeNodes.push(child(routeNodes[2], 'semantic_domain_food'));
+    routeNodes.push(child(routeNodes[3], 'candidate_set_food_noun'));
+    if (routeNodes.some(node => !node)) return null;
+    const set = routeNodes[4];
+    const candidates = A(set.children).map(candidate => {
+      const expr = candidateExpression(candidate);
+      return { id: candidate.id, weight: candidate.w, visible_expression: expr && expr.visible_expression || '', has_ordered_symbol_construction: !!(expr && expr.construction), construction_node_id: expr && expr.construction_node_id || null };
+    });
+    const selected = A(set.children).slice().sort((a, b) => Number(b.w || 0) - Number(a.w || 0))[0] || null;
+    const selectedExpr = candidateExpression(selected);
+    const visible = selectedExpr && selectedExpr.visible_expression || '';
+    const requestedText = text(requested || visible).trim();
+    const ok = !!selected && !!selectedExpr && (!requestedText || visible === requestedText);
+    const selectedPath = selected ? pathOf(root, selected.id) : null;
+    const constructionPath = selectedExpr && selectedExpr.construction_node_id ? pathOf(root, selectedExpr.construction_node_id) : selectedPath;
+    return { ok, focus_operator: 'F_food_noun', formula: 'F_food_noun(B) -> ' + (ok ? visible : ''), brain_invariant: '|B| = 1', route: routeNodes.map(node => node.id), candidate_set_path: pathOf(root, set.id), candidates, selection_rule: 'select highest current focus weight inside noun/food candidate set', selected_candidate: selected ? { id: selected.id, weight: selected.w, path: selectedPath } : null, visible_expression: ok ? visible : '', construction_path: constructionPath, construction: selectedExpr && selectedExpr.construction || null };
   }
 
   function findConstructedToken(root, wanted) {
@@ -156,18 +178,7 @@
       const construction = constructedSequence(node);
       return { id: row.id, symbol: symbols[row.id] || symbolBase(row.id), path: row.path, leaf: row.leaf, vague: row.vague, ok: row.ok, child_count: row.child_count, child_total: row.child_total, formulas: node ? formulasFor(node, symbols) : [], construction: construction || null };
     });
-    return {
-      packet_type: '42ndMind_recursive_unit_self_definition_v0_1',
-      root_id: root.id,
-      root_symbol: 'B',
-      statement: 'the current body defines its visible law from its active aspect structure',
-      symbols,
-      root_formulas: formulasFor(root, symbols),
-      immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })),
-      constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })),
-      local_ones: localOnes,
-      empty_text: ''
-    };
+    return { packet_type: '42ndMind_recursive_unit_self_definition_v0_1', root_id: root.id, root_symbol: 'B', statement: 'the current brain defines its visible law from its active math structure', symbols, root_formulas: formulasFor(root, symbols), immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })), constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })), semantic_focuses: [semanticFocus(root, 'potato')].filter(Boolean), local_ones: localOnes, empty_text: '' };
   }
 
   function project(input, context) {
@@ -182,42 +193,19 @@
     const root = packet.root;
     const f = O(focus);
     const token = text(f.expression_token || f.token || 'potato').trim();
-    const found = findConstructedToken(root, token);
-    const focusPath = A(f.path).length ? A(f.path).join('/') : found && found.row.path;
-    const node = focusPath ? findPath(root, focusPath.split('/')) : null;
-    const construction = constructedSequence(node);
-    const derived = construction && construction.ok ? construction.visible_expression : '';
-    const fromBody = !!(construction && construction.ok && derived === token);
-    const ok = packet.ok === true && fromBody;
-    return {
-      packet_type: '42ndMind_recursive_unit_focus_expression_v0_1',
-      focus_id: cleanId(f.id || 'symbolic_token_focus'),
-      ok,
-      visible_expression: ok ? derived : '',
-      requested_expression: token,
-      whole_body_present: true,
-      selective_focus: true,
-      source: ok ? 'body_ordered_symbol_sequence' : 'no_body_ordered_sequence_derived_the_requested_expression',
-      body_packet_type: packet.packet_type,
-      body_root_id: root.id,
-      body_ok: packet.ok === true,
-      body_kernel_error: packet.kernel_error,
-      focus_path: focusPath || null,
-      trace: focusPath ? focusPath.split('/') : [],
-      construction: construction || null,
-      obligation: { requested_expression_must_be_derived_from_ordered_body_parts: true, body_must_preserve_unit_total: true, expression_must_not_bypass_body: true, satisfied: ok },
-      empty_text: ''
-    };
+    const semantic = semanticFocus(root, token);
+    const semanticOk = !!(semantic && semantic.ok);
+    const fallback = semanticOk ? null : findConstructedToken(root, token);
+    const focusPath = semanticOk ? semantic.construction_path : fallback && fallback.row.path;
+    const derived = semanticOk ? semantic.visible_expression : fallback && fallback.construction.visible_expression || '';
+    const ok = packet.ok === true && derived === token;
+    return { packet_type: '42ndMind_recursive_unit_focus_expression_v0_1', focus_id: cleanId(f.id || 'symbolic_token_focus'), ok, visible_expression: ok ? derived : '', requested_expression: token, whole_brain_present: true, brain_invariant: '|B| = 1', selective_focus: true, focus_formula: semanticOk ? semantic.formula : 'F_symbol_sequence(B) -> ' + (ok ? derived : ''), source: semanticOk ? 'semantic_focus_then_ordered_symbol_sequence' : ok ? 'body_ordered_symbol_sequence' : 'no_brain_route_derived_the_requested_expression', brain_packet_type: packet.packet_type, brain_root_id: root.id, body_packet_type: packet.packet_type, body_root_id: root.id, body_ok: packet.ok === true, brain_ok: packet.ok === true, body_kernel_error: packet.kernel_error, focus_path: focusPath || null, trace: focusPath ? focusPath.split('/') : [], semantic_focus: semantic || null, construction: semanticOk ? semantic.construction : fallback && fallback.construction || null, obligation: { focused_mouth_must_preserve_brain_one: true, selected_expression_must_be_derived_by_focus_route: true, expression_must_not_bypass_brain: true, satisfied: ok }, empty_text: '' };
   }
 
   function mergeChildren(existing, incoming) {
     const byId = {};
     A(existing).forEach(row => { byId[cleanId(row.id)] = clone(row); });
-    A(incoming).forEach(row => {
-      const id = cleanId(row.id || row.dimension || row.name);
-      const prev = O(byId[id]);
-      byId[id] = Object.assign({}, prev, clone(row), { id, w: rawWeight(prev) + rawWeight(row) });
-    });
+    A(incoming).forEach(row => { const id = cleanId(row.id || row.dimension || row.name); const prev = O(byId[id]); byId[id] = Object.assign({}, prev, clone(row), { id, w: rawWeight(prev) + rawWeight(row) }); });
     return Object.keys(byId).sort().map(id => byId[id]);
   }
 
@@ -240,9 +228,9 @@
   }
 
   function letter(id, symbol, position) { return { id, w: 1, vague: false, meta: { symbol_letter: symbol, position } }; }
-  function potatoConstruction() {
-    return { id: 'symbolic_token_potato', w: EPS, vague: false, meta: { role: 'controlled_focus_proof_token', expression_construction: 'ordered_symbol_sequence' }, children: [letter('letter_p_1', 'p', 1), letter('letter_o_2', 'o', 2), letter('letter_t_3', 't', 3), letter('letter_a_4', 'a', 4), letter('letter_t_5', 't', 5), letter('letter_o_6', 'o', 6)] };
-  }
+  function potatoConstruction() { return { id: 'symbolic_token_potato', w: 1, vague: false, meta: { role: 'controlled_focus_proof_token', expression_construction: 'ordered_symbol_sequence' }, children: [letter('letter_p_1', 'p', 1), letter('letter_o_2', 'o', 2), letter('letter_t_3', 't', 3), letter('letter_a_4', 'a', 4), letter('letter_t_5', 't', 5), letter('letter_o_6', 'o', 6)] }; }
+  function foodCandidate(id, word, w, constructed) { return { id, w, vague: !constructed, meta: { candidate_expression: word, semantic_kind: 'food_noun_candidate' }, children: constructed ? [constructed] : [] }; }
+  function foodNounRoute() { return { id: 'word_class_noun', w: EPS, vague: false, children: [{ id: 'semantic_domain_food', w: 1, vague: false, children: [{ id: 'candidate_set_food_noun', w: 1, vague: false, meta: { focus_selection_rule: 'highest_current_focus_weight' }, children: [foodCandidate('candidate_rice', 'rice', 1, null), foodCandidate('candidate_bread', 'bread', 1, null), foodCandidate('candidate_apple', 'apple', 1, null), foodCandidate('candidate_potato', 'potato', 4, potatoConstruction())] }] }] }; }
 
   function liveProjection(input) {
     const value = O(input);
@@ -260,15 +248,15 @@
     const mutations = Math.min(1, A(internal.mutations).length / 32);
     const virtualEdits = Math.min(1, A(internal.virtual_edits).length / 32);
     const root = { id: 'one_logic_brain', children: [
-      { id: 'kernel', w: 1, children: [ { id: 'unit_total_constraint', w: 1 }, { id: 'proof_obligation_constraint', w: expression.objective_reality_gate ? 1 : 0.5 }, { id: 'reality_contact_constraint', w: truthContact + EPS }, { id: 'source_body_identity_constraint', w: sourceIdentity + EPS } ] },
-      { id: 'language', w: 1, children: [ { id: 'coherence', w: languageCoherence + EPS }, { id: 'symbol_memory', w: symbols + EPS }, { id: 'relation_memory', w: relations + EPS }, { id: 'growth_pressure', w: languageGrowth + EPS }, { id: 'vague_abstraction_capacity', w: Math.max(EPS, 1 - Math.max(symbols, relations)) }, potatoConstruction() ] },
-      { id: 'truth', w: 1, children: [ { id: 'contact', w: truthContact + EPS }, { id: 'damage_guard', w: Math.max(EPS, 1 - truthDamage) }, { id: 'belief_separation', w: 1 } ] },
-      { id: 'memory', w: 1, children: [ { id: 'mutation_memory', w: mutations + EPS }, { id: 'virtual_state_memory', w: virtualEdits + EPS }, { id: 'current_body_memory', w: 1 } ] },
-      { id: 'action', w: 1, children: [ { id: 'mutation_pressure', w: actionMutation + EPS }, { id: 'source_promotion_boundary', w: 1 } ] }
+      { id: 'kernel', w: 1, children: [{ id: 'unit_total_constraint', w: 1 }, { id: 'proof_obligation_constraint', w: expression.objective_reality_gate ? 1 : 0.5 }, { id: 'reality_contact_constraint', w: truthContact + EPS }, { id: 'source_body_identity_constraint', w: sourceIdentity + EPS }] },
+      { id: 'language', w: 1, children: [{ id: 'coherence', w: languageCoherence + EPS }, { id: 'symbol_memory', w: symbols + EPS }, { id: 'relation_memory', w: relations + EPS }, { id: 'growth_pressure', w: languageGrowth + EPS }, { id: 'vague_abstraction_capacity', w: Math.max(EPS, 1 - Math.max(symbols, relations)) }, foodNounRoute()] },
+      { id: 'truth', w: 1, children: [{ id: 'contact', w: truthContact + EPS }, { id: 'damage_guard', w: Math.max(EPS, 1 - truthDamage) }, { id: 'belief_separation', w: 1 }] },
+      { id: 'memory', w: 1, children: [{ id: 'mutation_memory', w: mutations + EPS }, { id: 'virtual_state_memory', w: virtualEdits + EPS }, { id: 'current_body_memory', w: 1 }] },
+      { id: 'action', w: 1, children: [{ id: 'mutation_pressure', w: actionMutation + EPS }, { id: 'source_promotion_boundary', w: 1 }] }
     ] };
     const projection = project(root, { source: 'live_self_stable_expression', generation: internal.generation || 0, t: value.state && value.state.t || 0 });
     projection.contact = { truth_contact: R(truthContact), language_growth_pressure: R(languageGrowth), source_identity: R(sourceIdentity), mutation_pressure: R(actionMutation), symbol_memory: R(symbols), relation_memory: R(relations) };
-    projection.focus_expression_demonstrations = [focusExpression(projection, { id: 'potato_symbolic_focus', token: 'potato' })];
+    projection.focus_expression_demonstrations = [focusExpression(projection, { id: 'food_noun_focus_potato', token: 'potato' })];
     return projection;
   }
 
