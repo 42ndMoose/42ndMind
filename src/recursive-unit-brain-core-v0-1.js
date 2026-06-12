@@ -4,7 +4,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.7.0';
+  const VERSION = '0.8.0';
   const EPS = 1e-9;
 
   function A(value) { return Array.isArray(value) ? value : []; }
@@ -113,9 +113,56 @@
 
   function child(node, id) { return A(node && node.children).find(row => row.id === id) || null; }
   function childAny(node, ids) { return A(ids).map(id => child(node, id)).find(Boolean) || null; }
+  function findFirst(root, id) { return walk(root, [], []).map(row => findPath(root, row.path.split('/'))).find(node => node && node.id === id) || null; }
   function pathOf(root, targetId) {
     const row = walk(root, [], []).find(item => item.id === targetId);
     return row ? row.path : null;
+  }
+
+  function activeMathLaw() {
+    return {
+      packet_type: '42ndMind_universal_active_math_law_v0_1',
+      law: [
+        'B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G',
+        '|B| = 1',
+        '∀q ∈ B: q = U_q ⊕ R_q ⊕ X_q ⊕ C_q ⊕ Ω_q ⊕ Φ_q ⊕ P_q ⊕ G_q',
+        'B_next = closure(B ⊕ input_unit)',
+        'unknown(q) ⇔ ¬stable(R(q))',
+        'expression(F_φ(B)) is valid only when P(F_φ(B)) = 1'
+      ],
+      variables: {
+        U: 'units',
+        R: 'relations',
+        X: 'transformations',
+        C: 'constraints',
+        'Ω': 'unresolveds',
+        'Φ': 'focus field',
+        P: 'proof obligations',
+        G: 'growth and optimization pressure'
+      }
+    };
+  }
+
+  function languageMathLaw(language, symbols) {
+    const L = language ? symbols[language.id] || 'L' : 'L';
+    return {
+      packet_type: '42ndMind_active_math_language_law_v0_1',
+      statement: 'language is a projection of the universal active math, not a separate module',
+      symbol: L,
+      invariant: '|' + L + '| = 1',
+      law: [
+        L + ' = U_L ⊕ R_L ⊕ X_L ⊕ C_L ⊕ Ω_L ⊕ Φ_L ⊕ P_L ⊕ G_L',
+        '|' + L + '| = 1',
+        '∀u ∈ U_L: |u| = 1',
+        'definition(u) = stable_closure(R_L(u))',
+        'unknown(u) ⇔ ¬stable(R_L(u))',
+        'F_φ(' + L + ') = stable_expression selected from ' + L + ' under active focus φ'
+      ],
+      expression_rule: 'language output is not a UI event; it is the active mathematical expression selected from L',
+      unknown_rule: 'an input without stable relations remains an unresolved local one rather than being forced into meaning',
+      conservation_rule: 'every expression unit remains one whether defined, partially defined, or unresolved',
+      ui_role: 'display only'
+    };
   }
 
   function constructedSequence(node) {
@@ -142,77 +189,25 @@
     return metaText ? { visible_expression: metaText, construction: null, construction_node_id: null } : null;
   }
 
-  function languageMathLaw(language, symbols) {
-    const L = language ? symbols[language.id] || 'L' : 'L';
-    return {
-      packet_type: '42ndMind_active_math_language_law_v0_1',
-      statement: 'language is pure active math: a conserved local one whose expressions are units defined only by surviving relations',
-      symbol: L,
-      invariant: '|' + L + '| = 1',
-      law: [
-        L + ' = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G',
-        '|' + L + '| = 1',
-        '∀u ∈ U: |u| = 1',
-        'definition(u) = stable_closure(R(u))',
-        'unknown(u) ⇔ ¬stable(R(u))',
-        'F_φ(' + L + ') = stable_expression selected from ' + L + ' under active focus φ'
-      ],
-      variables: {
-        U: 'expression units',
-        R: 'relations between units',
-        T: 'structure-preserving transformations',
-        C: 'constraints on false or unstable definition',
-        'Ω': 'unresolved units kept inside language',
-        G: 'definition growth pressure'
-      },
-      expression_rule: 'language output is not a UI event; it is the active mathematical expression selected from L',
-      unknown_rule: 'an input without stable relations remains an unresolved local one rather than being forced into meaning',
-      conservation_rule: 'every expression unit remains one whether defined, partially defined, or unresolved',
-      ui_role: 'display only'
-    };
-  }
-
   function proofObligationsNode() {
-    return { id: 'P_proof_obligations', w: 1, vague: false, meta: { symbol: 'P', active_math_law: 'P(B,L) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F', role: 'internal proof obligations are part of the same math, not external tests' }, children: [
+    return { id: 'P_proof_obligations', w: 1, vague: false, meta: { symbol: 'P', active_math_law: 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F', role: 'internal proof obligations are part of the same math, not external tests' }, children: [
+      { id: 'P_B_universal_active_math', w: 1, meta: { proof: 'B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G' } },
       { id: 'P_B_brain_conservation', w: 1, meta: { proof: '|B| = 1' } },
+      { id: 'P_L_language_projection', w: 1, meta: { proof: 'L is π_language(B)' } },
       { id: 'P_L_language_conservation', w: 1, meta: { proof: '|L| = 1' } },
-      { id: 'P_L_active_math_law', w: 1, meta: { proof: 'L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G' } },
-      { id: 'P_U_local_unit_closure', w: 1, meta: { proof: '∀u ∈ U: |u| = 1' } },
-      { id: 'P_Omega_unknown_preservation', w: 1, meta: { proof: 'unknown(u) ⇔ ¬stable(R(u))' } },
-      { id: 'P_F_focus_preserves_B_and_L', w: 1, meta: { proof: 'F_φ(L) preserves |B| = 1 and |L| = 1' } }
+      { id: 'P_U_local_unit_closure', w: 1, meta: { proof: '∀q ∈ B: |q| = 1' } },
+      { id: 'P_Omega_unknown_preservation', w: 1, meta: { proof: 'unknown(q) ⇔ ¬stable(R(q))' } },
+      { id: 'P_F_focus_preserves_B_and_L', w: 1, meta: { proof: 'F_φ(B) preserves |B| = 1 and |L| = 1 when expressing language' } }
     ] };
   }
 
-  function proofState(root, symbols) {
-    const language = child(root, 'language');
-    const U = childAny(language, ['U_expression_units', 'expression_units']);
-    const Rr = childAny(language, ['R_relations', 'relations']);
-    const Tt = childAny(language, ['T_transformations', 'transformations']);
-    const Cc = childAny(language, ['C_constraints', 'constraints']);
-    const Om = childAny(language, ['Omega_unresolveds', 'unresolveds']);
-    const Gg = childAny(language, ['G_growth_pressure', 'growth_pressure']);
-    const kernel = child(root, 'kernel');
-    const P = child(kernel, 'P_proof_obligations');
-    const focus = semanticFocus(root, 'potato');
-    const checks = [
-      { id: 'P_B_brain_conservation', formula: '|B| = 1', satisfied: root && root.ok === true && Math.abs(Number(root.child_total || 0) - 1) < 1e-6 },
-      { id: 'P_L_language_conservation', formula: '|L| = 1', satisfied: !!language && language.ok === true && Math.abs(Number(language.child_total || 0) - 1) < 1e-6 },
-      { id: 'P_L_active_math_law', formula: 'L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G', satisfied: !!(language && U && Rr && Tt && Cc && Om && Gg) },
-      { id: 'P_U_local_unit_closure', formula: '∀u ∈ U: |u| = 1', satisfied: !!U && walk(U, [], []).every(row => row.ok === true || row.leaf === true) },
-      { id: 'P_Omega_unknown_preservation', formula: 'unknown(u) ⇔ ¬stable(R(u))', satisfied: !!Om && pathOf(root, Om.id) && A(Om.children).some(row => row.id === 'unresolved_input_ledger') },
-      { id: 'P_F_focus_preserves_B_and_L', formula: 'F_φ(L) preserves |B| = 1 and |L| = 1', satisfied: !!(focus && focus.ok && focus.brain_invariant === '|B| = 1' && focus.language_invariant === '|L| = 1') }
-    ];
-    const satisfied = checks.every(row => row.satisfied === true);
-    return { packet_type: '42ndMind_internal_math_proof_state_v0_1', symbol: 'P', formula: 'P(B,L) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F', invariant: '|P| = 1', proof_node_path: P ? pathOf(root, P.id) : null, satisfied, checks, failed: checks.filter(row => !row.satisfied), language_law: languageMathLaw(language, symbols) };
-  }
-
   function semanticFocus(root, requested) {
-    const language = child(root, 'language');
-    const expressionUnits = childAny(language, ['U_expression_units', 'expression_units']);
+    const language = findFirst(root, 'language');
+    const expressionUnits = childAny(language, ['U_L_expression_units', 'U_expression_units', 'expression_units']);
     const noun = child(expressionUnits, 'word_class_noun') || child(language, 'word_class_noun');
     const food = child(noun, 'semantic_domain_food');
     const set = child(food, 'candidate_set_food_noun');
-    const routeNodes = [root, language, expressionUnits || noun, expressionUnits ? noun : food, expressionUnits ? food : set, expressionUnits ? set : null].filter(Boolean);
+    const routeNodes = [root, child(root, 'U_units'), language, expressionUnits || noun, expressionUnits ? noun : food, expressionUnits ? food : set, expressionUnits ? set : null].filter(Boolean);
     if (!language || !noun || !food || !set) return null;
     const candidates = A(set.children).map(candidate => {
       const expr = candidateExpression(candidate);
@@ -226,6 +221,40 @@
     const selectedPath = selected ? pathOf(root, selected.id) : null;
     const constructionPath = selectedExpr && selectedExpr.construction_node_id ? pathOf(root, selectedExpr.construction_node_id) : selectedPath;
     return { ok, focus_operator: 'F_food_noun', formula: 'F_food_noun(B) -> ' + (ok ? visible : ''), brain_invariant: '|B| = 1', language_invariant: '|L| = 1', route: routeNodes.map(node => node.id), candidate_set_path: pathOf(root, set.id), candidates, selection_rule: 'select highest current focus weight inside noun/food expression units', selected_candidate: selected ? { id: selected.id, weight: selected.w, path: selectedPath, local_one: selected.unit === 1 } : null, visible_expression: ok ? visible : '', construction_path: constructionPath, construction: selectedExpr && selectedExpr.construction || null };
+  }
+
+  function proofState(root, symbols) {
+    const U = child(root, 'U_units');
+    const Rr = child(root, 'R_relations');
+    const X = child(root, 'X_transformations');
+    const Cc = child(root, 'C_constraints');
+    const Om = child(root, 'Omega_unresolveds');
+    const Phi = child(root, 'Phi_focus');
+    const P = child(root, 'P_proof');
+    const G = child(root, 'G_growth');
+    const POb = findFirst(root, 'P_proof_obligations');
+    const language = findFirst(root, 'language');
+    const LU = childAny(language, ['U_L_expression_units', 'U_expression_units']);
+    const LR = childAny(language, ['R_L_relations', 'R_relations']);
+    const LX = childAny(language, ['X_L_transformations', 'X_transformations']);
+    const LC = childAny(language, ['C_L_constraints', 'C_constraints']);
+    const LOm = childAny(language, ['Omega_L_unresolveds', 'Omega_unresolveds']);
+    const LPhi = childAny(language, ['Phi_L_focus', 'Phi_focus']);
+    const LP = childAny(language, ['P_L_proof', 'P_proof']);
+    const LG = childAny(language, ['G_L_growth', 'G_growth']);
+    const focus = semanticFocus(root, 'potato');
+    const checks = [
+      { id: 'P_B_universal_active_math', formula: 'B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G', satisfied: !!(U && Rr && X && Cc && Om && Phi && P && G) },
+      { id: 'P_B_brain_conservation', formula: '|B| = 1', satisfied: root && root.ok === true && Math.abs(Number(root.child_total || 0) - 1) < 1e-6 },
+      { id: 'P_L_language_projection', formula: 'L = π_language(B)', satisfied: !!language && !!pathOf(root, language.id) },
+      { id: 'P_L_language_conservation', formula: '|L| = 1', satisfied: !!language && language.ok === true && Math.abs(Number(language.child_total || 0) - 1) < 1e-6 },
+      { id: 'P_L_local_active_math', formula: 'L = U_L ⊕ R_L ⊕ X_L ⊕ C_L ⊕ Ω_L ⊕ Φ_L ⊕ P_L ⊕ G_L', satisfied: !!(language && LU && LR && LX && LC && LOm && LPhi && LP && LG) },
+      { id: 'P_U_local_unit_closure', formula: '∀q ∈ B: |q| = 1', satisfied: walk(root, [], []).every(row => row.ok === true || row.leaf === true) },
+      { id: 'P_Omega_unknown_preservation', formula: 'unknown(q) ⇔ ¬stable(R(q))', satisfied: !!Om && !!LOm && A(LOm.children).some(row => row.id === 'unresolved_input_ledger') },
+      { id: 'P_F_focus_preserves_B_and_L', formula: 'F_φ(B) preserves |B| = 1 and |L| = 1', satisfied: !!(focus && focus.ok && focus.brain_invariant === '|B| = 1' && focus.language_invariant === '|L| = 1') }
+    ];
+    const satisfied = checks.every(row => row.satisfied === true);
+    return { packet_type: '42ndMind_internal_math_proof_state_v0_1', symbol: 'P', formula: 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F', invariant: '|P| = 1', proof_node_path: POb ? pathOf(root, POb.id) : null, satisfied, checks, failed: checks.filter(row => !row.satisfied), universal_law: activeMathLaw(), language_law: languageMathLaw(language, symbols) };
   }
 
   function findConstructedToken(root, wanted) {
@@ -246,21 +275,20 @@
       const construction = constructedSequence(node);
       return { id: row.id, symbol: symbols[row.id] || symbolBase(row.id), path: row.path, leaf: row.leaf, vague: row.vague, ok: row.ok, child_count: row.child_count, child_total: row.child_total, formulas: node ? formulasFor(node, symbols) : [], construction: construction || null };
     });
-    const language = child(root, 'language');
-    const languageRows = rows.filter(row => row.path.indexOf(root.id + '/language') === 0);
+    const language = findFirst(root, 'language');
+    const languageRows = rows.filter(row => row.path.indexOf(pathOf(root, 'language') || 'no-language') === 0);
     const langLaw = languageMathLaw(language, symbols);
     const internalProof = proofState(root, symbols);
-    return { packet_type: '42ndMind_recursive_unit_self_definition_v0_1', root_id: root.id, root_symbol: 'B', statement: 'the current brain defines its visible law from its active math structure', symbols, root_formulas: formulasFor(root, symbols), language_math: langLaw, internal_math_proof: internalProof, language_one: language ? { id: language.id, symbol: symbols[language.id] || 'L', invariant: '|L| = 1', active_math_law: langLaw.law, formulas: formulasFor(language, symbols), child_total: language.child_total, ok: language.ok, local_expression_unit_count: languageRows.length } : null, immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })), constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })), semantic_focuses: [semanticFocus(root, 'potato')].filter(Boolean), local_ones: localOnes, empty_text: '' };
+    return { packet_type: '42ndMind_recursive_unit_self_definition_v0_1', root_id: root.id, root_symbol: 'B', statement: 'the current brain defines its visible law from its active math structure', symbols, root_formulas: formulasFor(root, symbols), universal_math: activeMathLaw(), language_math: langLaw, internal_math_proof: internalProof, language_one: language ? { id: language.id, symbol: symbols[language.id] || 'L', invariant: '|L| = 1', active_math_law: langLaw.law, formulas: formulasFor(language, symbols), child_total: language.child_total, ok: language.ok, local_expression_unit_count: languageRows.length } : null, immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })), constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })), semantic_focuses: [semanticFocus(root, 'potato')].filter(Boolean), local_ones: localOnes, empty_text: '' };
   }
 
   function project(input, context) {
     const root = normalizeNode(input || { id: 'brain' });
     const symbols = symbolMap(root);
-    const language = child(root, 'language');
     const internalProof = proofState(root, symbols);
     const s = stats(root);
     const kernelError = R((s.unit_violation_count || !internalProof.satisfied) ? 1 : 0);
-    return { packet_type: '42ndMind_recursive_unit_brain_projection_v0_1', version: VERSION, principle: 'recursive_unit_total_state_projected_through_kernel_constraints', ok: kernelError === 0, invariant: 'every defined local one normalizes its aspects to one; undefined leaves remain valid vague units; internal proof obligations are part of the same math', active_math: { brain_law: ['B = K ⊕ L ⊕ T ⊕ M ⊕ A', '|B| = 1', 'P(B,L) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F'], language_law: languageMathLaw(language, symbols), proof_state: internalProof }, root, self_definition: selfDefine(root), kernel_error: kernelError, unit_violation_count: s.unit_violation_count, proof_violation_count: internalProof.failed.length, vague_mass: s.vague_mass, node_count: s.node_count, leaf_count: s.leaf_count, max_depth: s.max_depth, context: O(context), empty_text: '' };
+    return { packet_type: '42ndMind_recursive_unit_brain_projection_v0_1', version: VERSION, principle: 'universal_active_math_state_projected_through_internal_proof_constraints', ok: kernelError === 0, invariant: 'B is one active math: units, relations, transformations, constraints, unresolveds, focus, proof, and growth are one conserved state', active_math: { universal_law: activeMathLaw(), proof_state: internalProof, language_law: languageMathLaw(findFirst(root, 'language'), symbols) }, root, self_definition: selfDefine(root), kernel_error: kernelError, unit_violation_count: s.unit_violation_count, proof_violation_count: internalProof.failed.length, vague_mass: s.vague_mass, node_count: s.node_count, leaf_count: s.leaf_count, max_depth: s.max_depth, context: O(context), empty_text: '' };
   }
 
   function focusExpression(projectionOrRoot, focus) {
@@ -274,7 +302,7 @@
     const focusPath = semanticOk ? semantic.construction_path : fallback && fallback.row.path;
     const derived = semanticOk ? semantic.visible_expression : fallback && fallback.construction.visible_expression || '';
     const ok = packet.ok === true && derived === token;
-    return { packet_type: '42ndMind_recursive_unit_focus_expression_v0_1', focus_id: cleanId(f.id || 'symbolic_token_focus'), ok, visible_expression: ok ? derived : '', requested_expression: token, whole_brain_present: true, brain_invariant: '|B| = 1', language_invariant: semantic && semantic.language_invariant || '|L| = 1', selective_focus: true, focus_formula: semanticOk ? semantic.formula : 'F_symbol_sequence(B) -> ' + (ok ? derived : ''), source: semanticOk ? 'semantic_focus_then_ordered_symbol_sequence' : ok ? 'body_ordered_symbol_sequence' : 'no_brain_route_derived_the_requested_expression', brain_packet_type: packet.packet_type, brain_root_id: root.id, body_packet_type: packet.packet_type, body_root_id: root.id, body_ok: packet.ok === true, brain_ok: packet.ok === true, body_kernel_error: packet.kernel_error, focus_path: focusPath || null, trace: focusPath ? focusPath.split('/') : [], semantic_focus: semantic || null, construction: semanticOk ? semantic.construction : fallback && fallback.construction || null, obligation: { focused_expression_must_preserve_brain_one: true, focused_expression_must_preserve_language_one: true, selected_expression_must_be_derived_by_focus_route: true, expression_must_not_bypass_brain: true, satisfied: ok }, empty_text: '' };
+    return { packet_type: '42ndMind_recursive_unit_focus_expression_v0_1', focus_id: cleanId(f.id || 'symbolic_token_focus'), ok, visible_expression: ok ? derived : '', requested_expression: token, whole_brain_present: true, brain_invariant: '|B| = 1', language_invariant: semantic && semantic.language_invariant || '|L| = 1', selective_focus: true, focus_formula: semanticOk ? semantic.formula : 'F_symbol_sequence(B) -> ' + (ok ? derived : ''), source: semanticOk ? 'semantic_focus_then_ordered_symbol_sequence' : ok ? 'body_ordered_symbol_sequence' : 'no_brain_route_derived_the_requested_expression', brain_packet_type: packet.packet_type, brain_root_id: root.id, brain_ok: packet.ok === true, body_kernel_error: packet.kernel_error, focus_path: focusPath || null, trace: focusPath ? focusPath.split('/') : [], semantic_focus: semantic || null, construction: semanticOk ? semantic.construction : fallback && fallback.construction || null, obligation: { focused_expression_must_preserve_brain_one: true, focused_expression_must_preserve_language_one: true, selected_expression_must_be_derived_by_focus_route: true, expression_must_not_bypass_brain: true, satisfied: ok }, empty_text: '' };
   }
 
   function mergeChildren(existing, incoming) {
@@ -309,14 +337,31 @@
 
   function languageState(params) {
     const p = O(params);
-    return { id: 'language', w: 1, vague: false, meta: { local_one_symbol: 'L', invariant: '|L| = 1', active_math_law: 'L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G', principle: 'language is active math; expression is selected from conserved units, relations, transformations, constraints, unresolveds, and growth pressure' }, children: [
-      { id: 'U_expression_units', w: 1, vague: false, meta: { symbol: 'U', role: 'units language can express; every u in U remains a local one' }, children: [foodNounRoute(), { id: 'sentence_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'narrative_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'unknown_input_units', w: EPS, meta: { status: 'unknown_until_relations_stabilize' } }] },
-      { id: 'R_relations', w: 1, vague: false, meta: { symbol: 'R', role: 'relation field defining expression units' }, children: [{ id: 'grammar_relations', w: p.languageCoherence + EPS }, { id: 'symbol_relations', w: p.symbols + EPS }, { id: 'semantic_relations', w: p.relations + EPS }, { id: 'context_relations', w: EPS }] },
-      { id: 'T_transformations', w: 1, vague: false, meta: { symbol: 'T', role: 'valid structure-preserving transformations' }, children: [{ id: 'ordered_symbol_sequence_transform', w: 1 }, { id: 'reference_resolution_transform', w: EPS }, { id: 'translation_transform', w: EPS }] },
-      { id: 'C_constraints', w: 1, vague: false, meta: { symbol: 'C', role: 'constraints preventing false or unstable definition' }, children: [{ id: 'local_one_constraint', w: 1 }, { id: 'coherence_constraint', w: p.languageCoherence + EPS }, { id: 'unknown_preservation_constraint', w: 1 }] },
-      { id: 'Omega_unresolveds', w: Math.max(EPS, 1 - Math.max(p.symbols, p.relations)), vague: false, meta: { symbol: 'Ω', role: 'unknowns remain inside language without forced definition' }, children: [{ id: 'vague_expression_capacity', w: 1 }, { id: 'unresolved_input_ledger', w: 1 }] },
-      { id: 'G_growth_pressure', w: p.languageGrowth + EPS, vague: false, meta: { symbol: 'G', role: 'pressure to define language through relations' }, children: [{ id: 'definition_growth_pressure', w: 1 }, { id: 'relation_growth_pressure', w: p.languageGrowth + EPS }] }
+    return { id: 'language', w: 1, vague: false, meta: { local_one_symbol: 'L', projection: 'π_language(B)', invariant: '|L| = 1', active_math_law: 'L = U_L ⊕ R_L ⊕ X_L ⊕ C_L ⊕ Ω_L ⊕ Φ_L ⊕ P_L ⊕ G_L' }, children: [
+      { id: 'U_L_expression_units', w: 1, vague: false, meta: { symbol: 'U_L', role: 'language expression units' }, children: [foodNounRoute(), { id: 'sentence_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'narrative_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'unknown_input_units', w: EPS, meta: { status: 'unknown_until_relations_stabilize' } }] },
+      { id: 'R_L_relations', w: 1, vague: false, meta: { symbol: 'R_L', role: 'language relations' }, children: [{ id: 'grammar_relations', w: p.languageCoherence + EPS }, { id: 'symbol_relations', w: p.symbols + EPS }, { id: 'semantic_relations', w: p.relations + EPS }, { id: 'context_relations', w: EPS }] },
+      { id: 'X_L_transformations', w: 1, vague: false, meta: { symbol: 'X_L', role: 'language transformations' }, children: [{ id: 'ordered_symbol_sequence_transform', w: 1 }, { id: 'reference_resolution_transform', w: EPS }, { id: 'translation_transform', w: EPS }] },
+      { id: 'C_L_constraints', w: 1, vague: false, meta: { symbol: 'C_L', role: 'language constraints' }, children: [{ id: 'local_one_constraint', w: 1 }, { id: 'coherence_constraint', w: p.languageCoherence + EPS }, { id: 'unknown_preservation_constraint', w: 1 }] },
+      { id: 'Omega_L_unresolveds', w: Math.max(EPS, 1 - Math.max(p.symbols, p.relations)), vague: false, meta: { symbol: 'Ω_L', role: 'language unknowns' }, children: [{ id: 'vague_expression_capacity', w: 1 }, { id: 'unresolved_input_ledger', w: 1 }] },
+      { id: 'Phi_L_focus', w: 1, vague: false, meta: { symbol: 'Φ_L', role: 'language focus field' }, children: [{ id: 'active_language_focus', w: 1 }, { id: 'ambiguity_focus', w: EPS }] },
+      { id: 'P_L_proof', w: 1, vague: false, meta: { symbol: 'P_L', role: 'language proof obligations' }, children: [{ id: 'language_conservation_proof', w: 1 }, { id: 'unknown_preservation_proof', w: 1 }] },
+      { id: 'G_L_growth', w: p.languageGrowth + EPS, vague: false, meta: { symbol: 'G_L', role: 'language definition growth' }, children: [{ id: 'definition_growth_pressure', w: 1 }, { id: 'relation_growth_pressure', w: p.languageGrowth + EPS }] }
     ] };
+  }
+
+  function truthProjection(params) {
+    const p = O(params);
+    return { id: 'truth_projection', w: 1, vague: false, meta: { local_one_symbol: 'T', projection: 'π_truth(B)', invariant: '|T| = 1' }, children: [{ id: 'contact', w: p.truthContact + EPS }, { id: 'damage_guard', w: Math.max(EPS, 1 - p.truthDamage) }, { id: 'belief_separation', w: 1 }, { id: 'unknown_truth_boundary', w: 1 }] };
+  }
+
+  function memoryProjection(params) {
+    const p = O(params);
+    return { id: 'memory_projection', w: 1, vague: false, meta: { local_one_symbol: 'M', projection: 'π_memory(B)', invariant: '|M| = 1' }, children: [{ id: 'mutation_memory', w: p.mutations + EPS }, { id: 'virtual_state_memory', w: p.virtualEdits + EPS }, { id: 'stable_relation_memory', w: p.relations + EPS }, { id: 'unknown_memory', w: 1 }] };
+  }
+
+  function actionProjection(params) {
+    const p = O(params);
+    return { id: 'action_projection', w: 1, vague: false, meta: { local_one_symbol: 'A', projection: 'π_action(B)', invariant: '|A| = 1' }, children: [{ id: 'mutation_pressure', w: p.actionMutation + EPS }, { id: 'source_promotion_boundary', w: 1 }, { id: 'expression_boundary', w: 1 }] };
   }
 
   function liveProjection(input) {
@@ -334,18 +379,22 @@
     const relations = Math.min(1, A(internal.relations).length / 128);
     const mutations = Math.min(1, A(internal.mutations).length / 32);
     const virtualEdits = Math.min(1, A(internal.virtual_edits).length / 32);
-    const root = { id: 'one_logic_brain', children: [
-      { id: 'kernel', w: 1, children: [{ id: 'unit_total_constraint', w: 1 }, proofObligationsNode(), { id: 'reality_contact_constraint', w: truthContact + EPS }, { id: 'source_body_identity_constraint', w: sourceIdentity + EPS }] },
-      languageState({ languageGrowth, languageCoherence, symbols, relations }),
-      { id: 'truth', w: 1, children: [{ id: 'contact', w: truthContact + EPS }, { id: 'damage_guard', w: Math.max(EPS, 1 - truthDamage) }, { id: 'belief_separation', w: 1 }] },
-      { id: 'memory', w: 1, children: [{ id: 'mutation_memory', w: mutations + EPS }, { id: 'virtual_state_memory', w: virtualEdits + EPS }, { id: 'current_body_memory', w: 1 }] },
-      { id: 'action', w: 1, children: [{ id: 'mutation_pressure', w: actionMutation + EPS }, { id: 'source_promotion_boundary', w: 1 }] }
+    const params = { truthContact, truthDamage, languageGrowth, languageCoherence, sourceIdentity, actionMutation, symbols, relations, mutations, virtualEdits };
+    const root = { id: 'one_logic_brain', meta: { active_math_law: 'B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G' }, children: [
+      { id: 'U_units', w: 1, vague: false, meta: { symbol: 'U', role: 'all units and projections' }, children: [languageState(params), truthProjection(params), memoryProjection(params), actionProjection(params), { id: 'raw_input_units', w: EPS, meta: { status: 'input becomes unit before meaning' } }] },
+      { id: 'R_relations', w: 1, vague: false, meta: { symbol: 'R', role: 'universal relation field' }, children: [{ id: 'observed_relations', w: relations + EPS }, { id: 'candidate_relations', w: 1 }, { id: 'contradiction_relations', w: EPS }] },
+      { id: 'X_transformations', w: 1, vague: false, meta: { symbol: 'X', role: 'universal transformations' }, children: [{ id: 'sequence_transform', w: 1 }, { id: 'closure_transform', w: 1 }, { id: 'projection_transform', w: 1 }] },
+      { id: 'C_constraints', w: 1, vague: false, meta: { symbol: 'C', role: 'universal constraints' }, children: [{ id: 'unit_conservation_constraint', w: 1 }, { id: 'proof_satisfaction_constraint', w: 1 }, { id: 'unknown_preservation_constraint', w: 1 }, { id: 'source_identity_constraint', w: sourceIdentity + EPS }] },
+      { id: 'Omega_unresolveds', w: 1, vague: false, meta: { symbol: 'Ω', role: 'universal unknown field' }, children: [{ id: 'unresolved_input_ledger', w: 1 }, { id: 'vague_unit_capacity', w: 1 }, { id: 'unproven_relation_capacity', w: 1 }] },
+      { id: 'Phi_focus', w: 1, vague: false, meta: { symbol: 'Φ', role: 'universal focus field' }, children: [{ id: 'active_focus_state', w: 1 }, { id: 'uncertainty_focus_pressure', w: EPS }, { id: 'definition_focus_pressure', w: languageGrowth + EPS }] },
+      { id: 'P_proof', w: 1, vague: false, meta: { symbol: 'P', role: 'proof is internal active math' }, children: [proofObligationsNode()] },
+      { id: 'G_growth', w: 1, vague: false, meta: { symbol: 'G', role: 'whole-state growth and optimization pressure' }, children: [{ id: 'relation_growth', w: languageGrowth + EPS }, { id: 'stability_growth', w: 1 }, { id: 'unknown_boundary_growth', w: 1 }] }
     ] };
-    const projection = project(root, { source: 'live_self_stable_expression', generation: internal.generation || 0, t: value.state && value.state.t || 0 });
+    const projection = project(root, { source: 'universal_active_math_state', generation: internal.generation || 0, t: value.state && value.state.t || 0 });
     projection.contact = { truth_contact: R(truthContact), language_growth_pressure: R(languageGrowth), source_identity: R(sourceIdentity), mutation_pressure: R(actionMutation), symbol_memory: R(symbols), relation_memory: R(relations) };
     projection.focus_expression_demonstrations = [focusExpression(projection, { id: 'food_noun_focus_potato', token: 'potato' })];
     return projection;
   }
 
-  return Object.freeze({ VERSION, normalizeWeights, normalizeNode, project, refineByContact, liveProjection, stats, l1, selfDefine, focusExpression, languageMathLaw, proofState });
+  return Object.freeze({ VERSION, normalizeWeights, normalizeNode, project, refineByContact, liveProjection, stats, l1, selfDefine, focusExpression, activeMathLaw, languageMathLaw, proofState });
 });
