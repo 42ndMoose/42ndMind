@@ -4,46 +4,60 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const v = '1.3.0';
+  const v = '1.4.0';
 
   const F = Object.freeze([
     'B=Cl(B)',
     'norm(B)=1',
-    'L=Pi_L(B)',
-    'norm(L)=1',
+    'P(B)=1',
+    'L=PiL(B)',
     'sub(L,B)',
-    'forall(q,in(q,B)->norm(q)=1)',
-    'iota(x)=q_x',
-    'in(q_x,B[x])',
-    'B[x]=Cl(union(B,{q_x}))',
-    'norm(B[x])=1',
-    'P(B[x])=1',
-    'D(q,B)=N(U(q),R(q,B),X(q,B),C(q,B),O(q,B),F(q,B),P(q,B),G(q,B))',
-    'O(q,B)=not(S(R(q,B)))',
-    'S(q,B)=and(C(q,B),P(q,B),not(O(q,B)))',
-    'E(B,phi)=Pi_E(F(B,phi))',
+    'norm(L)=1',
+    'P(L)=1',
+    'forall(q,imp(in(q,B),norm(q)=1))',
+    'iota(x)=qx',
+    'Bx=Cl(union(B,{qx}))',
+    'in(qx,Bx)',
+    'norm(Bx)=1',
+    'P(Bx)=1',
+    'D(q,B)=N(U(q),R(q,B),T(q,B),C(q,B),Om(q,B),Phi(q,B),P(q,B),G(q,B))',
+    'Om(q,B)=not(S(R(q,B)))',
+    'S(q,B)=and(C(q,B),P(q,B),not(Om(q,B)))',
+    'Phi(q,B)=Focus(B,q)',
+    'E(B,phi)=PiE(Phi(phi,B))',
     'sub(E(B,phi),B)',
-    'P(E(B,phi))=1'
+    'norm(E(B,phi))=1',
+    'P(E(B,phi))=1',
+    'Adm(x,B)=and(norm(Bx)=1,P(Bx)=1)',
+    'Valid(y,B)=and(sub(y,B),norm(y)=1,P(y)=1)',
+    'Live(B)=and(B=Cl(B),norm(B)=1,P(B)=1,forall(x,imp(Adm(x,B),Cl(Bx)=Bx)))'
   ]);
 
   const A = Object.freeze([
     ['=', 'B', ['Cl', 'B']],
     ['=', ['norm', 'B'], 1],
-    ['=', 'L', ['Pi_L', 'B']],
-    ['=', ['norm', 'L'], 1],
+    ['=', ['P', 'B'], 1],
+    ['=', 'L', ['PiL', 'B']],
     ['sub', 'L', 'B'],
-    ['forall', 'q', ['->', ['in', 'q', 'B'], ['=', ['norm', 'q'], 1]]],
-    ['=', ['iota', 'x'], 'q_x'],
-    ['in', 'q_x', ['B', 'x']],
-    ['=', ['B', 'x'], ['Cl', ['union', 'B', ['set', 'q_x']]]],
-    ['=', ['norm', ['B', 'x']], 1],
-    ['=', ['P', ['B', 'x']], 1],
-    ['=', ['D', 'q', 'B'], ['N', ['U', 'q'], ['R', 'q', 'B'], ['X', 'q', 'B'], ['C', 'q', 'B'], ['O', 'q', 'B'], ['F', 'q', 'B'], ['P', 'q', 'B'], ['G', 'q', 'B']]],
-    ['=', ['O', 'q', 'B'], ['not', ['S', ['R', 'q', 'B']]]],
-    ['=', ['S', 'q', 'B'], ['and', ['C', 'q', 'B'], ['P', 'q', 'B'], ['not', ['O', 'q', 'B']]]],
-    ['=', ['E', 'B', 'phi'], ['Pi_E', ['F', 'B', 'phi']]],
+    ['=', ['norm', 'L'], 1],
+    ['=', ['P', 'L'], 1],
+    ['forall', 'q', ['imp', ['in', 'q', 'B'], ['=', ['norm', 'q'], 1]]],
+    ['=', ['iota', 'x'], 'qx'],
+    ['=', 'Bx', ['Cl', ['union', 'B', ['set', 'qx']]]],
+    ['in', 'qx', 'Bx'],
+    ['=', ['norm', 'Bx'], 1],
+    ['=', ['P', 'Bx'], 1],
+    ['=', ['D', 'q', 'B'], ['N', ['U', 'q'], ['R', 'q', 'B'], ['T', 'q', 'B'], ['C', 'q', 'B'], ['Om', 'q', 'B'], ['Phi', 'q', 'B'], ['P', 'q', 'B'], ['G', 'q', 'B']]],
+    ['=', ['Om', 'q', 'B'], ['not', ['S', ['R', 'q', 'B']]]],
+    ['=', ['S', 'q', 'B'], ['and', ['C', 'q', 'B'], ['P', 'q', 'B'], ['not', ['Om', 'q', 'B']]]],
+    ['=', ['Phi', 'q', 'B'], ['Focus', 'B', 'q']],
+    ['=', ['E', 'B', 'phi'], ['PiE', ['Phi', 'phi', 'B']]],
     ['sub', ['E', 'B', 'phi'], 'B'],
-    ['=', ['P', ['E', 'B', 'phi']], 1]
+    ['=', ['norm', ['E', 'B', 'phi']], 1],
+    ['=', ['P', ['E', 'B', 'phi']], 1],
+    ['=', ['Adm', 'x', 'B'], ['and', ['=', ['norm', 'Bx'], 1], ['=', ['P', 'Bx'], 1]]],
+    ['=', ['Valid', 'y', 'B'], ['and', ['sub', 'y', 'B'], ['=', ['norm', 'y'], 1], ['=', ['P', 'y'], 1]]],
+    ['=', ['Live', 'B'], ['and', ['=', 'B', ['Cl', 'B']], ['=', ['norm', 'B'], 1], ['=', ['P', 'B'], 1], ['forall', 'x', ['imp', ['Adm', 'x', 'B'], ['=', ['Cl', 'Bx'], 'Bx']]]]]
   ]);
 
   const M = Object.freeze({ v, F, A });
