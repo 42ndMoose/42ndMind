@@ -5,13 +5,14 @@ function near(value, target, message) {
   assert.ok(Math.abs(Number(value) - Number(target)) < 1e-6, message || `expected ${value} near ${target}`);
 }
 
-assert.strictEqual(UnitBrain.VERSION, '0.7.0');
+assert.strictEqual(UnitBrain.VERSION, '0.8.0');
 assert.strictEqual(typeof UnitBrain.normalizeNode, 'function');
 assert.strictEqual(typeof UnitBrain.project, 'function');
 assert.strictEqual(typeof UnitBrain.refineByContact, 'function');
 assert.strictEqual(typeof UnitBrain.liveProjection, 'function');
 assert.strictEqual(typeof UnitBrain.selfDefine, 'function');
 assert.strictEqual(typeof UnitBrain.focusExpression, 'function');
+assert.strictEqual(typeof UnitBrain.activeMathLaw, 'function');
 assert.strictEqual(typeof UnitBrain.languageMathLaw, 'function');
 assert.strictEqual(typeof UnitBrain.proofState, 'function');
 
@@ -40,50 +41,54 @@ const live = UnitBrain.liveProjection({
 assert.strictEqual(live.packet_type, '42ndMind_recursive_unit_brain_projection_v0_1');
 assert.strictEqual(live.ok, true);
 assert.strictEqual(live.root.id, 'one_logic_brain');
-assert.strictEqual(live.contact.truth_contact, 1);
-assert.strictEqual(live.contact.language_growth_pressure, 0.25);
+assert.strictEqual(live.principle, 'universal_active_math_state_projected_through_internal_proof_constraints');
+assert.strictEqual(live.root.meta.active_math_law, 'B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G');
 near(live.root.child_total, 1, 'live projection root must conserve one');
 live.root.children.forEach(child => near(child.child_total, 1, `${child.id} must conserve one`));
 
-const kernel = live.root.children.find(x => x.id === 'kernel');
-const proofNode = kernel.children.find(x => x.id === 'P_proof_obligations');
-assert.ok(proofNode, 'proof obligations must be inside the math, under kernel');
-near(proofNode.child_total, 1, 'proof obligations must conserve one');
-assert.strictEqual(proofNode.meta.active_math_law, 'P(B,L) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F');
+const rootIds = live.root.children.map(x => x.id);
+['U_units', 'R_relations', 'X_transformations', 'C_constraints', 'Omega_unresolveds', 'Phi_focus', 'P_proof', 'G_growth'].forEach(id => {
+  assert.ok(rootIds.includes(id), `root must include ${id}`);
+});
 
-const language = live.root.children.find(x => x.id === 'language');
-assert.ok(language, 'live projection must define language as local one');
+const units = live.root.children.find(x => x.id === 'U_units');
+const language = units.children.find(x => x.id === 'language');
+assert.ok(language, 'language must be a projection inside U, not a separate root engine');
 near(language.child_total, 1, 'language must conserve one');
+assert.strictEqual(language.meta.projection, 'π_language(B)');
 assert.strictEqual(language.meta.invariant, '|L| = 1');
-assert.strictEqual(language.meta.active_math_law, 'L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G');
-assert.ok(language.children.some(x => x.id === 'U_expression_units'));
-assert.ok(language.children.some(x => x.id === 'R_relations'));
-assert.ok(language.children.some(x => x.id === 'T_transformations'));
-assert.ok(language.children.some(x => x.id === 'C_constraints'));
-assert.ok(language.children.some(x => x.id === 'Omega_unresolveds'));
-assert.ok(language.children.some(x => x.id === 'G_growth_pressure'));
+assert.strictEqual(language.meta.active_math_law, 'L = U_L ⊕ R_L ⊕ X_L ⊕ C_L ⊕ Ω_L ⊕ Φ_L ⊕ P_L ⊕ G_L');
+['U_L_expression_units', 'R_L_relations', 'X_L_transformations', 'C_L_constraints', 'Omega_L_unresolveds', 'Phi_L_focus', 'P_L_proof', 'G_L_growth'].forEach(id => {
+  assert.ok(language.children.some(x => x.id === id), `language must include ${id}`);
+});
+
+const proof = live.root.children.find(x => x.id === 'P_proof');
+const proofNode = proof.children.find(x => x.id === 'P_proof_obligations');
+assert.ok(proofNode, 'proof obligations must be in P, inside the same active math');
+near(proofNode.child_total, 1, 'proof obligations must conserve one');
+assert.strictEqual(proofNode.meta.active_math_law, 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F');
 
 assert.strictEqual(live.unit_violation_count, 0);
 assert.strictEqual(live.proof_violation_count, 0);
+assert.strictEqual(live.active_math.universal_law.packet_type, '42ndMind_universal_active_math_law_v0_1');
+assert.ok(live.active_math.universal_law.law.includes('B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G'));
+assert.ok(live.active_math.universal_law.law.includes('B_next = closure(B ⊕ input_unit)'));
 assert.strictEqual(live.active_math.proof_state.packet_type, '42ndMind_internal_math_proof_state_v0_1');
 assert.strictEqual(live.active_math.proof_state.satisfied, true);
 assert.strictEqual(live.active_math.proof_state.failed.length, 0);
-assert.strictEqual(live.active_math.proof_state.proof_node_path, 'one_logic_brain/kernel/P_proof_obligations');
-assert.ok(live.active_math.brain_law.includes('P(B,L) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F'));
+assert.strictEqual(live.active_math.proof_state.proof_node_path, 'one_logic_brain/P_proof/P_proof_obligations');
 assert.strictEqual(live.self_definition.internal_math_proof.satisfied, true);
 assert.ok(live.self_definition.internal_math_proof.checks.every(row => row.satisfied === true));
 
 assert.strictEqual(live.active_math.language_law.packet_type, '42ndMind_active_math_language_law_v0_1');
-assert.ok(live.active_math.language_law.law.includes('L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G'));
-assert.ok(live.active_math.language_law.law.includes('∀u ∈ U: |u| = 1'));
-assert.ok(live.active_math.language_law.law.includes('unknown(u) ⇔ ¬stable(R(u))'));
-assert.strictEqual(live.self_definition.language_math.invariant, '|L| = 1');
-assert.ok(live.self_definition.language_one.active_math_law.includes('definition(u) = stable_closure(R(u))'));
+assert.ok(live.active_math.language_law.law.includes('L = U_L ⊕ R_L ⊕ X_L ⊕ C_L ⊕ Ω_L ⊕ Φ_L ⊕ P_L ⊕ G_L'));
+assert.ok(live.active_math.language_law.law.includes('∀u ∈ U_L: |u| = 1'));
+assert.ok(live.active_math.language_law.law.includes('unknown(u) ⇔ ¬stable(R_L(u))'));
 
 assert.strictEqual(live.self_definition.constructed_expressions[0].visible_expression, 'potato');
 assert.ok(live.self_definition.constructed_expressions[0].reduction.includes('p + o + t + a + t + o'));
 assert.strictEqual(live.self_definition.semantic_focuses[0].focus_operator, 'F_food_noun');
-assert.deepStrictEqual(live.self_definition.semantic_focuses[0].route, ['one_logic_brain', 'language', 'U_expression_units', 'word_class_noun', 'semantic_domain_food', 'candidate_set_food_noun']);
+assert.deepStrictEqual(live.self_definition.semantic_focuses[0].route, ['one_logic_brain', 'U_units', 'language', 'U_L_expression_units', 'word_class_noun', 'semantic_domain_food', 'candidate_set_food_noun']);
 assert.strictEqual(live.self_definition.semantic_focuses[0].language_invariant, '|L| = 1');
 assert.strictEqual(live.self_definition.semantic_focuses[0].selected_candidate.id, 'candidate_potato');
 
@@ -103,7 +108,7 @@ assert.strictEqual(failedFocus.visible_expression, '');
 assert.strictEqual(failedFocus.obligation.satisfied, false);
 
 const refined = UnitBrain.refineByContact(live.root, {
-  path: ['one_logic_brain', 'truth'],
+  path: ['one_logic_brain', 'U_units', 'truth_projection'],
   children: [
     { id: 'contact', w: 3 },
     { id: 'contradiction_guard', w: 1 },
@@ -112,10 +117,9 @@ const refined = UnitBrain.refineByContact(live.root, {
 });
 
 assert.strictEqual(refined.ok, true);
-assert.deepStrictEqual(refined.refinement.path, ['one_logic_brain', 'truth']);
-const truth = refined.root.children.find(x => x.id === 'truth');
-assert.strictEqual(truth.vague, false);
-near(truth.child_total, 1, 'refined truth aspects must conserve one');
-assert.strictEqual(truth.children.length, 4);
+assert.deepStrictEqual(refined.refinement.path, ['one_logic_brain', 'U_units', 'truth_projection']);
+const refinedTruth = refined.root.children.find(x => x.id === 'U_units').children.find(x => x.id === 'truth_projection');
+assert.strictEqual(refinedTruth.vague, false);
+near(refinedTruth.child_total, 1, 'refined truth projection aspects must conserve one');
 
 console.log('recursive-unit-brain-core-v0-1-test: all checks passed');
