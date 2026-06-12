@@ -5,13 +5,14 @@ function near(value, target, message) {
   assert.ok(Math.abs(Number(value) - Number(target)) < 1e-6, message || `expected ${value} near ${target}`);
 }
 
-assert.strictEqual(UnitBrain.VERSION, '0.5.0');
+assert.strictEqual(UnitBrain.VERSION, '0.6.0');
 assert.strictEqual(typeof UnitBrain.normalizeNode, 'function');
 assert.strictEqual(typeof UnitBrain.project, 'function');
 assert.strictEqual(typeof UnitBrain.refineByContact, 'function');
 assert.strictEqual(typeof UnitBrain.liveProjection, 'function');
 assert.strictEqual(typeof UnitBrain.selfDefine, 'function');
 assert.strictEqual(typeof UnitBrain.focusExpression, 'function');
+assert.strictEqual(typeof UnitBrain.languageMathLaw, 'function');
 
 const live = UnitBrain.liveProjection({
   state: {
@@ -49,20 +50,29 @@ const language = live.root.children.find(x => x.id === 'language');
 assert.ok(language, 'live projection must define language as local one');
 near(language.child_total, 1, 'language must conserve one');
 assert.strictEqual(language.meta.invariant, '|L| = 1');
-assert.ok(language.children.some(x => x.id === 'expression_units'), 'language must contain expression unit space');
-assert.ok(language.children.some(x => x.id === 'relations'), 'language must contain relation field');
-assert.ok(language.children.some(x => x.id === 'unresolveds'), 'language must preserve unknowns inside language');
+assert.strictEqual(language.meta.active_math_law, 'L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G');
+assert.ok(language.children.some(x => x.id === 'U_expression_units'), 'language must contain mathematical expression-unit space U');
+assert.ok(language.children.some(x => x.id === 'R_relations'), 'language must contain mathematical relation field R');
+assert.ok(language.children.some(x => x.id === 'T_transformations'), 'language must contain mathematical transformation field T');
+assert.ok(language.children.some(x => x.id === 'C_constraints'), 'language must contain mathematical constraint field C');
+assert.ok(language.children.some(x => x.id === 'Omega_unresolveds'), 'language must preserve unknowns inside Ω');
+assert.ok(language.children.some(x => x.id === 'G_growth_pressure'), 'language must contain mathematical growth pressure G');
 assert.strictEqual(live.unit_violation_count, 0);
 assert.strictEqual(live.max_depth >= 7, true);
-assert.strictEqual(live.node_count > 40, true, 'live projection must materialize language as a local one with semantic focus route and symbol construction');
+assert.strictEqual(live.node_count > 40, true, 'live projection must materialize language as active math with semantic focus route and symbol construction');
 assert.strictEqual(live.self_definition.packet_type, '42ndMind_recursive_unit_self_definition_v0_1');
 assert.ok(live.self_definition.root_formulas.some(line => line.includes('⊕')), 'self definition must generate aspect formula from brain');
+assert.strictEqual(live.active_math.language_law.packet_type, '42ndMind_active_math_language_law_v0_1');
+assert.ok(live.active_math.language_law.law.includes('L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G'));
+assert.ok(live.active_math.language_law.law.includes('∀u ∈ U: |u| = 1'));
+assert.ok(live.active_math.language_law.law.includes('unknown(u) ⇔ ¬stable(R(u))'));
+assert.strictEqual(live.self_definition.language_math.invariant, '|L| = 1');
 assert.strictEqual(live.self_definition.language_one.invariant, '|L| = 1');
-assert.ok(live.self_definition.language_one.formulas.some(line => line.startsWith('L =') || line.startsWith('L=')), 'self definition must expose language as a local one');
+assert.ok(live.self_definition.language_one.active_math_law.includes('definition(u) = stable_closure(R(u))'), 'self definition must expose language as active math');
 assert.strictEqual(live.self_definition.constructed_expressions[0].visible_expression, 'potato');
 assert.ok(live.self_definition.constructed_expressions[0].reduction.includes('p + o + t + a + t + o'));
 assert.strictEqual(live.self_definition.semantic_focuses[0].focus_operator, 'F_food_noun');
-assert.deepStrictEqual(live.self_definition.semantic_focuses[0].route, ['one_logic_brain', 'language', 'expression_units', 'word_class_noun', 'semantic_domain_food', 'candidate_set_food_noun']);
+assert.deepStrictEqual(live.self_definition.semantic_focuses[0].route, ['one_logic_brain', 'language', 'U_expression_units', 'word_class_noun', 'semantic_domain_food', 'candidate_set_food_noun']);
 assert.strictEqual(live.self_definition.semantic_focuses[0].language_invariant, '|L| = 1');
 assert.strictEqual(live.self_definition.semantic_focuses[0].visible_expression, 'potato');
 assert.strictEqual(live.self_definition.semantic_focuses[0].selected_candidate.id, 'candidate_potato');
