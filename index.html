@@ -1,1 +1,43 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>42ndMind — One Logic Math</title><style>:root{color-scheme:dark}body{margin:0;background:#0b0c10;color:#f4f6fb;font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5}main{width:min(980px,calc(100% - 24px));margin:auto;padding:28px 0 64px}section{border:1px solid #303746;border-radius:22px;background:#151922;padding:22px;margin:16px 0}.top{background:#181c26}h1{font-size:clamp(2rem,7vw,4.6rem);line-height:.95;letter-spacing:-.06em;margin:0 0 12px}.muted{color:#aab2c2}.formula code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e2e8f0;margin:6px 0;font-size:1.05rem}.pill{display:inline-block;border:1px solid #303746;border-radius:999px;padding:7px 10px;color:#aab2c2;font-size:.85rem;margin:3px}.pill strong{color:#f4f6fb}</style></head><body><main><section class="top"><p class="muted">42ndMind / One Logic / standalone math authority</p><h1>One Logic Canonical Math</h1><p class="muted">This is the complete math shown first. Implementation, projection, artifacts, and debug state are not the authority.</p><span class="pill">math version <strong>1.0.0</strong></span><span class="pill">status <strong>complete_standalone_math_first</strong></span></section><section><h2>Primitive math</h2><div class="formula"><code>1 = 1</code><code>B = 1</code><code>L = 1</code><code>q = 1</code><code>L ⊂ B</code><code>∀q ⊂ B, q = 1</code><code>definition(q) = stable distinction of q preserving q = 1</code><code>unknown(q) = unresolved distinction of q preserving q = 1</code><code>closure(B, x) = B′ where B′ = 1</code><code>expression(q) is permitted only when q = 1 is preserved</code></div></section><section><h2>Coordinate details</h2><p class="muted">Coordinates describe distinction inside the one. They do not replace B = 1, L = 1, or q = 1.</p><div class="formula"><code>coord(B) = { U, R, X, C, Ω, Φ, P, G }</code><code>coord(L) = { U_L, R_L, X_L, C_L, Ω_L, Φ_L, P_L, G_L }</code><code>coord(q) = { U_q, R_q, X_q, C_q, Ω_q, Φ_q, P_q, G_q }</code><code>coordinates are descriptions of distinction; they are not the primitive law</code><code>Σ wᵢdᵢ = 1 only describes a current coordinate expression of a local one</code></div></section><section><h2>Operators</h2><div class="formula"><code>unit(x) = q</code><code>relate(q) attempts distinction without breaking q = 1</code><code>transform(q) changes expression while preserving q = 1</code><code>prove(q) rejects any expression that breaks q = 1</code><code>focus(B, φ) selects a local one without making it external to B</code><code>closure(B, x) = normalize(B ⊕ unit(x)) under B = 1</code></div></section><section><h2>Integrity rules</h2><div class="formula"><code>The math is standalone before implementation.</code><code>Implementation may compute a projection, but projection is not the authority.</code><code>The page must show primitive math first.</code><code>Debug state may be shown only as a current expression of the math.</code><code>No implementation-generated symbol is allowed to replace the primitive law.</code></div></section></main></body></html>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B=1</title><style>body{margin:0;background:#0b0c10;color:#e2e8f0;font:14px ui-monospace,monospace}pre{white-space:pre-wrap;word-break:break-word;margin:0;padding:16px}</style></head><body><pre>{
+  "v": "1.1.0",
+  "F": [
+    "eq(1,1)",
+    "eq(B,1)",
+    "eq(L,1)",
+    "eq(q,1)",
+    "sub(L,B)",
+    "forall(q,imp(sub(q,B),eq(q,1)))",
+    "and(eq(D(q),S(Delta(q))),eq(q,1))",
+    "and(eq(Omega(q),not(S(Delta(q)))),eq(q,1))",
+    "and(eq(K(B,x),Bp),eq(Bp,1))",
+    "imp(E(q),eq(q,1))"
+  ],
+  "A": [
+    ["eq","1","1"],
+    ["eq","B","1"],
+    ["eq","L","1"],
+    ["eq","q","1"],
+    ["sub","L","B"],
+    ["forall","q",["imp",["sub","q","B"],["eq","q","1"]]],
+    ["and",["eq",["D","q"],["S",["Delta","q"]]],["eq","q","1"]],
+    ["and",["eq",["Omega","q"],["not",["S",["Delta","q"]]]],["eq","q","1"]],
+    ["and",["eq",["K","B","x"],"Bp"],["eq","Bp","1"]],
+    ["imp",["E","q"],["eq","q","1"]]
+  ],
+  "C": [
+    ["Gm","B",["U","R","X","C","O","F","P","G"]],
+    ["Gm","L",["UL","RL","XL","CL","OL","FL","PL","GL"]],
+    ["Gm","q",["Uq","Rq","Xq","Cq","Oq","Fq","Pq","Gq"]],
+    ["imp",["Gm","z"],["eq","z","1"]],
+    ["eq",["sum",["mul","wi","di"]],"1"]
+  ],
+  "O": [
+    ["iota","x","q"],
+    ["rho","q"],
+    ["tau","q"],
+    ["pi","q"],
+    ["phi","B","q"],
+    ["K","B","x","Bp"],
+    ["eq","Bp","1"]
+  ]
+}</pre></body></html>
