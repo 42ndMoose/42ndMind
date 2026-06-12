@@ -4,7 +4,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.8.0';
+  const VERSION = '0.9.0';
   const EPS = 1e-9;
 
   function A(value) { return Array.isArray(value) ? value : []; }
@@ -14,6 +14,8 @@
   function clamp01(value) { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0; }
   function clone(value) { return JSON.parse(JSON.stringify(value == null ? null : value)); }
   function cleanId(value) { const s = text(value).trim(); return s || 'unit'; }
+  function slug(value) { return cleanId(value).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 36) || 'unit'; }
+  function hashString(value) { let h = 2166136261; const s = text(value); for (let i = 0; i < s.length; i += 1) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
 
   function rawWeight(row) {
     const value = row && row.w != null ? row.w : row && row.weight != null ? row.weight : 1;
@@ -130,16 +132,7 @@
         'unknown(q) ⇔ ¬stable(R(q))',
         'expression(F_φ(B)) is valid only when P(F_φ(B)) = 1'
       ],
-      variables: {
-        U: 'units',
-        R: 'relations',
-        X: 'transformations',
-        C: 'constraints',
-        'Ω': 'unresolveds',
-        'Φ': 'focus field',
-        P: 'proof obligations',
-        G: 'growth and optimization pressure'
-      }
+      variables: { U: 'units', R: 'relations', X: 'transformations', C: 'constraints', 'Ω': 'unresolveds', 'Φ': 'focus field', P: 'proof obligations', G: 'growth and optimization pressure' }
     };
   }
 
@@ -163,6 +156,89 @@
       conservation_rule: 'every expression unit remains one whether defined, partially defined, or unresolved',
       ui_role: 'display only'
     };
+  }
+
+  function localActiveUnit(id, meta, weights) {
+    const m = O(meta);
+    const w = O(weights);
+    return { id: cleanId(id), w: m.w == null ? 1 : m.w, vague: m.vague === true ? true : false, meta: Object.assign({}, m, { active_math_law: 'q = U_q ⊕ R_q ⊕ X_q ⊕ C_q ⊕ Ω_q ⊕ Φ_q ⊕ P_q ⊕ G_q' }), children: [
+      { id: 'U_q_identity', w: w.U == null ? 1 : w.U, meta: { symbol: 'U_q', role: 'unit identity' } },
+      { id: 'R_q_relations', w: w.R == null ? EPS : w.R, meta: { symbol: 'R_q', role: 'relations currently attached to q' } },
+      { id: 'X_q_transformations', w: w.X == null ? EPS : w.X, meta: { symbol: 'X_q', role: 'transformations currently available to q' } },
+      { id: 'C_q_constraints', w: w.C == null ? 1 : w.C, meta: { symbol: 'C_q', role: 'constraints over q' } },
+      { id: 'Omega_q_unresolved', w: w.Omega == null ? 1 : w.Omega, meta: { symbol: 'Ω_q', role: 'unresolved remainder of q' } },
+      { id: 'Phi_q_focus', w: w.Phi == null ? EPS : w.Phi, meta: { symbol: 'Φ_q', role: 'focus pressure around q' } },
+      { id: 'P_q_proof', w: w.P == null ? EPS : w.P, meta: { symbol: 'P_q', role: 'proof obligations of q' } },
+      { id: 'G_q_growth', w: w.G == null ? EPS : w.G, meta: { symbol: 'G_q', role: 'growth pressure of q' } }
+    ] };
+  }
+
+  function extractInput(input) {
+    const obj = O(input);
+    if (obj.value != null) return obj.value;
+    if (obj.input != null) return obj.input;
+    if (obj.text != null) return obj.text;
+    return input;
+  }
+
+  function inputUnit(input) {
+    const value = extractInput(input);
+    const raw = typeof value === 'string' ? value : JSON.stringify(value == null ? '' : value);
+    const trimmed = text(raw).trim();
+    const chars = trimmed.length;
+    const tokens = trimmed ? trimmed.split(/\s+/).filter(Boolean) : [];
+    const relationPressure = clamp01((chars ? 0.2 : 0) + Math.min(tokens.length, 8) / 16);
+    const transformPressure = clamp01(chars ? 0.25 : 0);
+    const unresolved = chars ? Math.max(0.25, 1 - relationPressure) : 1;
+    return localActiveUnit('input_' + slug(trimmed || 'empty') + '_' + hashString(trimmed), { input_kind: typeof value, input_length: chars, token_count: tokens.length, raw_preview: trimmed.slice(0, 120), local_one: true, source: 'active_closure_input_unit' }, { R: relationPressure + EPS, X: transformPressure + EPS, Omega: unresolved, Phi: 1, P: 0.5, G: 1 });
+  }
+
+  function relationUnitsFor(unit) {
+    const preview = text(O(unit.meta).raw_preview || '');
+    const out = [localActiveUnit('relation_input_identity_' + hashString(unit.id), { relation_type: 'input_identity', source_unit: unit.id }, { R: 1, X: 0.2, Omega: 0.25, P: 0.5, G: 0.5 })];
+    if (preview.length) out.push(localActiveUnit('relation_symbol_sequence_' + hashString(preview), { relation_type: 'symbol_sequence', source_unit: unit.id, observed_length: preview.length }, { R: 1, X: 0.5, Omega: 0.35, P: 0.5, G: 0.75 }));
+    if (/\s/.test(preview)) out.push(localActiveUnit('relation_token_sequence_' + hashString(preview), { relation_type: 'token_sequence', source_unit: unit.id }, { R: 1, X: 0.4, Omega: 0.45, P: 0.5, G: 0.75 }));
+    if (/^[0-9+\-.,\s]+$/.test(preview) && /\d/.test(preview)) out.push(localActiveUnit('relation_numeric_pattern_' + hashString(preview), { relation_type: 'numeric_pattern', source_unit: unit.id }, { R: 1, X: 0.5, Omega: 0.4, P: 0.5, G: 0.6 }));
+    if (/[A-Za-z]/.test(preview)) out.push(localActiveUnit('relation_alpha_pattern_' + hashString(preview), { relation_type: 'alphabetic_pattern', source_unit: unit.id }, { R: 1, X: 0.35, Omega: 0.45, P: 0.5, G: 0.7 }));
+    out.push(localActiveUnit('relation_unresolved_reference_' + hashString(unit.id), { relation_type: 'unresolved_reference', source_unit: unit.id, preservation: 'unknown remains until stable relation closure' }, { R: 0.25, X: EPS, Omega: 1, P: 1, G: 0.5 }));
+    return out;
+  }
+
+  function transformationUnitsFor(unit, relations) {
+    const preview = text(O(unit.meta).raw_preview || '');
+    const out = [localActiveUnit('transform_identity_projection_' + hashString(unit.id), { transformation_type: 'identity_projection', source_unit: unit.id }, { R: 0.5, X: 1, Omega: 0.25, P: 0.5, G: 0.5 })];
+    if (preview.length) out.push(localActiveUnit('transform_sequence_read_' + hashString(preview), { transformation_type: 'sequence_read', source_unit: unit.id }, { R: 0.75, X: 1, Omega: 0.35, P: 0.5, G: 0.7 }));
+    if (A(relations).length > 2) out.push(localActiveUnit('transform_relation_closure_' + hashString(unit.id), { transformation_type: 'relation_closure', source_unit: unit.id }, { R: 1, X: 1, Omega: 0.4, P: 0.75, G: 1 }));
+    return out;
+  }
+
+  function closureConstraints(unit, relations, transformations) {
+    const hasUnit = !!unit && unit.unit === 1;
+    const hasRelations = A(relations).length > 0;
+    const hasTransforms = A(transformations).length > 0;
+    return [
+      { id: 'constraint_input_is_unit', formula: 'input x → q, |q| = 1', satisfied: hasUnit },
+      { id: 'constraint_relation_attempted', formula: 'R(q) is attempted before definition', satisfied: hasRelations },
+      { id: 'constraint_transform_attempted', formula: 'X(q) is attempted before expression', satisfied: hasTransforms },
+      { id: 'constraint_unknown_preserved', formula: 'Ω_q remains when R(q) is not stable', satisfied: true }
+    ];
+  }
+
+  function closureUnknownState(unit, relations, constraints) {
+    const preview = text(O(unit.meta).raw_preview || '');
+    const satisfied = A(constraints).every(row => row.satisfied === true);
+    const relationCount = A(relations).filter(row => O(row.meta).relation_type !== 'unresolved_reference').length;
+    const stable = !!preview && satisfied && relationCount >= 3;
+    const provisional = !!preview && satisfied && relationCount > 0 && !stable;
+    return { state: stable ? 'stable' : provisional ? 'provisional' : 'unresolved', unknown_preserved: !stable, relation_count: relationCount, reason: stable ? 'relations sufficient for provisional stable closure' : provisional ? 'relations exist but definition remains open' : 'insufficient stable relations' };
+  }
+
+  function closureScore(constraints, unknown) {
+    const c = A(constraints);
+    const constraintScore = c.length ? c.filter(row => row.satisfied).length / c.length : 0;
+    const unknownScore = unknown && unknown.unknown_preserved ? 1 : 0.75;
+    const stability = unknown && unknown.state === 'stable' ? 1 : unknown && unknown.state === 'provisional' ? 0.65 : 0.35;
+    return R((constraintScore + unknownScore + stability) / 3);
   }
 
   function constructedSequence(node) {
@@ -190,14 +266,15 @@
   }
 
   function proofObligationsNode() {
-    return { id: 'P_proof_obligations', w: 1, vague: false, meta: { symbol: 'P', active_math_law: 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F', role: 'internal proof obligations are part of the same math, not external tests' }, children: [
+    return { id: 'P_proof_obligations', w: 1, vague: false, meta: { symbol: 'P', active_math_law: 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F ⊕ P_closure', role: 'internal proof obligations are part of the same math, not external tests' }, children: [
       { id: 'P_B_universal_active_math', w: 1, meta: { proof: 'B = U ⊕ R ⊕ X ⊕ C ⊕ Ω ⊕ Φ ⊕ P ⊕ G' } },
       { id: 'P_B_brain_conservation', w: 1, meta: { proof: '|B| = 1' } },
       { id: 'P_L_language_projection', w: 1, meta: { proof: 'L is π_language(B)' } },
       { id: 'P_L_language_conservation', w: 1, meta: { proof: '|L| = 1' } },
       { id: 'P_U_local_unit_closure', w: 1, meta: { proof: '∀q ∈ B: |q| = 1' } },
       { id: 'P_Omega_unknown_preservation', w: 1, meta: { proof: 'unknown(q) ⇔ ¬stable(R(q))' } },
-      { id: 'P_F_focus_preserves_B_and_L', w: 1, meta: { proof: 'F_φ(B) preserves |B| = 1 and |L| = 1 when expressing language' } }
+      { id: 'P_F_focus_preserves_B_and_L', w: 1, meta: { proof: 'F_φ(B) preserves |B| = 1 and |L| = 1 when expressing language' } },
+      { id: 'P_closure_operation', w: 1, meta: { proof: 'B_next = closure(B ⊕ input_unit)' } }
     ] };
   }
 
@@ -251,10 +328,11 @@
       { id: 'P_L_local_active_math', formula: 'L = U_L ⊕ R_L ⊕ X_L ⊕ C_L ⊕ Ω_L ⊕ Φ_L ⊕ P_L ⊕ G_L', satisfied: !!(language && LU && LR && LX && LC && LOm && LPhi && LP && LG) },
       { id: 'P_U_local_unit_closure', formula: '∀q ∈ B: |q| = 1', satisfied: walk(root, [], []).every(row => row.ok === true || row.leaf === true) },
       { id: 'P_Omega_unknown_preservation', formula: 'unknown(q) ⇔ ¬stable(R(q))', satisfied: !!Om && !!LOm && A(LOm.children).some(row => row.id === 'unresolved_input_ledger') },
-      { id: 'P_F_focus_preserves_B_and_L', formula: 'F_φ(B) preserves |B| = 1 and |L| = 1', satisfied: !!(focus && focus.ok && focus.brain_invariant === '|B| = 1' && focus.language_invariant === '|L| = 1') }
+      { id: 'P_F_focus_preserves_B_and_L', formula: 'F_φ(B) preserves |B| = 1 and |L| = 1', satisfied: !!(focus && focus.ok && focus.brain_invariant === '|B| = 1' && focus.language_invariant === '|L| = 1') },
+      { id: 'P_closure_operation', formula: 'B_next = closure(B ⊕ input_unit)', satisfied: !!childAny(U, ['raw_input_units']) && !!childAny(Rr, ['candidate_relations']) && !!childAny(X, ['closure_transform']) }
     ];
     const satisfied = checks.every(row => row.satisfied === true);
-    return { packet_type: '42ndMind_internal_math_proof_state_v0_1', symbol: 'P', formula: 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F', invariant: '|P| = 1', proof_node_path: POb ? pathOf(root, POb.id) : null, satisfied, checks, failed: checks.filter(row => !row.satisfied), universal_law: activeMathLaw(), language_law: languageMathLaw(language, symbols) };
+    return { packet_type: '42ndMind_internal_math_proof_state_v0_1', symbol: 'P', formula: 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F ⊕ P_closure', invariant: '|P| = 1', proof_node_path: POb ? pathOf(root, POb.id) : null, satisfied, checks, failed: checks.filter(row => !row.satisfied), universal_law: activeMathLaw(), language_law: languageMathLaw(language, symbols) };
   }
 
   function findConstructedToken(root, wanted) {
@@ -289,6 +367,27 @@
     const s = stats(root);
     const kernelError = R((s.unit_violation_count || !internalProof.satisfied) ? 1 : 0);
     return { packet_type: '42ndMind_recursive_unit_brain_projection_v0_1', version: VERSION, principle: 'universal_active_math_state_projected_through_internal_proof_constraints', ok: kernelError === 0, invariant: 'B is one active math: units, relations, transformations, constraints, unresolveds, focus, proof, and growth are one conserved state', active_math: { universal_law: activeMathLaw(), proof_state: internalProof, language_law: languageMathLaw(findFirst(root, 'language'), symbols) }, root, self_definition: selfDefine(root), kernel_error: kernelError, unit_violation_count: s.unit_violation_count, proof_violation_count: internalProof.failed.length, vague_mass: s.vague_mass, node_count: s.node_count, leaf_count: s.leaf_count, max_depth: s.max_depth, context: O(context), empty_text: '' };
+  }
+
+  function activeClosure(projectionOrRoot, input) {
+    const beforePacket = projectionOrRoot && projectionOrRoot.packet_type ? projectionOrRoot : project(projectionOrRoot && projectionOrRoot.id ? projectionOrRoot : liveProjection({}).root);
+    const beforeRoot = beforePacket.root;
+    const beforeStats = stats(beforeRoot);
+    const unit = inputUnit(input);
+    const relations = relationUnitsFor(unit);
+    const transformations = transformationUnitsFor(unit, relations);
+    const constraints = closureConstraints(unit, relations, transformations);
+    const unknown = closureUnknownState(unit, relations, constraints);
+    const score = closureScore(constraints, unknown);
+    let nextRoot = refineAt(beforeRoot, ['one_logic_brain', 'U_units', 'raw_input_units'], [unit]);
+    nextRoot = refineAt(nextRoot, ['one_logic_brain', 'R_relations', 'candidate_relations'], relations);
+    nextRoot = refineAt(nextRoot, ['one_logic_brain', 'X_transformations', 'closure_transform'], transformations);
+    nextRoot = refineAt(nextRoot, ['one_logic_brain', 'Omega_unresolveds', 'unresolved_input_ledger'], unknown.unknown_preserved ? [localActiveUnit('unknown_state_' + hashString(unit.id), { source_unit: unit.id, unknown_state: unknown.state, reason: unknown.reason }, { R: 0.25, X: EPS, Omega: 1, P: 1, G: 0.5 })] : []);
+    nextRoot = refineAt(nextRoot, ['one_logic_brain', 'Phi_focus', 'definition_focus_pressure'], [localActiveUnit('focus_on_' + hashString(unit.id), { source_unit: unit.id, focus_reason: unknown.state }, { R: 0.5, X: 0.25, Omega: unknown.unknown_preserved ? 1 : 0.25, Phi: 1, P: 0.75, G: 1 })]);
+    nextRoot = refineAt(nextRoot, ['one_logic_brain', 'G_growth', 'relation_growth'], [localActiveUnit('growth_from_' + hashString(unit.id), { source_unit: unit.id, stability_score: score, definition_delta: unknown.state }, { R: 0.75, X: 0.5, Omega: unknown.unknown_preserved ? 1 : 0.25, Phi: 0.5, P: 0.75, G: 1 })]);
+    const afterPacket = project(nextRoot, { source: 'active_closure', input_unit: unit.id });
+    const afterStats = stats(afterPacket.root);
+    return { packet_type: '42ndMind_active_closure_v0_1', formula: 'B_next = closure(B ⊕ input_unit)', ok: afterPacket.ok === true, B_before: beforePacket, input_unit: unit, candidate_relations: relations, candidate_transformations: transformations, constraint_results: constraints, unknown_state: unknown, focus_state: { selected_unit: unit.id, focus_formula: 'F_φ(B) includes ' + unit.id, expression_allowed: unknown.state === 'stable' }, proof_state: afterPacket.active_math.proof_state, B_after: afterPacket, stability_score: score, definition_delta: { node_count: afterStats.node_count - beforeStats.node_count, vague_mass_delta: R(afterStats.vague_mass - beforeStats.vague_mass), state: unknown.state } };
   }
 
   function focusExpression(projectionOrRoot, focus) {
@@ -396,5 +495,5 @@
     return projection;
   }
 
-  return Object.freeze({ VERSION, normalizeWeights, normalizeNode, project, refineByContact, liveProjection, stats, l1, selfDefine, focusExpression, activeMathLaw, languageMathLaw, proofState });
+  return Object.freeze({ VERSION, normalizeWeights, normalizeNode, project, refineByContact, activeClosure, liveProjection, stats, l1, selfDefine, focusExpression, activeMathLaw, languageMathLaw, proofState });
 });
