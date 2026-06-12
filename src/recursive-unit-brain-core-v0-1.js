@@ -4,7 +4,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.5.0';
+  const VERSION = '0.6.0';
   const EPS = 1e-9;
 
   function A(value) { return Array.isArray(value) ? value : []; }
@@ -79,7 +79,9 @@
     map[root.id] = 'B';
     (function visit(node) {
       A(node.children).forEach((child, index) => {
-        const base = symbolBase(child.id, 'A' + (index + 1));
+        const meta = O(child.meta);
+        const explicit = text(meta.symbol || meta.local_one_symbol || '').trim();
+        const base = explicit || symbolBase(child.id, 'A' + (index + 1));
         const count = used[base] || 0;
         used[base] = count + 1;
         map[child.id] = count ? base + (count + 1) : base;
@@ -110,6 +112,7 @@
   }
 
   function child(node, id) { return A(node && node.children).find(row => row.id === id) || null; }
+  function childAny(node, ids) { return A(ids).map(id => child(node, id)).find(Boolean) || null; }
   function pathOf(root, targetId) {
     const row = walk(root, [], []).find(item => item.id === targetId);
     return row ? row.path : null;
@@ -139,9 +142,39 @@
     return metaText ? { visible_expression: metaText, construction: null, construction_node_id: null } : null;
   }
 
+  function languageMathLaw(language, symbols) {
+    const L = language ? symbols[language.id] || 'L' : 'L';
+    return {
+      packet_type: '42ndMind_active_math_language_law_v0_1',
+      statement: 'language is pure active math: a conserved local one whose expressions are units defined only by surviving relations',
+      symbol: L,
+      invariant: '|' + L + '| = 1',
+      law: [
+        L + ' = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G',
+        '|' + L + '| = 1',
+        '∀u ∈ U: |u| = 1',
+        'definition(u) = stable_closure(R(u))',
+        'unknown(u) ⇔ ¬stable(R(u))',
+        'F_φ(' + L + ') = stable_expression selected from ' + L + ' under active focus φ'
+      ],
+      variables: {
+        U: 'expression units',
+        R: 'relations between units',
+        T: 'structure-preserving transformations',
+        C: 'constraints on false or unstable definition',
+        'Ω': 'unresolved units kept inside language',
+        G: 'definition growth pressure'
+      },
+      expression_rule: 'language output is not a UI event; it is the active mathematical expression selected from L',
+      unknown_rule: 'an input without stable relations remains an unresolved local one rather than being forced into meaning',
+      conservation_rule: 'every expression unit remains one whether defined, partially defined, or unresolved',
+      ui_role: 'display only'
+    };
+  }
+
   function semanticFocus(root, requested) {
     const language = child(root, 'language');
-    const expressionUnits = child(language, 'expression_units');
+    const expressionUnits = childAny(language, ['U_expression_units', 'expression_units']);
     const noun = child(expressionUnits, 'word_class_noun') || child(language, 'word_class_noun');
     const food = child(noun, 'semantic_domain_food');
     const set = child(food, 'candidate_set_food_noun');
@@ -181,14 +214,17 @@
     });
     const language = child(root, 'language');
     const languageRows = rows.filter(row => row.path.indexOf(root.id + '/language') === 0);
-    return { packet_type: '42ndMind_recursive_unit_self_definition_v0_1', root_id: root.id, root_symbol: 'B', statement: 'the current brain defines its visible law from its active math structure', symbols, root_formulas: formulasFor(root, symbols), language_one: language ? { id: language.id, symbol: symbols[language.id] || 'L', invariant: '|L| = 1', formulas: formulasFor(language, symbols), child_total: language.child_total, ok: language.ok, local_expression_unit_count: languageRows.length } : null, immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })), constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })), semantic_focuses: [semanticFocus(root, 'potato')].filter(Boolean), local_ones: localOnes, empty_text: '' };
+    const langLaw = languageMathLaw(language, symbols);
+    return { packet_type: '42ndMind_recursive_unit_self_definition_v0_1', root_id: root.id, root_symbol: 'B', statement: 'the current brain defines its visible law from its active math structure', symbols, root_formulas: formulasFor(root, symbols), language_math: langLaw, language_one: language ? { id: language.id, symbol: symbols[language.id] || 'L', invariant: '|L| = 1', active_math_law: langLaw.law, formulas: formulasFor(language, symbols), child_total: language.child_total, ok: language.ok, local_expression_unit_count: languageRows.length } : null, immediate_aspects: A(root.children).map(child => ({ id: child.id, symbol: symbols[child.id] || symbolBase(child.id), weight: child.w, child_total: child.child_total, child_count: A(child.children).length, vague: child.vague, ok: child.ok })), constructed_expressions: localOnes.filter(row => row.construction && row.construction.ok).map(row => ({ id: row.id, path: row.path, visible_expression: row.construction.visible_expression, reduction: row.construction.reduction })), semantic_focuses: [semanticFocus(root, 'potato')].filter(Boolean), local_ones: localOnes, empty_text: '' };
   }
 
   function project(input, context) {
     const root = normalizeNode(input || { id: 'brain' });
+    const symbols = symbolMap(root);
+    const language = child(root, 'language');
     const s = stats(root);
     const kernelError = R(s.unit_violation_count ? 1 : 0);
-    return { packet_type: '42ndMind_recursive_unit_brain_projection_v0_1', version: VERSION, principle: 'recursive_unit_total_state_projected_through_kernel_constraints', ok: kernelError === 0, invariant: 'every defined local one normalizes its aspects to one; undefined leaves remain valid vague units', root, self_definition: selfDefine(root), kernel_error: kernelError, unit_violation_count: s.unit_violation_count, vague_mass: s.vague_mass, node_count: s.node_count, leaf_count: s.leaf_count, max_depth: s.max_depth, context: O(context), empty_text: '' };
+    return { packet_type: '42ndMind_recursive_unit_brain_projection_v0_1', version: VERSION, principle: 'recursive_unit_total_state_projected_through_kernel_constraints', ok: kernelError === 0, invariant: 'every defined local one normalizes its aspects to one; undefined leaves remain valid vague units', active_math: { brain_law: ['B = K ⊕ L ⊕ T ⊕ M ⊕ A', '|B| = 1'], language_law: languageMathLaw(language, symbols) }, root, self_definition: selfDefine(root), kernel_error: kernelError, unit_violation_count: s.unit_violation_count, vague_mass: s.vague_mass, node_count: s.node_count, leaf_count: s.leaf_count, max_depth: s.max_depth, context: O(context), empty_text: '' };
   }
 
   function focusExpression(projectionOrRoot, focus) {
@@ -237,13 +273,13 @@
 
   function languageState(params) {
     const p = O(params);
-    return { id: 'language', w: 1, vague: false, meta: { local_one_symbol: 'L', invariant: '|L| = 1', principle: 'language is a recursive active-math local one; every expression unit remains one whether defined or vague' }, children: [
-      { id: 'expression_units', w: 1, vague: false, meta: { role: 'all language expressions are units' }, children: [foodNounRoute(), { id: 'sentence_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'narrative_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'unknown_input_units', w: EPS, meta: { status: 'unknown_until_relations_stabilize' } }] },
-      { id: 'relations', w: 1, vague: false, meta: { role: 'relation field defining expression units' }, children: [{ id: 'grammar_relations', w: p.languageCoherence + EPS }, { id: 'symbol_relations', w: p.symbols + EPS }, { id: 'semantic_relations', w: p.relations + EPS }, { id: 'context_relations', w: EPS }] },
-      { id: 'transformations', w: 1, vague: false, meta: { role: 'valid expression transformations' }, children: [{ id: 'ordered_symbol_sequence_transform', w: 1 }, { id: 'reference_resolution_transform', w: EPS }, { id: 'translation_transform', w: EPS }] },
-      { id: 'constraints', w: 1, vague: false, meta: { role: 'language stability constraints' }, children: [{ id: 'local_one_constraint', w: 1 }, { id: 'coherence_constraint', w: p.languageCoherence + EPS }, { id: 'unknown_preservation_constraint', w: 1 }] },
-      { id: 'unresolveds', w: Math.max(EPS, 1 - Math.max(p.symbols, p.relations)), vague: false, meta: { role: 'unknowns remain inside language without forced definition' }, children: [{ id: 'vague_expression_capacity', w: 1 }, { id: 'unresolved_input_ledger', w: 1 }] },
-      { id: 'growth_pressure', w: p.languageGrowth + EPS, vague: false, meta: { role: 'pressure to define language through relations' }, children: [{ id: 'definition_growth_pressure', w: 1 }, { id: 'relation_growth_pressure', w: p.languageGrowth + EPS }] }
+    return { id: 'language', w: 1, vague: false, meta: { local_one_symbol: 'L', invariant: '|L| = 1', active_math_law: 'L = U ⊕ R ⊕ T ⊕ C ⊕ Ω ⊕ G', principle: 'language is active math; expression is selected from conserved units, relations, transformations, constraints, unresolveds, and growth pressure' }, children: [
+      { id: 'U_expression_units', w: 1, vague: false, meta: { symbol: 'U', role: 'units language can express; every u in U remains a local one' }, children: [foodNounRoute(), { id: 'sentence_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'narrative_units', w: EPS, meta: { status: 'vague_expression_unit_space' } }, { id: 'unknown_input_units', w: EPS, meta: { status: 'unknown_until_relations_stabilize' } }] },
+      { id: 'R_relations', w: 1, vague: false, meta: { symbol: 'R', role: 'relation field defining expression units' }, children: [{ id: 'grammar_relations', w: p.languageCoherence + EPS }, { id: 'symbol_relations', w: p.symbols + EPS }, { id: 'semantic_relations', w: p.relations + EPS }, { id: 'context_relations', w: EPS }] },
+      { id: 'T_transformations', w: 1, vague: false, meta: { symbol: 'T', role: 'valid structure-preserving transformations' }, children: [{ id: 'ordered_symbol_sequence_transform', w: 1 }, { id: 'reference_resolution_transform', w: EPS }, { id: 'translation_transform', w: EPS }] },
+      { id: 'C_constraints', w: 1, vague: false, meta: { symbol: 'C', role: 'constraints preventing false or unstable definition' }, children: [{ id: 'local_one_constraint', w: 1 }, { id: 'coherence_constraint', w: p.languageCoherence + EPS }, { id: 'unknown_preservation_constraint', w: 1 }] },
+      { id: 'Omega_unresolveds', w: Math.max(EPS, 1 - Math.max(p.symbols, p.relations)), vague: false, meta: { symbol: 'Ω', role: 'unknowns remain inside language without forced definition' }, children: [{ id: 'vague_expression_capacity', w: 1 }, { id: 'unresolved_input_ledger', w: 1 }] },
+      { id: 'G_growth_pressure', w: p.languageGrowth + EPS, vague: false, meta: { symbol: 'G', role: 'pressure to define language through relations' }, children: [{ id: 'definition_growth_pressure', w: 1 }, { id: 'relation_growth_pressure', w: p.languageGrowth + EPS }] }
     ] };
   }
 
@@ -275,5 +311,5 @@
     return projection;
   }
 
-  return Object.freeze({ VERSION, normalizeWeights, normalizeNode, project, refineByContact, liveProjection, stats, l1, selfDefine, focusExpression });
+  return Object.freeze({ VERSION, normalizeWeights, normalizeNode, project, refineByContact, liveProjection, stats, l1, selfDefine, focusExpression, languageMathLaw });
 });
