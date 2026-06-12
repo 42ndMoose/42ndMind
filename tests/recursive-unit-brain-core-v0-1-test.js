@@ -5,10 +5,11 @@ function near(value, target, message) {
   assert.ok(Math.abs(Number(value) - Number(target)) < 1e-6, message || `expected ${value} near ${target}`);
 }
 
-assert.strictEqual(UnitBrain.VERSION, '0.8.0');
+assert.strictEqual(UnitBrain.VERSION, '0.9.0');
 assert.strictEqual(typeof UnitBrain.normalizeNode, 'function');
 assert.strictEqual(typeof UnitBrain.project, 'function');
 assert.strictEqual(typeof UnitBrain.refineByContact, 'function');
+assert.strictEqual(typeof UnitBrain.activeClosure, 'function');
 assert.strictEqual(typeof UnitBrain.liveProjection, 'function');
 assert.strictEqual(typeof UnitBrain.selfDefine, 'function');
 assert.strictEqual(typeof UnitBrain.focusExpression, 'function');
@@ -66,7 +67,7 @@ const proof = live.root.children.find(x => x.id === 'P_proof');
 const proofNode = proof.children.find(x => x.id === 'P_proof_obligations');
 assert.ok(proofNode, 'proof obligations must be in P, inside the same active math');
 near(proofNode.child_total, 1, 'proof obligations must conserve one');
-assert.strictEqual(proofNode.meta.active_math_law, 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F');
+assert.strictEqual(proofNode.meta.active_math_law, 'P(B) = P_B ⊕ P_L ⊕ P_U ⊕ P_Ω ⊕ P_F ⊕ P_closure');
 
 assert.strictEqual(live.unit_violation_count, 0);
 assert.strictEqual(live.proof_violation_count, 0);
@@ -91,6 +92,22 @@ assert.strictEqual(live.self_definition.semantic_focuses[0].focus_operator, 'F_f
 assert.deepStrictEqual(live.self_definition.semantic_focuses[0].route, ['one_logic_brain', 'U_units', 'language', 'U_L_expression_units', 'word_class_noun', 'semantic_domain_food', 'candidate_set_food_noun']);
 assert.strictEqual(live.self_definition.semantic_focuses[0].language_invariant, '|L| = 1');
 assert.strictEqual(live.self_definition.semantic_focuses[0].selected_candidate.id, 'candidate_potato');
+
+const closure = UnitBrain.activeClosure(live, { text: 'new glyph pattern 42' });
+assert.strictEqual(closure.packet_type, '42ndMind_active_closure_v0_1');
+assert.strictEqual(closure.formula, 'B_next = closure(B ⊕ input_unit)');
+assert.strictEqual(closure.ok, true);
+assert.strictEqual(closure.input_unit.unit, 1);
+assert.ok(closure.input_unit.meta.active_math_law.includes('q = U_q'));
+assert.ok(closure.candidate_relations.length >= 3, 'closure must propose relations for input');
+assert.ok(closure.candidate_transformations.length >= 2, 'closure must propose transformations for input');
+assert.ok(closure.constraint_results.every(row => row.satisfied === true), 'closure constraints must be represented as satisfied or unresolved');
+assert.ok(['stable', 'provisional', 'unresolved'].includes(closure.unknown_state.state));
+assert.strictEqual(closure.unknown_state.unknown_preserved, closure.unknown_state.state !== 'stable');
+assert.strictEqual(closure.proof_state.satisfied, true);
+assert.ok(closure.stability_score > 0);
+assert.ok(closure.definition_delta.node_count > 0, 'closure must add active math structure');
+assert.ok(closure.B_after.root.children.find(x => x.id === 'U_units').children.find(x => x.id === 'raw_input_units').children.length >= 1);
 
 const potatoFocus = UnitBrain.focusExpression(live, { token: 'potato' });
 assert.strictEqual(potatoFocus.packet_type, '42ndMind_recursive_unit_focus_expression_v0_1');
