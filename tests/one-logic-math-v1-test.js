@@ -1,28 +1,24 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const MathCore = require('../src/one-logic-math-v1.js');
+const M = require('../src/one-logic-math-v1.js');
 
-assert.strictEqual(MathCore.VERSION, '1.0.0');
-assert.strictEqual(MathCore.packet.packet_type, '42ndMind_one_logic_canonical_math_v1');
-assert.ok(MathCore.primitive.includes('1 = 1'));
-assert.ok(MathCore.primitive.includes('B = 1'));
-assert.ok(MathCore.primitive.includes('L = 1'));
-assert.ok(MathCore.primitive.includes('q = 1'));
-assert.ok(MathCore.primitive.includes('∀q ⊂ B, q = 1'));
-assert.ok(MathCore.primitive.includes('closure(B, x) = B′ where B′ = 1'));
-assert.ok(MathCore.coordinate.includes('coordinates are descriptions of distinction; they are not the primitive law'));
-assert.ok(MathCore.integrity.includes('The math is standalone before implementation.'));
-assert.ok(MathCore.integrity.includes('No implementation-generated symbol is allowed to replace the primitive law.'));
+assert.strictEqual(M.VERSION, '1.1.0');
+assert.deepStrictEqual(M.A[0], ['eq', '1', '1']);
+assert.deepStrictEqual(M.A[1], ['eq', 'B', '1']);
+assert.deepStrictEqual(M.A[2], ['eq', 'L', '1']);
+assert.deepStrictEqual(M.A[3], ['eq', 'q', '1']);
+assert.deepStrictEqual(M.A[4], ['sub', 'L', 'B']);
+assert.ok(M.F.includes('forall(q,imp(sub(q,B),eq(q,1)))'));
+assert.ok(M.F.includes('and(eq(K(B,x),Bp),eq(Bp,1))'));
+assert.deepStrictEqual(M.C[0], ['Gm', 'B', ['U', 'R', 'X', 'C', 'O', 'F', 'P', 'G']]);
+assert.deepStrictEqual(M.O[0], ['iota', 'x', 'q']);
+assert.deepStrictEqual(Object.keys(M.M).sort(), ['A', 'C', 'F', 'O', 'v'].sort());
 
 const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-assert.ok(index.includes('One Logic Canonical Math'));
-assert.ok(index.includes('B = 1'));
-assert.ok(index.includes('L = 1'));
-assert.ok(index.includes('q = 1'));
-assert.ok(index.includes('Implementation, projection, artifacts, and debug state are not the authority.'));
-assert.ok(!index.includes('latest-recursive-unit-brain-projection'));
-assert.ok(!index.includes('Generated body law'));
-assert.ok(!index.includes('Loading current body'));
+assert.ok(index.includes('"v": "1.1.0"'));
+assert.ok(index.includes('"eq(B,1)"'));
+assert.ok(index.includes('["eq","B","1"]'));
+assert.ok(index.includes('["Gm","B",["U","R","X","C","O","F","P","G"]]'));
 
 console.log('one-logic-math-v1-test: all checks passed');
