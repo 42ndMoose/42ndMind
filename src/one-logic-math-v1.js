@@ -97,7 +97,7 @@
     E: { role: 'expression', law: ['E(B,phi)=PiE(Phi(phi,B))'], contract: { operation: 'expression_from_focus', output_must_satisfy: 'Valid(E(B,phi),B)' } },
     Valid: { role: 'expression_validity', law: ['Valid(y,B)=and(sub(y,B),norm(y)=1,P(y)=1)', 'Valid(E(B,phi),B)=1'], contract: { holds_when: ['sub(y,B)', 'norm(y)=1', 'P(y)=1'] } },
     Active: { role: 'active_math', law: ['Active(B)=and(One(B),forall(x,imp(Adm(x,B),One(B[x]))))'], contract: { active_when: ['One(B)', 'every_admitted_difference_preserves_One'] } },
-    Living: { role: 'living_math', law: ['Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))'], contract: { living_when: ['Active(B)', 'equivalent_difference_collapses', 'unknowns_preserved', 'reduction_preserves_norm', 'non_growth_does_not_change_state'] } }
+    Living: { role: 'living_math', law: ['Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))))'], contract: { living_when: ['Active(B)', 'equivalent_difference_collapses', 'unknowns_preserved', 'reduction_preserves_norm', 'non_growth_does_not_change_state'] } }
   });
 
   const CONTRACT = freezeDeep({
