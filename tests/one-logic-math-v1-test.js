@@ -38,7 +38,7 @@ const formulas = new Set(M.F);
 const contractLaw = new Set(Object.values(M.CONTRACT.operators).flatMap(operator => operator.law || []));
 formulas.forEach(formula => assert.ok(contractLaw.has(formula), 'formula has canonical operator contract law: ' + formula));
 
-assert.strictEqual(P.VERSION, '0.1.2');
+assert.strictEqual(P.VERSION, '0.1.3');
 assert.strictEqual(P.EXPECTED_MATH_VERSION, M.CONTRACT.expected_math_version);
 assert.strictEqual(P.CANONICAL_MATH_PATH, M.CONTRACT.canonical_path);
 assert.deepStrictEqual(P.REQUIRED, M.CONTRACT.required_formulas);
@@ -53,6 +53,7 @@ const gateSource = fs.readFileSync(path.join(__dirname, '..', 'src', 'math-law-g
 const proverSource = fs.readFileSync(path.join(__dirname, '..', 'src', 'math-law-invariant-prover-v0-1.js'), 'utf8');
 assert.ok(!canonical.includes('B_t'));
 assert.ok(!canonical.includes('B_t1'));
+assert.ok(!canonical.includes('Cl(union(B({a})))'));
 assert.ok(!gateSource.includes("const EXPECTED_MATH_VERSION = '1.5.0'"));
 assert.ok(!gateSource.includes("const CANONICAL_MATH_PATH = 'src/one-logic-math-v1.js'"));
 assert.ok(!gateSource.includes('Object.freeze(Prover && Prover.REQUIRED || ['));
@@ -74,6 +75,8 @@ assert.strictEqual(stateReport.ok, true);
 assert.strictEqual(stateReport.One, true);
 assert.strictEqual(stateReport.Closure, true);
 assert.strictEqual(stateReport.Reduction, true);
+assert.strictEqual(stateReport.proved, true);
+assert.strictEqual(stateReport.proof.ok, true);
 assert.ok(stateReport.reduction.duplicate_count >= 1);
 
 const noContractReport = P.evaluateState(state, { math: { VERSION: '1.5.0', F: M.F } });
