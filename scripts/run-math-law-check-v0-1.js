@@ -8,7 +8,7 @@ const Proof = require('../src/math-law-proof-checker-v0-1.js');
 const G = require('../src/math-law-gate-v0-1.js');
 const C = require('../src/math-law-cycle-core-v0-1.js');
 const ROOT = path.resolve(__dirname, '..');
-const paths = ['src/one-logic-math-v1.js','src/math-law-invariant-prover-v0-1.js','src/math-law-proof-checker-v0-1.js','src/math-law-gate-v0-1.js','src/math-law-cycle-core-v0-1.js','src/live-self-dynamics-core-v0-1.js','src/math-language-kernel-v0-1.js','src/math-ast-core-v0-1.js','src/operator-anatomy-v0-1.js','src/proof-calculus-core-v0-1.js','src/math-closure-engine-v0-1.js','src/unified-self-simulation-core-v0-1.js','src/autonomous-brain-growth-core-v0-1.js','src/nested-brain-core-v0-1.js','src/one-logic-direction-contract-v0-1.js'];
+const paths = ['src/one-logic-math-v1.js','src/math-law-invariant-prover-v0-1.js','src/math-law-proof-checker-v0-1.js','src/one-logic-language-completion-v0-1.js','src/math-law-gate-v0-1.js','src/math-law-cycle-core-v0-1.js','src/live-self-dynamics-core-v0-1.js','src/math-language-kernel-v0-1.js','src/math-ast-core-v0-1.js','src/operator-anatomy-v0-1.js','src/proof-calculus-core-v0-1.js','src/math-closure-engine-v0-1.js','src/unified-self-simulation-core-v0-1.js','src/autonomous-brain-growth-core-v0-1.js','src/nested-brain-core-v0-1.js','src/one-logic-direction-contract-v0-1.js'];
 const files = {};
 paths.forEach(p => { const f = path.join(ROOT, p); if (fs.existsSync(f)) files[p] = fs.readFileSync(f, 'utf8'); });
 const options = { math: M, prover: P, proof_checker: Proof, gate: G };
