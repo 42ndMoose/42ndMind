@@ -34,15 +34,33 @@ assert.strictEqual(M.operatorContract('EqB').contract.compare, 'definition_signa
 assert.strictEqual(M.operatorContract('Red').contract.operation, 'quotient_by_EqB');
 assert.ok(M.operatorContract('G').contract.no_growth_policy.includes('state_signature'));
 
-assert.strictEqual(P.VERSION, '0.1.1');
+const formulas = new Set(M.F);
+const contractLaw = new Set(Object.values(M.CONTRACT.operators).flatMap(operator => operator.law || []));
+formulas.forEach(formula => assert.ok(contractLaw.has(formula), 'formula has canonical operator contract law: ' + formula));
+
+assert.strictEqual(P.VERSION, '0.1.2');
 assert.strictEqual(P.EXPECTED_MATH_VERSION, M.CONTRACT.expected_math_version);
 assert.strictEqual(P.CANONICAL_MATH_PATH, M.CONTRACT.canonical_path);
 assert.deepStrictEqual(P.REQUIRED, M.CONTRACT.required_formulas);
+assert.strictEqual(G.VERSION, '0.1.3');
+assert.strictEqual(G.EXPECTED_MATH_VERSION, M.CONTRACT.expected_math_version);
+assert.strictEqual(G.CANONICAL_MATH_PATH, M.CONTRACT.canonical_path);
+assert.deepStrictEqual(G.REQUIRED, M.CONTRACT.required_formulas);
 ['closure','closureSignature','verifyClosureIdempotence','candidateAsInput','candidateAfterState','verifyAdmission','defineUnit','definitionSignature','stabilityOf','unknownOf','preservesUnknown','eqB','collapseEquivalentUnits','verifyEquivalenceCollapse','red','verifyReductionNorm','isGrowth','verifyNoGrowthNoChange','focus','expressionOf','validExpression','verifyActive','verifyLiving','evaluateState','evaluateTransition'].forEach(name => assert.strictEqual(typeof P[name], 'function', name));
 
 const canonical = fs.readFileSync(path.join(__dirname, '..', 'src', 'one-logic-math-v1.js'), 'utf8');
+const gateSource = fs.readFileSync(path.join(__dirname, '..', 'src', 'math-law-gate-v0-1.js'), 'utf8');
+const proverSource = fs.readFileSync(path.join(__dirname, '..', 'src', 'math-law-invariant-prover-v0-1.js'), 'utf8');
 assert.ok(!canonical.includes('B_t'));
 assert.ok(!canonical.includes('B_t1'));
+assert.ok(!gateSource.includes("const EXPECTED_MATH_VERSION = '1.5.0'"));
+assert.ok(!gateSource.includes("const CANONICAL_MATH_PATH = 'src/one-logic-math-v1.js'"));
+assert.ok(!gateSource.includes('Object.freeze(Prover && Prover.REQUIRED || ['));
+assert.ok(!gateSource.includes("'B=Cl(B)'"));
+assert.ok(!proverSource.includes("'B=Cl(B)'"));
+assert.ok(!proverSource.includes('required_formulas || ['));
+assert.ok(!proverSource.includes("|| 'src/one-logic-math-v1.js'"));
+
 const state = {
   files: { 'src/one-logic-math-v1.js': canonical },
   internal_state: { symbols: ['B', 'B'], relations: [], expressions: [], virtual_edits: [] }
@@ -57,6 +75,10 @@ assert.strictEqual(stateReport.One, true);
 assert.strictEqual(stateReport.Closure, true);
 assert.strictEqual(stateReport.Reduction, true);
 assert.ok(stateReport.reduction.duplicate_count >= 1);
+
+const noContractReport = P.evaluateState(state, { math: { VERSION: '1.5.0', F: M.F } });
+assert.strictEqual(noContractReport.ok, false);
+assert.strictEqual(noContractReport.one.canonical.blocked_reason, 'canonical_operator_contract_unavailable');
 
 const gateReport = G.verifyState(state, { math: M, prover: P });
 assert.strictEqual(gateReport.ok, true);
