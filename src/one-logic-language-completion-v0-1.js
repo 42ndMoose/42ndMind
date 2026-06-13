@@ -4,7 +4,9 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.1.1';
+  const SEMANTIC_AUTHORITY = 'one-logic-math-v1.js::CONTRACT';
+  const PROOF_AUTHORITY = 'one-logic-math-v1.js::CONTRACT.proofs';
   let M = null, P = null, Proof = null, Kernel = null, fs = null, path = null;
   try { if (typeof require === 'function') M = require('./one-logic-math-v1.js'); } catch (_) {}
   try { if (typeof require === 'function') P = require('./math-law-invariant-prover-v0-1.js'); } catch (_) {}
@@ -23,7 +25,12 @@
   function stable(value) { if (value == null) return 'null'; if (typeof value !== 'object') return JSON.stringify(value); if (Array.isArray(value)) return '[' + value.map(stable).join(',') + ']'; return '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + stable(value[k])).join(',') + '}'; }
   function hash(value) { const s = stable(value); let h = 2166136261; for (let i = 0; i < s.length; i += 1) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); }
 
-  function canonicalPath(options) { const m = math(options || {}); return O(m && m.CONTRACT).canonical_path || 'src/one-logic-math-v1.js'; }
+  function contract(options) { const m = math(options || {}); return O(m && m.CONTRACT); }
+  function operators(options) { return O(contract(options || {}).operators); }
+  function operator(name, options) { return O(operators(options || {})[name]); }
+  function law(name, options) { return A(operator(name, options || {}).law); }
+  function canonicalPath(options) { return contract(options || {}).canonical_path || 'src/one-logic-math-v1.js'; }
+  function proofAuthority(options) { return O(contract(options || {}).proofs).authority || PROOF_AUTHORITY; }
   function canonicalSource(options) {
     const opts = options || {}, m = math(opts), p = canonicalPath(opts);
     if (opts.files && opts.files[p]) return String(opts.files[p]);
@@ -39,7 +46,7 @@
       packet_type: '42ndMind_one_logic_language_completion_state_v0_1',
       files,
       internal_state: {
-        symbols: ['B', 'L', 'One', 'Active', 'Living'],
+        symbols: ['B', 'L', 'One', 'Active', 'Living', 'Phi', 'E', 'Valid'],
         relations: A(opts.relations),
         expressions: A(expressions),
         virtual_edits: []
@@ -52,15 +59,40 @@
   function proofFrom(report) { return report && report.proof || null; }
   function certified(packet, report) { const proof = proofFrom(report); return Object.assign({}, packet, { invariant_report: report, proof, proved: !!(proof && proof.ok === true), ok: packet.ok !== false && !!(report && report.ok === true) && !!(proof && proof.ok === true), blocked_reason: report && report.blocked_reason || null }); }
 
-  function languagePacket(input, options) {
+  function parserPacket(input, options) {
+    // Parser/formatter only. It may shape display metadata, but it is not semantic authority.
+    // Semantics and proof authority remain only SEMANTIC_AUTHORITY and PROOF_AUTHORITY.
     const k = kernel(options || {});
     if (k && typeof k.completeMath === 'function') return k.completeMath(input, options || {});
     if (k && typeof k.math === 'function') return k.math(input, options || {});
     return { φ: 'M', ok: false, verified: false, source: String(input == null ? '' : input), gaps: [{ id: 'language_kernel_unavailable' }], Ξ: '' };
   }
+  function contractExpression(input, parser, options) {
+    const c = contract(options || {}), source = String(input == null ? '' : input);
+    const required = ['Phi', 'E', 'Valid', 'One', 'Active', 'Living'];
+    const rows = required.map(name => ({ operator: name, role: operator(name, options || {}).role || null, law: law(name, options || {}) }));
+    return {
+      packet_type: '42ndMind_contract_derived_expression_v0_1',
+      version: VERSION,
+      source,
+      semantic_authority: c.canonical_path ? c.canonical_path + '::CONTRACT' : SEMANTIC_AUTHORITY,
+      proof_authority: proofAuthority(options || {}),
+      derived_from_contract: true,
+      operators: rows,
+      expression_law: law('E', options || {}),
+      validity_law: law('Valid', options || {}),
+      focus_law: law('Phi', options || {}),
+      constraints: A(O(c.unit_constraints).expression),
+      parser_role: 'parse_format_hint_only_not_semantic_authority',
+      parser_packet: C(parser),
+      χ: ['E(B,phi) derives from CONTRACT.operators.E', 'Valid(E(B,phi),B) derives from CONTRACT.operators.Valid', 'Phi derives from CONTRACT.operators.Phi', 'semantic authority is only CONTRACT', 'proof authority is only CONTRACT.proofs'],
+      Ξ: ''
+    };
+  }
   function expression(input, options) {
-    const body = languagePacket(input, options || {});
-    const expr = { packet_type: '42ndMind_generated_expression_v0_1', version: VERSION, kind: 'generated_expression', id: 'expr:' + hash(body), source: String(input == null ? '' : input), expression: body, χ: ['generated expression must remain inside B', 'proof from CONTRACT.proofs'], Ξ: '' };
+    const parsed = parserPacket(input, options || {});
+    const body = contractExpression(input, parsed, options || {});
+    const expr = { packet_type: '42ndMind_generated_expression_v0_1', version: VERSION, kind: 'generated_expression', id: 'expr:' + hash(body), source: String(input == null ? '' : input), expression: body, semantic_authority: body.semantic_authority, proof_authority: body.proof_authority, χ: ['generated expression must remain inside B', 'generated expression derives from CONTRACT.operators', 'proof from CONTRACT.proofs'], Ξ: '' };
     const state = baseState([expr], options || {});
     return certified(expr, stateReport(state, options || {}));
   }
@@ -91,9 +123,10 @@
     const admissions = generated.map(expr => admit(expr, Object.assign({}, options || {}, { expressions: [] })));
     const reductions = [reduce(generated, options || {})];
     const refusals = A(options && options.refusals).map(row => refuse(row && row.input, row && row.reason, Object.assign({}, options || {}, { expressions: generated })));
-    const proofs = generated.concat(admissions).concat(reductions).concat(refusals).map(packet => packet.proof).filter(Boolean);
-    return { packet_type: '42ndMind_one_logic_language_completion_v0_1', version: VERSION, generated, admissions, reductions, refusals, proof_count: proofs.length, proved: proofs.length > 0 && proofs.every(proof => proof.ok === true), ok: proofs.length > 0 && proofs.every(proof => proof.ok === true), χ: ['language completion packets are certified by CONTRACT.proofs', 'no generated/admitted/reduced/refused packet is proofless'], Ξ: '' };
+    const packets = generated.concat(admissions).concat(reductions).concat(refusals);
+    const proofs = packets.map(packet => packet.proof).filter(Boolean);
+    return { packet_type: '42ndMind_one_logic_language_completion_v0_1', version: VERSION, generated, admissions, reductions, refusals, proof_count: proofs.length, proved: packets.length > 0 && packets.every(packet => packet.proved === true) && proofs.every(proof => proof.ok === true), ok: packets.length > 0 && packets.every(packet => packet.ok === true) && proofs.every(proof => proof.ok === true), χ: ['language completion packets are certified by CONTRACT.proofs', 'no generated/admitted/reduced/refused packet is proofless'], Ξ: '' };
   }
 
-  return Object.freeze({ VERSION, expression, admit, reduce, refuse, complete, baseState, stateReport, transitionReport });
+  return Object.freeze({ VERSION, expression, admit, reduce, refuse, complete, baseState, stateReport, transitionReport, contractExpression });
 });
