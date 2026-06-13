@@ -100,26 +100,20 @@
     Living: { role: 'living_math', law: ['Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))))'], contract: { living_when: ['Active(B)', 'equivalent_difference_collapses', 'unknowns_preserved', 'reduction_preserves_norm', 'non_growth_does_not_change_state'] } }
   });
 
+  const PROOFS = freezeDeep({ authority: 'src/one-logic-math-v1.js::CONTRACT.proofs', theorem: 'LivingPreservationUnderAdmittedDifference', conclusion: 'Admitted transition preserves Living(B)', order: [], obligations: {} });
+
   const CONTRACT = freezeDeep({
-    version: 'one-logic-operator-contract-v0.1',
-    math_version: v,
-    expected_math_version: v,
-    first_principle,
-    canonical_path: 'src/one-logic-math-v1.js',
-    required_formulas: F.slice(),
-    banned_runtime_notation: [{ base: 'B', index: 't' }, { base: 'B', index: 't1' }],
-    state_sources: ['canonical_math', 'files', 'internal_state'],
-    unit_kinds: ['formula', 'file', 'symbol', 'relation', 'expression', 'candidate'],
-    definition_fields: OPERATORS.D.contract.fields.slice(),
-    unit_constraints: { formula: ['CanonicalMath', 'Proof'], file: ['One', 'Closure', 'SourceIdentity', 'Proof'], symbol: ['One', 'Closure', 'Proof'], relation: ['EqB', 'Reduction'], expression: ['One', 'Focus', 'ExpressionValidity'], candidate: ['One', 'Closure', 'Admission', 'Growth', 'UnknownPreservation', 'Reduction', 'ExpressionValidity'], unit: ['One', 'Closure', 'Proof'] },
-    operators: OPERATORS
+    version: 'one-logic-operator-contract-v0.1', math_version: v, expected_math_version: v, first_principle, canonical_path: 'src/one-logic-math-v1.js', required_formulas: F.slice(),
+    banned_runtime_notation: [{ base: 'B', index: 't' }, { base: 'B', index: 't1' }], state_sources: ['canonical_math', 'files', 'internal_state'], unit_kinds: ['formula', 'file', 'symbol', 'relation', 'expression', 'candidate'],
+    definition_fields: OPERATORS.D.contract.fields.slice(), unit_constraints: { formula: ['CanonicalMath', 'Proof'], file: ['One', 'Closure', 'SourceIdentity', 'Proof'], symbol: ['One', 'Closure', 'Proof'], relation: ['EqB', 'Reduction'], expression: ['One', 'Focus', 'ExpressionValidity'], candidate: ['One', 'Closure', 'Admission', 'Growth', 'UnknownPreservation', 'Reduction', 'ExpressionValidity'], unit: ['One', 'Closure', 'Proof'] },
+    operators: OPERATORS, proofs: PROOFS
   });
 
   const M = Object.freeze({ v, F, A, CONTRACT });
   function lines() { return F.slice(); }
   function textBlock() { return F.join('\n'); }
   function operatorContract(name) { return CONTRACT.operators[name] || null; }
+  function proofContract(name) { return name ? CONTRACT.proofs.obligations[name] || null : CONTRACT.proofs; }
   function contractBlock() { return JSON.stringify(CONTRACT, null, 2); }
-
-  return Object.freeze({ VERSION: v, FIRST_PRINCIPLE: first_principle, M, F, A, OPERATORS, CONTRACT, lines, textBlock, operatorContract, contractBlock });
+  return Object.freeze({ VERSION: v, FIRST_PRINCIPLE: first_principle, M, F, A, OPERATORS, PROOFS, CONTRACT, lines, textBlock, operatorContract, proofContract, contractBlock });
 });
