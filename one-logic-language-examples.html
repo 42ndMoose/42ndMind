@@ -6,12 +6,25 @@
   <title>One Logic Language Examples</title>
   <style>
     body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; line-height: 1.35; }
-    pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0 24px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f6f6f6; }
+    code, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+    pre { padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
+    .note { max-width: 920px; }
   </style>
 </head>
 <body>
   <h1>One Logic Language Examples</h1>
-  <p>This page runs the browser globals and prints: input → generated expression → proof → result.</p>
+  <p class="note">This page runs the browser globals and prints: input → generated expression → proof → result. Refusal proof certifies refusal and preservation of B; it does not certify the invalid input.</p>
+
+  <h2>Examples</h2>
+  <div id="examples">Loading…</div>
+
+  <h2>Language spec</h2>
+  <div id="spec">Loading…</div>
+
+  <h2>Raw packet</h2>
   <pre id="out">Loading…</pre>
 
   <script src="src/one-logic-math-v1.js"></script>
@@ -25,25 +38,70 @@
       const P = window.FortySecondMindMathLawInvariantProver;
       const Proof = window.FortySecondMindMathLawProofChecker;
       const out = document.getElementById('out');
+      const examplesEl = document.getElementById('examples');
+      const specEl = document.getElementById('spec');
+
+      function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+      }
+      function list(value) { return Array.isArray(value) ? value.join(' + ') : String(value == null ? '' : value); }
+      function renderExamples(examples) {
+        return '<table><thead><tr><th>Input</th><th>Generated expression</th><th>Proof obligation used</th><th>Result</th><th>Proof authority</th></tr></thead><tbody>' + examples.map(row => {
+          const g = row.generated_expression;
+          const r = row.result;
+          const generated = g ? [
+            'id: ' + g.id,
+            'form: ' + g.form,
+            'ok: ' + g.ok,
+            'proof_ok: ' + g.proof_ok
+          ].join('\n') : 'none; invalid/unclosed input was refused before expression generation';
+          const resultLines = [
+            'packet: ' + r.packet_type,
+            'kind: ' + r.kind,
+            'ok: ' + r.ok,
+            'proved: ' + r.proved
+          ];
+          if (r.kind === 'admission') resultLines.push('candidate_admitted: ' + r.candidate_admitted);
+          if (r.kind === 'reduction') resultLines.push('duplicate_count: ' + r.duplicate_count);
+          if (r.kind === 'refusal') {
+            resultLines.push('blocked_reason: ' + r.blocked_reason);
+            resultLines.push('refusal_reason: ' + r.refusal_reason);
+            resultLines.push('note: refusal preserves B; invalid input is not certified as valid');
+          }
+          return '<tr><td><code>' + esc(row.input) + '</code></td><td><pre>' + esc(generated) + '</pre></td><td>' + esc(list(row.proof.obligations_used)) + '</td><td><pre>' + esc(resultLines.join('\n')) + '</pre></td><td><code>' + esc(r.proof_authority) + '</code></td></tr>';
+        }).join('') + '</tbody></table>';
+      }
+      function renderSpec(spec) {
+        return '<table><thead><tr><th>Accepted syntax</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Proof authority</th><th>Note</th></tr></thead><tbody>' + spec.map(row => '<tr><td><code>' + esc(row.accepted_syntax) + '</code></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td><code>' + esc(row.proof_authority) + '</code></td><td>' + esc(row.note) + '</td></tr>').join('') + '</tbody></table>';
+      }
+
       try {
         const options = { math: M, prover: P, proof_checker: Proof };
         const examples = LC.exampleRows(options).map(row => ({
           input: row.input,
           generated_expression: row.generated_expression,
+          generated_expressions: row.generated_expressions,
           proof: row.proof,
           result: row.result
         }));
-        out.textContent = JSON.stringify({
+        const packet = {
           packet_type: '42ndMind_one_logic_language_example_set_v0_1',
           language_version: LC.VERSION,
           math_version: M.VERSION,
           semantic_authority: M.CONTRACT.canonical_path + '::CONTRACT',
           proof_authority: M.CONTRACT.proofs.authority,
           grammar: LC.grammar(),
+          language_spec: LC.languageSpec(options),
           examples
-        }, null, 2);
+        };
+        examplesEl.innerHTML = renderExamples(examples);
+        specEl.innerHTML = renderSpec(packet.language_spec);
+        out.textContent = JSON.stringify(packet, null, 2);
       } catch (err) {
-        out.textContent = String(err && err.stack || err);
+        const msg = String(err && err.stack || err);
+        examplesEl.textContent = msg;
+        specEl.textContent = msg;
+        out.textContent = msg;
       }
     })();
   </script>
