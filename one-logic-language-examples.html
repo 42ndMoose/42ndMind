@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Final Formal One Logic Spec</title>
+  <title>Formal One Logic Kernel v1.0</title>
   <style>
     body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; line-height: 1.35; }
     table { border-collapse: collapse; width: 100%; margin: 16px 0 24px; }
@@ -15,8 +15,8 @@
   </style>
 </head>
 <body>
-  <h1>Final Formal One Logic Spec</h1>
-  <p class="note">Architecture frozen. Human aliases are optional compile shortcuts only. The language object is formal_expression/formal_ast. Validation is the certificate under CONTRACT.proofs.</p>
+  <h1>Formal One Logic Kernel v1.0</h1>
+  <p class="note">Architecture frozen. Human aliases are optional compile shortcuts only. The language object is formal_expression/formal_ast. Validation is the certificate under CONTRACT.proofs. Future work should only populate and grow language inside B, not change this architecture.</p>
 
   <h2>Verification</h2>
   <div id="verification">Loading…</div>
@@ -63,10 +63,11 @@
         const examples = LC.exampleRows(options, true);
         const authority = M.CONTRACT.proofs.authority;
         const checks = [
+          ['input → formal_ast → proof certificate → admit/reduce/refuse', examples.every(x => x.formal_ast && x.proof && x.result && (x.result.kind === 'admission' || x.result.kind === 'reduction' || x.result.kind === 'refusal'))],
           ['Every alias compiles into formal_expression and formal_ast', examples.every(x => x.formal_expression && x.formal_ast)],
           ['Every formal_ast uses Σ or canonical internal primitives', examples.every(x => allowed(x.formal_ast))],
           ['Every certificate targets the formal object, not alias authority', examples.every(x => x.formal_ast && x.proof && x.proof.authority === authority && String(x.proof.note).indexOf('formal') >= 0)],
-          ['Page treats alias as optional and formal AST as objective language object', true]
+          ['Only one-logic-math-v1.js::CONTRACT and CONTRACT.proofs are authority', examples.every(x => x.proof && x.proof.authority === authority)]
         ];
         document.getElementById('verification').innerHTML = table(['Check', 'Status'], checks.map(x => [esc(x[0]), x[1] ? 'PASS' : 'FAIL']));
         document.getElementById('symbols').textContent = 'Σ = {' + SIGMA.join(', ') + '}\ncanonical_internal_primitives = {' + INTERNAL.join(', ') + '}';
