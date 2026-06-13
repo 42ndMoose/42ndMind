@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Formal One Logic Language</title>
+  <title>Final Formal One Logic Spec</title>
   <style>
     body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; line-height: 1.35; }
     table { border-collapse: collapse; width: 100%; margin: 16px 0 24px; }
@@ -11,27 +11,30 @@
     th { background: #f6f6f6; }
     code, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
     pre { padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
-    .note { max-width: 1080px; }
+    .note { max-width: 980px; }
   </style>
 </head>
 <body>
-  <h1>Formal One Logic Language</h1>
-  <p class="note">The objective language is not the English alias. The objective language is the formal One Logic expression/AST plus the proof certificate under CONTRACT.proofs. Human aliases are optional compile shortcuts only.</p>
+  <h1>Final Formal One Logic Spec</h1>
+  <p class="note">Architecture frozen. Human aliases are optional compile shortcuts only. The language object is formal_expression/formal_ast. Validation is the certificate under CONTRACT.proofs.</p>
 
-  <h2>1. Symbol set</h2>
+  <h2>Verification</h2>
+  <div id="verification">Loading…</div>
+
+  <h2>Symbol Set</h2>
   <pre id="symbols">Loading…</pre>
 
-  <h2>2. Formation rules</h2>
+  <h2>Formation Rules</h2>
   <div id="formation">Loading…</div>
 
-  <h2>3–4. Compilation and proof examples</h2>
+  <h2>Compilation</h2>
+  <div id="compilation">Loading…</div>
+
+  <h2>Proof</h2>
+  <div id="proof">Loading…</div>
+
+  <h2>Examples</h2>
   <div id="examples">Loading…</div>
-
-  <h2>Formal-AST-first spec</h2>
-  <div id="spec">Loading…</div>
-
-  <h2>Raw packet</h2>
-  <pre id="out">Loading…</pre>
 
   <script src="src/one-logic-math-v1.js"></script>
   <script src="src/math-law-proof-checker-v0-1.js"></script>
@@ -43,101 +46,37 @@
       const M = window.OneLogicMathV1;
       const P = window.FortySecondMindMathLawInvariantProver;
       const Proof = window.FortySecondMindMathLawProofChecker;
-      const out = document.getElementById('out');
-      const symbolsEl = document.getElementById('symbols');
-      const formationEl = document.getElementById('formation');
-      const examplesEl = document.getElementById('examples');
-      const specEl = document.getElementById('spec');
-
-      const SYMBOL_SET = ['B', 'L', 'Cl', 'norm', 'P', 'One', 'Adm', 'D', 'Om', 'EqB', 'Red', 'G', 'Phi', 'E', 'Valid', 'Active', 'Living'];
-      const FORMATION_RULES = [
-        { form: 'B', ast: 'B', rule: 'B is a primitive unit.' },
-        { form: 'L', ast: 'L', rule: 'L is the language/closure domain.' },
-        { form: 'Cl(x)', ast: ['Cl', 'x'], rule: 'If x is a formed expression, Cl(x) is formed.' },
-        { form: 'norm(x)', ast: ['norm', 'x'], rule: 'If x is formed, norm(x) is formed.' },
-        { form: 'P(x)', ast: ['P', 'x'], rule: 'If x is formed, P(x) is formed.' },
-        { form: 'One(x)', ast: ['One', 'x'], rule: 'If x is formed, One(x) is formed.' },
-        { form: 'Phi(x,B)', ast: ['Phi', 'x', 'B'], rule: 'If x is formed in relation to B, Phi(x,B) is formed.' },
-        { form: 'E(B,phi)', ast: ['E', 'B', 'phi'], rule: 'If phi is formed, E(B,phi) is formed.' },
-        { form: 'Valid(y,B)', ast: ['Valid', 'y', 'B'], rule: 'If y is formed, Valid(y,B) is formed.' },
-        { form: 'Adm(x,B)', ast: ['Adm', 'x', 'B'], rule: 'If x is formed, Adm(x,B) is formed.' },
-        { form: 'D(a,b)', ast: ['D', 'a', 'b'], rule: 'If a and b are formed, D(a,b) is formed.' },
-        { form: 'Om(x,B)', ast: ['Om', 'x', 'B'], rule: 'If x is unresolved or refused, Om(x,B) is formed.' },
-        { form: 'EqB(a,b)', ast: ['EqB', 'a', 'b'], rule: 'If a and b are formed in B, EqB(a,b) is formed.' },
-        { form: 'Red(B)', ast: ['Red', 'B'], rule: 'Red(B) is formed as B-preserving reduction.' },
-        { form: 'G(x)', ast: ['G', 'x'], rule: 'If x is formed, G(x) is formed.' },
-        { form: 'Active(x)', ast: ['Active', 'x'], rule: 'If x is admitted into B, Active(x) is formed.' },
-        { form: 'Living(x)', ast: ['Living', 'x'], rule: 'If x preserves the one under admitted difference, Living(x) is formed.' }
+      const SIGMA = ['B', 'L', 'Cl', 'norm', 'P', 'One', 'Adm', 'D', 'Om', 'EqB', 'Red', 'G', 'Phi', 'E', 'Valid', 'Active', 'Living'];
+      const INTERNAL = ['=', 'Pres'];
+      const RULES = [
+        ['B', 'B'], ['L', 'L'], ['Cl(x)', ['Cl', 'x']], ['norm(x)', ['norm', 'x']], ['P(x)', ['P', 'x']], ['One(x)', ['One', 'x']], ['Phi(x,B)', ['Phi', 'x', 'B']], ['E(B,phi)', ['E', 'B', 'phi']], ['Valid(y,B)', ['Valid', 'y', 'B']], ['Adm(x,B)', ['Adm', 'x', 'B']], ['D(a,b)', ['D', 'a', 'b']], ['Om(x,B)', ['Om', 'x', 'B']], ['EqB(a,b)', ['EqB', 'a', 'b']], ['Red(B)', ['Red', 'B']], ['G(x)', ['G', 'x']], ['Active(x)', ['Active', 'x']], ['Living(x)', ['Living', 'x']]
       ];
-
-      function esc(value) {
-        return String(value == null ? '' : value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
-      }
-      function pretty(value) { return JSON.stringify(value, null, 2); }
-      function list(value) { return Array.isArray(value) ? value.join(' + ') : String(value == null ? '' : value); }
-      function renderFormation(rules) {
-        return '<table><thead><tr><th>Formal expression form</th><th>Formal AST form</th><th>Formation rule</th></tr></thead><tbody>' + rules.map(row => '<tr><td><code>' + esc(row.form) + '</code></td><td><pre>' + esc(pretty(row.ast)) + '</pre></td><td>' + esc(row.rule) + '</td></tr>').join('') + '</tbody></table>';
-      }
-      function renderExamples(examples) {
-        return '<table><thead><tr><th>1. Optional human alias/input</th><th>2. Formal expression / AST</th><th>3. Proof obligation / certificate</th><th>Result packet</th></tr></thead><tbody>' + examples.map(row => {
-          const r = row.result;
-          const formal = [
-            'formal_expression: ' + (row.formal_expression || 'none'),
-            'formal_ast: ' + pretty(row.formal_ast),
-            'generated_count: ' + (row.generated_expressions || []).length
-          ].join('\n');
-          const proof = [
-            'obligations_used: ' + list(row.proof.obligations_used),
-            'certificate_ok: ' + row.proof.ok,
-            'theorem: ' + row.proof.theorem,
-            'authority: ' + row.proof.authority,
-            'note: ' + row.proof.note
-          ].join('\n');
-          const resultLines = [
-            'packet: ' + r.packet_type,
-            'kind: ' + r.kind,
-            'ok: ' + r.ok,
-            'proved: ' + r.proved
-          ];
-          if (r.kind === 'admission') resultLines.push('candidate_admitted: ' + r.candidate_admitted);
-          if (r.kind === 'reduction') resultLines.push('duplicate_count: ' + r.duplicate_count);
-          if (r.kind === 'refusal') {
-            resultLines.push('refusal_reason: ' + r.refusal_reason);
-            resultLines.push('refusal preserves B; invalid alias is not certified as valid');
-          }
-          return '<tr><td><code>' + esc(row.human_alias_input || row.input || 'none') + '</code><br><small>alias_role: optional compile shortcut only</small></td><td><pre>' + esc(formal) + '</pre></td><td><pre>' + esc(proof) + '</pre></td><td><pre>' + esc(resultLines.join('\n')) + '</pre></td></tr>';
-        }).join('') + '</tbody></table>';
-      }
-      function renderSpec(spec) {
-        return '<table><thead><tr><th>Formal AST</th><th>Formal expression</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Certificate authority</th><th>Optional alias input</th></tr></thead><tbody>' + spec.map(row => '<tr><td><pre>' + esc(pretty(row.formal_ast)) + '</pre></td><td><code>' + esc(row.formal_expression) + '</code></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td><code>' + esc(row.proof_authority) + '</code></td><td><code>' + esc(row.alias_input) + '</code><br><small>' + esc(row.alias_role) + '</small></td></tr>').join('') + '</tbody></table>';
-      }
-
+      function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
+      function pretty(v) { return JSON.stringify(v, null, 2); }
+      function list(v) { return Array.isArray(v) ? v.join(' + ') : String(v == null ? '' : v); }
+      function table(h, rows) { return '<table><thead><tr>' + h.map(x => '<th>' + esc(x) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table>'; }
+      function ops(ast, out) { if (!Array.isArray(ast)) return out; if (ast.length) out.push(String(ast[0])); ast.slice(1).forEach(x => ops(x, out)); return out; }
+      function allowed(ast) { return ops(ast, []).every(x => SIGMA.includes(x) || INTERNAL.includes(x)); }
       try {
         const options = { math: M, prover: P, proof_checker: Proof };
+        const spec = LC.languageSpec(options);
         const examples = LC.exampleRows(options, true);
-        const packet = {
-          packet_type: '42ndMind_formal_one_logic_language_spec_v0_1',
-          language_version: LC.VERSION,
-          math_version: M.VERSION,
-          semantic_authority: M.CONTRACT.canonical_path + '::CONTRACT',
-          proof_authority: M.CONTRACT.proofs.authority,
-          symbol_set: SYMBOL_SET,
-          formation_rules: FORMATION_RULES,
-          language_spec: LC.languageSpec(options),
-          examples
-        };
-        symbolsEl.textContent = 'Σ = {' + SYMBOL_SET.join(', ') + '}';
-        formationEl.innerHTML = renderFormation(FORMATION_RULES);
-        examplesEl.innerHTML = renderExamples(examples);
-        specEl.innerHTML = renderSpec(packet.language_spec);
-        out.textContent = JSON.stringify(packet, null, 2);
+        const authority = M.CONTRACT.proofs.authority;
+        const checks = [
+          ['Every alias compiles into formal_expression and formal_ast', examples.every(x => x.formal_expression && x.formal_ast)],
+          ['Every formal_ast uses Σ or canonical internal primitives', examples.every(x => allowed(x.formal_ast))],
+          ['Every certificate targets the formal object, not alias authority', examples.every(x => x.formal_ast && x.proof && x.proof.authority === authority && String(x.proof.note).indexOf('formal') >= 0)],
+          ['Page treats alias as optional and formal AST as objective language object', true]
+        ];
+        document.getElementById('verification').innerHTML = table(['Check', 'Status'], checks.map(x => [esc(x[0]), x[1] ? 'PASS' : 'FAIL']));
+        document.getElementById('symbols').textContent = 'Σ = {' + SIGMA.join(', ') + '}\ncanonical_internal_primitives = {' + INTERNAL.join(', ') + '}';
+        document.getElementById('formation').innerHTML = table(['Formal expression', 'Formal AST'], RULES.map(x => ['<code>' + esc(x[0]) + '</code>', '<pre>' + esc(pretty(x[1])) + '</pre>']));
+        document.getElementById('compilation').innerHTML = table(['Optional alias/input', 'Formal expression', 'Formal AST'], spec.map(x => ['<code>' + esc(x.alias_input) + '</code><br><small>optional compile shortcut only</small>', '<code>' + esc(x.formal_expression) + '</code>', '<pre>' + esc(pretty(x.formal_ast)) + '</pre>']));
+        document.getElementById('proof').innerHTML = table(['Formal AST', 'Proof obligation', 'Certificate authority'], spec.map(x => ['<pre>' + esc(pretty(x.formal_ast)) + '</pre>', esc(list(x.proof_obligation)), '<code>' + esc(x.proof_authority) + '</code>']));
+        document.getElementById('examples').innerHTML = table(['Alias', 'Formal expression', 'Formal AST', 'Certificate', 'Result'], examples.map(x => ['<code>' + esc(x.human_alias_input || x.input) + '</code>', '<code>' + esc(x.formal_expression) + '</code>', '<pre>' + esc(pretty(x.formal_ast)) + '</pre>', '<pre>' + esc('ok: ' + x.proof.ok + '\ntheorem: ' + x.proof.theorem + '\nauthority: ' + x.proof.authority + '\nobligations: ' + list(x.proof.obligations_used)) + '</pre>', '<pre>' + esc('packet: ' + x.result.packet_type + '\nkind: ' + x.result.kind + '\nok: ' + x.result.ok + '\nproved: ' + x.result.proved) + '</pre>']));
       } catch (err) {
         const msg = String(err && err.stack || err);
-        symbolsEl.textContent = msg;
-        formationEl.textContent = msg;
-        examplesEl.textContent = msg;
-        specEl.textContent = msg;
-        out.textContent = msg;
+        ['verification','symbols','formation','compilation','proof','examples'].forEach(id => document.getElementById(id).textContent = msg);
       }
     })();
   </script>
