@@ -13,7 +13,7 @@
     { form: 'admission', syntax: 'admit <phi>', maps_to: ['iota', 'Adm', 'Active', 'Living'] },
     { form: 'equivalence', syntax: 'eq <a> = <b> | <a> == <b> | <a> ≡ <b>', maps_to: ['D', 'EqB', 'Red'] },
     { form: 'reduction', syntax: 'reduce <phi>; <phi>; ...', maps_to: ['EqB', 'Red'] },
-    { form: 'refusal', syntax: 'refuse <reason>: <input> | invalid/unclosed input', maps_to: ['Om', 'Pres'] }
+    { form: 'refusal', syntax: 'refuse <reason>: <input> | invalid/unclosed input', maps_to: ['Om'] }
   ]);
   let M = null, P = null, Proof = null, Kernel = null, fs = null, path = null;
   try { if (typeof require === 'function') M = require('./one-logic-math-v1.js'); } catch (_) {}
@@ -132,7 +132,7 @@
       admission_law: law('Adm', options || {}),
       equivalence_law: law('EqB', options || {}),
       reduction_law: law('Red', options || {}),
-      refusal_law: law('Om', options || {}).concat(law('Pres', options || {})),
+      refusal_law: law('Om', options || {}),
       constraints: A(O(c.unit_constraints).expression),
       parser_role: 'parse_format_hint_only_not_semantic_authority',
       parser_packet: C(parser),
