@@ -6,7 +6,6 @@
 
   const v = '1.5.0';
   const first_principle = 'All admitted difference must preserve the one.';
-
   const F = Object.freeze([
     'B=Cl(B)',
     'Cl(Cl(B))=Cl(B)',
@@ -51,7 +50,6 @@
   ]);
 
   function freezeDeep(value) { if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value; Object.keys(value).forEach(k => freezeDeep(value[k])); return Object.freeze(value); }
-
   const OPERATORS = freezeDeep({
     B: { role: 'whole', law: ['B=Cl(B)', 'norm(B)=1', 'P(B)=1'], contract: { state_sources: ['canonical_math', 'files', 'internal_state.symbols', 'internal_state.relations', 'internal_state.expressions'], forbidden: [{ base: 'B', index: 't' }, { base: 'B', index: 't1' }], source_identity_path: 'src/one-logic-math-v1.js' } },
     Cl: { role: 'closure', law: ['B=Cl(B)', 'Cl(Cl(B))=Cl(B)', 'B[x]=Cl(union(B,{qx}))'], contract: { operation: 'deterministic_closure', input: 'state_or_union', output: 'closure_signature', sources: ['canonical_math', 'source_files', 'symbols', 'relations', 'expressions', 'definition_vectors'], idempotent: true, equivalent_unit_policy: 'collapse_by_EqB' } },
@@ -74,7 +72,6 @@
     Active: { role: 'active_math', law: ['Active(B)=and(One(B),forall(x,imp(Adm(x,B),One(B[x]))))'], contract: { active_when: ['One(B)', 'every_admitted_difference_preserves_One'] } },
     Living: { role: 'living_math', law: ['Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))))'], contract: { living_when: ['Active(B)', 'equivalent_difference_collapses', 'unknowns_preserved', 'reduction_preserves_norm', 'non_growth_does_not_change_state'] } }
   });
-
   const PROOFS = freezeDeep({ authority: 'src/one-logic-math-v1.js::CONTRACT.proofs', theorem: 'LivingPreservationUnderAdmittedDifference', conclusion: 'Admitted transition preserves Living(B)', order: ['One','ClosureIdempotence','AdmissionPreservesOne','UnknownPreservation','EquivalenceCollapse','ReductionNorm','NoGrowthNoChange','ExpressionValidity','Active','Living','LanguageClosure'], obligations: {
     One: { phase: 'both', theorem: 'One(B)=and(B=Cl(B),norm(B)=1,P(B)=1)', requires: ['B=Cl(B)', 'norm(B)=1', 'P(B)=1'], checks: ['One'], result: 'One(B)' },
     ClosureIdempotence: { phase: 'both', theorem: 'Cl(Cl(B))=Cl(B)', requires: ['B=Cl(B)'], checks: ['Closure'], result: 'B=Cl(B)' },
@@ -85,17 +82,10 @@
     NoGrowthNoChange: { phase: 'transition', theorem: 'imp(not(G(q,B)),B[q]=B)', requires: ['G(q,B)=and(Adm(q,B),not(exists(r,and(in(r,B),EqB(q,r)))))'], checks: ['NoGrowthNoChange'], result: 'non_growth_preserves_B' },
     ExpressionValidity: { phase: 'both', theorem: 'Valid(y,B)=and(sub(y,B),norm(y)=1,P(y)=1)', requires: ['Valid(E(B,phi),B)=1'], checks: ['ExpressionValidity'], result: 'valid_expression_inside_B' },
     Active: { phase: 'both', theorem: 'Active(B)=and(One(B),forall(x,imp(Adm(x,B),One(B[x]))))', requires: ['One(B)=and(B=Cl(B),norm(B)=1,P(B)=1)', 'imp(Adm(x,B),One(B[x]))'], checks: ['Active'], result: 'Active(B)' },
-    Living: { phase: 'both', theorem: 'Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))))', requires: ['Active(B)=and(One(B),forall(x,imp(Adm(x,B),One(B[x]))))', 'imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B({a})))'], checks: ['Living'], result: 'Living(B)' },
+    Living: { phase: 'both', theorem: 'Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))))', requires: ['Active(B)=and(One(B),forall(x,imp(Adm(x,B),One(B[x]))))', 'imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))'], checks: ['Living'], result: 'Living(B)' },
     LanguageClosure: { phase: 'both', theorem: 'forall(q,imp(in(q,B),One(q)))', requires: ['L=PiL(B)', 'sub(L,B)', 'One(L)=and(sub(L,B),norm(L)=1,P(L)=1)'], checks: ['One'], result: 'language_units_preserve_One' }
   } });
-
-  const CONTRACT = freezeDeep({
-    version: 'one-logic-operator-contract-v0.1', math_version: v, expected_math_version: v, first_principle, canonical_path: 'src/one-logic-math-v1.js', required_formulas: F.slice(),
-    banned_runtime_notation: [{ base: 'B', index: 't' }, { base: 'B', index: 't1' }], state_sources: ['canonical_math', 'files', 'internal_state'], unit_kinds: ['formula', 'file', 'symbol', 'relation', 'expression', 'candidate'],
-    definition_fields: OPERATORS.D.contract.fields.slice(), unit_constraints: { formula: ['CanonicalMath', 'Proof'], file: ['One', 'Closure', 'SourceIdentity', 'Proof'], symbol: ['One', 'Closure', 'Proof'], relation: ['EqB', 'Reduction'], expression: ['One', 'Focus', 'ExpressionValidity'], candidate: ['One', 'Closure', 'Admission', 'Growth', 'UnknownPreservation', 'Reduction', 'ExpressionValidity'], unit: ['One', 'Closure', 'Proof'] },
-    operators: OPERATORS, proofs: PROOFS
-  });
-
+  const CONTRACT = freezeDeep({ version: 'one-logic-operator-contract-v0.1', math_version: v, expected_math_version: v, first_principle, canonical_path: 'src/one-logic-math-v1.js', required_formulas: F.slice(), banned_runtime_notation: [{ base: 'B', index: 't' }, { base: 'B', index: 't1' }], state_sources: ['canonical_math', 'files', 'internal_state'], unit_kinds: ['formula', 'file', 'symbol', 'relation', 'expression', 'candidate'], definition_fields: OPERATORS.D.contract.fields.slice(), unit_constraints: { formula: ['CanonicalMath', 'Proof'], file: ['One', 'Closure', 'SourceIdentity', 'Proof'], symbol: ['One', 'Closure', 'Proof'], relation: ['EqB', 'Reduction'], expression: ['One', 'Focus', 'ExpressionValidity'], candidate: ['One', 'Closure', 'Admission', 'Growth', 'UnknownPreservation', 'Reduction', 'ExpressionValidity'], unit: ['One', 'Closure', 'Proof'] }, operators: OPERATORS, proofs: PROOFS });
   const M = Object.freeze({ v, F, A, CONTRACT });
   function lines() { return F.slice(); }
   function textBlock() { return F.join('\n'); }
