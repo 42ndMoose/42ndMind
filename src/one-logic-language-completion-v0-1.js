@@ -4,7 +4,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.2.0';
+  const VERSION = '0.2.1';
   const SEMANTIC_AUTHORITY = 'one-logic-math-v1.js::CONTRACT';
   const PROOF_AUTHORITY = 'one-logic-math-v1.js::CONTRACT.proofs';
   const GRAMMAR = Object.freeze([
@@ -15,6 +15,22 @@
     { form: 'reduction', syntax: 'reduce <phi>; <phi>; ...', maps_to: ['EqB', 'Red'] },
     { form: 'refusal', syntax: 'refuse <reason>: <input> | invalid/unclosed input', maps_to: ['Om'] }
   ]);
+  const OBLIGATIONS = Object.freeze({
+    focus: ['ExpressionValidity', 'AdmissionPreservesOne'],
+    expression: ['ExpressionValidity', 'AdmissionPreservesOne'],
+    admission: ['ExpressionValidity', 'AdmissionPreservesOne'],
+    equivalence: ['EquivalenceCollapse', 'ReductionNorm'],
+    reduction: ['EquivalenceCollapse', 'ReductionNorm'],
+    refusal: ['NoGrowthNoChange', 'UnknownPreservation']
+  });
+  const RESULT_PACKETS = Object.freeze({
+    focus: '42ndMind_language_admission_v0_1',
+    expression: '42ndMind_language_admission_v0_1',
+    admission: '42ndMind_language_admission_v0_1',
+    equivalence: '42ndMind_language_reduction_v0_1',
+    reduction: '42ndMind_language_reduction_v0_1',
+    refusal: '42ndMind_language_refusal_v0_1'
+  });
   let M = null, P = null, Proof = null, Kernel = null, fs = null, path = null;
   try { if (typeof require === 'function') M = require('./one-logic-math-v1.js'); } catch (_) {}
   try { if (typeof require === 'function') P = require('./math-law-invariant-prover-v0-1.js'); } catch (_) {}
@@ -42,6 +58,20 @@
   function proofAuthority(options) { return O(contract(options || {}).proofs).authority || PROOF_AUTHORITY; }
   function grammar() { return C(GRAMMAR); }
   function grammarRow(form) { return GRAMMAR.find(row => row.form === form) || GRAMMAR[1]; }
+  function obligationNames(form) { return C(OBLIGATIONS[form] || OBLIGATIONS.expression); }
+  function resultPacketType(form) { return RESULT_PACKETS[form] || RESULT_PACKETS.expression; }
+  function proofNote(form) { return form === 'refusal' ? 'proof certifies refusal and preservation of B; it does not certify the invalid input' : 'proof certifies the generated/admitted/reduced packet under CONTRACT.proofs'; }
+  function languageSpec(options) {
+    return GRAMMAR.map(row => ({
+      accepted_syntax: row.syntax,
+      form: row.form,
+      mapped_operator: C(row.maps_to),
+      result_packet: resultPacketType(row.form),
+      proof_obligation: obligationNames(row.form),
+      proof_authority: proofAuthority(options || {}),
+      note: proofNote(row.form)
+    }));
+  }
   function operatorRows(names, options) { return A(names).map(name => ({ operator: name, role: operator(name, options || {}).role || null, law: law(name, options || {}), contract: C(operator(name, options || {}).contract || {}) })); }
   function canonicalSource(options) {
     const opts = options || {}, m = math(opts), p = canonicalPath(opts);
@@ -99,7 +129,7 @@
     m = s.match(/^focus\s+(.+)$/i);
     if (m) return { ok: true, form: 'focus', source: raw, payload: m[1].trim(), operators: grammarRow('focus').maps_to };
     m = s.match(/^eq\s+(.+?)\s*=\s*(.+)$/i) || s.match(/^(.+?)\s*(?:==|≡)\s*(.+)$/);
-    if (m) return { ok: true, form: 'equivalence', source: raw, payload: s, left: m[1].trim(), right: m[2].trim(), operators: grammarRow('equivalence').maps_to };
+    if (m) return { ok: true, form: 'equivalence', source: raw, payload: s, left: m[1].trim(), right: m[2].trim(), items: [m[1].trim(), m[2].trim()], operators: grammarRow('equivalence').maps_to };
     m = s.match(/^(?:expr|say)\s+(.+)$/i);
     return { ok: true, form: 'expression', source: raw, payload: (m ? m[1] : s).trim(), operators: grammarRow('expression').maps_to };
   }
@@ -126,6 +156,8 @@
       derived_from_contract: true,
       grammar: grammarRow(parsed.form || 'expression'),
       operators: operatorRows(ops, options || {}),
+      proof_obligations_used: obligationNames(parsed.form || 'expression'),
+      proof_note: proofNote(parsed.form || 'expression'),
       expression_law: law('E', options || {}),
       validity_law: law('Valid', options || {}),
       focus_law: law('Phi', options || {}),
@@ -144,7 +176,7 @@
     const parsed = O(options).parsed || parse(input), parsedInput = parsed.payload || input;
     const parsedPacket = parserPacket(parsedInput, options || {});
     const body = contractExpression(parsedInput, parsedPacket, Object.assign({}, options || {}, { parsed }));
-    const expr = { packet_type: '42ndMind_generated_expression_v0_1', version: VERSION, kind: 'generated_expression', id: 'expr:' + hash(body), source: text(input), form: parsed.form || 'expression', payload: parsed.payload || text(input), expression: body, semantic_authority: body.semantic_authority, proof_authority: body.proof_authority, χ: ['generated expression must remain inside B', 'generated expression derives from CONTRACT.operators', 'proof from CONTRACT.proofs'], Ξ: '' };
+    const expr = { packet_type: '42ndMind_generated_expression_v0_1', version: VERSION, kind: 'generated_expression', id: 'expr:' + hash(body), source: text(input), form: parsed.form || 'expression', payload: parsed.payload || text(input), expression: body, semantic_authority: body.semantic_authority, proof_authority: body.proof_authority, proof_obligations_used: obligationNames(parsed.form || 'expression'), proof_note: proofNote(parsed.form || 'expression'), χ: ['generated expression must remain inside B', 'generated expression derives from CONTRACT.operators', 'proof from CONTRACT.proofs'], Ξ: '' };
     const state = baseState([expr], options || {});
     return certified(expr, stateReport(state, options || {}));
   }
@@ -154,27 +186,29 @@
     const before = baseState(prior, options || {});
     const after = baseState(prior.concat([e]), options || {});
     const candidate = { packet_type: '42ndMind_language_admission_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'admit:' + e.id, after_state: after, operations: [], events: [{ kind: 'admission', expression_id: e.id }] };
-    return certified({ packet_type: '42ndMind_language_admission_v0_1', version: VERSION, kind: 'admission', expression: C(e), admitted_expression_id: e.id, candidate }, transitionReport(before, candidate, after, options || {}));
+    return certified({ packet_type: '42ndMind_language_admission_v0_1', version: VERSION, kind: 'admission', expression: C(e), admitted_expression_id: e.id, candidate, candidate_admitted: true, proof_obligations_used: obligationNames('admission'), proof_note: proofNote('admission'), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, after, options || {}));
   }
+  function duplicateCount(list) { const seen = {}; A(list).forEach(row => { seen[stable(row)] = true; }); return Math.max(0, A(list).length - Object.keys(seen).length); }
   function reduce(expressions, options) {
     const list = A(expressions);
     const before = baseState(list, options || {});
     const p = prover(options || {});
     const after = p && p.reducedState ? p.reducedState(before, opts(options || {})) : before;
     const candidate = { packet_type: '42ndMind_language_reduction_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'reduce:' + hash(list), after_state: after, operations: [], events: [{ kind: 'reduction', count: list.length }] };
-    return certified({ packet_type: '42ndMind_language_reduction_v0_1', version: VERSION, kind: 'reduction', before_count: list.length, after_count: A(after && after.internal_state && after.internal_state.expressions).length, reduction: after && after.reduction || null, candidate }, transitionReport(before, candidate, after, options || {}));
+    return certified({ packet_type: '42ndMind_language_reduction_v0_1', version: VERSION, kind: 'reduction', before_count: list.length, after_count: A(after && after.internal_state && after.internal_state.expressions).length, duplicate_count: duplicateCount(list), reduction: after && after.reduction || null, candidate, proof_obligations_used: obligationNames('reduction'), proof_note: proofNote('reduction'), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, after, options || {}));
   }
   function refuse(input, reason, options) {
     const prior = A(options && options.expressions);
     const before = baseState(prior, options || {});
     const candidate = { packet_type: '42ndMind_language_refusal_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'refuse:' + hash({ input, reason }), after_state: before, operations: [], events: [{ kind: 'refusal', reason: text(reason || 'not_admitted') }] };
-    return certified({ packet_type: '42ndMind_language_refusal_v0_1', version: VERSION, kind: 'refusal', source: text(input), refused: true, reason: text(reason || 'not_admitted'), grammar: grammarRow('refusal'), operators: operatorRows(grammarRow('refusal').maps_to, options || {}), candidate }, transitionReport(before, candidate, before, options || {}));
+    return certified({ packet_type: '42ndMind_language_refusal_v0_1', version: VERSION, kind: 'refusal', source: text(input), refused: true, reason: text(reason || 'not_admitted'), refusal_reason: text(reason || 'not_admitted'), blocked_reason: text(reason || 'not_admitted'), grammar: grammarRow('refusal'), operators: operatorRows(grammarRow('refusal').maps_to, options || {}), candidate, proof_obligations_used: obligationNames('refusal'), proof_note: proofNote('refusal'), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, before, options || {}));
   }
   function handle(input, options) {
     const parsed = parse(input), source = parsed.payload || input;
     if (!parsed.ok || parsed.form === 'refusal') return { input: text(input), parsed, generated_expression: null, proof: null, result: refuse(source, parsed.reason || 'not_admitted', options || {}) };
-    if (parsed.form === 'reduction') {
-      const generated = A(parsed.items).map(item => expression(item, Object.assign({}, options || {}, { parsed: parse(item) })));
+    if (parsed.form === 'reduction' || parsed.form === 'equivalence') {
+      const items = A(parsed.items).length ? parsed.items : [parsed.left, parsed.right].filter(Boolean);
+      const generated = items.map(item => expression(item, Object.assign({}, options || {}, { parsed: parse(item) })));
       const result = reduce(generated, options || {});
       return { input: text(input), parsed, generated_expression: generated, proof: result.proof, result };
     }
@@ -194,15 +228,26 @@
     const refusals = routedRefusals.concat(explicitRefusals);
     const packets = generated.concat(admissions).concat(reductions).concat(refusals);
     const proofs = packets.map(packet => packet.proof).filter(Boolean);
-    return { packet_type: '42ndMind_one_logic_language_completion_v0_1', version: VERSION, grammar: grammar(), rows, generated, admissions, reductions, refusals, proof_count: proofs.length, proved: packets.length > 0 && packets.every(packet => packet.proved === true) && proofs.every(proof => proof.ok === true), ok: packets.length > 0 && packets.every(packet => packet.ok === true) && proofs.every(proof => proof.ok === true), χ: ['language completion packets are certified by CONTRACT.proofs', 'no generated/admitted/reduced/refused packet is proofless'], Ξ: '' };
+    return { packet_type: '42ndMind_one_logic_language_completion_v0_1', version: VERSION, grammar: grammar(), language_spec: languageSpec(options || {}), rows, generated, admissions, reductions, refusals, proof_count: proofs.length, proved: packets.length > 0 && packets.every(packet => packet.proved === true) && proofs.every(proof => proof.ok === true), ok: packets.length > 0 && packets.every(packet => packet.ok === true) && proofs.every(proof => proof.ok === true), χ: ['language completion packets are certified by CONTRACT.proofs', 'no generated/admitted/reduced/refused packet is proofless'], Ξ: '' };
+  }
+  function proofSummary(packet, fallbackForm, options) {
+    const p = packet && packet.proof || null, form = fallbackForm || (packet && packet.kind) || 'expression';
+    return { ok: !!(p && p.ok), theorem: p && p.theorem || null, obligations_used: packet && packet.proof_obligations_used || obligationNames(form), authority: p && p.authority || proofAuthority(options || {}), note: packet && packet.proof_note || proofNote(form) };
+  }
+  function resultSummary(packet, form, options) {
+    const kind = packet && packet.kind || null;
+    return { packet_type: packet && packet.packet_type || resultPacketType(form), kind, ok: !!(packet && packet.ok), proved: !!(packet && packet.proved), candidate_admitted: kind === 'admission' ? !!(packet && packet.candidate_admitted) : null, duplicate_count: kind === 'reduction' ? packet && packet.duplicate_count || 0 : null, blocked_reason: kind === 'refusal' ? packet && packet.blocked_reason || null : null, refusal_reason: kind === 'refusal' ? packet && packet.refusal_reason || packet && packet.reason || null : null, refused: !!(packet && packet.refused), proof_authority: packet && packet.proof_authority || proofAuthority(options || {}), proof_obligations_used: packet && packet.proof_obligations_used || obligationNames(form), proof_note: packet && packet.proof_note || proofNote(form) };
+  }
+  function generatedSummary(generated) {
+    return A(generated).map(g => ({ id: g.id, form: g.form, ok: g.ok, proof_ok: !!(g.proof && g.proof.ok), proof_obligations_used: g.proof_obligations_used, proof_authority: g.proof_authority }));
   }
   function exampleRows(options) {
     const inputs = ['focus B', 'reduce focus B; focus B', 'expr (unclosed'];
     return inputs.map(input => {
-      const row = handle(input, options || {}), generated = row.generated_expression, g = Array.isArray(generated) ? generated[0] : generated;
-      return { input, generated_expression: g ? { id: g.id, form: g.form, ok: g.ok, proof_ok: !!(g.proof && g.proof.ok) } : null, proof: g && g.proof ? { ok: g.proof.ok, theorem: g.proof.theorem } : row.result && row.result.proof ? { ok: row.result.proof.ok, theorem: row.result.proof.theorem } : null, result: { packet_type: row.result && row.result.packet_type || null, kind: row.result && row.result.kind || null, ok: !!(row.result && row.result.ok), proved: !!(row.result && row.result.proved), refused: !!(row.result && row.result.refused), reason: row.result && row.result.reason || null } };
+      const row = handle(input, options || {}), generated = Array.isArray(row.generated_expression) ? row.generated_expression : (row.generated_expression ? [row.generated_expression] : []), form = row.parsed && row.parsed.form || 'expression';
+      return { input, generated_expression: generated[0] ? generatedSummary([generated[0]])[0] : null, generated_expressions: generatedSummary(generated), proof: proofSummary(row.result, form, options || {}), result: resultSummary(row.result, form, options || {}) };
     });
   }
 
-  return Object.freeze({ VERSION, SEMANTIC_AUTHORITY, PROOF_AUTHORITY, grammar, parse, expression, admit, reduce, refuse, handle, complete, exampleRows, baseState, stateReport, transitionReport, contractExpression });
+  return Object.freeze({ VERSION, SEMANTIC_AUTHORITY, PROOF_AUTHORITY, grammar, languageSpec, parse, expression, admit, reduce, refuse, handle, complete, exampleRows, baseState, stateReport, transitionReport, contractExpression });
 });
