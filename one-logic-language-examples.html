@@ -64,7 +64,7 @@
           if (r.kind === 'admission') resultLines.push('candidate_admitted: ' + r.candidate_admitted);
           if (r.kind === 'reduction') resultLines.push('duplicate_count: ' + r.duplicate_count);
           if (r.kind === 'refusal') {
-            resultLines.push('blocked_reason: ' + r.blocked_reason);
+            resultLines.push('blocked_reason: ' + (r.blocked_reason || r.refusal_reason));
             resultLines.push('refusal_reason: ' + r.refusal_reason);
             resultLines.push('note: refusal preserves B; invalid input is not certified as valid');
           }
