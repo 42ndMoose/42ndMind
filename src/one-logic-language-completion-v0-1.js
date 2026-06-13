@@ -4,31 +4,42 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.2.1';
+  const VERSION = '0.2.2';
   const SEMANTIC_AUTHORITY = 'one-logic-math-v1.js::CONTRACT';
   const PROOF_AUTHORITY = 'one-logic-math-v1.js::CONTRACT.proofs';
   const GRAMMAR = Object.freeze([
-    { form: 'focus', syntax: 'focus <unit>', maps_to: ['Phi'] },
-    { form: 'expression', syntax: 'expr <phi> | say <phi> | <phi>', maps_to: ['Phi', 'E', 'Valid'] },
-    { form: 'admission', syntax: 'admit <phi>', maps_to: ['iota', 'Adm', 'Active', 'Living'] },
-    { form: 'equivalence', syntax: 'eq <a> = <b> | <a> == <b> | <a> ≡ <b>', maps_to: ['D', 'EqB', 'Red'] },
-    { form: 'reduction', syntax: 'reduce <phi>; <phi>; ...', maps_to: ['EqB', 'Red'] },
-    { form: 'refusal', syntax: 'refuse <reason>: <input> | invalid/unclosed input', maps_to: ['Om'] }
+    { form: 'one', syntax: 'one <unit>', maps_to: ['One'], example: 'one B' },
+    { form: 'focus', syntax: 'focus <unit>', maps_to: ['Phi'], example: 'focus B' },
+    { form: 'expression', syntax: 'expr <phi> | say <phi> | <phi>', maps_to: ['Phi', 'E', 'Valid'], example: 'expr focus B' },
+    { form: 'valid', syntax: 'valid <expr> in B', maps_to: ['Valid'], example: 'valid focus B in B' },
+    { form: 'unknown', syntax: 'unknown <unit>', maps_to: ['Om'], example: 'unknown q' },
+    { form: 'same', syntax: 'same <a> <b>', maps_to: ['EqB'], example: 'same focus B focus B' },
+    { form: 'reduction', syntax: 'reduce <items>', maps_to: ['Red'], example: 'reduce focus B; focus B' },
+    { form: 'admission', syntax: 'admit <expr>', maps_to: ['Adm', 'Active', 'Living'], example: 'admit focus B' },
+    { form: 'refusal', syntax: 'refuse <input> because <reason>', maps_to: ['Om'], example: 'refuse expr (unclosed because unclosed_expression' }
   ]);
   const OBLIGATIONS = Object.freeze({
+    one: ['One'],
     focus: ['ExpressionValidity', 'AdmissionPreservesOne'],
     expression: ['ExpressionValidity', 'AdmissionPreservesOne'],
-    admission: ['ExpressionValidity', 'AdmissionPreservesOne'],
+    valid: ['ExpressionValidity'],
+    unknown: ['UnknownPreservation'],
+    same: ['EquivalenceCollapse'],
     equivalence: ['EquivalenceCollapse', 'ReductionNorm'],
-    reduction: ['EquivalenceCollapse', 'ReductionNorm'],
+    reduction: ['ReductionNorm'],
+    admission: ['AdmissionPreservesOne', 'Active', 'Living'],
     refusal: ['NoGrowthNoChange', 'UnknownPreservation']
   });
   const RESULT_PACKETS = Object.freeze({
+    one: '42ndMind_language_admission_v0_1',
     focus: '42ndMind_language_admission_v0_1',
     expression: '42ndMind_language_admission_v0_1',
-    admission: '42ndMind_language_admission_v0_1',
+    valid: '42ndMind_language_admission_v0_1',
+    unknown: '42ndMind_language_admission_v0_1',
+    same: '42ndMind_language_reduction_v0_1',
     equivalence: '42ndMind_language_reduction_v0_1',
     reduction: '42ndMind_language_reduction_v0_1',
+    admission: '42ndMind_language_admission_v0_1',
     refusal: '42ndMind_language_refusal_v0_1'
   });
   let M = null, P = null, Proof = null, Kernel = null, fs = null, path = null;
@@ -57,9 +68,10 @@
   function canonicalPath(options) { return contract(options || {}).canonical_path || 'src/one-logic-math-v1.js'; }
   function proofAuthority(options) { return O(contract(options || {}).proofs).authority || PROOF_AUTHORITY; }
   function grammar() { return C(GRAMMAR); }
-  function grammarRow(form) { return GRAMMAR.find(row => row.form === form) || GRAMMAR[1]; }
+  function grammarRow(form) { return GRAMMAR.find(row => row.form === form) || GRAMMAR[2]; }
   function obligationNames(form) { return C(OBLIGATIONS[form] || OBLIGATIONS.expression); }
   function resultPacketType(form) { return RESULT_PACKETS[form] || RESULT_PACKETS.expression; }
+  function resultKind(form) { return resultPacketType(form).replace('42ndMind_language_', '').replace('_v0_1', ''); }
   function proofNote(form) { return form === 'refusal' ? 'proof certifies refusal and preservation of B; it does not certify the invalid input' : 'proof certifies the generated/admitted/reduced packet under CONTRACT.proofs'; }
   function languageSpec(options) {
     return GRAMMAR.map(row => ({
@@ -68,6 +80,8 @@
       mapped_operator: C(row.maps_to),
       result_packet: resultPacketType(row.form),
       proof_obligation: obligationNames(row.form),
+      example_input: row.example,
+      example_result: resultKind(row.form),
       proof_authority: proofAuthority(options || {}),
       note: proofNote(row.form)
     }));
@@ -117,11 +131,29 @@
     if (/\bB_t\b|\bB_t1\b|latest-recursive-unit-brain-projection|\bprojection\b/i.test(s)) return 'forbidden_runtime_or_projection_notation';
     return null;
   }
+  function splitSame(rest) {
+    const byDelim = rest.split(/\s*[,|]\s*/).filter(Boolean);
+    if (byDelim.length >= 2) return [byDelim[0].trim(), byDelim.slice(1).join(' ').trim()];
+    const parts = rest.trim().split(/\s+/).filter(Boolean), mid = Math.max(1, Math.floor(parts.length / 2));
+    return [parts.slice(0, mid).join(' '), parts.slice(mid).join(' ')];
+  }
   function parse(source) {
-    const raw = text(source), s = raw.trim(), bad = invalidReason(s);
-    if (bad) return { ok: false, form: 'refusal', source: raw, payload: s, reason: bad, operators: grammarRow('refusal').maps_to };
-    let m = s.match(/^refuse\s+([^:]+):\s*(.+)$/i);
+    const raw = text(source), s = raw.trim();
+    if (!s) return { ok: false, form: 'refusal', source: raw, payload: s, reason: 'empty_input', operators: grammarRow('refusal').maps_to };
+    let m = s.match(/^refuse\s+(.+?)\s+because\s+(.+)$/i);
+    if (m) return { ok: false, form: 'refusal', source: raw, payload: m[1].trim(), reason: m[2].trim(), operators: grammarRow('refusal').maps_to };
+    m = s.match(/^refuse\s+([^:]+):\s*(.+)$/i);
     if (m) return { ok: false, form: 'refusal', source: raw, payload: m[2].trim(), reason: m[1].trim(), operators: grammarRow('refusal').maps_to };
+    const bad = invalidReason(s);
+    if (bad) return { ok: false, form: 'refusal', source: raw, payload: s, reason: bad, operators: grammarRow('refusal').maps_to };
+    m = s.match(/^one\s+(.+)$/i);
+    if (m) return { ok: true, form: 'one', source: raw, payload: m[1].trim(), operators: grammarRow('one').maps_to };
+    m = s.match(/^valid\s+(.+?)\s+in\s+B$/i);
+    if (m) return { ok: true, form: 'valid', source: raw, payload: m[1].trim(), scope: 'B', operators: grammarRow('valid').maps_to };
+    m = s.match(/^unknown\s+(.+)$/i);
+    if (m) return { ok: true, form: 'unknown', source: raw, payload: m[1].trim(), operators: grammarRow('unknown').maps_to };
+    m = s.match(/^same\s+(.+)$/i);
+    if (m) { const pair = splitSame(m[1]); return { ok: true, form: 'same', source: raw, payload: s, left: pair[0], right: pair[1], items: pair, operators: grammarRow('same').maps_to }; }
     m = s.match(/^admit\s+(.+)$/i);
     if (m) return { ok: true, form: 'admission', source: raw, payload: m[1].trim(), operators: grammarRow('admission').maps_to };
     m = s.match(/^reduce\s+(.+)$/i);
@@ -129,7 +161,7 @@
     m = s.match(/^focus\s+(.+)$/i);
     if (m) return { ok: true, form: 'focus', source: raw, payload: m[1].trim(), operators: grammarRow('focus').maps_to };
     m = s.match(/^eq\s+(.+?)\s*=\s*(.+)$/i) || s.match(/^(.+?)\s*(?:==|≡)\s*(.+)$/);
-    if (m) return { ok: true, form: 'equivalence', source: raw, payload: s, left: m[1].trim(), right: m[2].trim(), items: [m[1].trim(), m[2].trim()], operators: grammarRow('equivalence').maps_to };
+    if (m) return { ok: true, form: 'equivalence', source: raw, payload: s, left: m[1].trim(), right: m[2].trim(), items: [m[1].trim(), m[2].trim()], operators: ['D', 'EqB', 'Red'] };
     m = s.match(/^(?:expr|say)\s+(.+)$/i);
     return { ok: true, form: 'expression', source: raw, payload: (m ? m[1] : s).trim(), operators: grammarRow('expression').maps_to };
   }
@@ -165,6 +197,7 @@
       equivalence_law: law('EqB', options || {}),
       reduction_law: law('Red', options || {}),
       refusal_law: law('Om', options || {}),
+      one_law: law('One', options || {}),
       constraints: A(O(c.unit_constraints).expression),
       parser_role: 'parse_format_hint_only_not_semantic_authority',
       parser_packet: C(parser),
@@ -182,20 +215,21 @@
   }
   function admit(expr, options) {
     const e = expr && expr.packet_type === '42ndMind_generated_expression_v0_1' ? expr : expression(expr, options || {});
+    const form = e.form || 'admission';
     const prior = A(options && options.expressions);
     const before = baseState(prior, options || {});
     const after = baseState(prior.concat([e]), options || {});
-    const candidate = { packet_type: '42ndMind_language_admission_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'admit:' + e.id, after_state: after, operations: [], events: [{ kind: 'admission', expression_id: e.id }] };
-    return certified({ packet_type: '42ndMind_language_admission_v0_1', version: VERSION, kind: 'admission', expression: C(e), admitted_expression_id: e.id, candidate, candidate_admitted: true, proof_obligations_used: obligationNames('admission'), proof_note: proofNote('admission'), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, after, options || {}));
+    const candidate = { packet_type: '42ndMind_language_admission_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'admit:' + e.id, after_state: after, operations: [], events: [{ kind: 'admission', expression_id: e.id, form }] };
+    return certified({ packet_type: '42ndMind_language_admission_v0_1', version: VERSION, kind: 'admission', expression: C(e), admitted_expression_id: e.id, candidate, candidate_admitted: true, proof_obligations_used: obligationNames(form), proof_note: proofNote(form), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, after, options || {}));
   }
   function duplicateCount(list) { const seen = {}; A(list).forEach(row => { seen[stable(row)] = true; }); return Math.max(0, A(list).length - Object.keys(seen).length); }
   function reduce(expressions, options) {
-    const list = A(expressions);
+    const list = A(expressions), form = O(options).parsed && O(options).parsed.form || 'reduction';
     const before = baseState(list, options || {});
     const p = prover(options || {});
     const after = p && p.reducedState ? p.reducedState(before, opts(options || {})) : before;
-    const candidate = { packet_type: '42ndMind_language_reduction_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'reduce:' + hash(list), after_state: after, operations: [], events: [{ kind: 'reduction', count: list.length }] };
-    return certified({ packet_type: '42ndMind_language_reduction_v0_1', version: VERSION, kind: 'reduction', before_count: list.length, after_count: A(after && after.internal_state && after.internal_state.expressions).length, duplicate_count: duplicateCount(list), reduction: after && after.reduction || null, candidate, proof_obligations_used: obligationNames('reduction'), proof_note: proofNote('reduction'), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, after, options || {}));
+    const candidate = { packet_type: '42ndMind_language_reduction_candidate_v0_1', version: VERSION, kind: 'candidate', id: 'reduce:' + hash(list), after_state: after, operations: [], events: [{ kind: 'reduction', count: list.length, form }] };
+    return certified({ packet_type: '42ndMind_language_reduction_v0_1', version: VERSION, kind: 'reduction', before_count: list.length, after_count: A(after && after.internal_state && after.internal_state.expressions).length, duplicate_count: duplicateCount(list), reduction: after && after.reduction || null, candidate, proof_obligations_used: obligationNames(form), proof_note: proofNote(form), proof_authority: proofAuthority(options || {}) }, transitionReport(before, candidate, after, options || {}));
   }
   function refuse(input, reason, options) {
     const prior = A(options && options.expressions);
@@ -206,10 +240,10 @@
   function handle(input, options) {
     const parsed = parse(input), source = parsed.payload || input;
     if (!parsed.ok || parsed.form === 'refusal') return { input: text(input), parsed, generated_expression: null, proof: null, result: refuse(source, parsed.reason || 'not_admitted', options || {}) };
-    if (parsed.form === 'reduction' || parsed.form === 'equivalence') {
+    if (parsed.form === 'reduction' || parsed.form === 'equivalence' || parsed.form === 'same') {
       const items = A(parsed.items).length ? parsed.items : [parsed.left, parsed.right].filter(Boolean);
       const generated = items.map(item => expression(item, Object.assign({}, options || {}, { parsed: parse(item) })));
-      const result = reduce(generated, options || {});
+      const result = reduce(generated, Object.assign({}, options || {}, { parsed }));
       return { input: text(input), parsed, generated_expression: generated, proof: result.proof, result };
     }
     const generated = expression(source, Object.assign({}, options || {}, { parsed }));
@@ -242,8 +276,7 @@
     return A(generated).map(g => ({ id: g.id, form: g.form, ok: g.ok, proof_ok: !!(g.proof && g.proof.ok), proof_obligations_used: g.proof_obligations_used, proof_authority: g.proof_authority }));
   }
   function exampleRows(options) {
-    const inputs = ['focus B', 'reduce focus B; focus B', 'expr (unclosed'];
-    return inputs.map(input => {
+    return GRAMMAR.map(rowSpec => rowSpec.example).filter(Boolean).map(input => {
       const row = handle(input, options || {}), generated = Array.isArray(row.generated_expression) ? row.generated_expression : (row.generated_expression ? [row.generated_expression] : []), form = row.parsed && row.parsed.form || 'expression';
       return { input, generated_expression: generated[0] ? generatedSummary([generated[0]])[0] : null, generated_expressions: generatedSummary(generated), proof: proofSummary(row.result, form, options || {}), result: resultSummary(row.result, form, options || {}) };
     });
