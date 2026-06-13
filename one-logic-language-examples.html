@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>One Logic Language Examples</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; line-height: 1.35; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>One Logic Language Examples</h1>
+  <p>This page runs the browser globals and prints: input → generated expression → proof → result.</p>
+  <pre id="out">Loading…</pre>
+
+  <script src="src/one-logic-math-v1.js"></script>
+  <script src="src/math-law-proof-checker-v0-1.js"></script>
+  <script src="src/math-law-invariant-prover-v0-1.js"></script>
+  <script src="src/one-logic-language-completion-v0-1.js"></script>
+  <script>
+    (function() {
+      const LC = window.FortySecondMindOneLogicLanguageCompletion;
+      const M = window.OneLogicMathV1;
+      const P = window.FortySecondMindMathLawInvariantProver;
+      const Proof = window.FortySecondMindMathLawProofChecker;
+      const out = document.getElementById('out');
+      try {
+        const options = { math: M, prover: P, proof_checker: Proof };
+        const examples = LC.exampleRows(options).map(row => ({
+          input: row.input,
+          generated_expression: row.generated_expression,
+          proof: row.proof,
+          result: row.result
+        }));
+        out.textContent = JSON.stringify({
+          packet_type: '42ndMind_one_logic_language_example_set_v0_1',
+          language_version: LC.VERSION,
+          math_version: M.VERSION,
+          semantic_authority: M.CONTRACT.canonical_path + '::CONTRACT',
+          proof_authority: M.CONTRACT.proofs.authority,
+          grammar: LC.grammar(),
+          examples
+        }, null, 2);
+      } catch (err) {
+        out.textContent = String(err && err.stack || err);
+      }
+    })();
+  </script>
+</body>
+</html>
