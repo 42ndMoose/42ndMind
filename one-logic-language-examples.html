@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>One Logic Language Examples</title>
+  <title>Formal One Logic Language</title>
   <style>
     body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; line-height: 1.35; }
     table { border-collapse: collapse; width: 100%; margin: 16px 0 24px; }
@@ -11,17 +11,23 @@
     th { background: #f6f6f6; }
     code, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
     pre { padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
-    .note { max-width: 980px; }
+    .note { max-width: 1080px; }
   </style>
 </head>
 <body>
-  <h1>One Logic Language Examples</h1>
-  <p class="note">Layer 1 is only human alias/input. The objective language is Layer 2, the formal One Logic expression/AST, plus Layer 3, the proof certificate under CONTRACT.proofs. Refusal proof certifies refusal and preservation of B; it does not certify the invalid alias input.</p>
+  <h1>Formal One Logic Language</h1>
+  <p class="note">The objective language is not the English alias. The objective language is the formal One Logic expression/AST plus the proof certificate under CONTRACT.proofs. Human aliases are optional compile shortcuts only.</p>
 
-  <h2>Three-layer examples</h2>
+  <h2>1. Symbol set</h2>
+  <pre id="symbols">Loading…</pre>
+
+  <h2>2. Formation rules</h2>
+  <div id="formation">Loading…</div>
+
+  <h2>3–4. Compilation and proof examples</h2>
   <div id="examples">Loading…</div>
 
-  <h2>Alias-to-formal language spec</h2>
+  <h2>Formal-AST-first spec</h2>
   <div id="spec">Loading…</div>
 
   <h2>Raw packet</h2>
@@ -38,16 +44,42 @@
       const P = window.FortySecondMindMathLawInvariantProver;
       const Proof = window.FortySecondMindMathLawProofChecker;
       const out = document.getElementById('out');
+      const symbolsEl = document.getElementById('symbols');
+      const formationEl = document.getElementById('formation');
       const examplesEl = document.getElementById('examples');
       const specEl = document.getElementById('spec');
+
+      const SYMBOL_SET = ['B', 'L', 'Cl', 'norm', 'P', 'One', 'Adm', 'D', 'Om', 'EqB', 'Red', 'G', 'Phi', 'E', 'Valid', 'Active', 'Living'];
+      const FORMATION_RULES = [
+        { form: 'B', ast: 'B', rule: 'B is a primitive unit.' },
+        { form: 'L', ast: 'L', rule: 'L is the language/closure domain.' },
+        { form: 'Cl(x)', ast: ['Cl', 'x'], rule: 'If x is a formed expression, Cl(x) is formed.' },
+        { form: 'norm(x)', ast: ['norm', 'x'], rule: 'If x is formed, norm(x) is formed.' },
+        { form: 'P(x)', ast: ['P', 'x'], rule: 'If x is formed, P(x) is formed.' },
+        { form: 'One(x)', ast: ['One', 'x'], rule: 'If x is formed, One(x) is formed.' },
+        { form: 'Phi(x,B)', ast: ['Phi', 'x', 'B'], rule: 'If x is formed in relation to B, Phi(x,B) is formed.' },
+        { form: 'E(B,phi)', ast: ['E', 'B', 'phi'], rule: 'If phi is formed, E(B,phi) is formed.' },
+        { form: 'Valid(y,B)', ast: ['Valid', 'y', 'B'], rule: 'If y is formed, Valid(y,B) is formed.' },
+        { form: 'Adm(x,B)', ast: ['Adm', 'x', 'B'], rule: 'If x is formed, Adm(x,B) is formed.' },
+        { form: 'D(a,b)', ast: ['D', 'a', 'b'], rule: 'If a and b are formed, D(a,b) is formed.' },
+        { form: 'Om(x,B)', ast: ['Om', 'x', 'B'], rule: 'If x is unresolved or refused, Om(x,B) is formed.' },
+        { form: 'EqB(a,b)', ast: ['EqB', 'a', 'b'], rule: 'If a and b are formed in B, EqB(a,b) is formed.' },
+        { form: 'Red(B)', ast: ['Red', 'B'], rule: 'Red(B) is formed as B-preserving reduction.' },
+        { form: 'G(x)', ast: ['G', 'x'], rule: 'If x is formed, G(x) is formed.' },
+        { form: 'Active(x)', ast: ['Active', 'x'], rule: 'If x is admitted into B, Active(x) is formed.' },
+        { form: 'Living(x)', ast: ['Living', 'x'], rule: 'If x preserves the one under admitted difference, Living(x) is formed.' }
+      ];
 
       function esc(value) {
         return String(value == null ? '' : value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
       }
       function pretty(value) { return JSON.stringify(value, null, 2); }
       function list(value) { return Array.isArray(value) ? value.join(' + ') : String(value == null ? '' : value); }
+      function renderFormation(rules) {
+        return '<table><thead><tr><th>Formal expression form</th><th>Formal AST form</th><th>Formation rule</th></tr></thead><tbody>' + rules.map(row => '<tr><td><code>' + esc(row.form) + '</code></td><td><pre>' + esc(pretty(row.ast)) + '</pre></td><td>' + esc(row.rule) + '</td></tr>').join('') + '</tbody></table>';
+      }
       function renderExamples(examples) {
-        return '<table><thead><tr><th>Layer 1: human alias/input</th><th>Layer 2: formal One Logic expression / AST</th><th>Layer 3: proof obligation / certificate</th><th>Result packet</th></tr></thead><tbody>' + examples.map(row => {
+        return '<table><thead><tr><th>1. Optional human alias/input</th><th>2. Formal expression / AST</th><th>3. Proof obligation / certificate</th><th>Result packet</th></tr></thead><tbody>' + examples.map(row => {
           const r = row.result;
           const formal = [
             'formal_expression: ' + (row.formal_expression || 'none'),
@@ -70,35 +102,39 @@
           if (r.kind === 'admission') resultLines.push('candidate_admitted: ' + r.candidate_admitted);
           if (r.kind === 'reduction') resultLines.push('duplicate_count: ' + r.duplicate_count);
           if (r.kind === 'refusal') {
-            resultLines.push('blocked_reason: ' + (r.blocked_reason || r.refusal_reason));
             resultLines.push('refusal_reason: ' + r.refusal_reason);
             resultLines.push('refusal preserves B; invalid alias is not certified as valid');
           }
-          return '<tr><td><code>' + esc(row.human_alias_input || row.input) + '</code><br><small>alias_role: compile shortcut only</small></td><td><pre>' + esc(formal) + '</pre></td><td><pre>' + esc(proof) + '</pre></td><td><pre>' + esc(resultLines.join('\n')) + '</pre></td></tr>';
+          return '<tr><td><code>' + esc(row.human_alias_input || row.input || 'none') + '</code><br><small>alias_role: optional compile shortcut only</small></td><td><pre>' + esc(formal) + '</pre></td><td><pre>' + esc(proof) + '</pre></td><td><pre>' + esc(resultLines.join('\n')) + '</pre></td></tr>';
         }).join('') + '</tbody></table>';
       }
       function renderSpec(spec) {
-        return '<table><thead><tr><th>Human alias/input convenience</th><th>Formal expression</th><th>Formal AST</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Example result</th><th>Proof authority</th></tr></thead><tbody>' + spec.map(row => '<tr><td><code>' + esc(row.alias_input) + '</code><br><small>' + esc(row.alias_role) + '</small></td><td><code>' + esc(row.formal_expression) + '</code></td><td><pre>' + esc(pretty(row.formal_ast)) + '</pre></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td>' + esc(row.example_result) + '</td><td><code>' + esc(row.proof_authority) + '</code></td></tr>').join('') + '</tbody></table>';
+        return '<table><thead><tr><th>Formal AST</th><th>Formal expression</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Certificate authority</th><th>Optional alias input</th></tr></thead><tbody>' + spec.map(row => '<tr><td><pre>' + esc(pretty(row.formal_ast)) + '</pre></td><td><code>' + esc(row.formal_expression) + '</code></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td><code>' + esc(row.proof_authority) + '</code></td><td><code>' + esc(row.alias_input) + '</code><br><small>' + esc(row.alias_role) + '</small></td></tr>').join('') + '</tbody></table>';
       }
 
       try {
         const options = { math: M, prover: P, proof_checker: Proof };
         const examples = LC.exampleRows(options, true);
         const packet = {
-          packet_type: '42ndMind_one_logic_language_example_set_v0_1',
+          packet_type: '42ndMind_formal_one_logic_language_spec_v0_1',
           language_version: LC.VERSION,
           math_version: M.VERSION,
           semantic_authority: M.CONTRACT.canonical_path + '::CONTRACT',
           proof_authority: M.CONTRACT.proofs.authority,
-          alias_spec: LC.grammar(),
+          symbol_set: SYMBOL_SET,
+          formation_rules: FORMATION_RULES,
           language_spec: LC.languageSpec(options),
           examples
         };
+        symbolsEl.textContent = 'Σ = {' + SYMBOL_SET.join(', ') + '}';
+        formationEl.innerHTML = renderFormation(FORMATION_RULES);
         examplesEl.innerHTML = renderExamples(examples);
         specEl.innerHTML = renderSpec(packet.language_spec);
         out.textContent = JSON.stringify(packet, null, 2);
       } catch (err) {
         const msg = String(err && err.stack || err);
+        symbolsEl.textContent = msg;
+        formationEl.textContent = msg;
         examplesEl.textContent = msg;
         specEl.textContent = msg;
         out.textContent = msg;
