@@ -11,17 +11,17 @@
     th { background: #f6f6f6; }
     code, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
     pre { padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
-    .note { max-width: 920px; }
+    .note { max-width: 980px; }
   </style>
 </head>
 <body>
   <h1>One Logic Language Examples</h1>
-  <p class="note">This page runs the browser globals and prints: input → generated expression → proof → result. Refusal proof certifies refusal and preservation of B; it does not certify the invalid input.</p>
+  <p class="note">Layer 1 is only human alias/input. The objective language is Layer 2, the formal One Logic expression/AST, plus Layer 3, the proof certificate under CONTRACT.proofs. Refusal proof certifies refusal and preservation of B; it does not certify the invalid alias input.</p>
 
-  <h2>Examples</h2>
+  <h2>Three-layer examples</h2>
   <div id="examples">Loading…</div>
 
-  <h2>Language spec</h2>
+  <h2>Alias-to-formal language spec</h2>
   <div id="spec">Loading…</div>
 
   <h2>Raw packet</h2>
@@ -44,17 +44,23 @@
       function esc(value) {
         return String(value == null ? '' : value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
       }
+      function pretty(value) { return JSON.stringify(value, null, 2); }
       function list(value) { return Array.isArray(value) ? value.join(' + ') : String(value == null ? '' : value); }
       function renderExamples(examples) {
-        return '<table><thead><tr><th>Input</th><th>Generated expression</th><th>Proof obligation used</th><th>Result</th><th>Proof authority</th></tr></thead><tbody>' + examples.map(row => {
-          const g = row.generated_expression;
+        return '<table><thead><tr><th>Layer 1: human alias/input</th><th>Layer 2: formal One Logic expression / AST</th><th>Layer 3: proof obligation / certificate</th><th>Result packet</th></tr></thead><tbody>' + examples.map(row => {
           const r = row.result;
-          const generated = g ? [
-            'id: ' + g.id,
-            'form: ' + g.form,
-            'ok: ' + g.ok,
-            'proof_ok: ' + g.proof_ok
-          ].join('\n') : 'none; invalid/unclosed input was refused before expression generation';
+          const formal = [
+            'formal_expression: ' + (row.formal_expression || 'none'),
+            'formal_ast: ' + pretty(row.formal_ast),
+            'generated_count: ' + (row.generated_expressions || []).length
+          ].join('\n');
+          const proof = [
+            'obligations_used: ' + list(row.proof.obligations_used),
+            'certificate_ok: ' + row.proof.ok,
+            'theorem: ' + row.proof.theorem,
+            'authority: ' + row.proof.authority,
+            'note: ' + row.proof.note
+          ].join('\n');
           const resultLines = [
             'packet: ' + r.packet_type,
             'kind: ' + r.kind,
@@ -66,31 +72,25 @@
           if (r.kind === 'refusal') {
             resultLines.push('blocked_reason: ' + (r.blocked_reason || r.refusal_reason));
             resultLines.push('refusal_reason: ' + r.refusal_reason);
-            resultLines.push('note: refusal preserves B; invalid input is not certified as valid');
+            resultLines.push('refusal preserves B; invalid alias is not certified as valid');
           }
-          return '<tr><td><code>' + esc(row.input) + '</code></td><td><pre>' + esc(generated) + '</pre></td><td>' + esc(list(row.proof.obligations_used)) + '</td><td><pre>' + esc(resultLines.join('\n')) + '</pre></td><td><code>' + esc(r.proof_authority) + '</code></td></tr>';
+          return '<tr><td><code>' + esc(row.human_alias_input || row.input) + '</code><br><small>alias_role: compile shortcut only</small></td><td><pre>' + esc(formal) + '</pre></td><td><pre>' + esc(proof) + '</pre></td><td><pre>' + esc(resultLines.join('\n')) + '</pre></td></tr>';
         }).join('') + '</tbody></table>';
       }
       function renderSpec(spec) {
-        return '<table><thead><tr><th>Accepted syntax</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Example input</th><th>Example result</th><th>Proof authority</th><th>Note</th></tr></thead><tbody>' + spec.map(row => '<tr><td><code>' + esc(row.accepted_syntax) + '</code></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td><code>' + esc(row.example_input) + '</code></td><td>' + esc(row.example_result) + '</td><td><code>' + esc(row.proof_authority) + '</code></td><td>' + esc(row.note) + '</td></tr>').join('') + '</tbody></table>';
+        return '<table><thead><tr><th>Human alias/input convenience</th><th>Formal expression</th><th>Formal AST</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Example result</th><th>Proof authority</th></tr></thead><tbody>' + spec.map(row => '<tr><td><code>' + esc(row.alias_input) + '</code><br><small>' + esc(row.alias_role) + '</small></td><td><code>' + esc(row.formal_expression) + '</code></td><td><pre>' + esc(pretty(row.formal_ast)) + '</pre></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td>' + esc(row.example_result) + '</td><td><code>' + esc(row.proof_authority) + '</code></td></tr>').join('') + '</tbody></table>';
       }
 
       try {
         const options = { math: M, prover: P, proof_checker: Proof };
-        const examples = LC.exampleRows(options).map(row => ({
-          input: row.input,
-          generated_expression: row.generated_expression,
-          generated_expressions: row.generated_expressions,
-          proof: row.proof,
-          result: row.result
-        }));
+        const examples = LC.exampleRows(options, true);
         const packet = {
           packet_type: '42ndMind_one_logic_language_example_set_v0_1',
           language_version: LC.VERSION,
           math_version: M.VERSION,
           semantic_authority: M.CONTRACT.canonical_path + '::CONTRACT',
           proof_authority: M.CONTRACT.proofs.authority,
-          grammar: LC.grammar(),
+          alias_spec: LC.grammar(),
           language_spec: LC.languageSpec(options),
           examples
         };
