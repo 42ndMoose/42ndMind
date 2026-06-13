@@ -6,6 +6,7 @@ const P = require('../src/math-law-invariant-prover-v0-1.js');
 const G = require('../src/math-law-gate-v0-1.js');
 
 assert.strictEqual(M.VERSION, '1.5.0');
+assert.strictEqual(M.FIRST_PRINCIPLE, 'All admitted difference must preserve the one.');
 assert.ok(M.F.includes('B=Cl(B)'));
 assert.ok(M.F.includes('Cl(Cl(B))=Cl(B)'));
 assert.ok(M.F.includes('One(B)=and(B=Cl(B),norm(B)=1,P(B)=1)'));
@@ -23,12 +24,25 @@ assert.ok(M.F.includes('Active(B)=and(One(B),forall(x,imp(Adm(x,B),One(B[x]))))'
 assert.ok(M.F.includes('Living(B)=and(Active(B),forall(a,b,imp(EqB(a,b),Cl(union(B,{a,b}))=Cl(union(B,{a})))))'));
 assert.deepStrictEqual(M.A[0], ['=', 'B', ['Cl', 'B']]);
 assert.deepStrictEqual(M.A[1], ['=', ['Cl', ['Cl', 'B']], ['Cl', 'B']]);
-assert.deepStrictEqual(Object.keys(M.M).sort(), ['A', 'F', 'v'].sort());
+assert.deepStrictEqual(Object.keys(M.M).sort(), ['A', 'CONTRACT', 'F', 'v'].sort());
 
-assert.strictEqual(P.VERSION, '0.1.0');
+assert.ok(M.CONTRACT);
+assert.strictEqual(M.CONTRACT.version, 'one-logic-operator-contract-v0.1');
+assert.strictEqual(M.CONTRACT.expected_math_version, '1.5.0');
+['Cl','norm','P','sub','Adm','D','Om','EqB','Red','G','Phi','E','Valid','Active','Living'].forEach(name => assert.ok(M.CONTRACT.operators[name], name));
+assert.strictEqual(M.operatorContract('EqB').contract.compare, 'definition_signature');
+assert.strictEqual(M.operatorContract('Red').contract.operation, 'quotient_by_EqB');
+assert.ok(M.operatorContract('G').contract.no_growth_policy.includes('state_signature'));
+
+assert.strictEqual(P.VERSION, '0.1.1');
+assert.strictEqual(P.EXPECTED_MATH_VERSION, M.CONTRACT.expected_math_version);
+assert.strictEqual(P.CANONICAL_MATH_PATH, M.CONTRACT.canonical_path);
+assert.deepStrictEqual(P.REQUIRED, M.CONTRACT.required_formulas);
 ['closure','closureSignature','verifyClosureIdempotence','candidateAsInput','candidateAfterState','verifyAdmission','defineUnit','definitionSignature','stabilityOf','unknownOf','preservesUnknown','eqB','collapseEquivalentUnits','verifyEquivalenceCollapse','red','verifyReductionNorm','isGrowth','verifyNoGrowthNoChange','focus','expressionOf','validExpression','verifyActive','verifyLiving','evaluateState','evaluateTransition'].forEach(name => assert.strictEqual(typeof P[name], 'function', name));
 
 const canonical = fs.readFileSync(path.join(__dirname, '..', 'src', 'one-logic-math-v1.js'), 'utf8');
+assert.ok(!canonical.includes('B_t'));
+assert.ok(!canonical.includes('B_t1'));
 const state = {
   files: { 'src/one-logic-math-v1.js': canonical },
   internal_state: { symbols: ['B', 'B'], relations: [], expressions: [], virtual_edits: [] }
@@ -36,6 +50,7 @@ const state = {
 const stateReport = P.evaluateState(state, { math: M });
 assert.strictEqual(stateReport.theorem_prover, false);
 assert.strictEqual(stateReport.invariant_prover, true);
+assert.strictEqual(stateReport.contract_version, 'one-logic-operator-contract-v0.1');
 assert.strictEqual(stateReport.math_version, '1.5.0');
 assert.strictEqual(stateReport.ok, true);
 assert.strictEqual(stateReport.One, true);
