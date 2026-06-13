@@ -72,7 +72,7 @@
         }).join('') + '</tbody></table>';
       }
       function renderSpec(spec) {
-        return '<table><thead><tr><th>Accepted syntax</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Proof authority</th><th>Note</th></tr></thead><tbody>' + spec.map(row => '<tr><td><code>' + esc(row.accepted_syntax) + '</code></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td><code>' + esc(row.proof_authority) + '</code></td><td>' + esc(row.note) + '</td></tr>').join('') + '</tbody></table>';
+        return '<table><thead><tr><th>Accepted syntax</th><th>Mapped operator</th><th>Result packet</th><th>Proof obligation</th><th>Example input</th><th>Example result</th><th>Proof authority</th><th>Note</th></tr></thead><tbody>' + spec.map(row => '<tr><td><code>' + esc(row.accepted_syntax) + '</code></td><td>' + esc(list(row.mapped_operator)) + '</td><td><code>' + esc(row.result_packet) + '</code></td><td>' + esc(list(row.proof_obligation)) + '</td><td><code>' + esc(row.example_input) + '</code></td><td>' + esc(row.example_result) + '</td><td><code>' + esc(row.proof_authority) + '</code></td><td>' + esc(row.note) + '</td></tr>').join('') + '</tbody></table>';
       }
 
       try {
