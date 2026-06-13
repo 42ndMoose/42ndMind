@@ -4,6 +4,7 @@ const path = require('path');
 const M = require('../src/one-logic-math-v1.js');
 const P = require('../src/math-law-invariant-prover-v0-1.js');
 const G = require('../src/math-law-gate-v0-1.js');
+const Proof = require('../src/math-law-proof-checker-v0-1.js');
 
 assert.strictEqual(M.VERSION, '1.5.0');
 assert.strictEqual(M.FIRST_PRINCIPLE, 'All admitted difference must preserve the one.');
@@ -78,6 +79,28 @@ assert.strictEqual(stateReport.Reduction, true);
 assert.strictEqual(stateReport.proved, true);
 assert.strictEqual(stateReport.proof.ok, true);
 assert.ok(stateReport.reduction.duplicate_count >= 1);
+
+const proofReport = Proof.proveState(state, {
+  math: M,
+  evidence: stateReport
+});
+assert.strictEqual(Proof.VERSION, '0.1.2');
+assert.strictEqual(proofReport.ok, true);
+assert.strictEqual(proofReport.failed_obligation, null);
+assert.ok(proofReport.obligations.length > 0);
+
+const brokenMath = {
+  VERSION: M.VERSION,
+  F: M.F.filter(f => f !== 'B=Cl(B)'),
+  CONTRACT: M.CONTRACT
+};
+const brokenProof = Proof.proveState(state, {
+  math: brokenMath,
+  evidence: stateReport
+});
+assert.strictEqual(brokenProof.ok, false);
+assert.strictEqual(brokenProof.failed_obligation, 'One');
+assert.ok(brokenProof.obligations.some(row => row.missing_required.includes('B=Cl(B)')));
 
 const noContractReport = P.evaluateState(state, { math: { VERSION: '1.5.0', F: M.F } });
 assert.strictEqual(noContractReport.ok, false);
