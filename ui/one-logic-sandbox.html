@@ -7,16 +7,16 @@
   <style>
     :root { color-scheme: light dark; }
     body { font-family: system-ui, sans-serif; margin: 24px; max-width: 1220px; line-height: 1.45; }
-    button, input, select, textarea { font: inherit; }
+    button, input, textarea { font: inherit; }
     button { padding: 8px 12px; margin: 4px 6px 4px 0; cursor: pointer; }
     input[type="range"] { width: min(420px, 100%); }
     textarea { width: 100%; min-height: 120px; }
     pre { background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
     .card { border: 1px solid rgba(127,127,127,.25); border-radius: 12px; padding: 14px; margin: 14px 0; }
     .metric { border: 1px solid rgba(127,127,127,.22); border-radius: 10px; padding: 10px; }
-    .metric strong { display: block; font-size: 1.35rem; }
+    .metric strong { display: block; font-size: 1.25rem; }
     .ok { color: #168a38; font-weight: 700; }
     .bad { color: #b00020; font-weight: 700; }
     .muted { opacity: .72; }
@@ -26,15 +26,15 @@
 </head>
 <body>
   <h1>42ndMind One Logic Sandbox</h1>
-  <p>This page runs the existing live self-state simulation through the current One Logic math law gate. Execution may cycle; the canonical math remains the atemporal law in <code>src/one-logic-math-v1.js</code>.</p>
+  <p>This page runs the existing simulation through the One Logic math law gate and the repo-level invariant prover.</p>
 
   <div class="card">
     <button id="boot">Boot / reload source files</button>
-    <button id="start">Start simulation loop</button>
+    <button id="start">Start loop</button>
     <button id="pause">Pause</button>
     <button id="step">Step once</button>
     <button id="reset">Reset stored state</button>
-    <button id="copy">Copy state packet for review</button>
+    <button id="copy">Copy state packet</button>
     <button id="download">Download state packet</button>
     <span id="status" class="muted">Not booted.</span>
     <p>
@@ -44,16 +44,26 @@
   </div>
 
   <div class="metrics">
-    <div class="metric"><span class="muted">Cycles</span><strong id="ticks">0</strong></div>
+    <div class="metric"><span class="muted">Cycles</span><strong id="cycles">0</strong></div>
     <div class="metric"><span class="muted">Generation</span><strong id="generation">0</strong></div>
     <div class="metric"><span class="muted">Symbols</span><strong id="symbols">0</strong></div>
     <div class="metric"><span class="muted">Virtual edits</span><strong id="virtualEdits">0</strong></div>
     <div class="metric"><span class="muted">Law gate</span><strong id="lawGate">unknown</strong></div>
+    <div class="metric"><span class="muted">Invariant prover</span><strong id="invariantStatus">unknown</strong></div>
+    <div class="metric"><span class="muted">Last admitted</span><strong id="admitted">unknown</strong></div>
+    <div class="metric"><span class="muted">Genuine growth</span><strong id="growth">unknown</strong></div>
+    <div class="metric"><span class="muted">Reduction duplicates</span><strong id="reductionDuplicates">0</strong></div>
+    <div class="metric"><span class="muted">Blocked reason</span><strong id="blockedReason">none</strong></div>
   </div>
 
   <div class="card">
     <h2>Current active/living math</h2>
     <pre id="mathLaw">Loading math law...</pre>
+  </div>
+
+  <div class="card">
+    <h2>Invariant report</h2>
+    <pre id="invariantReport">No invariant report yet.</pre>
   </div>
 
   <div class="card">
@@ -74,18 +84,19 @@
 
   <div class="card">
     <h2>Import state packet</h2>
-    <p class="muted">Paste a packet here to resume a state that was exported earlier.</p>
     <textarea id="importBox" placeholder="Paste exported one-logic state packet JSON here"></textarea>
     <p><button id="importBtn">Import packet</button></p>
   </div>
 
-  <script src="../src/one-logic-math-v1.js?v=one-logic-sandbox-20260612-1"></script>
-  <script src="../src/math-law-gate-v0-1.js?v=one-logic-sandbox-20260612-1"></script>
-  <script src="../src/live-self-dynamics-core-v0-1.js?v=one-logic-sandbox-20260612-1"></script>
-  <script src="../src/math-law-cycle-core-v0-1.js?v=one-logic-sandbox-20260612-1"></script>
+  <script src="../src/one-logic-math-v1.js?v=one-logic-sandbox-20260612-2"></script>
+  <script src="../src/math-law-invariant-prover-v0-1.js?v=one-logic-sandbox-20260612-2"></script>
+  <script src="../src/math-law-gate-v0-1.js?v=one-logic-sandbox-20260612-2"></script>
+  <script src="../src/live-self-dynamics-core-v0-1.js?v=one-logic-sandbox-20260612-2"></script>
+  <script src="../src/math-law-cycle-core-v0-1.js?v=one-logic-sandbox-20260612-2"></script>
   <script>
     const SOURCE_PATHS = [
       'src/one-logic-math-v1.js',
+      'src/math-law-invariant-prover-v0-1.js',
       'src/math-law-gate-v0-1.js',
       'src/math-law-cycle-core-v0-1.js',
       'src/live-self-dynamics-core-v0-1.js',
@@ -103,47 +114,55 @@
     const STORAGE_KEY = '42ndMind.oneLogicSandbox.v0.1.liveState';
     const TRACE_LIMIT = 40;
     const M = globalThis.OneLogicMathV1;
+    const PROVER = globalThis.FortySecondMindMathLawInvariantProver;
     const GATE = globalThis.FortySecondMindMathLawGate;
-    const L = globalThis.FortySecondMindLiveSelfDynamicsCore;
+    const LIVE = globalThis.FortySecondMindLiveSelfDynamicsCore;
     const LAW = globalThis.FortySecondMindMathLawCycleCore;
 
     let baseFiles = null;
     let live = null;
     let trace = [];
     let timer = null;
-    let tickCount = 0;
+    let cycleCount = 0;
 
-    const statusEl = document.getElementById('status');
-    const ticksEl = document.getElementById('ticks');
-    const generationEl = document.getElementById('generation');
-    const symbolsEl = document.getElementById('symbols');
-    const virtualEditsEl = document.getElementById('virtualEdits');
-    const lawGateEl = document.getElementById('lawGate');
-    const mathLawEl = document.getElementById('mathLaw');
-    const scoreMeter = document.getElementById('scoreMeter');
-    const scoreText = document.getElementById('scoreText');
-    const packetEl = document.getElementById('packet');
-    const motionEl = document.getElementById('motion');
-    const speed = document.getElementById('speed');
-    const speedText = document.getElementById('speedText');
+    const $ = id => document.getElementById(id);
+    const statusEl = $('status');
+    const cyclesEl = $('cycles');
+    const generationEl = $('generation');
+    const symbolsEl = $('symbols');
+    const virtualEditsEl = $('virtualEdits');
+    const lawGateEl = $('lawGate');
+    const invariantStatusEl = $('invariantStatus');
+    const admittedEl = $('admitted');
+    const growthEl = $('growth');
+    const reductionDuplicatesEl = $('reductionDuplicates');
+    const blockedReasonEl = $('blockedReason');
+    const mathLawEl = $('mathLaw');
+    const invariantReportEl = $('invariantReport');
+    const scoreMeter = $('scoreMeter');
+    const scoreText = $('scoreText');
+    const packetEl = $('packet');
+    const motionEl = $('motion');
+    const speed = $('speed');
+    const speedText = $('speedText');
 
     function setStatus(text, ok) {
       statusEl.textContent = text;
       statusEl.className = ok === true ? 'ok' : ok === false ? 'bad' : 'muted';
     }
 
-    function setLawGate(gate) {
-      const ok = !!(gate && gate.ok);
-      lawGateEl.textContent = ok ? 'ok' : 'blocked';
-      lawGateEl.className = ok ? 'ok' : 'bad';
+    function setFlag(el, value, trueText, falseText) {
+      const known = value === true || value === false;
+      el.textContent = value === true ? trueText : value === false ? falseText : 'unknown';
+      el.className = known ? (value ? 'ok' : 'bad') : 'muted';
     }
 
     function dependenciesReady() {
-      return !!(M && GATE && L && LAW && typeof LAW.create === 'function' && typeof LAW.cycle === 'function');
+      return !!(M && PROVER && GATE && LIVE && LAW && typeof LAW.create === 'function' && typeof LAW.cycle === 'function');
     }
 
     function lawOptions() {
-      return { math: M, gate: GATE, base: L };
+      return { math: M, prover: PROVER, gate: GATE, base: LIVE };
     }
 
     function relativeSourcePath(path) {
@@ -163,22 +182,23 @@
       const reflection = live && live.reflection || {};
       const coupling = reflection.coupling || {};
       const internal = live && live.internal_state || {};
-      const last = live && live.last_event || null;
-      const gate = live && live.law_gate || null;
+      const gate = live && live.law_gate || {};
+      const report = live && live.invariant_report || gate.invariant_report || null;
+      const reduction = gate.reduction || report && report.reduction || live && live.reduction || null;
       return {
-        packet_type: '42ndMind_one_logic_browser_math_gated_packet_v0_1',
-        cycle: tickCount,
+        packet_type: '42ndMind_one_logic_browser_invariant_gated_packet_v0_1',
+        cycle: cycleCount,
         t: live ? live.t : 0,
         generation: internal.generation || 0,
         score: live ? live.score : 0,
-        pressure: L && L.pressureOf ? L.pressureOf(reflection) : 0,
+        pressure: LIVE && LIVE.pressureOf ? LIVE.pressureOf(reflection) : 0,
         symbols: (internal.symbols || []).length,
         relations: (internal.relations || []).length,
         mutations: (internal.mutations || []).length,
         virtual_edits: (internal.virtual_edits || []).length,
-        sandbox_state_path: L && L.AUTONOMOUS_STATE_PATH || null,
-        has_virtual_state: !!(L && live && live.files && live.files[L.AUTONOMOUS_STATE_PATH]),
         law_gate: gate,
+        invariant_report: report,
+        reduction,
         coupling: {
           language: coupling.language || null,
           truth: coupling.truth || null,
@@ -187,37 +207,18 @@
           novelty: coupling.novelty || null,
           relief: coupling.relief
         },
-        last_event: last ? {
-          candidate_kind: last.candidate_kind,
-          feeling: last.feeling,
-          internal_adjustment: last.internal_adjustment,
-          virtual_state_mutation: last.virtual_state_mutation,
-          moved_simulated_self: last.moved_simulated_self
-        } : null,
         recent_trace: trace.slice(-12),
-        export_note: 'Paste this packet into ChatGPT to inspect the current math-gated simulation state.'
+        export_note: 'Paste this packet into ChatGPT to inspect the current invariant-gated simulation state.'
       };
     }
 
     function fullExportPacket() {
-      return {
-        packet_type: '42ndMind_one_logic_browser_math_gated_export_v0_1',
-        created_at: new Date().toISOString(),
-        source_paths: SOURCE_PATHS,
-        cycle: tickCount,
-        base_files_loaded: !!baseFiles,
-        compact: compactState(),
-        live_state: live,
-        trace
-      };
+      return { packet_type: '42ndMind_one_logic_browser_invariant_gated_export_v0_1', created_at: new Date().toISOString(), source_paths: SOURCE_PATHS, cycle: cycleCount, base_files_loaded: !!baseFiles, compact: compactState(), live_state: live, trace };
     }
 
     function persist() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ live, trace, tickCount }));
-      } catch (err) {
-        setStatus('Could not persist state: ' + err.message, false);
-      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ live, trace, cycleCount })); }
+      catch (err) { setStatus('Could not persist state: ' + err.message, false); }
     }
 
     function restore() {
@@ -228,40 +229,51 @@
         if (!packet || !packet.live) return false;
         live = LAW.mark ? LAW.mark(packet.live, lawOptions()) : packet.live;
         trace = Array.isArray(packet.trace) ? packet.trace.slice(-TRACE_LIMIT) : [];
-        tickCount = Number(packet.tickCount || packet.cycle || 0);
+        cycleCount = Number(packet.cycleCount || packet.tickCount || packet.cycle || 0);
         return true;
-      } catch (_) {
-        return false;
-      }
+      } catch (_) { return false; }
     }
 
     function refresh() {
       if (M && typeof M.textBlock === 'function') mathLawEl.textContent = M.textBlock();
       const packet = compactState();
-      ticksEl.textContent = String(packet.cycle);
+      const gate = packet.law_gate || {};
+      const report = packet.invariant_report || {};
+      const reduction = packet.reduction || {};
+      cyclesEl.textContent = String(packet.cycle);
       generationEl.textContent = String(packet.generation);
       symbolsEl.textContent = String(packet.symbols);
       virtualEditsEl.textContent = String(packet.virtual_edits);
-      setLawGate(packet.law_gate);
+      setFlag(lawGateEl, gate.ok, 'ok', 'blocked');
+      setFlag(invariantStatusEl, gate.invariant_prover || report.invariant_prover, 'on', 'off');
+      setFlag(admittedEl, gate.candidate_admitted, 'yes', 'no');
+      setFlag(growthEl, gate.genuine_growth, 'yes', 'no');
+      reductionDuplicatesEl.textContent = String(reduction.duplicate_count || 0);
+      blockedReasonEl.textContent = gate.blocked_reason || 'none';
+      blockedReasonEl.className = gate.blocked_reason ? 'bad' : 'ok';
       scoreMeter.value = Number(packet.score || 0);
-      scoreText.textContent = JSON.stringify({ score: packet.score, pressure: packet.pressure, law_gate: packet.law_gate, coupling: packet.coupling }, null, 2);
+      scoreText.textContent = JSON.stringify({ score: packet.score, pressure: packet.pressure, coupling: packet.coupling }, null, 2);
+      invariantReportEl.textContent = JSON.stringify(report || gate.invariant_report || null, null, 2);
       packetEl.textContent = JSON.stringify(packet, null, 2);
       motionEl.textContent = JSON.stringify(trace.slice(-16), null, 2);
     }
 
     function recordCycle(cycle) {
-      const gate = cycle.law_gate || live && live.law_gate || null;
+      const gate = cycle.law_gate || live && live.law_gate || {};
       const event = {
-        cycle: tickCount,
+        cycle: cycleCount,
         generated: cycle.generated_count,
         autonomous: cycle.autonomous_generated_count,
         pressure: cycle.pressure_generated_count,
-        internal_growth: cycle.internal_growth,
-        virtual_state_growth: cycle.virtual_state_growth,
-        less_self_seen: cycle.less_self_seen,
         score: cycle.score,
-        law_gate_ok: !!(gate && gate.ok),
-        blocked_by_math_law: !!cycle.blocked_by_math_law,
+        law_gate_ok: !!gate.ok,
+        invariant_prover: !!gate.invariant_prover,
+        admitted: gate.candidate_admitted,
+        growth: gate.genuine_growth,
+        changed: gate.changed,
+        reduction_duplicates: gate.reduction && gate.reduction.duplicate_count || 0,
+        blocked: !!gate.blocked,
+        blocked_reason: gate.blocked_reason || null,
         event_kinds: (cycle.events || []).map(e => e.candidate_kind)
       };
       trace.push(event);
@@ -269,74 +281,43 @@
     }
 
     function stepOnce() {
-      if (!dependenciesReady()) {
-        setStatus('Math-gated runtime is not loaded.', false);
-        return;
-      }
-      if (!live || !baseFiles) {
-        setStatus('Boot first.', false);
-        return;
-      }
+      if (!dependenciesReady()) return setStatus('Invariant-gated runtime is not loaded.', false);
+      if (!live || !baseFiles) return setStatus('Boot first.', false);
       const cycle = LAW.cycle(live, lawOptions());
       live = cycle.state;
-      tickCount += 1;
+      cycleCount += 1;
       recordCycle(cycle);
       persist();
       refresh();
-      setStatus('Ran math-gated cycle ' + tickCount + '.', !!(live && live.law_gate && live.law_gate.ok));
+      setStatus('Ran invariant-gated cycle ' + cycleCount + '.', !!(live && live.law_gate && live.law_gate.ok));
     }
 
-    function loop() {
-      stepOnce();
-      timer = setTimeout(loop, Number(speed.value));
-    }
-
-    function start() {
-      if (timer) return;
-      if (!live) {
-        setStatus('Boot first.', false);
-        return;
-      }
-      setStatus('Simulation loop running through the math law gate.', true);
-      timer = setTimeout(loop, Number(speed.value));
-    }
-
-    function pause() {
-      if (timer) clearTimeout(timer);
-      timer = null;
-      setStatus('Paused. State is retained in browser storage.', null);
-    }
+    function loop() { stepOnce(); timer = setTimeout(loop, Number(speed.value)); }
+    function start() { if (timer) return; if (!live) return setStatus('Boot first.', false); setStatus('Loop running through invariant gate.', true); timer = setTimeout(loop, Number(speed.value)); }
+    function pause() { if (timer) clearTimeout(timer); timer = null; setStatus('Paused. State is retained in browser storage.', null); }
 
     async function boot(forceReset) {
       pause();
       setStatus('Loading source files...', null);
       try {
-        if (!dependenciesReady()) throw new Error('missing One Logic math, gate, live core, or cycle wrapper');
+        if (!dependenciesReady()) throw new Error('missing math, invariant prover, gate, live core, or cycle wrapper');
         baseFiles = await loadSourceFiles();
-        if (!forceReset && restore()) {
-          setStatus('Restored stored math-gated state.', !!(live && live.law_gate && live.law_gate.ok));
-        } else {
+        if (!forceReset && restore()) setStatus('Restored stored invariant-gated state.', !!(live && live.law_gate && live.law_gate.ok));
+        else {
           live = LAW.create(baseFiles, lawOptions());
           trace = [];
-          tickCount = 0;
+          cycleCount = 0;
           persist();
-          setStatus('Booted fresh math-gated sandbox state.', !!(live && live.law_gate && live.law_gate.ok));
+          setStatus('Booted fresh invariant-gated state.', !!(live && live.law_gate && live.law_gate.ok));
         }
         refresh();
-      } catch (err) {
-        setStatus(err.message, false);
-      }
+      } catch (err) { setStatus(err.message, false); }
     }
 
     async function copyPacket() {
       const text = JSON.stringify(fullExportPacket(), null, 2);
-      try {
-        await navigator.clipboard.writeText(text);
-        setStatus('State packet copied.', true);
-      } catch (_) {
-        packetEl.textContent = text;
-        setStatus('Clipboard blocked. Packet shown in state panel.', false);
-      }
+      try { await navigator.clipboard.writeText(text); setStatus('State packet copied.', true); }
+      catch (_) { packetEl.textContent = text; setStatus('Clipboard blocked. Packet shown in state panel.', false); }
     }
 
     function downloadPacket() {
@@ -344,7 +325,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = '42ndMind-one-logic-math-gated-state.json';
+      a.download = '42ndMind-one-logic-invariant-gated-state.json';
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -353,30 +334,27 @@
 
     function importPacket() {
       try {
-        const raw = document.getElementById('importBox').value;
-        const packet = JSON.parse(raw);
+        const packet = JSON.parse($('importBox').value);
         const state = packet.live_state || packet.live || packet.final_state;
         if (!state || !state.files || !state.internal_state) throw new Error('packet does not contain a live_state/final_state');
         live = LAW.mark ? LAW.mark(state, lawOptions()) : state;
         trace = Array.isArray(packet.trace) ? packet.trace.slice(-TRACE_LIMIT) : [];
-        tickCount = Number(packet.cycle || packet.tick || packet.compact && (packet.compact.cycle || packet.compact.tick) || live.t || 0);
+        cycleCount = Number(packet.cycle || packet.tick || packet.compact && (packet.compact.cycle || packet.compact.tick) || live.t || 0);
         persist();
         refresh();
-        setStatus('Imported math-gated state packet.', !!(live && live.law_gate && live.law_gate.ok));
-      } catch (err) {
-        setStatus('Import failed: ' + err.message, false);
-      }
+        setStatus('Imported invariant-gated state packet.', !!(live && live.law_gate && live.law_gate.ok));
+      } catch (err) { setStatus('Import failed: ' + err.message, false); }
     }
 
     speed.oninput = () => { speedText.textContent = speed.value + 'ms'; };
-    document.getElementById('boot').onclick = () => boot(false);
-    document.getElementById('start').onclick = start;
-    document.getElementById('pause').onclick = pause;
-    document.getElementById('step').onclick = stepOnce;
-    document.getElementById('reset').onclick = () => { localStorage.removeItem(STORAGE_KEY); boot(true); };
-    document.getElementById('copy').onclick = copyPacket;
-    document.getElementById('download').onclick = downloadPacket;
-    document.getElementById('importBtn').onclick = importPacket;
+    $('boot').onclick = () => boot(false);
+    $('start').onclick = start;
+    $('pause').onclick = pause;
+    $('step').onclick = stepOnce;
+    $('reset').onclick = () => { localStorage.removeItem(STORAGE_KEY); boot(true); };
+    $('copy').onclick = copyPacket;
+    $('download').onclick = downloadPacket;
+    $('importBtn').onclick = importPacket;
 
     boot(false);
   </script>
