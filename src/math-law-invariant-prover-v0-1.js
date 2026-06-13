@@ -4,220 +4,90 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
 
-  const VERSION = '0.1.1';
+  const VERSION = '0.1.2';
   let Canon = null;
-  try { if (typeof require === 'function') Canon = require('./one-logic-math-v1.js'); } catch (_) { Canon = null; }
+  try { if (typeof require === 'function') Canon = require('./one-logic-math-v1.js'); } catch (_) {}
 
   function A(x) { return Array.isArray(x) ? x : []; }
   function O(x) { return x && typeof x === 'object' && !Array.isArray(x) ? x : {}; }
   function text(x) { return String(x == null ? '' : x); }
   function clone(x) { return JSON.parse(JSON.stringify(x == null ? null : x)); }
-  function math(o) { return (o && o.math) || Canon || (typeof globalThis !== 'undefined' && globalThis.OneLogicMathV1) || null; }
-  function contract(o) { const m = math(o || {}); return (o && o.contract) || (m && m.CONTRACT) || {}; }
+  function math(o) { return O(o).math || Canon || (typeof globalThis !== 'undefined' && globalThis.OneLogicMathV1) || null; }
+  function contract(o) { const m = math(o || {}); return O(O(o).contract || m && m.CONTRACT); }
+  function hasContract(o) { const c = contract(o || {}); return !!(c.version && c.operators && c.required_formulas); }
   function operators(o) { return O(contract(o || {}).operators); }
   function op(name, o) { return O(operators(o || {})[name]); }
   function opContract(name, o) { return O(op(name, o || {}).contract); }
   function required(o) { return A(contract(o || {}).required_formulas); }
-  function expectedVersion(o) { const c = contract(o || {}), m = math(o || {}); return text(c.expected_math_version || c.math_version || m && m.VERSION || ''); }
-  function canonicalPath(o) { return text(contract(o || {}).canonical_path || opContract('B', o).source_identity_path || 'src/one-logic-math-v1.js'); }
-  function banned(o) {
-    return A(contract(o || {}).banned_runtime_notation || opContract('B', o).forbidden).map(row => {
-      if (row && typeof row === 'object') return text(row.base) + '_' + text(row.index);
-      return text(row);
-    }).filter(Boolean);
-  }
+  function expectedVersion(o) { return contract(o || {}).expected_math_version || null; }
+  function canonicalPath(o) { return contract(o || {}).canonical_path || null; }
+  function banned(o) { return A(contract(o || {}).banned_runtime_notation).map(row => row && typeof row === 'object' ? text(row.base) + '_' + text(row.index) : text(row)).filter(Boolean); }
   function keys(o) { return Object.keys(O(o)).sort(); }
   function filesOf(s) { return O(s && s.files); }
   function internalOf(s) { return O(s && s.internal_state); }
-  function stable(x) {
-    if (x == null) return 'null';
-    if (typeof x !== 'object') return JSON.stringify(x);
-    if (Array.isArray(x)) return '[' + x.map(stable).join(',') + ']';
-    return '{' + Object.keys(x).sort().map(k => JSON.stringify(k) + ':' + stable(x[k])).join(',') + '}';
-  }
-  function hash(input) {
-    const s = text(input); let h = 2166136261;
-    for (let i = 0; i < s.length; i += 1) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-    return h.toString(36);
-  }
+  function mathLines(o) { const m = math(o || {}); return A(m && m.F); }
+  function stable(x) { if (x == null) return 'null'; if (typeof x !== 'object') return JSON.stringify(x); if (Array.isArray(x)) return '[' + x.map(stable).join(',') + ']'; return '{' + Object.keys(x).sort().map(k => JSON.stringify(k) + ':' + stable(x[k])).join(',') + '}'; }
+  function hash(input) { const s = text(input); let h = 2166136261; for (let i = 0; i < s.length; i += 1) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); }
   function unitId(q) { return text(q && q.id || q && q.U && q.U.id || q); }
   function uniqText(rows) { return Array.from(new Set(A(rows).map(text).filter(Boolean))).sort(); }
-  function mathLines(o) { const m = math(o || {}); return A(m && m.F); }
+
+  function noContractReport() { return { ok: false, contract_present: false, contract_version: null, blocked_reason: 'canonical_operator_contract_unavailable' }; }
 
   function verifyCanonicalMathState(state, options) {
-    const c = contract(options || {}), path = canonicalPath(options || {}), files = filesOf(state), internal = internalOf(state);
-    const canonical = text(files[path]), F = mathLines(options || {}), version = text((math(options || {}) || {}).VERSION || '');
-    const req = required(options || {});
+    if (!hasContract(options || {})) return noContractReport();
+    const path = canonicalPath(options || {}), files = filesOf(state), internal = internalOf(state), canonical = path ? text(files[path]) : '';
+    const F = mathLines(options || {}), version = text((math(options || {}) || {}).VERSION || ''), req = required(options || {});
     const required_missing_from_math = req.filter(x => F.indexOf(x) < 0);
     const required_missing_from_source = canonical ? req.filter(x => canonical.indexOf(x) < 0) : req.slice();
     const banned_runtime_notation = banned(options || {}).filter(x => canonical.indexOf(x) >= 0);
     const canonical_present = !!canonical;
     const version_ok = version === expectedVersion(options || {});
     const source_version_ok = canonical.indexOf(expectedVersion(options || {})) >= 0;
-    const contract_present = !!(c && c.operators && c.required_formulas);
     const has_state_shape = keys(files).length > 0 && !!(state && state.internal_state) && typeof state.internal_state === 'object' && !Array.isArray(state.internal_state);
     const source_identity_ok = canonical_present && source_version_ok && required_missing_from_source.length === 0;
     const contradicted = banned_runtime_notation.length > 0 || required_missing_from_source.length > 0;
-    const proof = opContract('P', options || {});
-    const ok = contract_present && version_ok && required_missing_from_math.length === 0 && has_state_shape && source_identity_ok && !contradicted;
-    return { ok, contract_version: c.version || null, version, expected_version: expectedVersion(options || {}), canonical_path: path, canonical_present, contract_present, version_ok, source_version_ok, has_state_shape, source_identity_ok, contradicted, proof_contract: proof, required_missing_from_math, required_missing_from_source, banned_runtime_notation, counts: { files: keys(files).length, symbols: A(internal.symbols).length, relations: A(internal.relations).length, expressions: A(internal.expressions).length } };
+    const ok = version_ok && required_missing_from_math.length === 0 && has_state_shape && source_identity_ok && !contradicted;
+    return { ok, contract_present: true, contract_version: contract(options || {}).version || null, version, expected_version: expectedVersion(options || {}), canonical_path: path, canonical_present, version_ok, source_version_ok, has_state_shape, source_identity_ok, contradicted, proof_contract: opContract('P', options || {}), required_missing_from_math, required_missing_from_source, banned_runtime_notation, counts: { files: keys(files).length, symbols: A(internal.symbols).length, relations: A(internal.relations).length, expressions: A(internal.expressions).length } };
   }
 
-  function verifyOne(state, options) { const canonical = verifyCanonicalMathState(state, options || {}); return { ok: canonical.ok, canonical, operator: op('One', options || {}) }; }
-
-  function rawUnits(state, options) {
-    const out = [], files = filesOf(state), internal = internalOf(state);
-    mathLines(options || {}).forEach(formula => out.push({ kind: 'formula', id: 'formula:' + formula, formula }));
-    keys(files).forEach(path => out.push({ kind: 'file', id: 'file:' + path, path, size: text(files[path]).length, digest: hash(files[path]) }));
-    A(internal.symbols).forEach(symbol => out.push({ kind: 'symbol', id: 'symbol:' + text(symbol), value: text(symbol) }));
-    A(internal.relations).forEach(relation => out.push({ kind: 'relation', id: 'relation:' + hash(stable(relation)), relation }));
-    A(internal.expressions).forEach(expression => out.push({ kind: 'expression', id: 'expression:' + hash(stable(expression)), expression }));
-    return out;
-  }
-  function units(state, options) {
-    const seen = new Set();
-    return rawUnits(state, options || {}).filter(u => { const sig = stable(u); if (seen.has(sig)) return false; seen.add(sig); return true; }).sort((a, b) => unitId(a).localeCompare(unitId(b)));
-  }
-  function relationRowsFor(q, state) {
-    const id = unitId(q), value = text(q && (q.value || q.path || q.formula || id));
-    return A(internalOf(state).relations).filter(r => stable(r).indexOf(id) >= 0 || (value && stable(r).indexOf(value) >= 0)).map(r => 'relation:' + hash(stable(r))).sort();
-  }
-  function constraintsFor(q, options) {
-    const c = contract(options || {}), map = O(c.unit_constraints), k = text(q && q.kind || 'unit');
-    return A(map[k] || map.unit || ['One', 'Closure', 'Proof']);
-  }
-  function focus(state, q) {
-    const rule = opContract('Phi', {});
-    return { operation: rule.operation || 'internal_focus', scope: rule.scope || 'B', unit: unitId(q), source_paths: keys(filesOf(state)).filter(path => path === canonicalPath({}) || text(filesOf(state)[path]).indexOf(text(q && (q.value || q.path || q.formula || ''))) >= 0).slice(0, 16) };
-  }
-  function proofOf(q, state, options) {
-    const one = verifyOne(state, options || {}), policy = opContract('P', options || {});
-    const unsafe_path = q && q.kind === 'candidate' && A(q.operations).some(operation => text(operation && operation.path).indexOf('..') >= 0);
-    return { ok: one.ok && !unsafe_path, source: one.ok, unsafe_path, contract: policy };
-  }
-  function stabilityOf(q, state, options) {
-    const sRule = opContract('S', options || {}), proof = proofOf(q, state, options || {}), rels = relationRowsFor(q, state), constraints = constraintsFor(q, options || {});
-    const relation_stability_known = !!(q && (q.kind === 'formula' || q.kind === 'file' || q.kind === 'candidate' || rels.length > 0));
-    return { ok: proof.ok && relation_stability_known && constraints.length > 0, proof, relation_stability_known, relation_count: rels.length, constraints, contract: sRule };
-  }
-  function unknownOf(q, state, options) {
-    const omRule = opContract('Om', options || {}), s = stabilityOf(q, state, options || {}), unresolved = [];
-    if (!s.proof.ok) unresolved.push('proof_not_established');
-    if (!s.relation_stability_known) unresolved.push('relation_stability_absent');
-    if (!s.constraints.length) unresolved.push('constraints_absent');
-    return { ok: unresolved.length > 0, unresolved, stable: s.ok, contract: omRule };
-  }
-  function defineUnit(q, state, options) {
-    const unit = O(q), kind = unit.kind || 'unit', fields = A(contract(options || {}).definition_fields || opContract('D', options || {}).fields);
-    const definition = {
-      U: { id: unitId(unit), kind },
-      R: relationRowsFor(unit, state),
-      T: kind === 'candidate' ? { operations: A(unit.operations).map(operation => ({ type: operation && (operation.type || operation.op) || 'replace', path: operation && operation.path || null, digest: hash(stable(operation)) })), events: A(unit.events).map(e => e && (e.candidate_kind || e.kind) || null).filter(Boolean) } : { digest: unit.digest || hash(stable(unit)), size: unit.size || null },
-      C: constraintsFor(unit, options || {}),
-      Om: unknownOf(unit, state, options || {}),
-      Phi: focus(state, unit),
-      P: proofOf(unit, state, options || {}),
-      G: kind === 'candidate' ? { status: 'transition_evaluated' } : { status: 'resident' }
-    };
-    return fields.length ? fields.reduce((out, key) => { out[key] = definition[key]; return out; }, {}) : definition;
-  }
+  function verifyOne(state, options) { const canonical = verifyCanonicalMathState(state, options || {}); return { ok: canonical.ok === true, canonical, operator: op('One', options || {}) }; }
+  function rawUnits(state, options) { const out = [], files = filesOf(state), internal = internalOf(state); mathLines(options || {}).forEach(formula => out.push({ kind: 'formula', id: 'formula:' + formula, formula })); keys(files).forEach(path => out.push({ kind: 'file', id: 'file:' + path, path, size: text(files[path]).length, digest: hash(files[path]) })); A(internal.symbols).forEach(symbol => out.push({ kind: 'symbol', id: 'symbol:' + text(symbol), value: text(symbol) })); A(internal.relations).forEach(relation => out.push({ kind: 'relation', id: 'relation:' + hash(stable(relation)), relation })); A(internal.expressions).forEach(expression => out.push({ kind: 'expression', id: 'expression:' + hash(stable(expression)), expression })); return out; }
+  function units(state, options) { const seen = new Set(); return rawUnits(state, options || {}).filter(unit => { const sig = stable(unit); if (seen.has(sig)) return false; seen.add(sig); return true; }).sort((a, b) => unitId(a).localeCompare(unitId(b))); }
+  function relationRowsFor(q, state) { const id = unitId(q), value = text(q && (q.value || q.path || q.formula || id)); return A(internalOf(state).relations).filter(r => stable(r).indexOf(id) >= 0 || (value && stable(r).indexOf(value) >= 0)).map(r => 'relation:' + hash(stable(r))).sort(); }
+  function constraintsFor(q, options) { const map = O(contract(options || {}).unit_constraints), k = text(q && q.kind || 'unit'); return A(map[k] || map.unit); }
+  function focus(state, q, options) { const rule = opContract('Phi', options || {}), path = canonicalPath(options || {}); return { operation: rule.operation || null, scope: rule.scope || null, unit: unitId(q), source_paths: keys(filesOf(state)).filter(p => p === path || text(filesOf(state)[p]).indexOf(text(q && (q.value || q.path || q.formula || ''))) >= 0).slice(0, 16) }; }
+  function proofOf(q, state, options) { const one = verifyOne(state, options || {}), policy = opContract('P', options || {}), unsafe_path = q && q.kind === 'candidate' && A(q.operations).some(operation => text(operation && operation.path).indexOf('..') >= 0); return { ok: one.ok && !unsafe_path, source: one.ok, unsafe_path, contract: policy }; }
+  function stabilityOf(q, state, options) { const proof = proofOf(q, state, options || {}), rels = relationRowsFor(q, state), constraints = constraintsFor(q, options || {}), relation_stability_known = !!(q && (q.kind === 'formula' || q.kind === 'file' || q.kind === 'candidate' || rels.length > 0)); return { ok: proof.ok && relation_stability_known && constraints.length > 0, proof, relation_stability_known, relation_count: rels.length, constraints, contract: opContract('S', options || {}) }; }
+  function unknownOf(q, state, options) { const s = stabilityOf(q, state, options || {}), unresolved = []; if (!s.proof.ok) unresolved.push('proof_not_established'); if (!s.relation_stability_known) unresolved.push('relation_stability_absent'); if (!s.constraints.length) unresolved.push('constraints_absent'); return { ok: unresolved.length > 0, unresolved, stable: s.ok, contract: opContract('Om', options || {}) }; }
+  function defineUnit(q, state, options) { const unit = O(q), kind = unit.kind || 'unit', fields = A(contract(options || {}).definition_fields); const definition = { U: { id: unitId(unit), kind }, R: relationRowsFor(unit, state), T: kind === 'candidate' ? { operations: A(unit.operations).map(operation => ({ type: operation && (operation.type || operation.op) || null, path: operation && operation.path || null, digest: hash(stable(operation)) })), events: A(unit.events).map(e => e && (e.candidate_kind || e.kind) || null).filter(Boolean) } : { digest: unit.digest || hash(stable(unit)), size: unit.size || null }, C: constraintsFor(unit, options || {}), Om: unknownOf(unit, state, options || {}), Phi: focus(state, unit, options || {}), P: proofOf(unit, state, options || {}), G: kind === 'candidate' ? { status: 'transition_evaluated' } : { status: 'resident' } }; return fields.length ? fields.reduce((out, key) => { out[key] = definition[key]; return out; }, {}) : definition; }
   function definitionSignature(definition) { return hash(stable(definition)); }
 
-  function closure(state, options) {
-    if (state && state.packet_type === '42ndMind_math_law_closure_v0_1') return clone(state);
-    const rule = opContract('Cl', options || {}), us = units(state, options || {});
-    const definitions = us.map(unit => ({ id: unitId(unit), signature: definitionSignature(defineUnit(unit, state, options || {})) })).sort((a, b) => a.id.localeCompare(b.id));
-    return { packet_type: '42ndMind_math_law_closure_v0_1', version: VERSION, math_version: expectedVersion(options || {}), operator_contract: rule.operation || 'deterministic_closure', canonical_path: canonicalPath(options || {}), source_signature: hash(stable(keys(filesOf(state)).map(path => [path, hash(filesOf(state)[path])]))), units: us.map(unit => ({ id: unitId(unit), kind: unit.kind })), definitions };
-  }
+  function closure(state, options) { if (state && state.packet_type === '42ndMind_math_law_closure_v0_1') return clone(state); const rule = opContract('Cl', options || {}), us = units(state, options || {}), definitions = us.map(unit => ({ id: unitId(unit), signature: definitionSignature(defineUnit(unit, state, options || {})) })).sort((a, b) => a.id.localeCompare(b.id)); return { packet_type: '42ndMind_math_law_closure_v0_1', version: VERSION, math_version: expectedVersion(options || {}), operator_contract: rule.operation || null, canonical_path: canonicalPath(options || {}), source_signature: hash(stable(keys(filesOf(state)).map(path => [path, hash(filesOf(state)[path])]))), units: us.map(unit => ({ id: unitId(unit), kind: unit.kind })), definitions }; }
   function closureSignature(state, options) { return hash(stable(closure(state, options || {}))); }
-  function verifyClosureIdempotence(state, options) {
-    const rule = opContract('Cl', options || {}), once = closure(state, options || {}), twice = closure(once, options || {}), once_sig = closureSignature(once, options || {}), twice_sig = closureSignature(twice, options || {});
-    return { ok: once_sig === twice_sig && rule.idempotent === true, once_sig, twice_sig, contract: rule };
-  }
-
-  function candidateAsInput(candidate) {
-    const c = O(candidate), iota = opContract('iota', {});
-    return { kind: 'candidate', id: 'candidate:' + text(c.id || c.candidate_id || c.packet_type || c.mode || hash(stable(c))), local_form: iota.maps && iota.maps.output || 'qx', operations: A(c.operations), events: A(c.events), summary: { packet_type: c.packet_type || null, generated_count: c.generated_count || 0, moved: !!c.moved, internal_growth: !!c.internal_growth, virtual_state_growth: !!c.virtual_state_growth } };
-  }
+  function verifyClosureIdempotence(state, options) { const rule = opContract('Cl', options || {}), once = closure(state, options || {}), twice = closure(once, options || {}), once_sig = closureSignature(once, options || {}), twice_sig = closureSignature(twice, options || {}); return { ok: once_sig === twice_sig && rule.idempotent === true, once_sig, twice_sig, contract: rule }; }
+  function candidateAsInput(candidate, options) { const c = O(candidate), iota = opContract('iota', options || {}); return { kind: 'candidate', id: 'candidate:' + text(c.id || c.candidate_id || c.packet_type || c.mode || hash(stable(c))), local_form: iota.maps && iota.maps.output || null, operations: A(c.operations), events: A(c.events), summary: { packet_type: c.packet_type || null, generated_count: c.generated_count || 0, moved: !!c.moved, internal_growth: !!c.internal_growth, virtual_state_growth: !!c.virtual_state_growth } }; }
   function candidateAfterState(before, candidate) { const c = O(candidate); return c.after_state || c.after || c.state || before; }
-  function verifyAdmission(before, candidate, after, options) {
-    const rule = opContract('Adm', options || {}), q = candidateAsInput(candidate), next = after || candidateAfterState(before, candidate), one = verifyOne(next, options || {});
-    return { ok: one.ok, admitted: one.ok, q, after_is_one: one.ok, contract: rule, one };
-  }
-
-  function eqB(a, b, state, options) {
-    const rule = opContract('EqB', options || {});
-    return (rule.compare || 'definition_signature') === 'definition_signature'
-      ? definitionSignature(defineUnit(a, state, options || {})) === definitionSignature(defineUnit(b, state, options || {}))
-      : stable(defineUnit(a, state, options || {})) === stable(defineUnit(b, state, options || {}));
-  }
-  function collapseEquivalentUnits(inputUnits, state, options) {
-    const groups = {};
-    A(inputUnits).forEach(unit => { const sig = definitionSignature(defineUnit(unit, state, options || {})); if (!groups[sig]) groups[sig] = []; groups[sig].push(unit); });
-    const collapsed = keys(groups).map(sig => groups[sig][0]);
-    return { units: collapsed, duplicate_count: A(inputUnits).length - collapsed.length, group_count: collapsed.length, groups, contract: opContract('EqB', options || {}) };
-  }
-  function verifyEquivalenceCollapse(before, after, options) {
-    const target = after || before, raw = rawUnits(target, options || {}), once = collapseEquivalentUnits(raw, target, options || {}), twice = collapseEquivalentUnits(once.units, target, options || {});
-    return { ok: stable(once.units.map(unitId).sort()) === stable(twice.units.map(unitId).sort()) && twice.duplicate_count === 0, duplicate_count: once.duplicate_count, group_count: once.group_count, unit_count: raw.length, contract: opContract('EqB', options || {}) };
-  }
-  function red(state, options) {
-    const rule = opContract('Red', options || {}), raw = rawUnits(state, options || {}), collapsed = collapseEquivalentUnits(raw, state, options || {}), original_count = raw.length, reduced_count = collapsed.units.length;
-    return { packet_type: '42ndMind_math_law_reduction_v0_1', version: VERSION, operation: rule.operation || 'quotient_by_EqB', original_count, reduced_count, duplicate_count: original_count - reduced_count, reduction_ratio: original_count ? Number(((original_count - reduced_count) / original_count).toFixed(6)) : 0, norm_preserved: verifyOne(state, options || {}).ok, units: collapsed.units.map(unit => ({ id: unitId(unit), kind: unit.kind })) };
-  }
-  function reducedState(state, options) {
-    const next = clone(state || {}) || {}, internal = O(next.internal_state);
-    internal.symbols = uniqText(internal.symbols);
-    internal.relations = Array.from(new Map(A(internal.relations).map(row => [hash(stable(row)), row])).values());
-    internal.expressions = Array.from(new Map(A(internal.expressions).map(row => [hash(stable(row)), row])).values());
-    internal.virtual_edits = Array.from(new Map(A(internal.virtual_edits).map(row => [hash(stable(row)), row])).values());
-    next.internal_state = internal;
-    next.reduction = red(next, options || {});
-    return next;
-  }
+  function verifyAdmission(before, candidate, after, options) { const rule = opContract('Adm', options || {}), q = candidateAsInput(candidate, options || {}), next = after || candidateAfterState(before, candidate), one = verifyOne(next, options || {}); return { ok: one.ok, admitted: one.ok, q, after_is_one: one.ok, contract: rule, one }; }
+  function eqB(a, b, state, options) { const rule = opContract('EqB', options || {}); return rule.compare === 'definition_signature' && definitionSignature(defineUnit(a, state, options || {})) === definitionSignature(defineUnit(b, state, options || {})); }
+  function collapseEquivalentUnits(inputUnits, state, options) { const groups = {}; A(inputUnits).forEach(unit => { const sig = definitionSignature(defineUnit(unit, state, options || {})); if (!groups[sig]) groups[sig] = []; groups[sig].push(unit); }); const collapsed = keys(groups).map(sig => groups[sig][0]); return { units: collapsed, duplicate_count: A(inputUnits).length - collapsed.length, group_count: collapsed.length, groups, contract: opContract('EqB', options || {}) }; }
+  function verifyEquivalenceCollapse(before, after, options) { const target = after || before, raw = rawUnits(target, options || {}), once = collapseEquivalentUnits(raw, target, options || {}), twice = collapseEquivalentUnits(once.units, target, options || {}); return { ok: stable(once.units.map(unitId).sort()) === stable(twice.units.map(unitId).sort()) && twice.duplicate_count === 0, duplicate_count: once.duplicate_count, group_count: once.group_count, unit_count: raw.length, contract: opContract('EqB', options || {}) }; }
+  function red(state, options) { const rule = opContract('Red', options || {}), raw = rawUnits(state, options || {}), collapsed = collapseEquivalentUnits(raw, state, options || {}), original_count = raw.length, reduced_count = collapsed.units.length; return { packet_type: '42ndMind_math_law_reduction_v0_1', version: VERSION, operation: rule.operation || null, original_count, reduced_count, duplicate_count: original_count - reduced_count, reduction_ratio: original_count ? Number(((original_count - reduced_count) / original_count).toFixed(6)) : 0, norm_preserved: verifyOne(state, options || {}).ok, units: collapsed.units.map(unit => ({ id: unitId(unit), kind: unit.kind })) }; }
+  function reducedState(state, options) { const next = clone(state || {}) || {}, internal = O(next.internal_state); internal.symbols = uniqText(internal.symbols); internal.relations = Array.from(new Map(A(internal.relations).map(row => [hash(stable(row)), row])).values()); internal.expressions = Array.from(new Map(A(internal.expressions).map(row => [hash(stable(row)), row])).values()); internal.virtual_edits = Array.from(new Map(A(internal.virtual_edits).map(row => [hash(stable(row)), row])).values()); next.internal_state = internal; next.reduction = red(next, options || {}); return next; }
   function verifyReductionNorm(state, options) { const r = red(state, options || {}); return { ok: r.norm_preserved && r.reduced_count <= r.original_count, reduction: r, contract: opContract('Red', options || {}) }; }
-
   function unknownSet(state, options) { return units(state, options || {}).map(unit => ({ id: unitId(unit), signature: definitionSignature(defineUnit(unit, state, options || {})), unknown: unknownOf(unit, state, options || {}) })).filter(row => row.unknown.ok); }
-  function preservesUnknown(before, after, options) {
-    const b = unknownSet(before, options || {}), a = unknownSet(after || before, options || {}), ids = new Set(a.map(row => row.id)), sigs = new Set(a.map(row => row.signature)), lost = b.filter(row => !ids.has(row.id) && !sigs.has(row.signature));
-    return { ok: lost.length === 0, before_unknown: b.length, after_unknown: a.length, lost, contract: opContract('Om', options || {}) };
-  }
+  function preservesUnknown(before, after, options) { const b = unknownSet(before, options || {}), a = unknownSet(after || before, options || {}), ids = new Set(a.map(row => row.id)), sigs = new Set(a.map(row => row.signature)), lost = b.filter(row => !ids.has(row.id) && !sigs.has(row.signature)); return { ok: lost.length === 0, before_unknown: b.length, after_unknown: a.length, lost, contract: opContract('Om', options || {}) }; }
   function changed(before, after, options) { return closureSignature(before, options || {}) !== closureSignature(after, options || {}); }
   function equivalentExisting(q, state, options) { const sig = definitionSignature(defineUnit(q, state, options || {})), hit = units(state, options || {}).find(unit => definitionSignature(defineUnit(unit, state, options || {})) === sig); return hit ? { ok: true, unit: hit, signature: sig } : { ok: false, signature: sig }; }
-  function isGrowth(q, before, after, options) {
-    const rule = opContract('G', options || {}), candidate = q && q.kind === 'candidate' ? q : candidateAsInput(q), admission = verifyAdmission(before, candidate, after, options || {}), didChange = changed(before, after, options || {}), equivalent = equivalentExisting(candidate, before, options || {}), unknown = preservesUnknown(before, after, options || {}), beforeOne = verifyOne(before, options || {}), afterOne = verifyOne(after, options || {}), improves_or_preserves_law = beforeOne.ok ? afterOne.ok : afterOne.ok === beforeOne.ok;
-    const ok = admission.ok && didChange && !equivalent.ok && unknown.ok && improves_or_preserves_law;
-    return { ok, admissible: admission.ok, changed: didChange, equivalent_existing: equivalent.ok, improves_or_preserves_law, unknown_preserved: unknown.ok, contract: rule, admission, equivalent, unknown };
-  }
-  function verifyNoGrowthNoChange(before, candidate, after, options) { const growth = isGrowth(candidateAsInput(candidate), before, after, options || {}), didChange = changed(before, after, options || {}); return { ok: growth.ok || !didChange, no_growth: !growth.ok, changed: didChange, growth, contract: opContract('G', options || {}) }; }
-
-  function expressionOf(state, phi) { return { kind: 'expression', id: 'expression:' + hash(stable(phi)), phi: focus(state, phi), value: phi }; }
-  function validExpression(expr, state, options) {
-    const rule = opContract('Valid', options || {}), e = O(expr), one = verifyOne(state, options || {}), files = filesOf(state), internal = internalOf(state), value = text(e.value || e.expression || e.id || ''), inside = !value || unitId(e).indexOf('expression:') === 0 || keys(files).some(path => text(files[path]).indexOf(value) >= 0) || A(internal.expressions).some(row => stable(row) === stable(e.value || e.expression || e)), proof = proofOf(e, state, options || {});
-    return { ok: !!inside && one.ok && proof.ok, sub: !!inside, norm: one.ok, proof: proof.ok, contract: rule };
-  }
-  function verifyExpressionValidity(state, options) { const expressions = A(internalOf(state).expressions), rows = expressions.length ? expressions.map(expr => validExpression({ kind: 'expression', expression: expr, value: expr }, state, options || {})) : [validExpression(expressionOf(state, 'B'), state, options || {})]; return { ok: rows.every(row => row.ok), checked: rows.length, rows, contract: opContract('Valid', options || {}) }; }
+  function isGrowth(q, before, after, options) { const rule = opContract('G', options || {}), candidate = q && q.kind === 'candidate' ? q : candidateAsInput(q, options || {}), admission = verifyAdmission(before, candidate, after, options || {}), didChange = changed(before, after, options || {}), equivalent = equivalentExisting(candidate, before, options || {}), unknown = preservesUnknown(before, after, options || {}), beforeOne = verifyOne(before, options || {}), afterOne = verifyOne(after, options || {}), improves_or_preserves_law = beforeOne.ok ? afterOne.ok : afterOne.ok === beforeOne.ok, ok = admission.ok && didChange && !equivalent.ok && unknown.ok && improves_or_preserves_law; return { ok, admissible: admission.ok, changed: didChange, equivalent_existing: equivalent.ok, improves_or_preserves_law, unknown_preserved: unknown.ok, contract: rule, admission, equivalent, unknown }; }
+  function verifyNoGrowthNoChange(before, candidate, after, options) { const growth = isGrowth(candidateAsInput(candidate, options || {}), before, after, options || {}), didChange = changed(before, after, options || {}); return { ok: growth.ok || !didChange, no_growth: !growth.ok, changed: didChange, growth, contract: opContract('G', options || {}) }; }
+  function expressionOf(state, phi, options) { return { kind: 'expression', id: 'expression:' + hash(stable(phi)), phi: focus(state, phi, options || {}), value: phi }; }
+  function validExpression(expr, state, options) { const rule = opContract('Valid', options || {}), e = O(expr), one = verifyOne(state, options || {}), files = filesOf(state), internal = internalOf(state), value = text(e.value || e.expression || e.id || ''), inside = !value || unitId(e).indexOf('expression:') === 0 || keys(files).some(path => text(files[path]).indexOf(value) >= 0) || A(internal.expressions).some(row => stable(row) === stable(e.value || e.expression || e)), proof = proofOf(e, state, options || {}); return { ok: !!inside && one.ok && proof.ok, sub: !!inside, norm: one.ok, proof: proof.ok, contract: rule }; }
+  function verifyExpressionValidity(state, options) { const expressions = A(internalOf(state).expressions), rows = expressions.length ? expressions.map(expr => validExpression({ kind: 'expression', expression: expr, value: expr }, state, options || {})) : [validExpression(expressionOf(state, 'B', options || {}), state, options || {})]; return { ok: rows.every(row => row.ok), checked: rows.length, rows, contract: opContract('Valid', options || {}) }; }
   function verifyActive(before, candidate, after, options) { const one = verifyOne(after || before, options || {}), admission = candidate ? verifyAdmission(before, candidate, after, options || {}) : { ok: true, admitted: true }; return { ok: one.ok && admission.ok, one, admission, contract: opContract('Active', options || {}) }; }
-  function verifyLiving(before, candidate, after, options) {
-    const target = after || before, active = verifyActive(before || target, candidate || null, target, options || {}), unknown = before ? preservesUnknown(before, target, options || {}) : { ok: true }, equivalence = verifyEquivalenceCollapse(before || target, target, options || {}), reduction = verifyReductionNorm(target, options || {}), growth = candidate ? isGrowth(candidateAsInput(candidate), before || target, target, options || {}) : { ok: true }, noGrowth = candidate ? verifyNoGrowthNoChange(before || target, candidate, target, options || {}) : { ok: true }, expression = verifyExpressionValidity(target, options || {}), ok = active.ok && unknown.ok && equivalence.ok && reduction.ok && noGrowth.ok && expression.ok;
-    return { ok, active, unknown, equivalence, reduction, growth, no_growth_no_change: noGrowth, expression, contract: opContract('Living', options || {}) };
-  }
-
+  function verifyLiving(before, candidate, after, options) { const target = after || before, active = verifyActive(before || target, candidate || null, target, options || {}), unknown = before ? preservesUnknown(before, target, options || {}) : { ok: true }, equivalence = verifyEquivalenceCollapse(before || target, target, options || {}), reduction = verifyReductionNorm(target, options || {}), growth = candidate ? isGrowth(candidateAsInput(candidate, options || {}), before || target, target, options || {}) : { ok: true }, noGrowth = candidate ? verifyNoGrowthNoChange(before || target, candidate, target, options || {}) : { ok: true }, expression = verifyExpressionValidity(target, options || {}), ok = active.ok && unknown.ok && equivalence.ok && reduction.ok && noGrowth.ok && expression.ok; return { ok, active, unknown, equivalence, reduction, growth, no_growth_no_change: noGrowth, expression, contract: opContract('Living', options || {}) }; }
   function falseReason(report) { const order = ['One','Closure','Admission','UnknownPreservation','EquivalenceCollapse','Reduction','NoGrowthNoChange','ExpressionValidity','Active','Living']; const key = order.find(k => report[k] === false); return key ? key + '_invariant_failed' : null; }
-  function evaluateState(state, options) {
-    const one = verifyOne(state, options || {}), closureReport = verifyClosureIdempotence(state, options || {}), equivalence = verifyEquivalenceCollapse(state, state, options || {}), reduction = verifyReductionNorm(state, options || {}), expression = verifyExpressionValidity(state, options || {}), active = verifyActive(state, null, state, options || {}), living = { ok: one.ok && closureReport.ok && equivalence.ok && reduction.ok && expression.ok && active.ok, contract: opContract('Living', options || {}) };
-    const report = { packet_type: '42ndMind_math_law_invariant_report_v0_1', version: VERSION, theorem_prover: false, invariant_prover: true, contract_version: contract(options || {}).version || null, math_version: expectedVersion(options || {}), One: one.ok, Closure: closureReport.ok, Admission: true, UnknownPreservation: true, EquivalenceCollapse: equivalence.ok, Reduction: reduction.ok, Growth: true, NoGrowthNoChange: true, ExpressionValidity: expression.ok, Active: active.ok, Living: living.ok, one, closure: closureReport, equivalence, reduction: reduction.reduction, expression, active, living };
-    report.ok = report.One && report.Closure && report.EquivalenceCollapse && report.Reduction && report.ExpressionValidity && report.Active && report.Living;
-    report.blocked_reason = report.ok ? null : falseReason(report);
-    return report;
-  }
-  function evaluateTransition(before, candidate, after, options) {
-    const target = after || candidateAfterState(before, candidate), one = verifyOne(target, options || {}), closureReport = verifyClosureIdempotence(target, options || {}), admission = verifyAdmission(before, candidate, target, options || {}), unknown = preservesUnknown(before, target, options || {}), equivalence = verifyEquivalenceCollapse(before, target, options || {}), reduction = verifyReductionNorm(target, options || {}), growth = isGrowth(candidateAsInput(candidate), before, target, options || {}), noGrowth = verifyNoGrowthNoChange(before, candidate, target, options || {}), expression = verifyExpressionValidity(target, options || {}), active = verifyActive(before, candidate, target, options || {}), living = verifyLiving(before, candidate, target, options || {}), didChange = changed(before, target, options || {});
-    const report = { packet_type: '42ndMind_math_law_transition_invariant_report_v0_1', version: VERSION, theorem_prover: false, invariant_prover: true, contract_version: contract(options || {}).version || null, math_version: expectedVersion(options || {}), changed: didChange, One: one.ok, Closure: closureReport.ok, Admission: admission.ok, UnknownPreservation: unknown.ok, EquivalenceCollapse: equivalence.ok, Reduction: reduction.ok, Growth: growth.ok, NoGrowthNoChange: noGrowth.ok, ExpressionValidity: expression.ok, Active: active.ok, Living: living.ok, one, closure: closureReport, admission, unknown, equivalence, reduction: reduction.reduction, growth, no_growth_no_change: noGrowth, expression, active, living };
-    report.ok = report.One && report.Closure && report.Admission && report.UnknownPreservation && report.EquivalenceCollapse && report.Reduction && report.NoGrowthNoChange && report.ExpressionValidity && report.Active && report.Living;
-    report.blocked_reason = report.ok ? null : falseReason(report);
-    return report;
-  }
+  function evaluateState(state, options) { const one = verifyOne(state, options || {}), closureReport = verifyClosureIdempotence(state, options || {}), equivalence = verifyEquivalenceCollapse(state, state, options || {}), reduction = verifyReductionNorm(state, options || {}), expression = verifyExpressionValidity(state, options || {}), active = verifyActive(state, null, state, options || {}), living = { ok: one.ok && closureReport.ok && equivalence.ok && reduction.ok && expression.ok && active.ok, contract: opContract('Living', options || {}) }, report = { packet_type: '42ndMind_math_law_invariant_report_v0_1', version: VERSION, theorem_prover: false, invariant_prover: true, contract_version: contract(options || {}).version || null, math_version: expectedVersion(options || {}), One: one.ok, Closure: closureReport.ok, Admission: true, UnknownPreservation: true, EquivalenceCollapse: equivalence.ok, Reduction: reduction.ok, Growth: true, NoGrowthNoChange: true, ExpressionValidity: expression.ok, Active: active.ok, Living: living.ok, one, closure: closureReport, equivalence, reduction: reduction.reduction, expression, active, living }; report.ok = report.One && report.Closure && report.EquivalenceCollapse && report.Reduction && report.ExpressionValidity && report.Active && report.Living; report.blocked_reason = report.ok ? null : falseReason(report); return report; }
+  function evaluateTransition(before, candidate, after, options) { const target = after || candidateAfterState(before, candidate), one = verifyOne(target, options || {}), closureReport = verifyClosureIdempotence(target, options || {}), admission = verifyAdmission(before, candidate, target, options || {}), unknown = preservesUnknown(before, target, options || {}), equivalence = verifyEquivalenceCollapse(before, target, options || {}), reduction = verifyReductionNorm(target, options || {}), growth = isGrowth(candidateAsInput(candidate, options || {}), before, target, options || {}), noGrowth = verifyNoGrowthNoChange(before, candidate, target, options || {}), expression = verifyExpressionValidity(target, options || {}), active = verifyActive(before, candidate, target, options || {}), living = verifyLiving(before, candidate, target, options || {}), didChange = changed(before, target, options || {}), report = { packet_type: '42ndMind_math_law_transition_invariant_report_v0_1', version: VERSION, theorem_prover: false, invariant_prover: true, contract_version: contract(options || {}).version || null, math_version: expectedVersion(options || {}), changed: didChange, One: one.ok, Closure: closureReport.ok, Admission: admission.ok, UnknownPreservation: unknown.ok, EquivalenceCollapse: equivalence.ok, Reduction: reduction.ok, Growth: growth.ok, NoGrowthNoChange: noGrowth.ok, ExpressionValidity: expression.ok, Active: active.ok, Living: living.ok, one, closure: closureReport, admission, unknown, equivalence, reduction: reduction.reduction, growth, no_growth_no_change: noGrowth, expression, active, living }; report.ok = report.One && report.Closure && report.Admission && report.UnknownPreservation && report.EquivalenceCollapse && report.Reduction && report.NoGrowthNoChange && report.ExpressionValidity && report.Active && report.Living; report.blocked_reason = report.ok ? null : falseReason(report); return report; }
 
-  return Object.freeze({ VERSION, EXPECTED_MATH_VERSION: expectedVersion({}), CANONICAL_MATH_PATH: canonicalPath({}), REQUIRED: required({}), stable, hash, contract, op, verifyCanonicalMathState, verifyOne, closure, closureSignature, verifyClosureIdempotence, candidateAsInput, candidateAfterState, verifyAdmission, defineUnit, definitionSignature, stabilityOf, unknownOf, preservesUnknown, eqB, collapseEquivalentUnits, verifyEquivalenceCollapse, red, reducedState, verifyReductionNorm, isGrowth, verifyNoGrowthNoChange, focus, expressionOf, validExpression, verifyExpressionValidity, verifyActive, verifyLiving, evaluateState, evaluateTransition });
+  return Object.freeze({ VERSION, get EXPECTED_MATH_VERSION() { return expectedVersion({}); }, get CANONICAL_MATH_PATH() { return canonicalPath({}); }, get REQUIRED() { return required({}); }, stable, hash, contract, op, verifyCanonicalMathState, verifyOne, closure, closureSignature, verifyClosureIdempotence, candidateAsInput, candidateAfterState, verifyAdmission, defineUnit, definitionSignature, stabilityOf, unknownOf, preservesUnknown, eqB, collapseEquivalentUnits, verifyEquivalenceCollapse, red, reducedState, verifyReductionNorm, isGrowth, verifyNoGrowthNoChange, focus, expressionOf, validExpression, verifyExpressionValidity, verifyActive, verifyLiving, evaluateState, evaluateTransition });
 });
