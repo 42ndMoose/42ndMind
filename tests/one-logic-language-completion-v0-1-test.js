@@ -10,6 +10,15 @@ const admitted = LC.admit(generated, options);
 const reduced = LC.reduce([generated, generated], options);
 const refused = LC.refuse('unclosed external assertion', 'not_admitted_without_one_logic_closure', options);
 
+assert.ok(LC.grammar().some(row => row.form === 'expression' && row.maps_to.includes('E')));
+assert.ok(LC.grammar().some(row => row.form === 'admission' && row.maps_to.includes('Adm')));
+assert.ok(LC.grammar().some(row => row.form === 'reduction' && row.maps_to.includes('Red')));
+assert.ok(LC.grammar().some(row => row.form === 'refusal' && row.maps_to.includes('Om')));
+assert.strictEqual(LC.parse('focus B').form, 'focus');
+assert.strictEqual(LC.parse('admit focus B').form, 'admission');
+assert.strictEqual(LC.parse('reduce focus B; focus B').form, 'reduction');
+assert.strictEqual(LC.parse('expr (unclosed').ok, false);
+
 assert.strictEqual(generated.expression.derived_from_contract, true);
 assert.strictEqual(generated.expression.parser_role, 'parse_format_hint_only_not_semantic_authority');
 assert.strictEqual(generated.expression.semantic_authority, M.CONTRACT.canonical_path + '::CONTRACT');
@@ -29,6 +38,39 @@ assert.ok(generated.expression.operators.some(row => row.operator === 'Valid'));
   assert.ok(Array.isArray(packet.proof.obligations));
   assert.ok(packet.proof.obligations.length > 0);
 });
+
+const acceptedRow = LC.handle('focus B', options);
+assert.strictEqual(acceptedRow.parsed.form, 'focus');
+assert.strictEqual(acceptedRow.generated_expression.ok, true);
+assert.strictEqual(acceptedRow.generated_expression.proof.ok, true);
+assert.strictEqual(acceptedRow.result.kind, 'admission');
+assert.strictEqual(acceptedRow.result.ok, true);
+assert.strictEqual(acceptedRow.result.proved, true);
+
+const reducedRow = LC.handle('reduce focus B; focus B', options);
+assert.strictEqual(reducedRow.parsed.form, 'reduction');
+assert.ok(Array.isArray(reducedRow.generated_expression));
+assert.strictEqual(reducedRow.generated_expression.length, 2);
+assert.strictEqual(reducedRow.result.kind, 'reduction');
+assert.strictEqual(reducedRow.result.ok, true);
+assert.strictEqual(reducedRow.result.proved, true);
+
+const refusedRow = LC.handle('expr (unclosed', options);
+assert.strictEqual(refusedRow.parsed.form, 'refusal');
+assert.strictEqual(refusedRow.generated_expression, null);
+assert.strictEqual(refusedRow.result.kind, 'refusal');
+assert.strictEqual(refusedRow.result.refused, true);
+assert.strictEqual(refusedRow.result.reason, 'unclosed_expression');
+assert.strictEqual(refusedRow.result.ok, true);
+assert.strictEqual(refusedRow.result.proved, true);
+
+const examples = LC.exampleRows(options);
+assert.strictEqual(examples.length, 3);
+assert.strictEqual(examples[0].result.kind, 'admission');
+assert.strictEqual(examples[1].result.kind, 'reduction');
+assert.strictEqual(examples[2].result.kind, 'refusal');
+assert.ok(examples.every(row => row.result.ok === true));
+assert.ok(examples.every(row => row.result.proved === true));
 
 const completion = LC.complete(['2 + 2 = 4'], Object.assign({}, options, {
   refusals: [{ input: 'unclosed external assertion', reason: 'not_admitted_without_one_logic_closure' }]
