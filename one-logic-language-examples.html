@@ -11,30 +11,19 @@
     th { background: #f6f6f6; }
     code, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
     pre { padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
-    .note { max-width: 980px; }
   </style>
 </head>
 <body>
   <h1>Formal One Logic Kernel v1.0</h1>
-  <p class="note">Architecture frozen. Human aliases are optional compile shortcuts only. The language object is formal_expression/formal_ast. Validation is the certificate under CONTRACT.proofs. Future work should only populate and grow language inside B, not change this architecture.</p>
+  <p>Architecture frozen. The language object is <code>formal_expression/formal_ast</code>. Validation is <code>CONTRACT.proofs</code>. Meaning growth uses only <code>D(q,B)</code> and <code>Cl(Red(...))</code>.</p>
 
-  <h2>Verification</h2>
-  <div id="verification">Loading…</div>
-
-  <h2>Symbol Set</h2>
-  <pre id="symbols">Loading…</pre>
-
-  <h2>Formation Rules</h2>
-  <div id="formation">Loading…</div>
-
-  <h2>Compilation</h2>
-  <div id="compilation">Loading…</div>
-
-  <h2>Proof</h2>
-  <div id="proof">Loading…</div>
-
-  <h2>Examples</h2>
-  <div id="examples">Loading…</div>
+  <h2>Verification</h2><div id="verification">Loading...</div>
+  <h2>Symbol Set</h2><pre id="symbols">Loading...</pre>
+  <h2>Formation Rules</h2><div id="formation">Loading...</div>
+  <h2>Compilation</h2><div id="compilation">Loading...</div>
+  <h2>Proof</h2><div id="proof">Loading...</div>
+  <h2>Self-Populating Meaning</h2><div id="meaning">Loading...</div>
+  <h2>Examples</h2><div id="examples">Loading...</div>
 
   <script src="src/one-logic-math-v1.js"></script>
   <script src="src/math-law-proof-checker-v0-1.js"></script>
@@ -46,12 +35,10 @@
       const M = window.OneLogicMathV1;
       const P = window.FortySecondMindMathLawInvariantProver;
       const Proof = window.FortySecondMindMathLawProofChecker;
-      const SIGMA = ['B', 'L', 'Cl', 'norm', 'P', 'One', 'Adm', 'D', 'Om', 'EqB', 'Red', 'G', 'Phi', 'E', 'Valid', 'Active', 'Living'];
-      const INTERNAL = ['=', 'Pres'];
-      const RULES = [
-        ['B', 'B'], ['L', 'L'], ['Cl(x)', ['Cl', 'x']], ['norm(x)', ['norm', 'x']], ['P(x)', ['P', 'x']], ['One(x)', ['One', 'x']], ['Phi(x,B)', ['Phi', 'x', 'B']], ['E(B,phi)', ['E', 'B', 'phi']], ['Valid(y,B)', ['Valid', 'y', 'B']], ['Adm(x,B)', ['Adm', 'x', 'B']], ['D(a,b)', ['D', 'a', 'b']], ['Om(x,B)', ['Om', 'x', 'B']], ['EqB(a,b)', ['EqB', 'a', 'b']], ['Red(B)', ['Red', 'B']], ['G(x)', ['G', 'x']], ['Active(x)', ['Active', 'x']], ['Living(x)', ['Living', 'x']]
-      ];
-      function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
+      const SIGMA = ['B','L','Cl','norm','P','One','Adm','D','Om','EqB','Red','G','Phi','E','Valid','Active','Living'];
+      const INTERNAL = ['=','Pres'];
+      const RULES = [['B','B'],['L','L'],['Cl(x)',['Cl','x']],['One(x)',['One','x']],['Phi(x,B)',['Phi','x','B']],['E(B,phi)',['E','B','phi']],['Valid(y,B)',['Valid','y','B']],['Adm(x,B)',['Adm','x','B']],['D(q,B)',['D','q','B']],['Om(x,B)',['Om','x','B']],['EqB(a,b)',['EqB','a','b']],['Red(B)',['Red','B']],['G(x)',['G','x']],['Active(x)',['Active','x']],['Living(x)',['Living','x']]];
+      function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
       function pretty(v) { return JSON.stringify(v, null, 2); }
       function list(v) { return Array.isArray(v) ? v.join(' + ') : String(v == null ? '' : v); }
       function table(h, rows) { return '<table><thead><tr>' + h.map(x => '<th>' + esc(x) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table>'; }
@@ -62,22 +49,31 @@
         const spec = LC.languageSpec(options);
         const examples = LC.exampleRows(options, true);
         const authority = M.CONTRACT.proofs.authority;
+        const self = M.CONTRACT.self_populating_meaning;
         const checks = [
-          ['input → formal_ast → proof certificate → admit/reduce/refuse', examples.every(x => x.formal_ast && x.proof && x.result && (x.result.kind === 'admission' || x.result.kind === 'reduction' || x.result.kind === 'refusal'))],
-          ['Every alias compiles into formal_expression and formal_ast', examples.every(x => x.formal_expression && x.formal_ast)],
-          ['Every formal_ast uses Σ or canonical internal primitives', examples.every(x => allowed(x.formal_ast))],
-          ['Every certificate targets the formal object, not alias authority', examples.every(x => x.formal_ast && x.proof && x.proof.authority === authority && String(x.proof.note).indexOf('formal') >= 0)],
-          ['Only one-logic-math-v1.js::CONTRACT and CONTRACT.proofs are authority', examples.every(x => x.proof && x.proof.authority === authority)]
+          ['input -> formal_ast -> proof certificate -> admit/reduce/refuse', examples.every(x => x.formal_ast && x.proof && x.result)],
+          ['q = iota(x) and Meaning(q,B)=D(q,B)', M.F.includes('q=iota(x)') && M.F.includes('Meaning(q,B)=D(q,B)')],
+          ['B[x] uses Cl(Red(union(B,{D(iota(x),B)})))', M.F.includes(self.update)],
+          ['formal_ast uses allowed operators', examples.every(x => allowed(x.formal_ast))],
+          ['certificate authority is CONTRACT.proofs', examples.every(x => x.proof && x.proof.authority === authority)]
         ];
-        document.getElementById('verification').innerHTML = table(['Check', 'Status'], checks.map(x => [esc(x[0]), x[1] ? 'PASS' : 'FAIL']));
+        document.getElementById('verification').innerHTML = table(['Check','Status'], checks.map(x => [esc(x[0]), x[1] ? 'PASS' : 'FAIL']));
         document.getElementById('symbols').textContent = 'Σ = {' + SIGMA.join(', ') + '}\ncanonical_internal_primitives = {' + INTERNAL.join(', ') + '}';
-        document.getElementById('formation').innerHTML = table(['Formal expression', 'Formal AST'], RULES.map(x => ['<code>' + esc(x[0]) + '</code>', '<pre>' + esc(pretty(x[1])) + '</pre>']));
-        document.getElementById('compilation').innerHTML = table(['Optional alias/input', 'Formal expression', 'Formal AST'], spec.map(x => ['<code>' + esc(x.alias_input) + '</code><br><small>optional compile shortcut only</small>', '<code>' + esc(x.formal_expression) + '</code>', '<pre>' + esc(pretty(x.formal_ast)) + '</pre>']));
-        document.getElementById('proof').innerHTML = table(['Formal AST', 'Proof obligation', 'Certificate authority'], spec.map(x => ['<pre>' + esc(pretty(x.formal_ast)) + '</pre>', esc(list(x.proof_obligation)), '<code>' + esc(x.proof_authority) + '</code>']));
-        document.getElementById('examples').innerHTML = table(['Alias', 'Formal expression', 'Formal AST', 'Certificate', 'Result'], examples.map(x => ['<code>' + esc(x.human_alias_input || x.input) + '</code>', '<code>' + esc(x.formal_expression) + '</code>', '<pre>' + esc(pretty(x.formal_ast)) + '</pre>', '<pre>' + esc('ok: ' + x.proof.ok + '\ntheorem: ' + x.proof.theorem + '\nauthority: ' + x.proof.authority + '\nobligations: ' + list(x.proof.obligations_used)) + '</pre>', '<pre>' + esc('packet: ' + x.result.packet_type + '\nkind: ' + x.result.kind + '\nok: ' + x.result.ok + '\nproved: ' + x.result.proved) + '</pre>']));
+        document.getElementById('formation').innerHTML = table(['Formal expression','Formal AST'], RULES.map(x => ['<code>' + esc(x[0]) + '</code>', '<pre>' + esc(pretty(x[1])) + '</pre>']));
+        document.getElementById('compilation').innerHTML = table(['Optional input','Formal expression','Formal AST'], spec.map(x => ['<code>' + esc(x.alias_input) + '</code>', '<code>' + esc(x.formal_expression) + '</code>', '<pre>' + esc(pretty(x.formal_ast)) + '</pre>']));
+        document.getElementById('proof').innerHTML = table(['Formal AST','Proof obligation','Certificate authority'], spec.map(x => ['<pre>' + esc(pretty(x.formal_ast)) + '</pre>', esc(list(x.proof_obligation)), '<code>' + esc(x.proof_authority) + '</code>']));
+        document.getElementById('meaning').innerHTML = table(['Stage','Canonical law'], [
+          ['input contact','<code>input x</code>'],
+          ['local unit','<code>' + esc(self.local_unit) + '</code>'],
+          ['meaning vector','<code>' + esc(self.meaning_profile) + '</code><br><code>' + esc(M.operatorContract('D').law[0]) + '</code>'],
+          ['reports','<code>Relates(q,r,B)</code><br><code>Equivalent(q,r,B)</code><br><code>Unresolved(q,B)</code><br><code>Growth(q,B)</code>'],
+          ['state update','<code>' + esc(self.update) + '</code>'],
+          ['result','<code>admit / reduce / preserve Om / refuse</code>']
+        ]);
+        document.getElementById('examples').innerHTML = table(['Input','Formal expression','Formal AST','Certificate','Result'], examples.map(x => ['<code>' + esc(x.human_alias_input || x.input) + '</code>', '<code>' + esc(x.formal_expression) + '</code>', '<pre>' + esc(pretty(x.formal_ast)) + '</pre>', '<pre>' + esc('ok: ' + x.proof.ok + '\nauthority: ' + x.proof.authority + '\nobligations: ' + list(x.proof.obligations_used)) + '</pre>', '<pre>' + esc('kind: ' + x.result.kind + '\nok: ' + x.result.ok + '\nproved: ' + x.result.proved) + '</pre>']));
       } catch (err) {
         const msg = String(err && err.stack || err);
-        ['verification','symbols','formation','compilation','proof','examples'].forEach(id => document.getElementById(id).textContent = msg);
+        ['verification','symbols','formation','compilation','proof','meaning','examples'].forEach(id => document.getElementById(id).textContent = msg);
       }
     })();
   </script>
